@@ -1,0 +1,571 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 110;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		EC072FD03066637B000ED989 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC072FB630666379000ED989 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EC072FBD30666379000ED989;
+			remoteInfo = Jamaal;
+		};
+		EC072FDA3066637B000ED989 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC072FB630666379000ED989 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EC072FBD30666379000ED989;
+			remoteInfo = Jamaal;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		EC072FBE3066637A000ED989 /* Jamaal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jamaal.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC072FCF3066637B000ED989 /* JamaalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamaalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC072FD93066637B000ED989 /* JamaalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamaalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		EC072FDF3066637B000ED989 /* Exceptions for "Jamaal" folder in "Jamaal" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = EC072FBD30666379000ED989 /* Jamaal */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		EC072FC03066637A000ED989 /* Jamaal */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				EC072FDF3066637B000ED989 /* Exceptions for "Jamaal" folder in "Jamaal" target */,
+			);
+			path = Jamaal;
+			sourceTree = "<group>";
+		};
+		EC072FD23066637B000ED989 /* JamaalTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = JamaalTests;
+			sourceTree = "<group>";
+		};
+		EC072FDC3066637B000ED989 /* JamaalUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = JamaalUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EC072FBB30666379000ED989 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		EC072FCC3066637B000ED989 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		EC072FD63066637B000ED989 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EC072FB530666379000ED989 = {
+			isa = PBXGroup;
+			children = (
+				EC072FC03066637A000ED989 /* Jamaal */,
+				EC072FD23066637B000ED989 /* JamaalTests */,
+				EC072FDC3066637B000ED989 /* JamaalUITests */,
+				EC072FBF3066637A000ED989 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EC072FBF3066637A000ED989 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EC072FBE3066637A000ED989 /* Jamaal.app */,
+				EC072FCF3066637B000ED989 /* JamaalTests.xctest */,
+				EC072FD93066637B000ED989 /* JamaalUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EC072FBD30666379000ED989 /* Jamaal */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC072FE03066637B000ED989 /* Build configuration list for PBXNativeTarget "Jamaal" */;
+			buildPhases = (
+				EC072FBA30666379000ED989 /* Sources */,
+				EC072FBB30666379000ED989 /* Frameworks */,
+				EC072FBC30666379000ED989 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				EC072FC03066637A000ED989 /* Jamaal */,
+			);
+			name = Jamaal;
+			productName = Jamaal;
+			productReference = EC072FBE3066637A000ED989 /* Jamaal.app */;
+			productType = "com.apple.product-type.application";
+		};
+		EC072FCE3066637B000ED989 /* JamaalTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC072FE53066637B000ED989 /* Build configuration list for PBXNativeTarget "JamaalTests" */;
+			buildPhases = (
+				EC072FCB3066637B000ED989 /* Sources */,
+				EC072FCC3066637B000ED989 /* Frameworks */,
+				EC072FCD3066637B000ED989 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EC072FD13066637B000ED989 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				EC072FD23066637B000ED989 /* JamaalTests */,
+			);
+			name = JamaalTests;
+			productName = JamaalTests;
+			productReference = EC072FCF3066637B000ED989 /* JamaalTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		EC072FD83066637B000ED989 /* JamaalUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC072FE83066637B000ED989 /* Build configuration list for PBXNativeTarget "JamaalUITests" */;
+			buildPhases = (
+				EC072FD53066637B000ED989 /* Sources */,
+				EC072FD63066637B000ED989 /* Frameworks */,
+				EC072FD73066637B000ED989 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EC072FDB3066637B000ED989 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				EC072FDC3066637B000ED989 /* JamaalUITests */,
+			);
+			name = JamaalUITests;
+			productName = JamaalUITests;
+			productReference = EC072FD93066637B000ED989 /* JamaalUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EC072FB630666379000ED989 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					EC072FBD30666379000ED989 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					EC072FCE3066637B000ED989 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = EC072FBD30666379000ED989;
+					};
+					EC072FD83066637B000ED989 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = EC072FBD30666379000ED989;
+					};
+				};
+			};
+			buildConfigurationList = EC072FB930666379000ED989 /* Build configuration list for PBXProject "Jamaal" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EC072FB530666379000ED989;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = EC072FBF3066637A000ED989 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EC072FBD30666379000ED989 /* Jamaal */,
+				EC072FCE3066637B000ED989 /* JamaalTests */,
+				EC072FD83066637B000ED989 /* JamaalUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EC072FBC30666379000ED989 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		EC072FCD3066637B000ED989 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		EC072FD73066637B000ED989 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EC072FBA30666379000ED989 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		EC072FCB3066637B000ED989 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		EC072FD53066637B000ED989 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EC072FD13066637B000ED989 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EC072FBD30666379000ED989 /* Jamaal */;
+			targetProxy = EC072FD03066637B000ED989 /* PBXContainerItemProxy */;
+		};
+		EC072FDB3066637B000ED989 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EC072FBD30666379000ED989 /* Jamaal */;
+			targetProxy = EC072FDA3066637B000ED989 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		EC072FE13066637B000ED989 /* Debug configuration for PBXNativeTarget "Jamaal" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Jamaal/Jamaal.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y395QDPS3G;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Jamaal/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fhdamd.Jamaal;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EC072FE23066637B000ED989 /* Release configuration for PBXNativeTarget "Jamaal" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Jamaal/Jamaal.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y395QDPS3G;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Jamaal/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fhdamd.Jamaal;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		EC072FE33066637B000ED989 /* Debug configuration for PBXProject "Jamaal" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = Y395QDPS3G;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		EC072FE43066637B000ED989 /* Release configuration for PBXProject "Jamaal" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Y395QDPS3G;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EC072FE63066637B000ED989 /* Debug configuration for PBXNativeTarget "JamaalTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y395QDPS3G;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fhdamd.JamaalTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Jamaal.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Jamaal";
+			};
+			name = Debug;
+		};
+		EC072FE73066637B000ED989 /* Release configuration for PBXNativeTarget "JamaalTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y395QDPS3G;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fhdamd.JamaalTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Jamaal.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Jamaal";
+			};
+			name = Release;
+		};
+		EC072FE93066637B000ED989 /* Debug configuration for PBXNativeTarget "JamaalUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y395QDPS3G;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fhdamd.JamaalUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Jamaal;
+			};
+			name = Debug;
+		};
+		EC072FEA3066637B000ED989 /* Release configuration for PBXNativeTarget "JamaalUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y395QDPS3G;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fhdamd.JamaalUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Jamaal;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EC072FB930666379000ED989 /* Build configuration list for PBXProject "Jamaal" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC072FE33066637B000ED989 /* Debug configuration for PBXProject "Jamaal" */,
+				EC072FE43066637B000ED989 /* Release configuration for PBXProject "Jamaal" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		EC072FE03066637B000ED989 /* Build configuration list for PBXNativeTarget "Jamaal" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC072FE13066637B000ED989 /* Debug configuration for PBXNativeTarget "Jamaal" */,
+				EC072FE23066637B000ED989 /* Release configuration for PBXNativeTarget "Jamaal" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		EC072FE53066637B000ED989 /* Build configuration list for PBXNativeTarget "JamaalTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC072FE63066637B000ED989 /* Debug configuration for PBXNativeTarget "JamaalTests" */,
+				EC072FE73066637B000ED989 /* Release configuration for PBXNativeTarget "JamaalTests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		EC072FE83066637B000ED989 /* Build configuration list for PBXNativeTarget "JamaalUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC072FE93066637B000ED989 /* Debug configuration for PBXNativeTarget "JamaalUITests" */,
+				EC072FEA3066637B000ED989 /* Release configuration for PBXNativeTarget "JamaalUITests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EC072FB630666379000ED989 /* Project object */;
+	validationLevel = 1;
+}
