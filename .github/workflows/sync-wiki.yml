@@ -42,8 +42,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Sync docs into wiki
-        run: rsync -a --delete --exclude='.git' repo/docs/ wiki/
+      - name: Sync docs into wiki (flattening nested paths)
+        run: python3 repo/.github/scripts/sync_wiki.py repo/docs wiki
 
       - name: Commit and push wiki
         working-directory: wiki
