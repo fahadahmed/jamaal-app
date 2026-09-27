@@ -96,6 +96,15 @@ Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity s
 
 **Docs/flows-first.** This repo was restarted from scratch specifically because the previous JamaalCore attempt skipped this step. Finalize `docs/schema/*` and `docs/journeys/*` before writing feature code — architecture overview is done, schema and journeys are still stubs as of this handoff. Don't jump ahead to implementation without checking those docs are filled in first.
 
+## Git workflow
+
+All new code or documentation work is tracked through a GitHub issue and lands via a PR — no direct commits to `main`, except trivial fixes (typos, formatting) explicitly requested as a direct commit.
+
+1. Open (or use an existing) GitHub issue describing the work.
+2. Branch off `main`, named `[type]/[issueNumber]-[description]`, where `type` is one of `feat`, `bug`, `task`, `doc`, and `description` is a short kebab-case summary (e.g. `feat/12-night-planning-wizard`).
+3. Open a PR from that branch into `main`, referencing the issue (e.g. `Closes #12`).
+4. Merge via PR — this is also what exercises `sync-wiki.yml` and (once it's live) `ci.yml`, which only fire on `main`.
+
 ## Open items to pick up next
 
 - [ ] Fill in `docs/schema/task.md`, `habit.md`, `anchor.md` with real field definitions (respecting CloudKit constraints above)
