@@ -1,6 +1,6 @@
 # Task
 
-> **Status: draft, needs review.** This is a first-pass proposal based on CLAUDE.md's primitives table and CloudKit constraints — not yet confirmed. See "Open questions" below.
+> **Status: reviewed, resolved for v1.** Fields below reflect decisions made in review; see CLAUDE.md's Git workflow / issue history for the discussion. Sharing/referral fields are still deliberately excluded — see "Open questions."
 
 Something the user **does**. Created by the user, tracked via completion (not streaks or attendance — see [Habit](habit) and [Anchor](anchor) for those).
 
@@ -15,8 +15,9 @@ Something the user **does**. Created by the user, tracked via completion (not st
 | `isCompleted` | `Bool`     | `false`        |                                                                                               |
 | `completedAt` | `Date?`    | `nil`          | Set when `isCompleted` flips true; cleared if un-completed.                                  |
 | `createdAt`   | `Date`     | `.now`         |                                                                                               |
-| `rolloverCount` | `Int`    | `0`            | Incremented each day the rules engine rolls an incomplete dated task forward.                |
-| `category`    | `String`   | `"personal"`   | One of `personal` / `family` / `work` — powers the unified Today List. Stored as `String`, not enum, per CloudKit-safe SwiftData patterns (see open question below). |
+| `rolloverCount` | `Int`    | `0`            | Incremented each day the rules engine rolls an incomplete dated task forward. Exact rollover behavior (indefinite vs. surfaced differently after N days) is deferred to the rules-engine module design — see [issue #7](https://github.com/fahadahmed/jamaal-app/issues/7). |
+| `category`    | `String`   | `"personal"`   | One of `personal` / `family` / `work` — powers the unified Today List. Raw `String` rather than an enum type or separate model, for CloudKit-safe SwiftData simplicity; a typed enum wrapper can sit on top in Swift. |
+| `priority`    | `String`   | `"none"`       | One of `none` / `low` / `medium` / `high`. Raw `String`, same rationale as `category`.        |
 
 ## Relationships
 
@@ -30,7 +31,4 @@ None currently — Task is a leaf primitive with no cross-links to Habit or Anch
 
 ## Open questions
 
-- **Category representation**: raw `String` (shown above) vs. a SwiftData-compatible enum wrapper vs. a separate `TaskCategory` model (would need a relationship, which must then be optional). Depends on whether categories become user-customizable later.
-- **Priority**: not mentioned anywhere in CLAUDE.md — is priority in scope for v1, or deferred?
-- **Rollover rules**: does an overdue task roll to "today" indefinitely, or does it get surfaced differently after N days? This is rules-engine module 1's job, but the field(s) needed here depend on the answer.
 - **Sharing/referral**: CLAUDE.md notes this is in scope for v1 but not yet reflected in any primitive — likely adds fields here (e.g. shared task ownership) once [the sharing/referral design pass](https://github.com/fahadahmed/jamaal-app/issues/8) lands. Deliberately left out of this draft.
