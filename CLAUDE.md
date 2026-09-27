@@ -1,0 +1,106 @@
+# CLAUDE.md — Jamaal
+
+Context for Claude Code sessions in this repo. This is a handoff from planning done in Claude chat — treat it as ground truth for decisions already made; don't re-litigate these unless something concrete has changed.
+
+## What Jamaal is
+
+A calm-focus multiplatform app (iOS, iPadOS, macOS, with first-class iPhone Duo support) built around three primitives — **Task**, **Habit**, **Anchor** — with a deterministic rules engine and a guided Night Planning flow. Built primarily for the developer's own use: a single unified "Today" list spanning personal, family, and work items, replacing a pattern of bouncing between reminder/task/calendar apps that never stuck.
+
+Deliberately a **general** productivity app, not an Islamic-only one — Islamic practice habits (salah, Qur'an, dhikr) and general habits (exercise, running) are just different presets of the same Habit engine, not a separate mode.
+
+## Repo structure
+
+```
+jamaal-app/
+├── Jamaal/              # app target (SwiftUI, multiplatform: iOS/iPadOS/macOS)
+│   ├── App/
+│   ├── Features/        # Today, Habits, Anchors, NightPlanning, Settings
+│   ├── Components/      # capacity slider, habit heatmap, wellbeing sparkline, night-planning wizard
+│   └── Resources/
+├── JamaalCore/           # local Swift Package — SwiftData models + rules engine, NO UI imports
+│   ├── Sources/JamaalCore/{Models,RulesEngine}/
+│   └── Tests/JamaalCoreTests/
+├── mockups/               # HTML reference screens (Liquid Glass pass applied) — source of truth for SwiftUI screens
+├── docs/                  # synced to GitHub wiki via .github/workflows/sync-wiki.yml on merge to main
+│   ├── Home.md / _Sidebar.md
+│   ├── architecture/ (overview.md, decisions/, uml/)
+│   ├── schema/ (task.md, habit.md, anchor.md)
+│   ├── journeys/ (today-list.md, night-planning.md, onboarding.md)
+│   ├── roadmap/phases.md
+│   └── design/threadskit-usage.md
+├── .github/workflows/ (ci.yml, sync-wiki.yml)
+└── ci_scripts/            # reserved for Xcode Cloud, empty for now
+```
+
+No `.xcworkspace` — JamaalCore is a Swift Package (added as a local package dependency directly into `Jamaal.xcodeproj`), not a separate `.xcodeproj`, so no workspace is needed. ThreadsKit lives in its own repo, added as a **remote** Swift Package dependency (pinned "Up to Next Major Version" from 1.0.0).
+
+## Xcode project settings (as created)
+
+- Organization Identifier: `dev.fhdamd` → bundle ID `dev.fhdamd.Jamaal`
+- Interface: SwiftUI · Language: Swift · Storage: SwiftData
+- **Host in CloudKit: enabled** — cross-device sync (iPhone/iPad/Mac) is in scope for v1, not deferred
+- Testing System: **Swift Testing with XCTest UI Tests** (see Testing section below)
+- Team: Personal (free) — fine through development; paid Apple Developer Program ($99/year) only needed at TestFlight-with-others / production CloudKit / App Store submission time, not before
+
+## Testing strategy
+
+- **JamaalCore** (`JamaalCoreTests`): **Swift Testing** exclusively (`@Test`, `#expect`, `try #require`). No XCTest here — this package is pure logic (rules engine, models), Apple's default for new unit tests in Xcode 26, and a good fit for parameterized tests (e.g. Anchor generation across time-window scenarios).
+- **Jamaal app** (`JamaalTests`): Swift Testing, for view models / app-layer logic.
+- **Jamaal app** (`JamaalUITests`): **XCTest / XCUITest** — non-negotiable, Apple hasn't replaced XCUITest with Swift Testing. Use for the custom, interaction-heavy components (capacity slider, night-planning wizard) that are easy to silently break in a SwiftUI refactor.
+
+## SwiftData / CloudKit constraints (applies to all three primitives)
+
+Because CloudKit sync is in from v1:
+
+- Every property needs a default value (no bare `let` without one)
+- No unique constraints on attributes
+- Relationships must be optional
+
+## The three primitives
+
+| Primitive  | Created by | Tracked via             | Nature                                                                                                                                                       |
+| ---------- | ---------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Task**   | User       | Completion              | Something you _do_                                                                                                                                           |
+| **Habit**  | User       | Streaks                 | Something you _cultivate_ — supports time-windowed occurrences (e.g. five daily prayers as a preset)                                                         |
+| **Anchor** | Generated  | Attendance, not streaks | Something your life _moves around_ — timing and the consequence of a miss are external to the user (prayer windows, school runs, bin night, watering plants) |
+
+Full rationale for Anchor as a third type (vs. folding into Habit): `docs/architecture/decisions/0001-anchor-object-type.md`.
+
+Notes feature was dropped in favor of optional lightweight markdown (checklists, bold/italic, links, inline code) scoped to individual tasks, surfaced as a tappable checklist during a task/anchor's timed session — not a separate notes destination.
+
+## Rules engine (JamaalCore)
+
+Deterministic — same state + inputs always produce the same output, no ML/heuristics. Six modules proposed (**boundaries are a first draft, confirm before implementing**):
+
+1. Task scheduling (due dates, rollover)
+2. Habit streak tracking
+3. Anchor generation (window-bound instances, attendance)
+4. Night Planning orchestration (5-step wizard state machine)
+5. Wellbeing scoring ("gathering data" → active score)
+6. Notification/nudge logic (streak-protection, during-day guidance)
+
+## Design system
+
+ThreadsKit (shared package, also used by Riqa/Hashiya) supplies tokens/components: off-white #E8E4DC, charcoal #2E2C28, terracotta #B5623A, sage #6B8C72; Fraunces + DM Sans. iOS 26 Liquid Glass pass already applied to the HTML mockups (floating pill tab bar, translucent glass nav circles).
+
+Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity slider, habit group completion ring, habit heatmap grid, wellbeing sparkline (Swift Charts), Night Planning 5-step wizard.
+
+## Business context (informs priority, not architecture)
+
+- Pricing: free download, 14-day full-access trial, then subscription only — $2.99/mo or $24.99/yr (no lifetime SKU)
+- Sharing/referral mechanic is confirmed in scope for v1 — **not yet reflected in the primitives or rules engine**, needs its own design pass before schema locks
+- Target launch: as early as late Dec 2026 (aligned to January resolution surge) or realistically ~March 2027 given ~10–20 hrs/week alongside full-time work; native Android (Kotlin, not Flutter) is a later, separate effort post-iOS-traction
+- Phase 2 pace checkpoint: end of October 2026
+
+## Working approach
+
+**Docs/flows-first.** This repo was restarted from scratch specifically because the previous JamaalCore attempt skipped this step. Finalize `docs/schema/*` and `docs/journeys/*` before writing feature code — architecture overview is done, schema and journeys are still stubs as of this handoff. Don't jump ahead to implementation without checking those docs are filled in first.
+
+## Open items to pick up next
+
+- [ ] Fill in `docs/schema/task.md`, `habit.md`, `anchor.md` with real field definitions (respecting CloudKit constraints above)
+- [ ] Fill in `docs/journeys/*.md` (today-list, night-planning, onboarding)
+- [ ] Confirm/revise the 6 rules-engine module boundaries before implementing
+- [ ] Design the sharing/referral mechanic and reflect it in schema once ready
+- [ ] Verify `.wiki.git` is initialized (create one page manually via GitHub's Wiki tab) before `sync-wiki.yml` will succeed
+- [ ] Once `Jamaal.xcodeproj` exists, `ci.yml`'s `xcodebuild` step will start working — it references scheme `Jamaal`, currently fails as expected until the project exists
