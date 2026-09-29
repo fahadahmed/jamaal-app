@@ -108,13 +108,14 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 ### 3. Anchor generation (window-bound instances, attendance)
 
 - **Input**: all enabled `AnchorRule`s, a generation horizon (today + tomorrow).
-- **Behavior**: decodes each rule's `configData` per `sourceKey` and generates concrete `Anchor` instances (`windowStart`/`windowEnd`/`title`/`effortMinutes`, linked via `rule`, `attendanceStatus = pending`). Generation is **idempotent**, keyed by `(rule, windowStart)`: an existing instance — including a `skipped` one — is never recreated or duplicated. Editing or disabling a rule affects only future instances. One-off Anchors (no `rule`) need no generation but are finalised like any other. Proposed `configData` shapes (placeholders, not locked):
-  - `prayerWindow`: `{ "calculationMethod": "ISNA", "latitude": 0.0, "longitude": 0.0, "prayers": ["fajr","dhuhr","asr","maghrib","isha"] }`
-  - `schoolRun`: `{ "weekdays": [1,2,3,4,5], "time": "08:15", "label": "dropoff" }`
-  - `binNight`: `{ "weekdays": [3], "time": "19:00" }` (or `"intervalDays"` for a fortnightly rotation)
-  - `plantWatering`: `{ "intervalDays": 3, "time": "09:00" }`
-  - `custom`: unstructured for now, until a real use case shows up.
-- **Output**: new `Anchor` rows. Instances whose window has passed while still `pending` are finalised as `missed` at the next evaluation (`skipped` instances are left alone and never count as misses) (no consequence beyond the record — messaging is copy, not data).
+- **Behavior**: decodes each rule's `configData` (two families, shapes in [anchor.md](../schema/anchor#configdata-shapes)) and generates concrete `Anchor` instances (`occurrenceDate`/`slotKey`/`windowStart`/`windowEnd`/`title`/`effortMinutes`, linked via `rule`, `attendanceStatus = pending`).
+  - **Scheduled rules** (`schoolRun`, `binNight`, `plantWatering`, `custom`): for each date in the horizon that matches the recurrence, one instance per slot, with the window at local wall-clock `start` for `windowMinutes` (or the whole day if `allDay`), until `endDate`.
+  - **Prayer rules**: for each date, computes the day's prayer times on-device from date, location, `method`, `madhab`, `highLatitude` and per-prayer adjustments, then builds windows Fajr → sunrise, Dhuhr → Asr, Asr → Maghrib, Maghrib → Isha, Isha → `ishaEnds`. Deterministic for the same inputs.
+  - **Idempotent**, keyed by `(rule, occurrenceDate, slotKey)` — *not* window start, because a rule edit or a recalculated prayer time can move the window without changing which occurrence it is. An existing instance — including a `skipped`, `attended` or `missed` one — is never recreated or duplicated; two devices generating at once dedup to one.
+  - **Rule edits, disabling and location changes** update *pending* instances from today onward in place (matched by key), remove pending instances the rule no longer produces, and never rewrite attended, missed or skipped ones.
+  - **Undecodable `configData`** (invalid, or a newer `version` than this build understands) → the rule is skipped, flagged "needs attention", and never deleted or partially generated.
+  - One-off Anchors (no `rule`) need no generation but are finalised like any other.
+- **Output**: new `Anchor` rows. Instances whose window has passed while still `pending` are finalised as `missed` at the next evaluation (`skipped` instances are left alone and never count as misses) — no consequence beyond the record; messaging is copy, not data.
 
 ### 4. Night Planning orchestration (5-step wizard state machine)
 
@@ -173,6 +174,6 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 - **Missing durations** count as zero, so load can be understated until durations are filled in. Current proposal: Night Planning's capacity step gently notes how many items have no duration, rather than guessing. Habit presets and the built-in anchor types ship default durations to keep this rare.
 - **Where the medium-day setting lives**: it changes computed load, so it should sync across devices. Preferences are per-device (`@AppStorage`); this one probably belongs in a small synced settings store (`NSUbiquitousKeyValueStore` or a `UserSettings` model). Decide before implementation.
 - **Wellbeing score composition**: v2's Wellbeing screen showed a single 0–100 score; this doc derives it from mood only. Decide whether completion rate and load also contribute.
-- **`AnchorRule.configData` shapes** remain a first pass; the Anchor positioning is settled, so only the per-type forms need these shapes finalised (see [ADR 0001](decisions/0001-anchor-object-type)).
-- **Notification limits**: iOS caps pending local notifications at 64 — confirm the reminder + nudge volume stays well under that (per-window habit reminders add up).
+- **Prayer-time library**: `configData` fixes the settings, not the implementation. Choose a well-tested prayer-time library (or implementation) at build time and check its method list against the `method` values offered, plus its high-latitude handling.
+- **Notification limits**: iOS caps pending local notifications at 64 — confirm the reminder + nudge volume stays well under that. Habit reminders add up, and five prayers a day for several days ahead adds more if each gets a reminder.
 - **Manual ordering** of Today (see [task.md](../schema/task)).
