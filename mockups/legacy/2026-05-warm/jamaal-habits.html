@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jamaal — Habits</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:             #E8E4DC;
+    --bg-deep:        #DDD8CE;
+    --card:           #EDEAE3;
+    --border:         #CEC9BE;
+    --border-soft:    #D8D3C8;
+    --charcoal:       #2E2C28;
+    --charcoal-mid:   #5A5750;
+    --charcoal-soft:  #8C8880;
+    --charcoal-faint: #ABA79F;
+    --terracotta:     #B5623A;
+    --terracotta-soft:#EDD9CC;
+    --sage:           #6B8C72;
+    --sage-soft:      #D4E2D6;
+    --sage-mid:       #7FA386;
+    --sage-dim:       #B2CEB6;
+    --sheet:          #F0EDE6;
+    --font-display:   'Fraunces', serif;
+    --font-body:      'DM Sans', sans-serif;
+    --shadow-card:    0 1px 2px rgba(46,44,40,0.06), 0 3px 10px rgba(46,44,40,0.04);
+  }
+
+  body {
+    background: #C8C3B8;
+    font-family: var(--font-body);
+    padding: 40px 24px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-style: italic;
+    font-weight: 300;
+    color: #6B6660;
+    letter-spacing: 0.02em;
+  }
+
+  .phones-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .screen-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #6B6660;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .phone {
+    width: 320px;
+    height: 693px;
+    background: var(--bg);
+    border-radius: 44px;
+    border: 1px solid var(--border);
+    box-shadow:
+      0 32px 80px rgba(46,44,40,0.18),
+      0 8px 24px rgba(46,44,40,0.10),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    padding: 16px 28px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .status-time {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--charcoal);
+  }
+  .status-right { font-size: 12px; color: var(--charcoal-soft); }
+
+  /* ── Nav ── */
+  .nav-bar {
+    padding: 12px 22px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .nav-back {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+  }
+  .nav-back svg {
+    width: 16px; height: 16px;
+    stroke: var(--charcoal-soft);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .nav-back-label { font-size: 13px; color: var(--charcoal-soft); }
+  .nav-action {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .nav-action svg {
+    width: 13px; height: 13px;
+    stroke: var(--charcoal-soft);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+
+  /* ── Scroll area ── */
+  .scroll {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 18px 22px 16px;
+  }
+  .scroll::-webkit-scrollbar { display: none; }
+
+  /* ── Page title ── */
+  .eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--charcoal-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    margin-bottom: 4px;
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--charcoal);
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+    line-height: 1.1;
+  }
+  .page-title em { font-style: italic; color: var(--sage); }
+  .page-sub {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    margin-bottom: 20px;
+  }
+
+  /* ── Today summary strip ── */
+  .today-summary {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .summary-stat {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 10px 10px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+  }
+  .summary-num {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .summary-num.sage { color: var(--sage); }
+  .summary-num.terra { color: var(--terracotta); }
+  .summary-lbl {
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--charcoal-faint);
+  }
+
+  /* ── Section label ── */
+  .section-lbl {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--charcoal-faint);
+    margin-bottom: 10px;
+  }
+
+  /* ── Habit card ── */
+  .habit-card {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 13px 14px;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+  }
+  .habit-card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  /* Completion ring */
+  .ring-wrap {
+    width: 38px; height: 38px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .ring-wrap svg {
+    width: 38px; height: 38px;
+    transform: rotate(-90deg);
+  }
+  .ring-track {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 3;
+  }
+  .ring-fill {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.4s ease;
+  }
+  .ring-fill.sage  { stroke: var(--sage); }
+  .ring-fill.terra { stroke: var(--terracotta); }
+  .ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--charcoal-mid);
+  }
+  .ring-center.sage  { color: var(--sage); }
+  .ring-center.terra { color: var(--terracotta); }
+
+  .habit-info { flex: 1; min-width: 0; }
+  .habit-name {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--charcoal);
+    margin-bottom: 3px;
+  }
+  .habit-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .streak-badge {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 7px;
+  }
+  .streak-badge.sage {
+    background: var(--sage-soft);
+    color: var(--sage);
+    border: 1px solid #B8D4BC;
+  }
+  .streak-badge.terra {
+    background: var(--terracotta-soft);
+    color: var(--terracotta);
+    border: 1px solid #DDC0AD;
+  }
+  .streak-badge.neutral {
+    background: var(--bg-deep);
+    color: var(--charcoal-faint);
+    border: 1px solid var(--border);
+  }
+  .habit-freq {
+    font-size: 10px;
+    color: var(--charcoal-faint);
+  }
+
+  .habit-check-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .habit-check-btn.done {
+    background: var(--sage);
+    border-color: var(--sage);
+  }
+  .habit-check-btn svg {
+    width: 13px; height: 13px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Mini heatmap on card */
+  .mini-heatmap {
+    display: grid;
+    grid-template-columns: repeat(14, 1fr);
+    gap: 3px;
+  }
+  .mh-cell {
+    height: 10px;
+    border-radius: 2px;
+    background: var(--border);
+  }
+  .mh-cell.done-1 { background: var(--sage-dim); }
+  .mh-cell.done-2 { background: var(--sage-mid); }
+  .mh-cell.done-3 { background: var(--sage); }
+  .mh-cell.skip   { background: var(--terracotta-soft); }
+  .mh-cell.today  {
+    background: var(--border);
+    outline: 1.5px solid var(--sage);
+    outline-offset: 1px;
+  }
+  .mh-cell.today.done-3 {
+    background: var(--sage);
+    outline: 1.5px solid var(--charcoal);
+    outline-offset: 1px;
+  }
+
+  /* ── Jamaal insight ── */
+  .jamaal-insight {
+    background: var(--sage-soft);
+    border: 1px solid #B8D4BC;
+    border-radius: 12px;
+    padding: 11px 13px;
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .j-av {
+    width: 24px; height: 24px;
+    border-radius: 7px;
+    background: var(--sage);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-style: italic;
+    color: white;
+  }
+  .j-av.terra { background: var(--terracotta); }
+  .j-from {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--sage);
+    margin-bottom: 2px;
+  }
+  .j-from.terra { color: var(--terracotta); }
+  .j-msg {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--charcoal);
+    line-height: 1.45;
+  }
+
+  /* ── Add habit btn ── */
+  .add-habit-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 13px;
+    background: transparent;
+    border: 1.5px dashed var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+  .add-habit-row svg {
+    width: 14px; height: 14px;
+    stroke: var(--charcoal-faint);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .add-habit-label {
+    font-size: 13px;
+    color: var(--charcoal-faint);
+    font-weight: 300;
+    font-style: italic;
+  }
+
+  /* ── Tab bar ── */
+  .tab-bar {
+    padding: 10px 28px 28px;
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    opacity: 0.35;
+  }
+  .tab.active { opacity: 1; }
+  .tab svg {
+    width: 21px; height: 21px;
+    stroke: var(--charcoal);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .tab.active svg { stroke: var(--terracotta); }
+  .tab-lbl {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--charcoal-mid);
+    letter-spacing: 0.03em;
+  }
+  .tab.active .tab-lbl { color: var(--terracotta); }
+
+  /* ════════════════════════════════════
+     HABIT DETAIL (full heatmap)
+  ════════════════════════════════════ */
+
+  /* Full heatmap */
+  .heatmap-wrap {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-card);
+  }
+  .heatmap-month-label {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--charcoal-faint);
+    margin-bottom: 8px;
+  }
+  .heatmap-dow-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    margin-bottom: 3px;
+  }
+  .heatmap-dow {
+    text-align: center;
+    font-size: 8px;
+    font-weight: 500;
+    color: var(--charcoal-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+  }
+  .hm-cell {
+    height: 22px;
+    border-radius: 5px;
+    background: var(--border);
+    position: relative;
+  }
+  .hm-cell.d1 { background: #C8DEC9; }
+  .hm-cell.d2 { background: var(--sage-dim); }
+  .hm-cell.d3 { background: var(--sage-mid); }
+  .hm-cell.d4 { background: var(--sage); }
+  .hm-cell.skip { background: var(--terracotta-soft); }
+  .hm-cell.empty { background: transparent; }
+  .hm-cell.today {
+    outline: 2px solid var(--charcoal);
+    outline-offset: 1px;
+  }
+
+  /* Stats row in detail */
+  .detail-stats {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .detail-stat {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 11px 10px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+  }
+  .ds-num {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .ds-num.sage  { color: var(--sage); }
+  .ds-num.terra { color: var(--terracotta); }
+  .ds-lbl {
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--charcoal-faint);
+  }
+
+  /* Frequency selector */
+  .freq-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .freq-btn {
+    flex: 1;
+    height: 36px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--charcoal-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .freq-btn.selected {
+    background: var(--sage-soft);
+    border-color: #B8D4BC;
+    color: var(--sage);
+  }
+
+  /* Action buttons */
+  .detail-actions {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 6px;
+  }
+  .det-btn {
+    flex: 1;
+    height: 42px;
+    border-radius: 11px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--charcoal-mid);
+  }
+  .det-btn svg {
+    width: 13px; height: 13px;
+    stroke: var(--charcoal-soft);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .det-btn.archive {
+    color: var(--terracotta);
+    border-color: #DDC0AD;
+    background: var(--terracotta-soft);
+  }
+  .det-btn.archive svg { stroke: var(--terracotta); }
+
+  /* Mark done footer */
+  .detail-footer {
+    padding: 8px 22px 28px;
+    flex-shrink: 0;
+  }
+  .mark-done-btn {
+    width: 100%;
+    height: 50px;
+    background: var(--charcoal);
+    border: none;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.82);
+  }
+  .mark-done-btn.already {
+    background: var(--sage);
+    color: rgba(255,255,255,0.9);
+  }
+  .mark-done-btn svg {
+    width: 16px; height: 16px;
+    stroke: rgba(255,255,255,0.6);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+</style>
+</head>
+<body>
+
+<h1>Habits — overview and detail</h1>
+
+<div class="phones-row">
+
+  <!-- ══ SCREEN 1: Habits overview ══ -->
+  <div class="phone-wrap">
+    <span class="screen-label">Habits overview</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41 AM</span>
+        <span class="status-right">Wed 13 May</span>
+      </div>
+      <div class="nav-bar">
+        <div></div>
+        <div class="nav-action">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+      </div>
+
+      <div class="scroll">
+        <div class="eyebrow">Your habits</div>
+        <div class="page-title">Building<br><em>consistency</em></div>
+        <div class="page-sub">3 habits · 1 done today</div>
+
+        <!-- Today summary -->
+        <div class="today-summary">
+          <div class="summary-stat">
+            <div class="summary-num sage">1</div>
+            <div class="summary-lbl">Done today</div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-num">2</div>
+            <div class="summary-lbl">Remaining</div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-num sage">12</div>
+            <div class="summary-lbl">Best streak</div>
+          </div>
+        </div>
+
+        <div class="section-lbl">Today</div>
+
+        <!-- Habit 1: Morning walk — done -->
+        <div class="habit-card">
+          <div class="habit-card-top">
+            <div class="ring-wrap">
+              <svg viewBox="0 0 38 38">
+                <circle class="ring-track" cx="19" cy="19" r="16"
+                  stroke-dasharray="100.5" stroke-dashoffset="0"/>
+                <circle class="ring-fill sage" cx="19" cy="19" r="16"
+                  stroke-dasharray="100.5" stroke-dashoffset="0"/>
+              </svg>
+              <div class="ring-center sage">✓</div>
+            </div>
+            <div class="habit-info">
+              <div class="habit-name">Morning walk</div>
+              <div class="habit-meta">
+                <span class="streak-badge sage">🔥 9 days</span>
+                <span class="habit-freq">Daily</span>
+              </div>
+            </div>
+            <div class="habit-check-btn done">
+              <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+          </div>
+          <div class="mini-heatmap">
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell skip"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell today done-3"></div>
+          </div>
+        </div>
+
+        <!-- Habit 2: Read 20 mins — pending -->
+        <div class="habit-card">
+          <div class="habit-card-top">
+            <div class="ring-wrap">
+              <svg viewBox="0 0 38 38">
+                <circle class="ring-track" cx="19" cy="19" r="16"
+                  stroke-dasharray="100.5" stroke-dashoffset="0"/>
+                <circle class="ring-fill sage" cx="19" cy="19" r="16"
+                  stroke-dasharray="100.5" stroke-dashoffset="50"/>
+              </svg>
+              <div class="ring-center">5d</div>
+            </div>
+            <div class="habit-info">
+              <div class="habit-name">Read 20 mins</div>
+              <div class="habit-meta">
+                <span class="streak-badge sage">5 days</span>
+                <span class="habit-freq">Daily</span>
+              </div>
+            </div>
+            <div class="habit-check-btn">
+            </div>
+          </div>
+          <div class="mini-heatmap">
+            <div class="mh-cell done-2"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-1"></div>
+            <div class="mh-cell skip"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-2"></div>
+            <div class="mh-cell skip"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-2"></div>
+            <div class="mh-cell today"></div>
+          </div>
+        </div>
+
+        <!-- Habit 3: Meditate — pending, fatigue warning -->
+        <div class="habit-card">
+          <div class="habit-card-top">
+            <div class="ring-wrap">
+              <svg viewBox="0 0 38 38">
+                <circle class="ring-track" cx="19" cy="19" r="16"
+                  stroke-dasharray="100.5" stroke-dashoffset="0"/>
+                <circle class="ring-fill terra" cx="19" cy="19" r="16"
+                  stroke-dasharray="100.5" stroke-dashoffset="75"/>
+              </svg>
+              <div class="ring-center terra">2d</div>
+            </div>
+            <div class="habit-info">
+              <div class="habit-name">Meditate</div>
+              <div class="habit-meta">
+                <span class="streak-badge terra">Slipping</span>
+                <span class="habit-freq">Daily</span>
+              </div>
+            </div>
+            <div class="habit-check-btn"></div>
+          </div>
+          <div class="mini-heatmap">
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell skip"></div>
+            <div class="mh-cell done-2"></div>
+            <div class="mh-cell skip"></div>
+            <div class="mh-cell done-1"></div>
+            <div class="mh-cell skip"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell skip"></div>
+            <div class="mh-cell done-2"></div>
+            <div class="mh-cell skip"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell done-3"></div>
+            <div class="mh-cell skip"></div>
+            <div class="mh-cell today"></div>
+          </div>
+        </div>
+
+        <!-- Jamaal insight -->
+        <div class="jamaal-insight" style="margin-top:14px; background:var(--terracotta-soft); border-color:#DDC0AD;">
+          <div class="j-av terra">J</div>
+          <div>
+            <div class="j-from terra">Jamaal</div>
+            <div class="j-msg">Meditation has been inconsistent lately. Want to try every other day for a while?</div>
+          </div>
+        </div>
+
+        <!-- Add habit -->
+        <div class="add-habit-row">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          <span class="add-habit-label">Add a new habit…</span>
+        </div>
+
+        <div style="height:8px"></div>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span class="tab-lbl">Today</span>
+        </div>
+        <div class="tab active">
+          <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></svg>
+          <span class="tab-lbl">Habits</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span class="tab-lbl">Wellbeing</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <span class="tab-lbl">Profile</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 2: Habit detail — healthy habit ══ -->
+  <div class="phone-wrap">
+    <span class="screen-label">Habit detail — healthy</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41 AM</span>
+        <span class="status-right">Wed 13 May</span>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          <span class="nav-back-label">Habits</span>
+        </div>
+        <div class="nav-action">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        </div>
+      </div>
+
+      <div class="scroll">
+        <div class="eyebrow">Habit</div>
+        <div class="page-title">Morning <em>walk</em></div>
+        <div class="page-sub">Daily · since 1 April 2026</div>
+
+        <!-- Stats -->
+        <div class="detail-stats">
+          <div class="detail-stat">
+            <div class="ds-num sage">9</div>
+            <div class="ds-lbl">Streak</div>
+          </div>
+          <div class="detail-stat">
+            <div class="ds-num sage">12</div>
+            <div class="ds-lbl">Best</div>
+          </div>
+          <div class="detail-stat">
+            <div class="ds-num">78%</div>
+            <div class="ds-lbl">This month</div>
+          </div>
+          <div class="detail-stat">
+            <div class="ds-num">42</div>
+            <div class="ds-lbl">Total done</div>
+          </div>
+        </div>
+
+        <!-- Full heatmap -->
+        <div class="heatmap-wrap">
+          <div class="heatmap-month-label">May 2026</div>
+          <div class="heatmap-dow-row">
+            <div class="heatmap-dow">M</div>
+            <div class="heatmap-dow">T</div>
+            <div class="heatmap-dow">W</div>
+            <div class="heatmap-dow">T</div>
+            <div class="heatmap-dow">F</div>
+            <div class="heatmap-dow">S</div>
+            <div class="heatmap-dow">S</div>
+          </div>
+          <div class="heatmap-grid">
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell d3"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell d3"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell skip"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell today d4"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+          </div>
+        </div>
+
+        <!-- Jamaal insight -->
+        <div class="jamaal-insight">
+          <div class="j-av">J</div>
+          <div>
+            <div class="j-from">Jamaal</div>
+            <div class="j-msg">Nine days running — you're close to your best streak of 12. Keep it going.</div>
+          </div>
+        </div>
+
+        <!-- Frequency -->
+        <div class="section-lbl">Frequency</div>
+        <div class="freq-row">
+          <div class="freq-btn selected">Daily</div>
+          <div class="freq-btn">Weekdays</div>
+          <div class="freq-btn">Custom</div>
+        </div>
+
+        <!-- Actions -->
+        <div class="detail-actions">
+          <div class="det-btn archive">
+            <svg viewBox="0 0 24 24"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
+            Archive
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-footer">
+        <button class="mark-done-btn already">
+          <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+          Done today
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 3: Habit detail — slipping ══ -->
+  <div class="phone-wrap">
+    <span class="screen-label">Habit detail — slipping</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41 AM</span>
+        <span class="status-right">Wed 13 May</span>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          <span class="nav-back-label">Habits</span>
+        </div>
+        <div class="nav-action">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        </div>
+      </div>
+
+      <div class="scroll">
+        <div class="eyebrow">Habit</div>
+        <div class="page-title">Meditate</div>
+        <div class="page-sub">Daily · since 15 March 2026</div>
+
+        <!-- Stats -->
+        <div class="detail-stats">
+          <div class="detail-stat">
+            <div class="ds-num terra">2</div>
+            <div class="ds-lbl">Streak</div>
+          </div>
+          <div class="detail-stat">
+            <div class="ds-num">8</div>
+            <div class="ds-lbl">Best</div>
+          </div>
+          <div class="detail-stat">
+            <div class="ds-num terra">38%</div>
+            <div class="ds-lbl">This month</div>
+          </div>
+          <div class="detail-stat">
+            <div class="ds-num">24</div>
+            <div class="ds-lbl">Total done</div>
+          </div>
+        </div>
+
+        <!-- Full heatmap — patchy -->
+        <div class="heatmap-wrap">
+          <div class="heatmap-month-label">May 2026</div>
+          <div class="heatmap-dow-row">
+            <div class="heatmap-dow">M</div>
+            <div class="heatmap-dow">T</div>
+            <div class="heatmap-dow">W</div>
+            <div class="heatmap-dow">T</div>
+            <div class="heatmap-dow">F</div>
+            <div class="heatmap-dow">S</div>
+            <div class="heatmap-dow">S</div>
+          </div>
+          <div class="heatmap-grid">
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell skip"></div>
+            <div class="hm-cell d2"></div>
+            <div class="hm-cell skip"></div>
+            <div class="hm-cell d3"></div>
+            <div class="hm-cell skip"></div>
+            <div class="hm-cell d1"></div>
+            <div class="hm-cell skip"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell skip"></div>
+            <div class="hm-cell d3"></div>
+            <div class="hm-cell skip"></div>
+            <div class="hm-cell skip"></div>
+            <div class="hm-cell d2"></div>
+            <div class="hm-cell d3"></div>
+            <div class="hm-cell skip"></div>
+            <div class="hm-cell d4"></div>
+            <div class="hm-cell today"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+            <div class="hm-cell empty"></div>
+          </div>
+        </div>
+
+        <!-- Jamaal fatigue suggestion -->
+        <div class="jamaal-insight" style="background:var(--terracotta-soft);border-color:#DDC0AD;">
+          <div class="j-av terra">J</div>
+          <div>
+            <div class="j-from terra">Jamaal</div>
+            <div class="j-msg">You've been missing this one often. Would every other day feel more realistic right now?</div>
+          </div>
+        </div>
+
+        <!-- Frequency — suggest change -->
+        <div class="section-lbl">Frequency</div>
+        <div class="freq-row">
+          <div class="freq-btn selected">Daily</div>
+          <div class="freq-btn">Weekdays</div>
+          <div class="freq-btn">Custom</div>
+        </div>
+
+        <div class="detail-actions">
+          <div class="det-btn archive">
+            <svg viewBox="0 0 24 24"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
+            Archive
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-footer">
+        <button class="mark-done-btn">
+          <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+          Mark as done today
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

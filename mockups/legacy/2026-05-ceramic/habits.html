@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Jamaal — Habits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..900&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="system.css">
+<style>
+  /* Today summary numbers */
+  .today-summary {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 6px; margin-bottom: 18px;
+  }
+  .sum-stat {
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 10px;
+    text-align: center;
+  }
+  .sum-stat.ink { background: var(--ink); color: var(--paper); border-color: transparent; }
+  .sum-stat.sun { background: var(--sun); border-color: transparent; }
+  .sum-num {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .sum-lbl {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .sum-stat.ink .sum-lbl { color: var(--ink-4); }
+  .sum-stat.sun .sum-lbl { color: var(--ink-2); }
+
+  /* Habit card */
+  .habit {
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .habit.done { background: var(--sun); border-color: transparent; }
+  .habit-row {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 12px;
+  }
+  .ring {
+    width: 36px; height: 36px; position: relative; flex-shrink: 0;
+  }
+  .ring svg { transform: rotate(-90deg); width: 36px; height: 36px; }
+  .ring .tk { fill: none; stroke: var(--line-strong); stroke-width: 3; }
+  .ring .fl { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; }
+  .ring .lbl {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .habit.done .ring .fl { stroke: var(--ink); }
+  .habit-info { flex: 1; min-width: 0; }
+  .habit-name {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .habit-meta { display: flex; align-items: center; gap: 6px; }
+  .badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .badge.streak { background: var(--ink); color: var(--paper); }
+  .badge.streak.live { background: var(--sun); color: var(--ink); }
+  .badge.slip { background: var(--clay-soft); color: var(--clay); }
+  .habit-freq {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .check-btn {
+    width: 32px; height: 32px;
+    border-radius: 99px;
+    border: 1.5px solid var(--line-strong);
+    background: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-btn.done {
+    background: var(--ink); border-color: var(--ink);
+  }
+  .check-btn svg {
+    width: 14px; height: 14px;
+    stroke: var(--paper); fill: none;
+    stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* Mini heatmap */
+  .mini-heat {
+    display: grid; grid-template-columns: repeat(14, 1fr); gap: 3px;
+  }
+  .mini-heat .c {
+    height: 10px;
+    border-radius: 2px;
+    background: var(--line);
+  }
+  .mini-heat .c.d1 { background: rgba(12,12,13,0.30); }
+  .mini-heat .c.d2 { background: rgba(12,12,13,0.60); }
+  .mini-heat .c.d3 { background: var(--ink); }
+  .mini-heat .c.sk { background: var(--clay-soft); }
+  .mini-heat .c.today { outline: 2px solid var(--sun); outline-offset: 1px; }
+  .habit.done .mini-heat .c { background: rgba(12,12,13,0.20); }
+  .habit.done .mini-heat .c.d3 { background: var(--ink); }
+  .habit.done .mini-heat .c.today { outline-color: var(--ink); }
+
+  /* Add habit */
+  .add-habit {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 14px;
+    border: 1.5px dashed var(--line-strong);
+    border-radius: 14px;
+    cursor: pointer;
+  }
+  .add-habit svg { width: 14px; height: 14px; stroke: var(--ink-3); fill: none; stroke-width: 2; stroke-linecap: round; }
+  .add-habit span {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-3);
+  }
+
+  /* Detail stats */
+  .detail-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 6px; margin-bottom: 14px;
+  }
+  .ds {
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-align: center;
+  }
+  .ds .n {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 22px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .ds .n.sun { color: var(--ink); position: relative; }
+  .ds .n.sun::after {
+    content: ""; display: block; width: 8px; height: 8px;
+    border-radius: 99px; background: var(--sun);
+    position: absolute; top: -3px; right: -8px;
+  }
+  .ds .n.clay { color: var(--clay); }
+  .ds .l {
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  /* Full heatmap */
+  .heat-wrap {
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+  .heat-month {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .heat-month-name {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: -0.01em;
+  }
+  .heat-month-meta {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .heat-dow {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
+    margin-bottom: 4px;
+  }
+  .heat-dow span {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+  }
+  .heat-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
+  }
+  .heat-grid .c {
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: var(--line);
+  }
+  .heat-grid .c.empty { background: transparent; }
+  .heat-grid .c.d1 { background: rgba(12,12,13,0.20); }
+  .heat-grid .c.d2 { background: rgba(12,12,13,0.45); }
+  .heat-grid .c.d3 { background: rgba(12,12,13,0.75); }
+  .heat-grid .c.d4 { background: var(--ink); }
+  .heat-grid .c.sk { background: var(--clay-soft); }
+  .heat-grid .c.today { outline: 2px solid var(--sun); outline-offset: 1px; }
+
+  .heat-legend {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 12px;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .heat-legend .scale { display: flex; gap: 3px; align-items: center; }
+  .heat-legend .scale .sq {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+  }
+
+  /* Freq buttons */
+  .freq-row {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 4px; margin-bottom: 12px;
+  }
+  .freq-btn {
+    padding: 10px 0;
+    border: 1px solid var(--line);
+    background: var(--snow);
+    border-radius: 99px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--ink-3);
+    cursor: pointer;
+  }
+  .freq-btn.selected { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  /* Action buttons */
+  .det-actions {
+    display: flex; gap: 6px;
+    margin-bottom: 16px;
+  }
+  .det-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--snow);
+    border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  .det-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .det-btn.clay { color: var(--clay); border-color: var(--clay-soft); background: var(--clay-soft); }
+</style>
+</head>
+<body data-screen-label="00 Habits" style="background-color: rgb(224, 224, 224)">
+
+<div class="page-header">
+  <div class="wordmark">Jamaal<span class="dot"></span></div>
+  <span class="crumb">Threads / Jamaal · Habits · Overview + detail</span>
+  <h1>Building<br/><em>consistency</em>.</h1>
+  <nav>
+    <a href="../Jamaal.html">Index</a>
+    <a href="onboarding.html">Onboarding</a>
+    <a href="night-planning.html">Night planning</a>
+    <a href="habits.html" class="on">Habits</a>
+    <a href="wellbeing.html">Wellbeing</a>
+  </nav>
+</div>
+
+<div class="phones-row">
+
+  <!-- ── Overview ─────────────────────────────────── -->
+  <div class="phone-wrap" data-screen-label="01 Overview">
+    <div class="phone-meta">
+      <span>01 — Overview</span>
+      <span class="num">Habits <span class="dot"></span></span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span class="time">9:41</span><span class="meta">Wed 13 May</span></div>
+      <div class="nav-bar">
+        <div></div>
+        <div class="nav-pill"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+      </div>
+      <div class="scroll">
+        <div class="eyebrow">Your habits</div>
+        <h2 class="title">Building<br/><em>consistency</em></h2>
+        <p class="sub">3 habits · 1 done today</p>
+
+        <div class="today-summary">
+          <div class="sum-stat sun">
+            <div class="sum-num">1</div>
+            <div class="sum-lbl">Done</div>
+          </div>
+          <div class="sum-stat">
+            <div class="sum-num">2</div>
+            <div class="sum-lbl">Left</div>
+          </div>
+          <div class="sum-stat ink">
+            <div class="sum-num">12</div>
+            <div class="sum-lbl">Best streak</div>
+          </div>
+        </div>
+
+        <div class="section-lbl">Today</div>
+
+        <!-- Habit 1: Done -->
+        <div class="habit done">
+          <div class="habit-row">
+            <div class="ring">
+              <svg viewBox="0 0 36 36">
+                <circle class="tk" cx="18" cy="18" r="15" stroke-dasharray="94.2"/>
+                <circle class="fl" cx="18" cy="18" r="15" stroke-dasharray="94.2" stroke-dashoffset="0"/>
+              </svg>
+              <span class="lbl">✓</span>
+            </div>
+            <div class="habit-info">
+              <div class="habit-name">Morning walk</div>
+              <div class="habit-meta">
+                <span class="badge streak">9 day streak</span>
+                <span class="habit-freq">Daily</span>
+              </div>
+            </div>
+            <div class="check-btn done"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+          </div>
+          <div class="mini-heat">
+            <span class="c d3"></span><span class="c d3"></span><span class="c d3"></span><span class="c sk"></span>
+            <span class="c d3"></span><span class="c d3"></span><span class="c d3"></span><span class="c d3"></span>
+            <span class="c d3"></span><span class="c d3"></span><span class="c d3"></span><span class="c d3"></span>
+            <span class="c d3"></span><span class="c today d3"></span>
+          </div>
+        </div>
+
+        <!-- Habit 2: Pending -->
+        <div class="habit">
+          <div class="habit-row">
+            <div class="ring">
+              <svg viewBox="0 0 36 36">
+                <circle class="tk" cx="18" cy="18" r="15" stroke-dasharray="94.2"/>
+                <circle class="fl" cx="18" cy="18" r="15" stroke-dasharray="94.2" stroke-dashoffset="47"/>
+              </svg>
+              <span class="lbl">5d</span>
+            </div>
+            <div class="habit-info">
+              <div class="habit-name">Read 20 mins</div>
+              <div class="habit-meta">
+                <span class="badge streak live">5 day streak</span>
+                <span class="habit-freq">Daily</span>
+              </div>
+            </div>
+            <div class="check-btn"></div>
+          </div>
+          <div class="mini-heat">
+            <span class="c d2"></span><span class="c d3"></span><span class="c d1"></span><span class="c sk"></span>
+            <span class="c d3"></span><span class="c d2"></span><span class="c sk"></span><span class="c d3"></span>
+            <span class="c d3"></span><span class="c d3"></span><span class="c d3"></span><span class="c d3"></span>
+            <span class="c d2"></span><span class="c today"></span>
+          </div>
+        </div>
+
+        <!-- Habit 3: Slipping -->
+        <div class="habit">
+          <div class="habit-row">
+            <div class="ring">
+              <svg viewBox="0 0 36 36">
+                <circle class="tk" cx="18" cy="18" r="15" stroke-dasharray="94.2"/>
+                <circle class="fl" cx="18" cy="18" r="15" stroke-dasharray="94.2" stroke-dashoffset="70" style="stroke: var(--clay);"/>
+              </svg>
+              <span class="lbl" style="color: var(--clay);">2d</span>
+            </div>
+            <div class="habit-info">
+              <div class="habit-name">Meditate</div>
+              <div class="habit-meta">
+                <span class="badge slip">Slipping</span>
+                <span class="habit-freq">Daily</span>
+              </div>
+            </div>
+            <div class="check-btn"></div>
+          </div>
+          <div class="mini-heat">
+            <span class="c d3"></span><span class="c sk"></span><span class="c d2"></span><span class="c sk"></span>
+            <span class="c d1"></span><span class="c sk"></span><span class="c d3"></span><span class="c sk"></span>
+            <span class="c d2"></span><span class="c sk"></span><span class="c d3"></span><span class="c d3"></span>
+            <span class="c sk"></span><span class="c today"></span>
+          </div>
+        </div>
+
+        <div class="jamaal bone-bg" style="margin-top: 14px;">
+          <div class="av">J</div>
+          <div>
+            <div class="name">Jamaal</div>
+            <div class="msg">Meditation has been inconsistent lately. Want to try every other day for a while?</div>
+          </div>
+        </div>
+
+        <div class="add-habit">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          <span>Add a new habit…</span>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span>Today</span>
+        </div>
+        <div class="tab active">
+          <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></svg>
+          <span>Habits</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>Wellbeing</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <span>Profile</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Detail: Healthy ──────────────────────────── -->
+  <div class="phone-wrap" data-screen-label="02 Detail healthy">
+    <div class="phone-meta">
+      <span>02 — Detail · Healthy</span>
+      <span class="num">Habit <span class="dot"></span></span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span class="time">9:41</span><span class="meta">Wed 13 May</span></div>
+      <div class="nav-bar">
+        <div class="nav-back"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Habits</div>
+        <div class="nav-pill"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="19" cy="12" r="1.4" fill="currentColor"/></svg></div>
+      </div>
+
+      <div class="scroll">
+        <div class="eyebrow">Habit</div>
+        <h2 class="title">Morning<br/><em>walk</em></h2>
+        <p class="sub">Daily · since 1 April 2026</p>
+
+        <div class="detail-stats">
+          <div class="ds"><div class="n sun">9</div><div class="l">Streak</div></div>
+          <div class="ds"><div class="n">12</div><div class="l">Best</div></div>
+          <div class="ds"><div class="n">78%</div><div class="l">Month</div></div>
+          <div class="ds"><div class="n">42</div><div class="l">Total</div></div>
+        </div>
+
+        <div class="heat-wrap">
+          <div class="heat-month">
+            <span class="heat-month-name">May 2026</span>
+            <span class="heat-month-meta">15 of 21 done</span>
+          </div>
+          <div class="heat-dow">
+            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+          </div>
+          <div class="heat-grid">
+            <span class="c empty"></span><span class="c empty"></span><span class="c empty"></span>
+            <span class="c d4"></span><span class="c d4"></span><span class="c d3"></span><span class="c d4"></span>
+            <span class="c d4"></span><span class="c d3"></span><span class="c d4"></span><span class="c sk"></span>
+            <span class="c d4"></span><span class="c d4"></span><span class="c d4"></span>
+            <span class="c d4"></span><span class="c d4"></span><span class="c d4"></span><span class="c d4"></span>
+            <span class="c d4"></span><span class="c d4"></span><span class="c today d4"></span>
+            <span class="c empty"></span><span class="c empty"></span><span class="c empty"></span>
+            <span class="c empty"></span><span class="c empty"></span><span class="c empty"></span><span class="c empty"></span>
+          </div>
+          <div class="heat-legend">
+            <span>Less</span>
+            <div class="scale">
+              <span class="sq" style="background:var(--line);"></span>
+              <span class="sq" style="background:rgba(12,12,13,0.20);"></span>
+              <span class="sq" style="background:rgba(12,12,13,0.45);"></span>
+              <span class="sq" style="background:rgba(12,12,13,0.75);"></span>
+              <span class="sq" style="background:var(--ink);"></span>
+            </div>
+            <span>More</span>
+          </div>
+        </div>
+
+        <div class="jamaal sun-bg">
+          <div class="av">J</div>
+          <div>
+            <div class="name">Jamaal</div>
+            <div class="msg">Nine days running — you're close to your best streak of 12. Keep it going.</div>
+          </div>
+        </div>
+
+        <div class="section-lbl">Frequency</div>
+        <div class="freq-row">
+          <div class="freq-btn selected">Daily</div>
+          <div class="freq-btn">Weekdays</div>
+          <div class="freq-btn">Custom</div>
+        </div>
+
+        <div class="det-actions">
+          <div class="det-btn">
+            <svg viewBox="0 0 24 24"><path d="M12 20h9M12 4L20 12 12 20"/></svg>
+            Edit
+          </div>
+          <div class="det-btn clay">
+            <svg viewBox="0 0 24 24"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
+            Archive
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <button class="cta sun"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Done today</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Detail: Slipping ─────────────────────────── -->
+  <div class="phone-wrap" data-screen-label="03 Detail slipping">
+    <div class="phone-meta">
+      <span>03 — Detail · Slipping</span>
+      <span class="num">Habit <span class="dot"></span></span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span class="time">9:41</span><span class="meta">Wed 13 May</span></div>
+      <div class="nav-bar">
+        <div class="nav-back"><svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Habits</div>
+        <div class="nav-pill"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="19" cy="12" r="1.4" fill="currentColor"/></svg></div>
+      </div>
+
+      <div class="scroll">
+        <div class="eyebrow">Habit</div>
+        <h2 class="title">Meditate</h2>
+        <p class="sub">Daily · since 15 March 2026</p>
+
+        <div class="detail-stats">
+          <div class="ds"><div class="n clay">2</div><div class="l">Streak</div></div>
+          <div class="ds"><div class="n">8</div><div class="l">Best</div></div>
+          <div class="ds"><div class="n clay">38%</div><div class="l">Month</div></div>
+          <div class="ds"><div class="n">24</div><div class="l">Total</div></div>
+        </div>
+
+        <div class="heat-wrap">
+          <div class="heat-month">
+            <span class="heat-month-name">May 2026</span>
+            <span class="heat-month-meta">8 of 21 done</span>
+          </div>
+          <div class="heat-dow">
+            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+          </div>
+          <div class="heat-grid">
+            <span class="c empty"></span><span class="c empty"></span><span class="c empty"></span>
+            <span class="c d4"></span><span class="c sk"></span><span class="c d2"></span><span class="c sk"></span>
+            <span class="c d3"></span><span class="c sk"></span><span class="c d1"></span><span class="c sk"></span>
+            <span class="c d4"></span><span class="c sk"></span><span class="c d3"></span>
+            <span class="c sk"></span><span class="c sk"></span><span class="c d2"></span><span class="c d3"></span>
+            <span class="c sk"></span><span class="c d4"></span><span class="c today"></span>
+            <span class="c empty"></span><span class="c empty"></span><span class="c empty"></span>
+            <span class="c empty"></span><span class="c empty"></span><span class="c empty"></span><span class="c empty"></span>
+          </div>
+          <div class="heat-legend">
+            <span>Less</span>
+            <div class="scale">
+              <span class="sq" style="background:var(--line);"></span>
+              <span class="sq" style="background:rgba(12,12,13,0.20);"></span>
+              <span class="sq" style="background:rgba(12,12,13,0.45);"></span>
+              <span class="sq" style="background:rgba(12,12,13,0.75);"></span>
+              <span class="sq" style="background:var(--ink);"></span>
+            </div>
+            <span>More</span>
+          </div>
+        </div>
+
+        <div class="jamaal">
+          <div class="av">J</div>
+          <div>
+            <div class="name">Jamaal</div>
+            <div class="msg">You've been missing this one often. Would every other day feel more realistic right now?</div>
+          </div>
+        </div>
+
+        <div class="section-lbl">Frequency · suggested change</div>
+        <div class="freq-row">
+          <div class="freq-btn">Daily</div>
+          <div class="freq-btn selected">Alternate</div>
+          <div class="freq-btn">Custom</div>
+        </div>
+
+        <div class="det-actions">
+          <div class="det-btn">
+            <svg viewBox="0 0 24 24"><path d="M12 20h9M12 4L20 12 12 20"/></svg>
+            Edit
+          </div>
+          <div class="det-btn clay">
+            <svg viewBox="0 0 24 24"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
+            Archive
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <button class="cta dark"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Mark as done today</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jamaal — Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:             #E8E4DC;
+    --bg-deep:        #DDD8CE;
+    --card:           #EDEAE3;
+    --border:         #CEC9BE;
+    --border-soft:    #D8D3C8;
+    --charcoal:       #2E2C28;
+    --charcoal-mid:   #5A5750;
+    --charcoal-soft:  #8C8880;
+    --charcoal-faint: #ABA79F;
+    --terracotta:     #B5623A;
+    --terracotta-soft:#EDD9CC;
+    --terracotta-mid: #C97A52;
+    --sage:           #6B8C72;
+    --sage-soft:      #D4E2D6;
+    --font-display:   'Fraunces', serif;
+    --font-body:      'DM Sans', sans-serif;
+    --shadow-card:    0 1px 2px rgba(46,44,40,0.06), 0 3px 10px rgba(46,44,40,0.04);
+  }
+
+  body {
+    background: #C8C3B8;
+    font-family: var(--font-body);
+    padding: 40px 24px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-style: italic;
+    font-weight: 300;
+    color: #6B6660;
+    letter-spacing: 0.02em;
+  }
+
+  .phones-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .screen-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #6B6660;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── Phone shell ── */
+  .phone {
+    width: 320px;
+    height: 693px;
+    background: var(--bg);
+    border-radius: 44px;
+    border: 1px solid var(--border);
+    box-shadow:
+      0 32px 80px rgba(46,44,40,0.18),
+      0 8px 24px rgba(46,44,40,0.10),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    padding: 16px 28px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .status-time {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--charcoal);
+  }
+  .status-right { font-size: 12px; color: var(--charcoal-soft); }
+
+  /* ── Progress dots ── */
+  .progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 16px 0 0;
+    flex-shrink: 0;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .dot.active {
+    background: var(--terracotta);
+    width: 18px;
+    border-radius: 3px;
+  }
+  .dot.done { background: var(--charcoal-faint); }
+
+  /* ── Scroll content ── */
+  .screen-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 24px 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .screen-content::-webkit-scrollbar { display: none; }
+
+  /* ── Screen footer ── */
+  .screen-footer {
+    padding: 12px 24px 32px;
+    flex-shrink: 0;
+  }
+  .cta {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 400;
+  }
+  .cta.dark {
+    background: var(--charcoal);
+    color: rgba(255,255,255,0.85);
+    box-shadow: 0 2px 8px rgba(46,44,40,0.18);
+  }
+  .cta.terra {
+    background: var(--terracotta);
+    color: rgba(255,255,255,0.92);
+    box-shadow: 0 2px 10px rgba(181,98,58,0.28);
+  }
+  .cta.sage {
+    background: var(--sage);
+    color: rgba(255,255,255,0.92);
+    box-shadow: 0 2px 10px rgba(107,140,114,0.28);
+  }
+  .cta svg {
+    width: 16px; height: 16px;
+    stroke: rgba(255,255,255,0.6);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .skip-link {
+    text-align: center;
+    font-size: 12px;
+    color: var(--charcoal-faint);
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: 300;
+  }
+
+  /* ════════════════════════
+     SCREEN 1 — Welcome
+  ════════════════════════ */
+  .welcome-spacer { height: 32px; }
+  .welcome-avatar-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+  .welcome-avatar {
+    width: 80px; height: 80px;
+    border-radius: 24px;
+    background: var(--terracotta);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 40px;
+    font-style: italic;
+    color: white;
+    font-weight: 300;
+    box-shadow: 0 8px 24px rgba(181,98,58,0.25);
+  }
+  .welcome-eyebrow {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--charcoal-faint);
+    margin-bottom: 10px;
+  }
+  .welcome-title {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 400;
+    color: var(--charcoal);
+    text-align: center;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .welcome-title em { font-style: italic; color: var(--terracotta); }
+  .welcome-body {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    text-align: center;
+    line-height: 1.65;
+    margin-bottom: 28px;
+    padding: 0 8px;
+  }
+  .welcome-values {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .welcome-value {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+  }
+  .value-icon {
+    width: 32px; height: 32px;
+    border-radius: 9px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .value-icon svg {
+    width: 15px; height: 15px;
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .value-icon.terra { background: var(--terracotta-soft); }
+  .value-icon.terra svg { stroke: var(--terracotta); }
+  .value-icon.sage  { background: var(--sage-soft); }
+  .value-icon.sage  svg { stroke: var(--sage); }
+  .value-icon.neutral { background: var(--bg-deep); }
+  .value-icon.neutral svg { stroke: var(--charcoal-soft); }
+  .value-text {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.35;
+  }
+  .value-text span {
+    display: block;
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    margin-top: 1px;
+  }
+
+  /* ════════════════════════
+     SCREEN 2 — Philosophy
+  ════════════════════════ */
+  .phil-spacer { height: 28px; }
+  .phil-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .phil-title em { font-style: italic; color: var(--terracotta); }
+  .phil-sub {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    line-height: 1.55;
+    margin-bottom: 24px;
+  }
+  .phil-card {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-card);
+  }
+  .phil-card-eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--charcoal-faint);
+    margin-bottom: 6px;
+  }
+  .phil-card-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--charcoal);
+    margin-bottom: 4px;
+  }
+  .phil-card-title em { font-style: italic; color: var(--terracotta); }
+  .phil-card-body {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    line-height: 1.5;
+  }
+  .phil-not {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--bg-deep);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  .phil-not-x {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .phil-not-x svg {
+    width: 9px; height: 9px;
+    stroke: var(--charcoal-faint);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .phil-not-text {
+    font-size: 12px;
+    color: var(--charcoal-soft);
+    text-decoration: line-through;
+    font-weight: 300;
+  }
+
+  /* ════════════════════════
+     SCREEN 3 — Capacity
+  ════════════════════════ */
+  .cap-spacer { height: 24px; }
+  .cap-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .cap-title em { font-style: italic; color: var(--terracotta); }
+  .cap-sub {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    line-height: 1.5;
+    margin-bottom: 22px;
+  }
+  .cap-slider-card {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-card);
+  }
+  .cap-slider-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+  .cap-slider-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--charcoal-mid);
+  }
+  .cap-slider-value {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--terracotta);
+    letter-spacing: -0.01em;
+  }
+  .cap-slider-unit {
+    font-size: 12px;
+    color: var(--charcoal-faint);
+    margin-left: 2px;
+  }
+  .slider-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  .slider-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--terracotta);
+  }
+  .slider-fill.w50 { width: 50%; }
+  .slider-thumb {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--terracotta);
+    position: absolute;
+    top: -9px;
+    box-shadow: 0 1px 4px rgba(181,98,58,0.25);
+  }
+  .slider-thumb.t50 { left: calc(50% - 11px); }
+  .slider-range {
+    display: flex;
+    justify-content: space-between;
+  }
+  .slider-min, .slider-max {
+    font-size: 10px;
+    color: var(--charcoal-faint);
+  }
+  .jamaal-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 11px 13px;
+    background: var(--terracotta-soft);
+    border: 1px solid #DDC0AD;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .j-av-sm {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-style: italic;
+    color: white;
+  }
+  .j-av-sm.terra { background: var(--terracotta); }
+  .j-av-sm.sage  { background: var(--sage); }
+  .j-hint-name {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 2px;
+  }
+  .j-hint-name.terra { color: var(--terracotta); }
+  .j-hint-name.sage  { color: var(--sage); }
+  .j-hint-text {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--charcoal);
+    line-height: 1.45;
+  }
+  .cap-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+  }
+  .cap-opt {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 10px 8px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+  }
+  .cap-opt.selected {
+    background: var(--terracotta-soft);
+    border-color: #DDC0AD;
+  }
+  .cap-opt-hours {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .cap-opt.selected .cap-opt-hours { color: var(--terracotta); }
+  .cap-opt-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--charcoal-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .cap-opt.selected .cap-opt-label { color: var(--terracotta-mid); }
+
+  /* ════════════════════════
+     SCREEN 4 — Notifications
+  ════════════════════════ */
+  .notif-spacer { height: 28px; }
+  .notif-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .notif-title em { font-style: italic; color: var(--terracotta); }
+  .notif-sub {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    line-height: 1.5;
+    margin-bottom: 22px;
+  }
+  .notif-card {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 12px;
+  }
+  .notif-row {
+    display: flex;
+    align-items: center;
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--border-soft);
+    gap: 12px;
+  }
+  .notif-row:last-child { border-bottom: none; }
+  .notif-icon {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .notif-icon svg {
+    width: 16px; height: 16px;
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .notif-icon.terra { background: var(--terracotta-soft); }
+  .notif-icon.terra svg { stroke: var(--terracotta); }
+  .notif-icon.sage  { background: var(--sage-soft); }
+  .notif-icon.sage  svg { stroke: var(--sage); }
+  .notif-icon.neutral { background: var(--bg-deep); }
+  .notif-icon.neutral svg { stroke: var(--charcoal-soft); }
+  .notif-body { flex: 1; }
+  .notif-row-title {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--charcoal);
+    margin-bottom: 1px;
+  }
+  .notif-row-sub {
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+  }
+  .time-chip {
+    background: var(--terracotta-soft);
+    border: 1px solid #DDC0AD;
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--terracotta);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .toggle {
+    width: 42px; height: 25px;
+    border-radius: 13px;
+    background: var(--sage);
+    position: relative;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .toggle.off { background: var(--border); }
+  .toggle-thumb {
+    width: 19px; height: 19px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .toggle.off .toggle-thumb { right: auto; left: 3px; }
+
+  /* iOS permission preview */
+  .permission-preview {
+    background: rgba(46,44,40,0.06);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .pp-title {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--charcoal-faint);
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .pp-sheet {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+  .pp-app-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: var(--terracotta);
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-style: italic;
+    color: white;
+  }
+  .pp-heading {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--charcoal);
+    margin-bottom: 3px;
+  }
+  .pp-body {
+    font-size: 11px;
+    color: var(--charcoal-soft);
+    font-weight: 300;
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+  .pp-btns {
+    display: flex;
+    gap: 8px;
+  }
+  .pp-btn {
+    flex: 1;
+    height: 34px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--charcoal-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .pp-btn.allow {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+    color: white;
+  }
+
+  /* ════════════════════════
+     SCREEN 5 — Ready
+  ════════════════════════ */
+  .ready-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 24px;
+  }
+  .ready-glyph {
+    width: 80px; height: 80px;
+    border-radius: 24px;
+    background: var(--sage-soft);
+    border: 1px solid #B8D4BC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 16px rgba(107,140,114,0.2);
+  }
+  .ready-glyph svg {
+    width: 36px; height: 36px;
+    stroke: var(--sage);
+    fill: none;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .ready-title {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  .ready-title em { font-style: italic; color: var(--sage); }
+  .ready-body {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    line-height: 1.6;
+    margin-bottom: 28px;
+    max-width: 230px;
+  }
+  .ready-hints {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  .ready-hint {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 13px;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 11px;
+    text-align: left;
+    box-shadow: var(--shadow-card);
+  }
+  .ready-hint-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--sage);
+    flex-shrink: 0;
+  }
+  .ready-hint-text {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+
+<h1>Onboarding — five screens</h1>
+
+<div class="phones-row">
+
+  <!-- ══ SCREEN 1: Welcome — Jamaal introduces himself ══ -->
+  <div class="phone-wrap">
+    <span class="screen-label">1 — Meet Jamaal</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41 AM</span>
+      </div>
+      <div class="progress-dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+      <div class="screen-content">
+        <div class="welcome-spacer"></div>
+        <div class="welcome-avatar-wrap">
+          <div class="welcome-avatar">J</div>
+        </div>
+        <div class="welcome-eyebrow">Welcome</div>
+        <div class="welcome-title">Hello. I'm<br><em>Jamaal.</em></div>
+        <div class="welcome-body">I'll help you tend to your day — calmly, intelligently, without the overwhelm.</div>
+
+        <div class="welcome-values">
+          <div class="welcome-value">
+            <div class="value-icon terra">
+              <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <div class="value-text">
+              One list, just today
+              <span>Not projects. Not systems. Just what matters now.</span>
+            </div>
+          </div>
+          <div class="welcome-value">
+            <div class="value-icon sage">
+              <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <div class="value-text">
+              Intelligent, not intrusive
+              <span>I watch patterns quietly and speak only when it helps.</span>
+            </div>
+          </div>
+          <div class="welcome-value">
+            <div class="value-icon neutral">
+              <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="value-text">
+              Sustainable, always
+              <span>Do the right amount of the right things. Nothing more.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <button class="cta terra">
+          <span>Meet Jamaal</span>
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 2: Philosophy ══ -->
+  <div class="phone-wrap">
+    <span class="screen-label">2 — How it works</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41 AM</span>
+      </div>
+      <div class="progress-dots">
+        <div class="dot done"></div>
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+      <div class="screen-content">
+        <div class="phil-spacer"></div>
+        <div class="phil-title">One <em>list.</em><br>Just today.</div>
+        <div class="phil-sub">Jamaal is built around a single principle — focus on today, nothing else.</div>
+
+        <div class="phil-card">
+          <div class="phil-card-eyebrow">Every evening</div>
+          <div class="phil-card-title">Plan <em>tomorrow</em> together</div>
+          <div class="phil-card-body">I'll review your day, help you decide what carries forward, and make sure tomorrow looks balanced before you sleep.</div>
+        </div>
+
+        <div class="phil-card">
+          <div class="phil-card-eyebrow">During the day</div>
+          <div class="phil-card-title">I stay out of your way</div>
+          <div class="phil-card-body">Your list is ready when you open the app. I'll suggest what to focus on next when it might help — and stay quiet when it won't.</div>
+        </div>
+
+        <div style="margin-bottom:12px">
+          <div class="phil-not">
+            <div class="phil-not-x">
+              <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </div>
+            <span class="phil-not-text">No projects or kanban boards</span>
+          </div>
+          <div class="phil-not">
+            <div class="phil-not-x">
+              <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </div>
+            <span class="phil-not-text">No complex productivity systems</span>
+          </div>
+          <div class="phil-not">
+            <div class="phil-not-x">
+              <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </div>
+            <span class="phil-not-text">No overwhelming features</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <button class="cta dark">
+          <span>Got it</span>
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 3: Capacity setup ══ -->
+  <div class="phone-wrap">
+    <span class="screen-label">3 — Capacity</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41 AM</span>
+      </div>
+      <div class="progress-dots">
+        <div class="dot done"></div>
+        <div class="dot done"></div>
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+      <div class="screen-content">
+        <div class="cap-spacer"></div>
+        <div class="cap-title">How much can<br>you <em>focus?</em></div>
+        <div class="cap-sub">On a typical day, how many hours of focused work feels realistic — not ideal, realistic.</div>
+
+        <div class="cap-options" style="margin-bottom:14px">
+          <div class="cap-opt">
+            <div class="cap-opt-hours">1–2</div>
+            <div class="cap-opt-label">Light</div>
+          </div>
+          <div class="cap-opt selected">
+            <div class="cap-opt-hours">3–4</div>
+            <div class="cap-opt-label">Moderate</div>
+          </div>
+          <div class="cap-opt">
+            <div class="cap-opt-hours">5–6</div>
+            <div class="cap-opt-label">Full on</div>
+          </div>
+        </div>
+
+        <div class="cap-slider-card">
+          <div class="cap-slider-label">
+            <span class="cap-slider-title">Daily focus hours</span>
+            <span>
+              <span class="cap-slider-value">3.0</span>
+              <span class="cap-slider-unit">hrs</span>
+            </span>
+          </div>
+          <div class="slider-track">
+            <div class="slider-fill w50"></div>
+            <div class="slider-thumb t50"></div>
+          </div>
+          <div class="slider-range">
+            <span class="slider-min">1 hr</span>
+            <span class="slider-max">8 hrs</span>
+          </div>
+        </div>
+
+        <div class="jamaal-hint">
+          <div class="j-av-sm terra">J</div>
+          <div>
+            <div class="j-hint-name terra">Jamaal</div>
+            <div class="j-hint-text">Don't worry about getting this perfect. I'll learn your real patterns over the first two weeks and adjust automatically.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <button class="cta dark">
+          <span>That looks right</span>
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 4: Notifications ══ -->
+  <div class="phone-wrap">
+    <span class="screen-label">4 — Notifications</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41 AM</span>
+      </div>
+      <div class="progress-dots">
+        <div class="dot done"></div>
+        <div class="dot done"></div>
+        <div class="dot done"></div>
+        <div class="dot active"></div>
+        <div class="dot"></div>
+      </div>
+
+      <div class="screen-content">
+        <div class="notif-spacer"></div>
+        <div class="notif-title">When should<br>I <em>check in?</em></div>
+        <div class="notif-sub">Two quiet reminders — one to plan your evening, one to start your morning.</div>
+
+        <div class="notif-card">
+          <div class="notif-row">
+            <div class="notif-icon terra">
+              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="notif-body">
+              <div class="notif-row-title">Evening planning</div>
+              <div class="notif-row-sub">Jamaal nudges you to plan tomorrow</div>
+            </div>
+            <div class="time-chip">8:00 PM</div>
+          </div>
+          <div class="notif-row">
+            <div class="notif-icon sage">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg>
+            </div>
+            <div class="notif-body">
+              <div class="notif-row-title">Morning reminder</div>
+              <div class="notif-row-sub">See what's on for today</div>
+            </div>
+            <div class="time-chip">8:00 AM</div>
+          </div>
+          <div class="notif-row">
+            <div class="notif-icon neutral">
+              <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <div class="notif-body">
+              <div class="notif-row-title">During-day nudges</div>
+              <div class="notif-row-sub">Next task suggestions</div>
+            </div>
+            <div class="toggle">
+              <div class="toggle-thumb"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="permission-preview">
+          <div class="pp-title">iOS will ask permission</div>
+          <div class="pp-sheet">
+            <div class="pp-app-icon">J</div>
+            <div class="pp-heading">"Jamaal" Would Like to Send You Notifications</div>
+            <div class="pp-body">Notifications may include alerts, sounds and icon badges.</div>
+            <div class="pp-btns">
+              <div class="pp-btn">Don't Allow</div>
+              <div class="pp-btn allow">Allow</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <button class="cta dark">
+          <span>Allow notifications</span>
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <div class="skip-link">Skip for now</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SCREEN 5: Ready ══ -->
+  <div class="phone-wrap">
+    <span class="screen-label">5 — Ready</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41 AM</span>
+      </div>
+      <div class="progress-dots">
+        <div class="dot done"></div>
+        <div class="dot done"></div>
+        <div class="dot done"></div>
+        <div class="dot done"></div>
+        <div class="dot active"></div>
+      </div>
+
+      <div class="ready-content">
+        <div class="ready-glyph">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2"/><path d="M8 12l3 3 5-5"/></svg>
+        </div>
+        <div class="ready-title">You're <em>ready</em><br>to begin</div>
+        <div class="ready-body">Your list is waiting. Add your first task and let today begin.</div>
+
+        <div class="ready-hints">
+          <div class="ready-hint">
+            <div class="ready-hint-dot"></div>
+            <div class="ready-hint-text">Add tasks and estimate how long each will take</div>
+          </div>
+          <div class="ready-hint">
+            <div class="ready-hint-dot"></div>
+            <div class="ready-hint-text">Plan tomorrow each evening — Jamaal will remind you</div>
+          </div>
+          <div class="ready-hint">
+            <div class="ready-hint-dot"></div>
+            <div class="ready-hint-text">Check Wellbeing anytime to see how your weeks are going</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <button class="cta sage">
+          <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Start my day</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

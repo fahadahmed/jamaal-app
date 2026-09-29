@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jamaal — Today View v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Keyboard-inspired palette */
+    --bg:            #E8E4DC;   /* warm off-white base — keycap white */
+    --bg-deep:       #DDD8CE;   /* slightly deeper — between keys */
+    --card:          #EDEAE3;   /* card surface — lighter keycap */
+    --card-hover:    #F2EFE9;
+    --border:        #CEC9BE;   /* subtle border — key gap shadow */
+    --border-soft:   #D8D3C8;
+
+    --charcoal:      #2E2C28;   /* keyboard case — deep neutral */
+    --charcoal-mid:  #5A5750;   /* secondary text */
+    --charcoal-soft: #8C8880;   /* tertiary text */
+    --charcoal-faint:#ABA79F;   /* muted labels */
+
+    --terracotta:    #B5623A;   /* rust accent keys — priority */
+    --terracotta-soft:#EDD9CC;  /* soft terracotta bg */
+    --terracotta-mid: #C97A52;
+
+    --sage:          #6B8C72;   /* sage green accent keys — done/habits */
+    --sage-soft:     #D4E2D6;   /* soft sage bg */
+    --sage-mid:      #7FA386;
+
+    --shadow-card: 0 1px 2px rgba(46,44,40,0.06), 0 3px 10px rgba(46,44,40,0.04);
+    --shadow-lift:  0 2px 8px rgba(46,44,40,0.10), 0 6px 20px rgba(46,44,40,0.06);
+
+    --font-display: 'Fraunces', serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  body {
+    background: #D4CFC6;
+    font-family: var(--font-body);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  /* ── Phone shell ── */
+  .phone {
+    width: 390px;
+    min-height: 844px;
+    background: var(--bg);
+    border-radius: 52px;
+    border: 1px solid var(--border);
+    box-shadow:
+      0 40px 100px rgba(46,44,40,0.18),
+      0 12px 32px rgba(46,44,40,0.10),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    padding: 16px 32px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .status-time {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--charcoal);
+  }
+  .status-icons {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .status-icons svg {
+    width: 16px; height: 16px;
+    fill: var(--charcoal);
+    opacity: 0.7;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 18px 28px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .header-greeting {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--charcoal-faint);
+    margin-bottom: 3px;
+    letter-spacing: 0.02em;
+  }
+  .header-date {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .header-date em {
+    font-style: italic;
+    color: var(--terracotta);
+  }
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 4px;
+  }
+  .icon-btn {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-card);
+  }
+  .icon-btn svg {
+    width: 15px; height: 15px;
+    stroke: var(--charcoal-mid);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ── Load indicator ── */
+  .load-wrap {
+    padding: 0 28px 16px;
+  }
+  .load-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 7px;
+  }
+  .load-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--charcoal-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .load-state {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--sage);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .load-track {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .load-fill {
+    height: 100%;
+    width: 72%;
+    background: linear-gradient(90deg, var(--sage) 0%, var(--sage-mid) 100%);
+    border-radius: 2px;
+  }
+
+  /* ── Habits strip ── */
+  .habits-strip {
+    padding: 0 28px 18px;
+  }
+  .strip-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--charcoal-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 9px;
+  }
+  .habits-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .habit-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  .habit-pill.done {
+    background: var(--sage-soft);
+    border-color: #B8D4BC;
+  }
+  .h-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .habit-pill.done .h-dot { background: var(--sage); }
+  .h-name {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--charcoal-soft);
+    white-space: nowrap;
+  }
+  .habit-pill.done .h-name { color: var(--sage); }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: var(--border-soft);
+    margin: 0 28px 16px;
+  }
+
+  /* ── Section header ── */
+  .section-header {
+    padding: 0 28px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .section-title {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--charcoal-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .section-count {
+    font-size: 11px;
+    color: var(--charcoal-faint);
+  }
+
+  /* ── Task list ── */
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  .task-list {
+    padding: 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .task-card {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 13px 14px 13px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* left accent strip */
+  .task-accent {
+    width: 3px;
+    align-self: stretch;
+    border-radius: 14px 0 0 14px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    background: var(--border-soft);
+  }
+  .task-card.priority .task-accent { background: var(--terracotta); }
+  .task-card.done .task-accent     { background: var(--sage); }
+  .task-card.normal .task-accent   { background: var(--border); }
+
+  .task-check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    flex-shrink: 0;
+    margin-top: 1px;
+    margin-right: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .task-card.done .task-check {
+    background: var(--sage);
+    border-color: var(--sage);
+  }
+  .task-card.done .task-check::after {
+    content: '';
+    width: 9px; height: 5px;
+    border-left: 1.5px solid white;
+    border-bottom: 1.5px solid white;
+    transform: rotate(-45deg) translateY(-1px);
+    display: block;
+  }
+
+  .task-body { flex: 1; min-width: 0; }
+  .task-title {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.35;
+    margin-bottom: 5px;
+  }
+  .task-card.done .task-title {
+    text-decoration: line-through;
+    color: var(--charcoal-faint);
+  }
+  .task-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .effort-tag {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 8px;
+    background: var(--bg-deep);
+    color: var(--charcoal-soft);
+  }
+  .task-card.priority .effort-tag {
+    background: var(--terracotta-soft);
+    color: var(--terracotta);
+  }
+  .defer-tag {
+    font-size: 10px;
+    color: var(--charcoal-faint);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .defer-tag svg {
+    width: 9px; height: 9px;
+    stroke: var(--charcoal-faint);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  /* ── Jamaal nudge ── */
+  .nudge {
+    margin: 12px 18px 0;
+    background: var(--terracotta-soft);
+    border: 1px solid #DDC0AD;
+    border-radius: 14px;
+    padding: 11px 13px;
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+  }
+  .nudge-avatar {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: var(--terracotta);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-style: italic;
+    color: white;
+    font-weight: 300;
+  }
+  .nudge-inner {}
+  .nudge-from {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--terracotta);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 2px;
+  }
+  .nudge-text {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--charcoal);
+    line-height: 1.5;
+  }
+  .nudge-dismiss {
+    margin-left: auto;
+    padding-left: 8px;
+    flex-shrink: 0;
+  }
+  .nudge-dismiss svg {
+    width: 14px; height: 14px;
+    stroke: var(--charcoal-faint);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  /* ── Add task ── */
+  .add-wrap {
+    padding: 12px 18px 10px;
+  }
+  .add-btn {
+    width: 100%;
+    height: 48px;
+    background: var(--charcoal);
+    border: none;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(46,44,40,0.15);
+  }
+  .add-btn svg {
+    width: 16px; height: 16px;
+    stroke: rgba(255,255,255,0.55);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .add-btn-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.75);
+    font-family: var(--font-body);
+  }
+
+  /* ── Tab bar ── */
+  .tab-bar {
+    padding: 10px 28px 28px;
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    opacity: 0.35;
+  }
+  .tab.active { opacity: 1; }
+  .tab svg {
+    width: 21px; height: 21px;
+    stroke: var(--charcoal);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .tab.active svg { stroke: var(--terracotta); }
+  .tab-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--charcoal-mid);
+    letter-spacing: 0.03em;
+  }
+  .tab.active .tab-label { color: var(--terracotta); }
+
+  /* ── Palette swatch panel (shown beside phone) ── */
+  .palette-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 50px;
+  }
+  .palette-label {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-style: italic;
+    color: var(--charcoal-mid);
+    margin-bottom: 4px;
+  }
+  .swatch-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .swatch {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    border: 1px solid rgba(46,44,40,0.1);
+    flex-shrink: 0;
+  }
+  .swatch-name {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--charcoal-mid);
+  }
+  .swatch-hex {
+    font-size: 11px;
+    color: var(--charcoal-faint);
+    font-family: monospace;
+  }
+</style>
+</head>
+<body>
+
+<!-- Phone mockup -->
+<div class="phone">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <!-- signal -->
+      <svg viewBox="0 0 24 24"><rect x="2" y="16" width="3" height="6" rx="1"/><rect x="7" y="11" width="3" height="11" rx="1"/><rect x="12" y="6" width="3" height="16" rx="1"/><rect x="17" y="2" width="3" height="20" rx="1" opacity="0.3"/></svg>
+      <!-- wifi -->
+      <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="#2E2C28"/></svg>
+      <!-- battery -->
+      <svg viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M20 10h2v4h-2"/><rect x="4" y="9" width="13" height="6" rx="1" fill="#2E2C28"/></svg>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="header-greeting">Good morning</div>
+      <div class="header-date">Wednesday, <em>today</em></div>
+    </div>
+    <div class="header-actions">
+      <div class="icon-btn">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+      </div>
+      <div class="icon-btn">
+        <svg viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load -->
+  <div class="load-wrap">
+    <div class="load-row">
+      <span class="load-label">Day load</span>
+      <span class="load-state">Balanced</span>
+    </div>
+    <div class="load-track"><div class="load-fill"></div></div>
+  </div>
+
+  <!-- Habits strip -->
+  <div class="habits-strip">
+    <div class="strip-label">Habits</div>
+    <div class="habits-row">
+      <div class="habit-pill done">
+        <div class="h-dot"></div>
+        <span class="h-name">Morning walk</span>
+      </div>
+      <div class="habit-pill">
+        <div class="h-dot"></div>
+        <span class="h-name">Read 20 mins</span>
+      </div>
+      <div class="habit-pill">
+        <div class="h-dot"></div>
+        <span class="h-name">Meditate</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="scroll-area">
+
+    <!-- Section header -->
+    <div class="section-header">
+      <span class="section-title">Today</span>
+      <span class="section-count">4 remaining · 2h 45m</span>
+    </div>
+
+    <!-- Tasks -->
+    <div class="task-list">
+
+      <div class="task-card priority">
+        <div class="task-accent"></div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">Review project proposal</div>
+          <div class="task-meta">
+            <span class="effort-tag">1 hour</span>
+            <span class="defer-tag">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+              deferred twice
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card priority">
+        <div class="task-accent"></div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">Reply to client emails</div>
+          <div class="task-meta">
+            <span class="effort-tag">30 mins</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card done">
+        <div class="task-accent"></div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">Morning standup</div>
+          <div class="task-meta">
+            <span class="effort-tag">15 mins</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card normal">
+        <div class="task-accent"></div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">Read design feedback</div>
+          <div class="task-meta">
+            <span class="effort-tag">15 mins</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card normal">
+        <div class="task-accent"></div>
+        <div class="task-check"></div>
+        <div class="task-body">
+          <div class="task-title">Update portfolio site</div>
+          <div class="task-meta">
+            <span class="effort-tag">2+ hours</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Jamaal nudge -->
+    <div class="nudge">
+      <div class="nudge-avatar">J</div>
+      <div class="nudge-inner">
+        <div class="nudge-from">Jamaal</div>
+        <div class="nudge-text">The proposal has come up a few times. Today looks like a good day to make a start.</div>
+      </div>
+      <div class="nudge-dismiss">
+        <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </div>
+    </div>
+
+    <!-- Add task -->
+    <div class="add-wrap">
+      <button class="add-btn">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        <span class="add-btn-label">Add a task</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <div class="tab active">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span class="tab-label">Today</span>
+    </div>
+    <div class="tab">
+      <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></svg>
+      <span class="tab-label">Habits</span>
+    </div>
+    <div class="tab">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span class="tab-label">Wellbeing</span>
+    </div>
+    <div class="tab">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span class="tab-label">Profile</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Palette panel -->
+<div class="palette-panel">
+  <div class="palette-label">Keyboard palette</div>
+
+  <div class="swatch-row">
+    <div class="swatch" style="background:#E8E4DC"></div>
+    <div>
+      <div class="swatch-name">Off-white base</div>
+      <div class="swatch-hex">#E8E4DC</div>
+    </div>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch" style="background:#EDEAE3"></div>
+    <div>
+      <div class="swatch-name">Card surface</div>
+      <div class="swatch-hex">#EDEAE3</div>
+    </div>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch" style="background:#2E2C28"></div>
+    <div>
+      <div class="swatch-name">Deep charcoal</div>
+      <div class="swatch-hex">#2E2C28</div>
+    </div>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch" style="background:#B5623A"></div>
+    <div>
+      <div class="swatch-name">Terracotta</div>
+      <div class="swatch-hex">#B5623A</div>
+    </div>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch" style="background:#6B8C72"></div>
+    <div>
+      <div class="swatch-name">Dusty sage</div>
+      <div class="swatch-hex">#6B8C72</div>
+    </div>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch" style="background:#CEC9BE"></div>
+    <div>
+      <div class="swatch-name">Key border</div>
+      <div class="swatch-hex">#CEC9BE</div>
+    </div>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch" style="background:#EDD9CC"></div>
+    <div>
+      <div class="swatch-name">Terracotta soft</div>
+      <div class="swatch-hex">#EDD9CC</div>
+    </div>
+  </div>
+  <div class="swatch-row">
+    <div class="swatch" style="background:#D4E2D6"></div>
+    <div>
+      <div class="swatch-name">Sage soft</div>
+      <div class="swatch-hex">#D4E2D6</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
