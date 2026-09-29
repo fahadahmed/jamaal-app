@@ -4,7 +4,7 @@ Context for Claude Code sessions in this repo. This is a handoff from planning d
 
 ## What Jamaal is
 
-A calm-focus multiplatform app (iOS, iPadOS, macOS, with first-class iPhone Duo support) built around three primitives — **Task**, **Habit**, **Anchor** — with a deterministic rules engine and a guided Night Planning flow. Built primarily for the developer's own use: a single unified "Today" list spanning personal, family, and work items, replacing a pattern of bouncing between reminder/task/calendar apps that never stuck.
+A calm-focus multiplatform app (iOS, iPadOS, macOS, with first-class iPhone Duo (the foldable iPhone) support — see `docs/journeys/app-flow.md`) built around three primitives — **Task**, **Habit**, **Anchor** — with a deterministic rules engine and a guided Night Planning flow. Built primarily for the developer's own use: a single unified "Today" list spanning personal, family, and work items, replacing a pattern of bouncing between reminder/task/calendar apps that never stuck.
 
 Deliberately a **general** productivity app, not an Islamic-only one — Islamic practice habits (Qur'an reading, dhikr) and general habits (exercise, running) are just different presets of the same Habit engine, not a separate mode. Salah is modeled separately as an Anchor, not a Habit — see `docs/schema/anchor.md` — since its timing is externally fixed (prayer windows) rather than self-paced, which is Anchor's defining trait.
 

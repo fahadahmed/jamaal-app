@@ -56,7 +56,7 @@ Built in `Jamaal/Components/` on top of the tokens above:
 - Wellbeing sparkline (Swift Charts)
 - Night Planning 5-step wizard (review & carry forward → reflect → plan → capacity & load check → confirm)
 
-Navigation chrome (floating pill tab bar, translucent nav circles) uses the iOS 26 Liquid Glass system APIs, tinted with `glassOn` where a tint is needed.
+Navigation chrome (floating pill tab bar, translucent nav circles) uses the iOS 26 Liquid Glass **system** components, tinted with `glassOn` where a tint is needed. It must be the system tab bar and toolbars, not custom-built ones, so iPad sidebars and iPhone Duo's side-mounted controls adapt automatically (see [app-flow.md](../journeys/app-flow#iphone-duo-foldable-iphone)).
 
 ## Open decisions
 
@@ -64,4 +64,4 @@ Navigation chrome (floating pill tab bar, translucent nav circles) uses the iOS 
 2. **No sage.** There is no green-family token other than the teal `accent`. Habit rings, heatmap intensity and sparklines need a colour plan using `accent` (with opacity steps? a new token?) and `terra`. The heatmap needs 3 states for binary habits (empty / missed / complete) and 5 for counted (empty / missed / partial-low / partial-high / complete); v2 mapped them to soft terracotta and three sage tints.
    - **Category colours** (see [task.md](../schema/task)): editable categories need a small fixed set of label colours, and the two accents aren't enough. Per ThreadsKit's rule, a new colour is a new asset-catalog token upstream, not an `.opacity()` at the call site.
 3. **Fonts.** `CLAUDE.md` names Fraunces + DM Sans. ThreadsKit does not bundle any font yet, and its README does not name the faces. Confirm the faces and licensing upstream.
-4. **Dependency not wired yet.** ThreadsKit is not yet added to `Jamaal.xcodeproj`. Check the app's deployment target against ThreadsKit's iOS 18 / macOS 15 minimum when adding it.
+4. **Dependency not wired yet.** ThreadsKit is not yet added to `Jamaal.xcodeproj`. Check the app's deployment target against ThreadsKit's iOS 18 / macOS 15 minimum when adding it. iPhone Duo-specific APIs (`ArrangementView`, `ReservedRegion`) are iOS 27.1 (beta), so they are availability-gated rather than raising the floor.

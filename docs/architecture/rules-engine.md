@@ -145,6 +145,7 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
   - an optional **morning nudge**;
   - per-window **habit reminders** and **streak-protection** nudges as a window's end approaches;
   - **during-day guidance** — a highlighted task ("Start here" / "Good now") plus one companion card, max one per day. Chosen deterministically from time of day, remaining effort vs. remaining free time, a lighter-tasks-in-the-early-afternoon curve, and open habit windows.
+- **Trial and subscription**: when the trial ends unsubscribed, the evening Night Planning notification and habit/guidance nudges are cancelled and only a small number of trial-end reminders are sent (proposal: day 12, 14 and 15); everything returns on subscribing.
 - **Permission** is requested during onboarding, framed around the evening planning reminder.
 - **Fallback if notifications are denied**: an in-app banner at planning time ("Start evening planning →") and a warning card in Settings with a deep link to iOS Settings.
 - **Output**: scheduled notifications and in-app cards; `NudgeLog` rows.

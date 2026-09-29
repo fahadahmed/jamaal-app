@@ -62,7 +62,31 @@ One design language, same four destinations, layout adapted to width:
 | Night Planning | Full-screen modal | Centred modal, fixed comfortable width |
 | Habits, Wellbeing, Settings | Full-screen pushes | Content pane with detail alongside where useful |
 
-Mac additionally gets menu-bar commands and keyboard shortcuts (new task, open Night Planning). Design the compact layout first, then the regular-width variants of Today, task detail and Night Planning; the rest stretch. **iPhone Duo** (CLAUDE.md lists it as first-class) is still undefined — see "Gaps found in review".
+Mac additionally gets menu-bar commands and keyboard shortcuts (new task, open Night Planning). Design the compact layout first, then the regular-width variants of Today, task detail and Night Planning; the rest stretch.
+
+### iPhone Duo (foldable iPhone)
+
+Source: Apple's HIG page [Designing for iPhone Duo](https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo) (new, September 2026). The device has an **outer** display (used closed) and an **inner** display (used open) joined by a hinge, in many poses (partly folded, standing, flat). Apple's guidance is not to design per pose: a **compact-width layout for the outer display and a regular-width layout for the inner display** cover every pose, and the app should resize rather than be reinvented. So the regular-width layouts above are also the Duo inner-display layouts.
+
+| Display / pose | Size class | Controls |
+| --- | --- | --- |
+| Outer (closed) | Compact — wider and shorter than other iPhones | Toolbar and tab bar move to the **side** |
+| Inner, portrait | Regular | Standard horizontal bars |
+| Inner, landscape | Regular | Controls stay on the side |
+| Inner, partly folded | Regular | The fold splits the display into two usable regions |
+
+What this means for Jamaal:
+
+1. **Use the system tab bar and toolbars, never a custom floating bar.** The system moves them to the side on Duo automatically. The "floating pill tab bar" in the design direction must be the system Liquid Glass tab bar, not a hand-built one. Give every toolbar item both a title and a symbol, keep text-only buttons rare, and set visibility priority so *Add task* stays visible longest, then the Night Planning entry.
+2. **Today is a split view.** Inner display: Today list and task detail side by side; outer display: one pane at a time (list, push to detail). Build with a navigation split view so it adapts to the fold. This replaces the earlier "trailing inspector" idea wherever the two would differ.
+3. **Same functions and state on both displays.** Open or close the device mid-task and nothing resets. Night Planning's persisted session already supports this; selection, filters and the open sheet should survive too.
+4. **Night Planning** is task-oriented: prefer keeping its toolbar over a tab bar when space is tight. Back or Close sits first on the vertical axis, then the prominent action (Next, Confirm). On the inner display the *Plan tomorrow* step can show candidate tasks and tomorrow's plan side by side, collapsing to one pane on the outer display.
+5. **Custom components must not assume a width.** Capacity slider, completion ring, heatmap, sparkline and the wizard must resize and stay clear of the fold (reserved regions). For the heatmap grid, prefer an even number of columns so it divides cleanly (e.g. weeks as columns, in even counts).
+6. **Small adjustments when folding, not rearrangement.** Sheets, alerts and menus move for the fold automatically; don't move key controls dramatically.
+7. **Right-to-left**: side controls stay on the same side in RTL languages, which suits an Arabic-name app with Islamic-practice presets.
+8. **Any size**: Split View multitasking means the app can appear at many sizes; use layout margins and safe areas, never fixed widths.
+
+**API and OS availability.** The Duo-specific SwiftUI APIs (`ArrangementView`, `ReservedRegion`) are marked iOS 27.1 and beta at the time of writing, while ThreadsKit's floor is iOS 18. Standard system components adapt on their own; anything Duo-specific is gated behind an availability check, so the deployment target is unaffected. Preview and test with Device Hub in Xcode.
 
 ## Trial and subscription
 
@@ -73,6 +97,7 @@ Pricing (CLAUDE.md): free download, 14-day full-access trial, then subscription 
 - **During the trial**: nothing changes. Settings has a trial-status row ("9 days left"). Reminders about the end are gentle and infrequent (e.g. days 12 and 14).
 - **Day 15 — paywall**: a calm full-screen paywall on next open. Monthly and yearly options, restore purchases, and a plain "Not now".
 - **Not subscribed → read-only**: Today, habits, wellbeing and history stay fully viewable, and ticking existing items off (complete a task, mark an Anchor attended, count a habit) still works so the day isn't held hostage. **Locked**: creating or editing tasks, habits, anchors and categories, Night Planning, and changing capacity. Data export always works. A slim banner explains and offers to subscribe.
+- **Notifications around the trial** are deliberately few and quiet. Proposal for the design pass: a short reminder on day 12 and day 14, and one on day 15; nothing after that (the in-app banner carries it from then on). No badge counts, no repeats, gentle wording, and they respect Focus modes. The evening Night Planning notification **stops** once the trial ends unsubscribed, and returns on subscribing. If notification permission is denied, the in-app banner covers everything.
 - **Subscribing** lifts everything immediately; nothing is lost either way.
 
 ## Screen inventory (from v2, updated)
@@ -119,7 +144,7 @@ Resolved in this reconciliation:
 - [x] Habit vs. Anchor boundary — salah is an Anchor; groups hold Habits only
 - [x] Pricing / platforms / bundle ID — repo (CLAUDE.md) wins over v2
 - [x] Trial and subscription — app-managed 14-day trial, then read-only with a calm paywall
-- [x] iPad and Mac navigation — sidebar on regular width, inspector for task detail
+- [x] iPad, Mac and iPhone Duo — adaptive layout: system tab bar/sidebar, split-view Today, Duo handled by compact (outer) and regular (inner) layouts
 - [x] Recurring tasks — simple repeat on Task, one live instance per series
 
 Still open — settle before or during screen design:
@@ -141,8 +166,8 @@ Not covered anywhere in the docs yet (checked by search). Grouped by what they w
 
 **Would change screens or journeys**
 
-- ~~**Trial and paywall.**~~ **Resolved** — see "Trial and subscription". Still open: what the evening Night Planning notification does after the trial ends (proposal: stops), and whether the trial-end reminders are notifications or in-app only.
-- ~~**Adaptive layout.**~~ **Resolved for iPad and Mac** — see "Adaptive layout". **iPhone Duo** ("first-class" in CLAUDE.md) is still undefined: what device or mode does it mean, and what changes for it?
+- ~~**Trial and paywall.**~~ **Resolved** — see "Trial and subscription". Decided: the evening Night Planning notification stops when the trial ends unsubscribed (planning is locked), and trial-end reminders are notifications, kept non-intrusive (see "Trial and subscription").
+- ~~**Adaptive layout.**~~ **Resolved** — see "Adaptive layout" and "iPhone Duo". Still to design: the regular-width variants (which double as Duo inner-display layouts) and a check of each screen at the outer display's compact size.
 - ~~**Recurring tasks.**~~ **Resolved** — simple repeat on Task, see [task.md](../schema/task#repeating-tasks).
 - **Calendar and other apps.** The stated goal is to stop bouncing between reminder, task and calendar apps, but nothing says whether Jamaal reads calendar events, imports Reminders, or ignores them.
 - **Habit pause.** No way to pause a streak for travel or illness; matters for a non-punitive tone.
