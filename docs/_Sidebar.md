@@ -1,6 +1,7 @@
 ### Architecture
 
 - [Overview](architecture/overview)
+- [Rules Engine](architecture/rules-engine)
 - [ADR 0001: Anchor object type](architecture/decisions/0001-anchor-object-type)
 
 ### Schema

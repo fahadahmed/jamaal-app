@@ -16,6 +16,7 @@ Walks a new user through creating one example of each primitive, so all three ar
 
 ## Open questions
 
+- **Step 6's premise is provisional**: the whole "guide the user through an `AnchorRule`, not a raw `Anchor`" approach rests on the generated-not-user-created positioning decided in `anchor.md` — flagged for revisiting, not settled. If that positioning changes, this step changes with it.
 - **Preset content for step 6**: `AnchorRule.configData`'s shape isn't settled yet (see anchor.md's open questions, deferred to #7) — onboarding's Anchor-setup UI depends on that being resolved first, at least for the built-in `sourceKey` options (prayer window, school run, bin night, plant watering).
 - **Skippable steps**: can a user skip guided Task/Habit/Anchor creation entirely and land on an empty Today List? Given the "guided primitive setup" decision, at minimum steps 4–6 are meant to be non-skippable for a first-run experience, but worth confirming explicitly.
 - **Notification permission prompt**: not included above — CLAUDE.md's rules-engine module 6 (notification/nudge logic) implies this is needed eventually, but whether it's asked during onboarding or deferred to first use of a feature that needs it (e.g. first Night Planning) isn't decided.

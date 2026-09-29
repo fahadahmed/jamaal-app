@@ -23,7 +23,7 @@ jamaal-app/
 ├── mockups/               # HTML reference screens (Liquid Glass pass applied) — source of truth for SwiftUI screens
 ├── docs/                  # synced to GitHub wiki via .github/workflows/sync-wiki.yml on merge to main
 │   ├── Home.md / _Sidebar.md
-│   ├── architecture/ (overview.md, decisions/, uml/)
+│   ├── architecture/ (overview.md, rules-engine.md, decisions/, uml/)
 │   ├── schema/ (task.md, habit.md, anchor.md)
 │   ├── journeys/ (today-list.md, night-planning.md, onboarding.md)
 │   ├── roadmap/phases.md
