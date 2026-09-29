@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jamaal — Today View</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ─────────────────────────────────────────────────────────────
+   THREADS DESIGN SYSTEM TOKENS (direct from Figma variables)
+───────────────────────────────────────────────────────────── */
+:root {
+  /* Raw palette */
+  --bone-50:    #F7F5F2;
+  --bone-100:   #F0EDE8;
+  --bone-200:   #E6E1D9;
+  --bone-300:   #D8D1C6;
+  --linen-50:   #F2EFE9;
+  --linen-100:  #E8E3DB;
+  --stone-100:  #E2DDD6;
+  --stone-200:  #CEC7BC;
+  --stone-300:  #B3AA9E;
+  --stone-400:  #918880;
+  --stone-500:  #726861;
+  --stone-600:  #574E48;
+  --stone-700:  #423A35;
+  --forest-100: #CCDEC9;
+  --forest-200: #ABCBA6;
+  --forest-300: #85B47F;
+  --forest-400: #629B5B;
+  --forest-500: #6B8C72;
+  --forest-600: #386632;
+  --forest-700: #2E2C28;
+  --forest-800: #1C3618;
+  --forest-900: #1C1A17;
+  --olive-300:  #8C8880;
+  --olive-500:  #5A5750;
+  --olive-700:  #5A5750;
+  --olive-900:  #2E2C28;
+  --ochre-50:   #FAF6ED;
+  --ochre-100:  #F2E0D0;
+  --ochre-200:  #EDDBAA;
+  --ochre-300:  #E3C97F;
+  --ochre-400:  #C88560;
+  --ochre-500:  #B5623A;
+  --ochre-600:  #AC8426;
+  --ochre-700:  #7D3D1F;
+  --rust-100:   #F2E0D0;
+  --rust-300:   #D9A882;
+  --rust-500:   #B87245;
+  --rust-700:   #8A4F28;
+  --sage-100:   #D4E8D0;
+  --sage-300:   #7FA386;
+  --sage-500:   #6B8C72;
+  --sage-700:   #4A6B52;
+
+  /* Semantic tokens */
+  --surface:        var(--bone-50);
+  --surface-sunken: var(--bone-100);
+  --surface-raised: #FFFFFF;
+  --surface-inverse: var(--forest-700);
+  --text:           var(--olive-900);
+  --text-muted:     var(--olive-500);
+  --text-subtle:    var(--olive-300);
+  --accent:         var(--ochre-500);
+  --accent-hover:   var(--ochre-400);
+  --accent-soft:    var(--ochre-100);
+  --accent-strong:  var(--ochre-700);
+  --status-success: #3D8C4A;
+  --status-warn:    #C49A18;
+  --status-danger:  #C0392B;
+  --status-info:    #2D6DA8;
+
+  /* Spacing (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 56px;
+  --space-10: 72px;
+
+  /* Radius */
+  --r-1: 4px;
+  --r-2: 6px;
+  --r-3: 10px;
+  --r-4: 14px;
+  --r-5: 20px;
+  --r-6: 28px;
+  --r-pill: 999px;
+
+  /* Typography */
+  --font-display: 'Bricolage Grotesque', sans-serif;
+  --font-body:    'Geist', sans-serif;
+  --font-mono:    'Geist Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #A8A49C;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-10);
+  padding: var(--space-10) var(--space-8);
+  flex-wrap: wrap;
+  font-family: var(--font-body);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PHONE SHELL
+───────────────────────────────────────────────────────────── */
+.phone {
+  width: 393px;
+  height: 852px;
+  background: var(--surface);
+  border-radius: 52px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.14),
+    0 32px 96px rgba(0,0,0,0.32),
+    inset 0 0 0 1.5px rgba(255,255,255,0.28);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   STATUS BAR
+───────────────────────────────────────────────────────────── */
+.status-bar {
+  height: 54px;
+  padding: var(--space-4) var(--space-7) 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+.status-time {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.status-icons { display: flex; align-items: center; gap: var(--space-2); }
+
+/* ─────────────────────────────────────────────────────────────
+   SCROLL AREA
+───────────────────────────────────────────────────────────── */
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 var(--space-5) 110px;
+  scrollbar-width: none;
+}
+.scroll::-webkit-scrollbar { display: none; }
+
+/* ─────────────────────────────────────────────────────────────
+   HEADER
+───────────────────────────────────────────────────────────── */
+.header {
+  padding: var(--space-5) var(--space-1) var(--space-3);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.header-greeting {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-subtle);
+  letter-spacing: 0.4px;
+  margin-bottom: var(--space-1);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+.header-date {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -1.2px;
+  line-height: 1.08;
+}
+.header-date .accent-word {
+  color: var(--accent);
+  font-weight: 500;
+}
+.header-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  border: 1.5px solid var(--ochre-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--space-1);
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LOAD CARD
+───────────────────────────────────────────────────────────── */
+.load-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--stone-100);
+  border-radius: var(--r-5);
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  margin-bottom: var(--space-4);
+  box-shadow: 0 1px 3px rgba(35,38,20,0.06), 0 4px 12px rgba(35,38,20,0.04);
+}
+.load-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+.load-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-subtle);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.load-state {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--status-success);
+  letter-spacing: -0.3px;
+}
+.load-state.warn { color: var(--status-warn); }
+.load-track {
+  height: 4px;
+  background: var(--bone-200);
+  border-radius: var(--r-pill);
+  overflow: visible;
+  position: relative;
+  margin-bottom: var(--space-3);
+}
+.load-fill {
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--forest-500);
+  width: 74%;
+  position: relative;
+}
+.load-fill::after {
+  content: '';
+  position: absolute;
+  right: -3px; top: -3px;
+  width: 10px; height: 10px;
+  background: var(--forest-600);
+  border-radius: 50%;
+  border: 2px solid var(--surface-raised);
+}
+.load-fill.warn { background: var(--ochre-500); }
+.load-fill.warn::after { background: var(--ochre-600); }
+
+/* Overflow tag */
+.load-overflow-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.load-overflow-bar-wrap {
+  flex: 1;
+}
+.load-overflow-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--ochre-100);
+  border: 1px solid var(--ochre-200);
+  border-radius: var(--r-pill);
+  padding: 3px 9px 3px 7px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.load-overflow-tag-text {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--ochre-700);
+  letter-spacing: -0.1px;
+}
+.load-stats {
+  display: flex;
+  gap: var(--space-4);
+}
+.load-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.load-stat-val {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.6px;
+  line-height: 1;
+}
+.load-stat-lbl {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-subtle);
+  letter-spacing: 0.3px;
+}
+.load-divider {
+  width: 1px;
+  background: var(--stone-100);
+  align-self: stretch;
+  margin: 2px 0;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HABITS STRIP
+───────────────────────────────────────────────────────────── */
+.habits-strip {
+  margin-bottom: var(--space-5);
+}
+.strip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+  padding: 0 var(--space-1);
+}
+.strip-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-subtle);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.strip-link {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: -0.1px;
+}
+.habits-row {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: var(--space-1);
+}
+.habits-row::-webkit-scrollbar { display: none; }
+
+.habit-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--surface-raised);
+  border: 1px solid var(--stone-100);
+  border-radius: var(--r-pill);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(35,38,20,0.05);
+}
+.habit-chip.done {
+  background: var(--sage-100);
+  border-color: var(--sage-300);
+}
+.habit-chip.partial {
+  background: var(--ochre-50);
+  border-color: var(--ochre-200);
+}
+.habit-ring {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.habit-chip-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: -0.1px;
+}
+.habit-chip.done .habit-chip-name { color: var(--sage-700); }
+.habit-chip.partial .habit-chip-name { color: var(--ochre-700); }
+.habit-chip-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-subtle);
+}
+.habit-chip.done .habit-chip-count { color: var(--sage-500); }
+.habit-chip.partial .habit-chip-count { color: var(--ochre-500); }
+
+/* ─────────────────────────────────────────────────────────────
+   SECTION HEADER
+───────────────────────────────────────────────────────────── */
+.section-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-1);
+  margin-bottom: var(--space-3);
+}
+.section-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-subtle);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.section-meta {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-subtle);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   JAMAAL GUIDANCE CARD
+───────────────────────────────────────────────────────────── */
+.guidance-card {
+  background: var(--surface-inverse);
+  border-radius: var(--r-5);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+.guidance-j {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--olive-900);
+  letter-spacing: -0.5px;
+  margin-top: 1px;
+}
+.guidance-body { flex: 1; }
+.guidance-text {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 400;
+  color: rgba(242,239,233,0.88);
+  line-height: 1.5;
+  letter-spacing: -0.1px;
+}
+.guidance-text strong {
+  font-weight: 600;
+  color: var(--ochre-200);
+}
+.guidance-dismiss {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.35;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TASK CARDS
+───────────────────────────────────────────────────────────── */
+.tasks { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.task-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--stone-100);
+  border-radius: var(--r-4);
+  padding: var(--space-4);
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(35,38,20,0.05), 0 2px 8px rgba(35,38,20,0.03);
+  cursor: pointer;
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+}
+.task-card:active {
+  transform: scale(0.988);
+  box-shadow: 0 1px 2px rgba(35,38,20,0.08);
+}
+
+/* Priority accent bar */
+.task-card::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+}
+.task-card.high::after  { background: var(--rust-500); }
+.task-card.med::after   { background: var(--ochre-400); }
+.task-card.low::after   { background: transparent; }
+.task-card.done::after  { background: var(--sage-500); }
+
+/* Highlight — start here */
+.task-card.highlight {
+  background: var(--ochre-50);
+  border-color: var(--ochre-200);
+  box-shadow: 0 2px 12px rgba(202,160,56,0.14), 0 1px 3px rgba(35,38,20,0.06);
+}
+
+/* Done state */
+.task-card.done {
+  opacity: 0.55;
+}
+
+/* Check circle */
+.check-wrap {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.6px solid var(--stone-200);
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+}
+.check-wrap.checked {
+  background: var(--sage-100);
+  border-color: var(--sage-500);
+}
+.check-wrap.active {
+  background: var(--ochre-100);
+  border-color: var(--ochre-500);
+}
+
+.task-body { flex: 1; min-width: 0; }
+
+.task-title {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.35;
+  letter-spacing: -0.15px;
+  margin-bottom: var(--space-2);
+}
+.task-card.done .task-title {
+  text-decoration: line-through;
+  color: var(--text-subtle);
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.task-effort {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-subtle);
+}
+
+.task-badge {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  letter-spacing: -0.1px;
+}
+.task-badge.high {
+  background: var(--rust-100);
+  color: var(--rust-700);
+}
+.task-badge.accent {
+  background: var(--ochre-100);
+  color: var(--ochre-700);
+}
+.task-badge.sage {
+  background: var(--sage-100);
+  color: var(--sage-700);
+}
+.task-badge.neutral {
+  background: var(--bone-200);
+  color: var(--stone-500);
+}
+
+/* Start here pill */
+.start-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--ochre-500);
+  color: var(--olive-900);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px 3px 7px;
+  border-radius: var(--r-pill);
+  letter-spacing: -0.1px;
+  margin-top: var(--space-2);
+}
+
+/* Deferred note */
+.task-deferred {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-subtle);
+  margin-top: 3px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   COMPLETED SECTION
+───────────────────────────────────────────────────────────── */
+.completed-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-1) var(--space-3);
+  cursor: pointer;
+}
+.completed-lbl {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-subtle);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.completed-badge {
+  background: var(--sage-100);
+  color: var(--sage-700);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ADD TASK ROW
+───────────────────────────────────────────────────────────── */
+.add-task {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1.5px dashed var(--stone-200);
+  border-radius: var(--r-4);
+  cursor: pointer;
+  margin-top: var(--space-2);
+  transition: background 0.14s;
+}
+.add-task:hover { background: var(--bone-100); }
+.add-task-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-subtle);
+  letter-spacing: -0.1px;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TAB BAR
+───────────────────────────────────────────────────────────── */
+.tab-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 88px;
+  background: rgba(247,245,242,0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid var(--stone-100);
+  display: flex;
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-2) 0;
+}
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: var(--space-1) 0;
+}
+.tab-icon-wrap {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-3);
+}
+.tab.active .tab-icon-wrap {
+  background: var(--ochre-100);
+}
+.tab-lbl {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-subtle);
+  letter-spacing: 0.2px;
+}
+.tab.active .tab-lbl { color: var(--accent-strong); }
+
+/* ─────────────────────────────────────────────────────────────
+   NIGHT PLANNING FAB
+───────────────────────────────────────────────────────────── */
+.fab {
+  position: absolute;
+  bottom: 96px;
+  right: var(--space-5);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--surface-inverse);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(15,31,12,0.32), 0 1px 4px rgba(15,31,12,0.2);
+  cursor: pointer;
+  transition: transform 0.18s ease;
+}
+.fab:hover { transform: scale(1.06); }
+
+/* ─────────────────────────────────────────────────────────────
+   SCREEN LABEL
+───────────────────────────────────────────────────────────── */
+.screen-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+.screen-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(35,38,20,0.4);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+svg { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN A — Default / Balanced load, no guidance
+══════════════════════════════════════════════════════════ -->
+<div class="screen-wrap">
+<div class="phone">
+
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none">
+        <rect x="0" y="7" width="3" height="5" rx="1" fill="#2E2C28"/>
+        <rect x="4.5" y="4.5" width="3" height="7.5" rx="1" fill="#2E2C28"/>
+        <rect x="9" y="2" width="3" height="10" rx="1" fill="#2E2C28"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="1" fill="#2E2C28" opacity="0.25"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+        <path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" fill="#2E2C28"/>
+        <path d="M4.5 6.8C5.7 5.7 6.8 5.2 8 5.2s2.3.5 3.5 1.6" stroke="#2E2C28" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <path d="M1.5 3.8C3.4 2 5.6 1 8 1s4.6 1 6.5 2.8" stroke="#2E2C28" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      </svg>
+      <svg width="26" height="12" viewBox="0 0 26 12" fill="none">
+        <rect x="0.5" y="0.5" width="22" height="11" rx="3.5" stroke="#2E2C28" stroke-opacity="0.3"/>
+        <rect x="2" y="2" width="17" height="8" rx="2" fill="#2E2C28"/>
+        <path d="M24 4v4a2 2 0 000-4z" fill="#2E2C28" opacity="0.35"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="scroll">
+
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <div class="header-greeting">Wednesday · 20 May</div>
+        <div class="header-date">Good<br><span class="accent-word">morning.</span></div>
+      </div>
+      <div class="header-avatar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7D3D1F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Load card -->
+    <div class="load-card">
+      <div class="load-top">
+        <span class="load-label">Today's load</span>
+        <span class="load-state">Balanced</span>
+      </div>
+      <div class="load-track">
+        <div class="load-fill" style="width:74%"></div>
+      </div>
+      <div class="load-stats">
+        <div class="load-stat">
+          <span class="load-stat-val">4</span>
+          <span class="load-stat-lbl">tasks</span>
+        </div>
+        <div class="load-divider"></div>
+        <div class="load-stat">
+          <span class="load-stat-val">2h 10m</span>
+          <span class="load-stat-lbl">estimated</span>
+        </div>
+        <div class="load-divider"></div>
+        <div class="load-stat">
+          <span class="load-stat-val">3h</span>
+          <span class="load-stat-lbl">capacity</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Habits strip -->
+    <div class="habits-strip">
+      <div class="strip-header">
+        <span class="strip-label">Habits</span>
+        <span class="strip-link">See all</span>
+      </div>
+      <div class="habits-row">
+
+        <!-- Salah group — partial -->
+        <div class="habit-chip partial">
+          <svg class="habit-ring" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#EDDBAA" stroke-width="2.5"/>
+            <circle cx="12" cy="12" r="9" stroke="#B5623A" stroke-width="2.5"
+              stroke-dasharray="56.5" stroke-dashoffset="28.25"
+              stroke-linecap="round" transform="rotate(-90 12 12)"/>
+            <text x="12" y="16" text-anchor="middle" font-family="Geist Mono" font-size="7" font-weight="500" fill="#7D3D1F">2/5</text>
+          </svg>
+          <span class="habit-chip-name">🕌 Salah</span>
+          <span class="habit-chip-count">2/5</span>
+        </div>
+
+        <!-- Morning routine — done -->
+        <div class="habit-chip done">
+          <svg class="habit-ring" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#7FA386" stroke-width="2.5"/>
+            <circle cx="12" cy="12" r="9" stroke="#6B8C72" stroke-width="2.5"
+              stroke-dasharray="56.5" stroke-dashoffset="0"
+              stroke-linecap="round" transform="rotate(-90 12 12)"/>
+            <path d="M8.5 12l2.5 2.5 4.5-4.5" stroke="#4A6B52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="habit-chip-name">☀️ Morning</span>
+        </div>
+
+        <!-- Reading — not started -->
+        <div class="habit-chip">
+          <svg class="habit-ring" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#CEC7BC" stroke-width="2.5"/>
+          </svg>
+          <span class="habit-chip-name">📖 Reading</span>
+          <span class="habit-chip-count">0/1</span>
+        </div>
+
+        <!-- Exercise — not started -->
+        <div class="habit-chip">
+          <svg class="habit-ring" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#CEC7BC" stroke-width="2.5"/>
+          </svg>
+          <span class="habit-chip-name">🏃 Exercise</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tasks section -->
+    <div class="section-hdr">
+      <span class="section-title">Tasks</span>
+      <span class="section-meta">4 remaining</span>
+    </div>
+
+    <div class="tasks">
+
+      <!-- Task 1 — High priority, highlighted -->
+      <div class="task-card high highlight">
+        <div class="check-wrap active">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+            <circle cx="7" cy="7" r="3" fill="#B5623A"/>
+          </svg>
+        </div>
+        <div class="task-body">
+          <div class="task-title">Review investor pitch deck</div>
+          <div class="task-meta">
+            <div class="task-effort">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#8C8880" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+              </svg>
+              60 min
+            </div>
+            <span class="task-badge high">Important</span>
+          </div>
+          <div class="start-pill">
+            <svg width="9" height="9" viewBox="0 0 12 12" fill="#2E2C28">
+              <polygon points="3,2 10,6 3,10"/>
+            </svg>
+            Start here
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 2 — Medium priority -->
+      <div class="task-card med">
+        <div class="check-wrap"></div>
+        <div class="task-body">
+          <div class="task-title">Reply to Atelier Mara contract email</div>
+          <div class="task-meta">
+            <div class="task-effort">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#8C8880" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+              </svg>
+              30 min
+            </div>
+            <span class="task-badge accent">Deadline</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 3 — Normal -->
+      <div class="task-card low">
+        <div class="check-wrap"></div>
+        <div class="task-body">
+          <div class="task-title">Threads DS — finish Foundations page in Figma</div>
+          <div class="task-meta">
+            <div class="task-effort">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#8C8880" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+              </svg>
+              30 min
+            </div>
+            <span class="task-badge neutral">Design</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task 4 — Deferred 2× -->
+      <div class="task-card low">
+        <div class="check-wrap"></div>
+        <div class="task-body">
+          <div class="task-title">Write Jamaal App Store description</div>
+          <div class="task-meta">
+            <div class="task-effort">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#8C8880" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+              </svg>
+              30 min
+            </div>
+          </div>
+          <div class="task-deferred">↩ Deferred twice</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Completed toggle -->
+    <div class="completed-toggle">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#8C8880" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 8l2 2 4-4"/>
+        <circle cx="8" cy="8" r="6"/>
+      </svg>
+      <span class="completed-lbl">Completed</span>
+      <span class="completed-badge">2</span>
+    </div>
+
+    <div class="tasks">
+      <!-- Completed task 1 -->
+      <div class="task-card done">
+        <div class="check-wrap checked">
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#6B8C72" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7l3 3 5-5"/>
+          </svg>
+        </div>
+        <div class="task-body">
+          <div class="task-title">Morning standup notes</div>
+          <div class="task-meta">
+            <div class="task-effort">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#8C8880" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+              </svg>
+              15 min
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completed task 2 -->
+      <div class="task-card done">
+        <div class="check-wrap checked">
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#6B8C72" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7l3 3 5-5"/>
+          </svg>
+        </div>
+        <div class="task-body">
+          <div class="task-title">Review pdf-craft PR #47</div>
+          <div class="task-meta">
+            <div class="task-effort">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#8C8880" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+              </svg>
+              15 min
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add task -->
+    <div class="add-task">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#B3AA9E" stroke-width="1.6" stroke-linecap="round">
+        <circle cx="10" cy="10" r="8"/><path d="M10 7v6M7 10h6"/>
+      </svg>
+      <span class="add-task-label">Add a task…</span>
+    </div>
+
+  </div><!-- /scroll -->
+
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <!-- Today (active) -->
+    <div class="tab active">
+      <div class="tab-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7D3D1F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="17" rx="3"/>
+          <path d="M3 9h18M8 2v4M16 2v4"/>
+          <path d="M7 14h2M11 14h2M7 17.5h2M11 17.5h2M15 14h2"/>
+        </svg>
+      </div>
+      <span class="tab-lbl">Today</span>
+    </div>
+    <!-- Habits -->
+    <div class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C8880" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a9 9 0 11-6.36 15.36"/><path d="M12 7v5l3 3"/>
+        </svg>
+      </div>
+      <span class="tab-lbl">Habits</span>
+    </div>
+    <!-- Wellbeing -->
+    <div class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C8880" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21C12 21 4 14.5 4 9a4 4 0 018 0 4 4 0 018 0c0 5.5-8 12-8 12z"/>
+        </svg>
+      </div>
+      <span class="tab-lbl">Wellbeing</span>
+    </div>
+    <!-- Profile -->
+    <div class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C8880" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </div>
+      <span class="tab-lbl">Profile</span>
+    </div>
+  </div>
+
+  <!-- Night planning FAB -->
+  <div class="fab">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F2EFE9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </svg>
+  </div>
+
+</div><!-- /phone -->
+<span class="screen-name">Today · Default state</span>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREEN B — With Jamaal guidance card + overloaded load
+══════════════════════════════════════════════════════════ -->
+<div class="screen-wrap">
+<div class="phone">
+
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <div class="status-icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none">
+        <rect x="0" y="7" width="3" height="5" rx="1" fill="#2E2C28"/>
+        <rect x="4.5" y="4.5" width="3" height="7.5" rx="1" fill="#2E2C28"/>
+        <rect x="9" y="2" width="3" height="10" rx="1" fill="#2E2C28"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="1" fill="#2E2C28" opacity="0.25"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+        <path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" fill="#2E2C28"/>
+        <path d="M4.5 6.8C5.7 5.7 6.8 5.2 8 5.2s2.3.5 3.5 1.6" stroke="#2E2C28" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <path d="M1.5 3.8C3.4 2 5.6 1 8 1s4.6 1 6.5 2.8" stroke="#2E2C28" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      </svg>
+      <svg width="26" height="12" viewBox="0 0 26 12" fill="none">
+        <rect x="0.5" y="0.5" width="22" height="11" rx="3.5" stroke="#2E2C28" stroke-opacity="0.3"/>
+        <rect x="2" y="2" width="17" height="8" rx="2" fill="#2E2C28"/>
+        <path d="M24 4v4a2 2 0 000-4z" fill="#2E2C28" opacity="0.35"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="scroll">
+
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <div class="header-greeting">Wednesday · 20 May</div>
+        <div class="header-date">Good<br><span class="accent-word">morning.</span></div>
+      </div>
+      <div class="header-avatar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7D3D1F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Load card — overloaded -->
+    <div class="load-card">
+      <div class="load-top">
+        <span class="load-label">Today's load</span>
+        <span class="load-state warn">Overloaded</span>
+      </div>
+      <div class="load-overflow-row">
+        <div class="load-overflow-bar-wrap">
+          <div class="load-track" style="margin-bottom:0">
+            <div class="load-fill warn" style="width:100%"></div>
+          </div>
+        </div>
+        <div class="load-overflow-tag">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#7D3D1F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2v4M6 8v1.5"/>
+          </svg>
+          <span class="load-overflow-tag-text">+1h 30m over</span>
+        </div>
+      </div>
+      <div class="load-stats" style="margin-top: var(--space-3)">
+        <div class="load-stat">
+          <span class="load-stat-val">7</span>
+          <span class="load-stat-lbl">tasks</span>
+        </div>
+        <div class="load-divider"></div>
+        <div class="load-stat">
+          <span class="load-stat-val">4h 30m</span>
+          <span class="load-stat-lbl">estimated</span>
+        </div>
+        <div class="load-divider"></div>
+        <div class="load-stat">
+          <span class="load-stat-val">3h</span>
+          <span class="load-stat-lbl">capacity</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jamaal guidance card -->
+    <div class="guidance-card">
+      <div class="guidance-j">J</div>
+      <div class="guidance-body">
+        <div class="guidance-text">
+          You're at <strong>150% capacity</strong> today. Three tasks can move to tomorrow without consequence — want me to suggest which ones?
+        </div>
+      </div>
+      <div class="guidance-dismiss">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#F2EFE9" stroke-width="2" stroke-linecap="round">
+          <path d="M4 4l8 8M12 4l-8 8"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Habits strip -->
+    <div class="habits-strip">
+      <div class="strip-header">
+        <span class="strip-label">Habits</span>
+        <span class="strip-link">See all</span>
+      </div>
+      <div class="habits-row">
+        <div class="habit-chip done">
+          <svg class="habit-ring" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#7FA386" stroke-width="2.5"/>
+            <circle cx="12" cy="12" r="9" stroke="#6B8C72" stroke-width="2.5"
+              stroke-dasharray="56.5" stroke-dashoffset="0"
+              stroke-linecap="round" transform="rotate(-90 12 12)"/>
+            <path d="M8.5 12l2.5 2.5 4.5-4.5" stroke="#4A6B52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="habit-chip-name">☀️ Morning</span>
+        </div>
+        <div class="habit-chip partial">
+          <svg class="habit-ring" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#EDDBAA" stroke-width="2.5"/>
+            <circle cx="12" cy="12" r="9" stroke="#B5623A" stroke-width="2.5"
+              stroke-dasharray="56.5" stroke-dashoffset="39.5"
+              stroke-linecap="round" transform="rotate(-90 12 12)"/>
+            <text x="12" y="16" text-anchor="middle" font-family="Geist Mono" font-size="7" font-weight="500" fill="#7D3D1F">1/5</text>
+          </svg>
+          <span class="habit-chip-name">🕌 Salah</span>
+          <span class="habit-chip-count">1/5</span>
+        </div>
+        <div class="habit-chip">
+          <svg class="habit-ring" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#CEC7BC" stroke-width="2.5"/>
+          </svg>
+          <span class="habit-chip-name">📖 Reading</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tasks section -->
+    <div class="section-hdr">
+      <span class="section-title">Tasks</span>
+      <span class="section-meta">7 remaining</span>
+    </div>
+
+    <div class="tasks">
+
+      <div class="task-card high highlight">
+        <div class="check-wrap active">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+            <circle cx="7" cy="7" r="3" fill="#B5623A"/>
+          </svg>
+        </div>
+        <div class="task-body">
+          <div class="task-title">Review investor pitch deck</div>
+          <div class="task-meta">
+            <div class="task-effort">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#8C8880" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+              </svg>
+              60 min
+            </div>
+            <span class="task-badge high">Important</span>
+          </div>
+          <div class="start-pill">
+            <svg width="9" height="9" viewBox="0 0 12 12" fill="#2E2C28">
+              <polygon points="3,2 10,6 3,10"/>
+            </svg>
+            Start here
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card med">
+        <div class="check-wrap"></div>
+        <div class="task-body">
+          <div class="task-title">Reply to Atelier Mara contract email</div>
+          <div class="task-meta">
+            <div class="task-effort">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#8C8880" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+              </svg>
+              30 min
+            </div>
+            <span class="task-badge accent">Deadline</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card low">
+        <div class="check-wrap"></div>
+        <div class="task-body">
+          <div class="task-title">Threads DS — finish Foundations page</div>
+          <div class="task-meta">
+            <div class="task-effort">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#8C8880" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+              </svg>
+              30 min
+            </div>
+            <span class="task-badge neutral">Design</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-card low">
+        <div class="check-wrap"></div>
+        <div class="task-body">
+          <div class="task-title">Write Jamaal App Store description</div>
+          <div class="task-meta">
+            <div class="task-effort">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#8C8880" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+              </svg>
+              30 min
+            </div>
+          </div>
+          <div class="task-deferred">↩ Deferred twice</div>
+        </div>
+      </div>
+
+      <div class="task-card low">
+        <div class="check-wrap"></div>
+        <div class="task-body">
+          <div class="task-title">Update pdf-craft landing page copy</div>
+          <div class="task-meta">
+            <div class="task-effort">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#8C8880" stroke-width="1.5" stroke-linecap="round">
+                <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+              </svg>
+              60 min
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Add task -->
+    <div class="add-task" style="margin-top: 10px;">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#B3AA9E" stroke-width="1.6" stroke-linecap="round">
+        <circle cx="10" cy="10" r="8"/><path d="M10 7v6M7 10h6"/>
+      </svg>
+      <span class="add-task-label">Add a task…</span>
+    </div>
+
+  </div><!-- /scroll -->
+
+  <div class="tab-bar">
+    <div class="tab active">
+      <div class="tab-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7D3D1F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/>
+          <path d="M7 14h2M11 14h2M7 17.5h2M11 17.5h2M15 14h2"/>
+        </svg>
+      </div>
+      <span class="tab-lbl">Today</span>
+    </div>
+    <div class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C8880" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a9 9 0 11-6.36 15.36"/><path d="M12 7v5l3 3"/>
+        </svg>
+      </div>
+      <span class="tab-lbl">Habits</span>
+    </div>
+    <div class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C8880" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21C12 21 4 14.5 4 9a4 4 0 018 0 4 4 0 018 0c0 5.5-8 12-8 12z"/>
+        </svg>
+      </div>
+      <span class="tab-lbl">Wellbeing</span>
+    </div>
+    <div class="tab">
+      <div class="tab-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8C8880" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </div>
+      <span class="tab-lbl">Profile</span>
+    </div>
+  </div>
+
+  <div class="fab">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F2EFE9" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+    </svg>
+  </div>
+
+</div><!-- /phone -->
+<span class="screen-name">Today · Jamaal guidance + overloaded</span>
+</div>
+
+</body>
+</html>

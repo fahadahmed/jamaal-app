@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Jamaal — Wellbeing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..900&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="system.css">
+<style>
+  /* Score card */
+  .score-card {
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 12px;
+  }
+  .score-card.good { background: var(--sun); }
+  .score-card.poor { background: var(--ink); color: var(--paper); }
+
+  .score-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .score-lbl {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 4px;
+  }
+  .score-card.poor .score-lbl { color: var(--ink-4); }
+
+  .score-num {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 80px;
+    line-height: 0.85;
+    letter-spacing: -0.045em;
+    color: var(--ink);
+  }
+  .score-card.poor .score-num { color: var(--paper); }
+  .score-out {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--ink-2);
+    margin-left: 2px;
+  }
+  .score-card.poor .score-out { color: var(--ink-4); }
+
+  .score-side {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+  }
+  .badge-state {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 99px;
+    background: var(--ink); color: var(--paper);
+    font-weight: 500;
+  }
+  .score-card.poor .badge-state { background: var(--sun); color: var(--ink); }
+  .score-trend {
+    display: flex; align-items: center; gap: 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .score-card.poor .score-trend { color: var(--ink-4); }
+  .score-trend svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Chart */
+  .chart {
+    height: 70px;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .chart svg { width: 100%; height: 100%; overflow: visible; }
+  .chart-days {
+    display: flex; justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    opacity: 0.7;
+  }
+  .score-card.poor .chart-days { color: var(--ink-4); }
+  .chart-days .today { opacity: 1; font-weight: 500; }
+
+  /* Stat pills */
+  .stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 6px; margin-bottom: 14px;
+  }
+  .pill {
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+  }
+  .pill.sun { background: var(--sun); border-color: transparent; }
+  .pill.ink { background: var(--ink); color: var(--paper); border-color: transparent; }
+  .pill .n {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 22px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+  .pill .l {
+    font-family: var(--mono);
+    font-size: 8px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    line-height: 1.3;
+  }
+  .pill.ink .l { color: var(--ink-4); }
+  .pill.sun .l { color: var(--ink-2); }
+
+  /* Pattern card */
+  .pattern {
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .pattern .ico {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--bone);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pattern .ico.sun { background: var(--sun); }
+  .pattern .ico.ink { background: var(--ink); }
+  .pattern .ico svg { width: 15px; height: 15px; stroke: var(--ink); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .pattern .ico.ink svg { stroke: var(--paper); }
+  .pattern .body { flex: 1; min-width: 0; }
+  .pattern .title-sm {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .pattern .sub-sm {
+    font-family: var(--sans);
+    font-size: 11px;
+    color: var(--ink-3);
+    line-height: 1.4;
+  }
+  .pattern .val {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+  .pattern .val.clay { color: var(--clay); }
+
+  /* Mini calendar / heatmap of days */
+  .days-strip {
+    display: grid; grid-template-columns: repeat(14, 1fr);
+    gap: 3px;
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  .days-strip .day {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .days-strip .day .lbl {
+    font-family: var(--mono);
+    font-size: 7px;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+  }
+  .days-strip .day .sq {
+    width: 100%; aspect-ratio: 1;
+    border-radius: 3px;
+    background: var(--line);
+  }
+  .days-strip .day .sq.d1 { background: rgba(12,12,13,0.30); }
+  .days-strip .day .sq.d2 { background: rgba(12,12,13,0.60); }
+  .days-strip .day .sq.d3 { background: var(--ink); }
+  .days-strip .day .sq.heavy { background: var(--clay); }
+  .days-strip .day.today .sq { outline: 2px solid var(--sun); outline-offset: 1px; }
+</style>
+</head>
+<body data-screen-label="00 Wellbeing" style="background-color: rgb(242, 242, 242)">
+
+<div class="page-header">
+  <div class="wordmark">Jamaal<span class="dot"></span></div>
+  <span class="crumb">Threads / Jamaal · Wellbeing · Two states</span>
+  <h1>How you're<br/>actually <em>doing</em>.</h1>
+  <nav>
+    <a href="../Jamaal.html">Index</a>
+    <a href="onboarding.html">Onboarding</a>
+    <a href="night-planning.html">Night planning</a>
+    <a href="habits.html">Habits</a>
+    <a href="wellbeing.html" class="on">Wellbeing</a>
+  </nav>
+</div>
+
+<div class="phones-row">
+
+  <!-- ── Healthy ──────────────────────────────────── -->
+  <div class="phone-wrap" data-screen-label="01 Healthy">
+    <div class="phone-meta">
+      <span>01 — Healthy · 78</span>
+      <span class="num">Wellbeing <span class="dot"></span></span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span class="time">9:41</span><span class="meta">Wed 13 May</span></div>
+      <div class="nav-bar"></div>
+
+      <div class="scroll">
+        <div class="eyebrow">Your wellbeing</div>
+        <h2 class="title">You're doing<br/><em>well</em></h2>
+        <p class="sub">Based on the past 14 days</p>
+
+        <div class="score-card good">
+          <div class="score-head">
+            <div>
+              <div class="score-lbl">Wellness score</div>
+              <div style="display:flex; align-items:baseline;">
+                <span class="score-num">78</span>
+                <span class="score-out">/100</span>
+              </div>
+            </div>
+            <div class="score-side">
+              <span class="badge-state">Good</span>
+              <span class="score-trend">
+                <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+                +6 wk
+              </span>
+            </div>
+          </div>
+
+          <div class="chart">
+            <svg viewBox="0 0 276 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="grad-good" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#7e8c70" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="#7e8c70" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M4,56 C20,54 36,52 52,48 C68,44 84,46 100,42 C116,38 132,34 148,30 C164,26 180,24 196,20 C212,16 228,14 244,12 C252,11 260,10 272,9 L272,70 L4,70 Z"
+                fill="url(#grad-good)"/>
+              <path d="M4,56 C20,54 36,52 52,48 C68,44 84,46 100,42 C116,38 132,34 148,30 C164,26 180,24 196,20 C212,16 228,14 244,12 C252,11 260,10 272,9"
+                fill="none" stroke="#7e8c70" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="272" cy="9" r="5" fill="#7e8c70"/>
+              <circle cx="272" cy="9" r="9" fill="none" stroke="#7e8c70" stroke-width="1" stroke-opacity="0.3"/>
+            </svg>
+          </div>
+          <div class="chart-days">
+            <span>29 APR</span>
+            <span>5 MAY</span>
+            <span>9 MAY</span>
+            <span class="today">TODAY</span>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="pill sun"><div class="n">74%</div><div class="l">Completion</div></div>
+          <div class="pill"><div class="n">1</div><div class="l">Heavy days</div></div>
+          <div class="pill ink"><div class="n">9</div><div class="l">Best streak</div></div>
+        </div>
+
+        <div class="jamaal sun-bg">
+          <div class="av">J</div>
+          <div>
+            <div class="name">Jamaal</div>
+            <div class="msg">A solid couple of weeks. Your completion rate is up and your days have been well-balanced. Keep it going.</div>
+          </div>
+        </div>
+
+        <div class="section-lbl">14-day rhythm</div>
+        <div class="days-strip">
+          <div class="day"><div class="sq d2"></div><span class="lbl">M</span></div>
+          <div class="day"><div class="sq d3"></div><span class="lbl">T</span></div>
+          <div class="day"><div class="sq d2"></div><span class="lbl">W</span></div>
+          <div class="day"><div class="sq d3"></div><span class="lbl">T</span></div>
+          <div class="day"><div class="sq d3"></div><span class="lbl">F</span></div>
+          <div class="day"><div class="sq d1"></div><span class="lbl">S</span></div>
+          <div class="day"><div class="sq d1"></div><span class="lbl">S</span></div>
+          <div class="day"><div class="sq d2"></div><span class="lbl">M</span></div>
+          <div class="day"><div class="sq d3"></div><span class="lbl">T</span></div>
+          <div class="day"><div class="sq d3"></div><span class="lbl">W</span></div>
+          <div class="day"><div class="sq heavy"></div><span class="lbl">T</span></div>
+          <div class="day"><div class="sq d3"></div><span class="lbl">F</span></div>
+          <div class="day"><div class="sq d2"></div><span class="lbl">S</span></div>
+          <div class="day today"><div class="sq d3"></div><span class="lbl">S</span></div>
+        </div>
+
+        <div class="section-lbl">Patterns</div>
+
+        <div class="pattern">
+          <div class="ico sun"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="body">
+            <div class="title-sm">Completion rate</div>
+            <div class="sub-sm">Up from 61% last week</div>
+          </div>
+          <span class="val">74%</span>
+        </div>
+
+        <div class="pattern">
+          <div class="ico ink"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+          <div class="body">
+            <div class="title-sm">Average day load</div>
+            <div class="sub-sm">Balanced across the week</div>
+          </div>
+          <span class="val">72%</span>
+        </div>
+
+        <div class="pattern">
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></svg></div>
+          <div class="body">
+            <div class="title-sm">Habit consistency</div>
+            <div class="sub-sm">Meditation needs attention</div>
+          </div>
+          <span class="val">2/3</span>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span>Today</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></svg>
+          <span>Habits</span>
+        </div>
+        <div class="tab active">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>Wellbeing</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <span>Profile</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Struggling ───────────────────────────────── -->
+  <div class="phone-wrap" data-screen-label="02 Struggling">
+    <div class="phone-meta">
+      <span>02 — Struggling · 41</span>
+      <span class="num">Wellbeing <span class="dot"></span></span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span class="time">9:41</span><span class="meta">Wed 13 May</span></div>
+      <div class="nav-bar"></div>
+
+      <div class="scroll">
+        <div class="eyebrow">Your wellbeing</div>
+        <h2 class="title">A <em>tough</em><br/>stretch</h2>
+        <p class="sub">Based on the past 14 days</p>
+
+        <div class="score-card poor">
+          <div class="score-head">
+            <div>
+              <div class="score-lbl">Wellness score</div>
+              <div style="display:flex; align-items:baseline;">
+                <span class="score-num">41</span>
+                <span class="score-out">/100</span>
+              </div>
+            </div>
+            <div class="score-side">
+              <span class="badge-state">Needs care</span>
+              <span class="score-trend">
+                <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                −12 wk
+              </span>
+            </div>
+          </div>
+
+          <div class="chart">
+            <svg viewBox="0 0 276 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="grad-low" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#c47e57" stop-opacity="0.45"/>
+                  <stop offset="100%" stop-color="#c47e57" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M4,14 C20,15 36,16 52,18 C68,20 84,18 100,22 C116,26 132,30 148,36 C164,42 180,40 196,46 C212,52 228,54 244,56 C252,57 260,58 272,60 L272,70 L4,70 Z"
+                fill="url(#grad-low)"/>
+              <path d="M4,14 C20,15 36,16 52,18 C68,20 84,18 100,22 C116,26 132,30 148,36 C164,42 180,40 196,46 C212,52 228,54 244,56 C252,57 260,58 272,60"
+                fill="none" stroke="#c47e57" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="272" cy="60" r="5" fill="#c47e57"/>
+              <circle cx="272" cy="60" r="9" fill="none" stroke="#c47e57" stroke-width="1" stroke-opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="chart-days">
+            <span>29 APR</span>
+            <span>5 MAY</span>
+            <span>9 MAY</span>
+            <span class="today">TODAY</span>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="pill"><div class="n" style="color:var(--clay);">42%</div><div class="l">Completion</div></div>
+          <div class="pill"><div class="n" style="color:var(--clay);">5</div><div class="l">Heavy days</div></div>
+          <div class="pill"><div class="n" style="color:var(--clay);">1/3</div><div class="l">On track</div></div>
+        </div>
+
+        <div class="jamaal">
+          <div class="av">J</div>
+          <div>
+            <div class="name">Jamaal</div>
+            <div class="msg">You've had a heavy couple of weeks. It might be worth going lighter for a few days and letting yourself recover.</div>
+          </div>
+        </div>
+
+        <div class="section-lbl">14-day rhythm</div>
+        <div class="days-strip">
+          <div class="day"><div class="sq d2"></div><span class="lbl">M</span></div>
+          <div class="day"><div class="sq heavy"></div><span class="lbl">T</span></div>
+          <div class="day"><div class="sq d3"></div><span class="lbl">W</span></div>
+          <div class="day"><div class="sq heavy"></div><span class="lbl">T</span></div>
+          <div class="day"><div class="sq d2"></div><span class="lbl">F</span></div>
+          <div class="day"><div class="sq d1"></div><span class="lbl">S</span></div>
+          <div class="day"><div class="sq d1"></div><span class="lbl">S</span></div>
+          <div class="day"><div class="sq heavy"></div><span class="lbl">M</span></div>
+          <div class="day"><div class="sq heavy"></div><span class="lbl">T</span></div>
+          <div class="day"><div class="sq d3"></div><span class="lbl">W</span></div>
+          <div class="day"><div class="sq heavy"></div><span class="lbl">T</span></div>
+          <div class="day"><div class="sq d2"></div><span class="lbl">F</span></div>
+          <div class="day"><div class="sq d1"></div><span class="lbl">S</span></div>
+          <div class="day today"><div class="sq heavy"></div><span class="lbl">S</span></div>
+        </div>
+
+        <div class="section-lbl">What's affecting it</div>
+
+        <div class="pattern">
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="body">
+            <div class="title-sm">Completion rate</div>
+            <div class="sub-sm">Down from 68% last week</div>
+          </div>
+          <span class="val clay">42%</span>
+        </div>
+
+        <div class="pattern">
+          <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+          <div class="body">
+            <div class="title-sm">Heavy day streak</div>
+            <div class="sub-sm">5 overloaded days running</div>
+          </div>
+          <span class="val clay">5</span>
+        </div>
+
+        <div class="pattern">
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></svg></div>
+          <div class="body">
+            <div class="title-sm">Habit consistency</div>
+            <div class="sub-sm">2 habits slipping this week</div>
+          </div>
+          <span class="val clay">1/3</span>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span>Today</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></svg>
+          <span>Habits</span>
+        </div>
+        <div class="tab active">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>Wellbeing</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <span>Profile</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

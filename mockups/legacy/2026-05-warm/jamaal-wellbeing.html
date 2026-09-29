@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jamaal — Wellbeing</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:             #E8E4DC;
+    --bg-deep:        #DDD8CE;
+    --card:           #EDEAE3;
+    --border:         #CEC9BE;
+    --border-soft:    #D8D3C8;
+    --charcoal:       #2E2C28;
+    --charcoal-mid:   #5A5750;
+    --charcoal-soft:  #8C8880;
+    --charcoal-faint: #ABA79F;
+    --terracotta:     #B5623A;
+    --terracotta-soft:#EDD9CC;
+    --sage:           #6B8C72;
+    --sage-soft:      #D4E2D6;
+    --sage-mid:       #7FA386;
+    --font-display:   'Fraunces', serif;
+    --font-body:      'DM Sans', sans-serif;
+    --shadow-card:    0 1px 2px rgba(46,44,40,0.06), 0 3px 10px rgba(46,44,40,0.04);
+  }
+
+  body {
+    background: #C8C3B8;
+    font-family: var(--font-body);
+    padding: 40px 24px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-style: italic;
+    font-weight: 300;
+    color: #6B6660;
+    letter-spacing: 0.02em;
+  }
+
+  .phones-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .screen-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #6B6660;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .phone {
+    width: 320px;
+    height: 693px;
+    background: var(--bg);
+    border-radius: 44px;
+    border: 1px solid var(--border);
+    box-shadow:
+      0 32px 80px rgba(46,44,40,0.18),
+      0 8px 24px rgba(46,44,40,0.10),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    padding: 16px 28px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .status-time {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--charcoal);
+  }
+  .status-right { font-size: 12px; color: var(--charcoal-soft); }
+
+  /* ── Nav ── */
+  .nav-bar {
+    padding: 12px 22px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  /* ── Scroll ── */
+  .scroll {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 18px 22px 16px;
+  }
+  .scroll::-webkit-scrollbar { display: none; }
+
+  /* ── Page header ── */
+  .eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--charcoal-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    margin-bottom: 4px;
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--charcoal);
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+    line-height: 1.1;
+  }
+  .page-title em { font-style: italic; color: var(--sage); }
+  .page-title em.terra { color: var(--terracotta); }
+  .page-sub {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    margin-bottom: 22px;
+  }
+
+  /* ── Wellness score card ── */
+  .score-card {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 18px;
+    padding: 18px 18px 14px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-card);
+  }
+  .score-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .score-left {}
+  .score-label {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--charcoal-faint);
+    margin-bottom: 4px;
+  }
+  .score-number {
+    font-family: var(--font-display);
+    font-size: 52px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--sage);
+  }
+  .score-number.medium { color: var(--charcoal-mid); }
+  .score-number.low    { color: var(--terracotta); }
+  .score-out-of {
+    font-size: 14px;
+    color: var(--charcoal-faint);
+    font-weight: 300;
+    margin-left: 2px;
+  }
+  .score-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .score-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 11px;
+    border-radius: 20px;
+  }
+  .score-badge.good {
+    background: var(--sage-soft);
+    color: var(--sage);
+    border: 1px solid #B8D4BC;
+  }
+  .score-badge.medium {
+    background: var(--bg-deep);
+    color: var(--charcoal-mid);
+    border: 1px solid var(--border);
+  }
+  .score-badge.low {
+    background: var(--terracotta-soft);
+    color: var(--terracotta);
+    border: 1px solid #DDC0AD;
+  }
+  .score-trend {
+    font-size: 11px;
+    color: var(--charcoal-faint);
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .score-trend svg {
+    width: 12px; height: 12px;
+    stroke: var(--sage);
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .score-trend svg.down { stroke: var(--terracotta); }
+
+  /* ── Sparkline chart ── */
+  .chart-wrap {
+    position: relative;
+    height: 64px;
+    margin-bottom: 8px;
+  }
+  .chart-wrap svg {
+    width: 100%;
+    height: 64px;
+    overflow: visible;
+  }
+  .chart-day-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2px;
+  }
+  .chart-day {
+    font-size: 9px;
+    color: var(--charcoal-faint);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .chart-day.today { color: var(--terracotta); }
+
+  /* ── Stat pills row ── */
+  .stats-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .stat-pill {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 10px 8px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+  }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .stat-num.sage  { color: var(--sage); }
+  .stat-num.terra { color: var(--terracotta); }
+  .stat-lbl {
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--charcoal-faint);
+    line-height: 1.3;
+  }
+
+  /* ── Jamaal insight ── */
+  .jamaal-insight {
+    border-radius: 14px;
+    padding: 13px 14px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .jamaal-insight.sage-bg {
+    background: var(--sage-soft);
+    border: 1px solid #B8D4BC;
+  }
+  .jamaal-insight.terra-bg {
+    background: var(--terracotta-soft);
+    border: 1px solid #DDC0AD;
+  }
+  .j-av {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-style: italic;
+    color: white;
+  }
+  .j-av.sage-av  { background: var(--sage); }
+  .j-av.terra-av { background: var(--terracotta); }
+  .j-body {}
+  .j-name {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 3px;
+  }
+  .j-name.sage-name  { color: var(--sage); }
+  .j-name.terra-name { color: var(--terracotta); }
+  .j-text {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--charcoal);
+    line-height: 1.5;
+  }
+
+  /* ── Pattern cards ── */
+  .section-lbl {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--charcoal-faint);
+    margin-bottom: 10px;
+  }
+  .pattern-card {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 13px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: var(--shadow-card);
+  }
+  .pattern-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pattern-icon svg {
+    width: 17px; height: 17px;
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .pattern-icon.sage-icon {
+    background: var(--sage-soft);
+  }
+  .pattern-icon.sage-icon svg { stroke: var(--sage); }
+  .pattern-icon.terra-icon {
+    background: var(--terracotta-soft);
+  }
+  .pattern-icon.terra-icon svg { stroke: var(--terracotta); }
+  .pattern-icon.neutral-icon {
+    background: var(--bg-deep);
+  }
+  .pattern-icon.neutral-icon svg { stroke: var(--charcoal-soft); }
+  .pattern-body { flex: 1; }
+  .pattern-title {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--charcoal);
+    margin-bottom: 2px;
+  }
+  .pattern-sub {
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    line-height: 1.4;
+  }
+  .pattern-value {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--charcoal-mid);
+    flex-shrink: 0;
+  }
+  .pattern-value.sage  { color: var(--sage); }
+  .pattern-value.terra { color: var(--terracotta); }
+
+  /* ── Tab bar ── */
+  .tab-bar {
+    padding: 10px 28px 28px;
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    opacity: 0.35;
+  }
+  .tab.active { opacity: 1; }
+  .tab svg {
+    width: 21px; height: 21px;
+    stroke: var(--charcoal);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .tab.active svg { stroke: var(--terracotta); }
+  .tab-lbl {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--charcoal-mid);
+    letter-spacing: 0.03em;
+  }
+  .tab.active .tab-lbl { color: var(--terracotta); }
+</style>
+</head>
+<body>
+
+<h1>Wellbeing — two states</h1>
+
+<div class="phones-row">
+
+  <!-- ══ STATE 1: Healthy — score 78 ══ -->
+  <div class="phone-wrap">
+    <span class="screen-label">Healthy — score 78</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41 AM</span>
+        <span class="status-right">Wed 13 May</span>
+      </div>
+      <div class="nav-bar"></div>
+
+      <div class="scroll">
+        <div class="eyebrow">Your wellbeing</div>
+        <div class="page-title">You're doing<br><em>well</em></div>
+        <div class="page-sub">Based on the past 14 days</div>
+
+        <!-- Score card -->
+        <div class="score-card">
+          <div class="score-header">
+            <div class="score-left">
+              <div class="score-label">Wellness score</div>
+              <div>
+                <span class="score-number">78</span>
+                <span class="score-out-of">/ 100</span>
+              </div>
+            </div>
+            <div class="score-right">
+              <span class="score-badge good">Good</span>
+              <span class="score-trend">
+                <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+                +6 this week
+              </span>
+            </div>
+          </div>
+
+          <!-- Sparkline — healthy upward trend -->
+          <div class="chart-wrap">
+            <svg viewBox="0 0 276 64" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="grad-good" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#6B8C72" stop-opacity="0.18"/>
+                  <stop offset="100%" stop-color="#6B8C72" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- Area fill -->
+              <path d="M4,52 C20,50 36,48 52,44 C68,40 84,42 100,38 C116,34 132,30 148,28 C164,26 180,24 196,20 C212,16 228,14 244,12 C252,11 260,10 272,9 L272,64 L4,64 Z"
+                fill="url(#grad-good)"/>
+              <!-- Line -->
+              <path d="M4,52 C20,50 36,48 52,44 C68,40 84,42 100,38 C116,34 132,30 148,28 C164,26 180,24 196,20 C212,16 228,14 244,12 C252,11 260,10 272,9"
+                fill="none" stroke="#6B8C72" stroke-width="2" stroke-linecap="round"/>
+              <!-- Today dot -->
+              <circle cx="272" cy="9" r="4" fill="#6B8C72"/>
+              <circle cx="272" cy="9" r="7" fill="none" stroke="#6B8C72" stroke-width="1" stroke-opacity="0.3"/>
+            </svg>
+          </div>
+          <div class="chart-day-labels">
+            <span class="chart-day">29 Apr</span>
+            <span class="chart-day">5 May</span>
+            <span class="chart-day">9 May</span>
+            <span class="chart-day today">Today</span>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="stat-num sage">74%</div>
+            <div class="stat-lbl">Completion rate</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-num">1</div>
+            <div class="stat-lbl">Heavy days</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-num sage">9</div>
+            <div class="stat-lbl">Best habit streak</div>
+          </div>
+        </div>
+
+        <!-- Jamaal insight -->
+        <div class="jamaal-insight sage-bg">
+          <div class="j-av sage-av">J</div>
+          <div class="j-body">
+            <div class="j-name sage-name">Jamaal</div>
+            <div class="j-text">A solid couple of weeks. Your completion rate is up and your days have been well-balanced. Keep it going.</div>
+          </div>
+        </div>
+
+        <!-- Patterns -->
+        <div class="section-lbl">Patterns</div>
+
+        <div class="pattern-card">
+          <div class="pattern-icon sage-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div class="pattern-body">
+            <div class="pattern-title">Completion rate</div>
+            <div class="pattern-sub">Up from 61% last week</div>
+          </div>
+          <div class="pattern-value sage">74%</div>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-icon sage-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
+          <div class="pattern-body">
+            <div class="pattern-title">Average day load</div>
+            <div class="pattern-sub">Balanced across the week</div>
+          </div>
+          <div class="pattern-value sage">72%</div>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-icon neutral-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></svg>
+          </div>
+          <div class="pattern-body">
+            <div class="pattern-title">Habit consistency</div>
+            <div class="pattern-sub">Meditation needs attention</div>
+          </div>
+          <div class="pattern-value">2 / 3</div>
+        </div>
+
+        <div style="height:8px"></div>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span class="tab-lbl">Today</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></svg>
+          <span class="tab-lbl">Habits</span>
+        </div>
+        <div class="tab active">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span class="tab-lbl">Wellbeing</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <span class="tab-lbl">Profile</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STATE 2: Struggling — score 41 ══ -->
+  <div class="phone-wrap">
+    <span class="screen-label">Struggling — score 41</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">9:41 AM</span>
+        <span class="status-right">Wed 13 May</span>
+      </div>
+      <div class="nav-bar"></div>
+
+      <div class="scroll">
+        <div class="eyebrow">Your wellbeing</div>
+        <div class="page-title">A <em class="terra">tough</em><br>stretch</div>
+        <div class="page-sub">Based on the past 14 days</div>
+
+        <!-- Score card -->
+        <div class="score-card">
+          <div class="score-header">
+            <div class="score-left">
+              <div class="score-label">Wellness score</div>
+              <div>
+                <span class="score-number low">41</span>
+                <span class="score-out-of">/ 100</span>
+              </div>
+            </div>
+            <div class="score-right">
+              <span class="score-badge low">Needs care</span>
+              <span class="score-trend">
+                <svg viewBox="0 0 24 24" class="down"><path d="M6 9l6 6 6-6"/></svg>
+                −12 this week
+              </span>
+            </div>
+          </div>
+
+          <!-- Sparkline — declining trend -->
+          <div class="chart-wrap">
+            <svg viewBox="0 0 276 64" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="grad-low" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#B5623A" stop-opacity="0.15"/>
+                  <stop offset="100%" stop-color="#B5623A" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M4,12 C20,13 36,14 52,16 C68,18 84,16 100,20 C116,24 132,28 148,34 C164,40 180,38 196,44 C212,50 228,52 244,54 C252,55 260,56 272,58 L272,64 L4,64 Z"
+                fill="url(#grad-low)"/>
+              <path d="M4,12 C20,13 36,14 52,16 C68,18 84,16 100,20 C116,24 132,28 148,34 C164,40 180,38 196,44 C212,50 228,52 244,54 C252,55 260,56 272,58"
+                fill="none" stroke="#B5623A" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="272" cy="58" r="4" fill="#B5623A"/>
+              <circle cx="272" cy="58" r="7" fill="none" stroke="#B5623A" stroke-width="1" stroke-opacity="0.3"/>
+            </svg>
+          </div>
+          <div class="chart-day-labels">
+            <span class="chart-day">29 Apr</span>
+            <span class="chart-day">5 May</span>
+            <span class="chart-day">9 May</span>
+            <span class="chart-day today">Today</span>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="stat-num terra">42%</div>
+            <div class="stat-lbl">Completion rate</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-num terra">5</div>
+            <div class="stat-lbl">Heavy days</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-num terra">1 / 3</div>
+            <div class="stat-lbl">Habits on track</div>
+          </div>
+        </div>
+
+        <!-- Jamaal insight — caring, not alarming -->
+        <div class="jamaal-insight terra-bg">
+          <div class="j-av terra-av">J</div>
+          <div class="j-body">
+            <div class="j-name terra-name">Jamaal</div>
+            <div class="j-text">You've had a heavy couple of weeks. It might be worth going lighter for a few days and letting yourself recover.</div>
+          </div>
+        </div>
+
+        <!-- Patterns -->
+        <div class="section-lbl">What's affecting it</div>
+
+        <div class="pattern-card">
+          <div class="pattern-icon terra-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div class="pattern-body">
+            <div class="pattern-title">Completion rate</div>
+            <div class="pattern-sub">Down from 68% last week</div>
+          </div>
+          <div class="pattern-value terra">42%</div>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-icon terra-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
+          <div class="pattern-body">
+            <div class="pattern-title">Heavy day streak</div>
+            <div class="pattern-sub">5 overloaded days running</div>
+          </div>
+          <div class="pattern-value terra">5</div>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-icon terra-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></svg>
+          </div>
+          <div class="pattern-body">
+            <div class="pattern-title">Habit consistency</div>
+            <div class="pattern-sub">2 habits slipping this week</div>
+          </div>
+          <div class="pattern-value terra">1 / 3</div>
+        </div>
+
+        <div style="height:8px"></div>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span class="tab-lbl">Today</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5c0 3.5-5 11-5 11S7 10.5 7 7a5 5 0 0 1 5-5z"/><circle cx="12" cy="7" r="2"/></svg>
+          <span class="tab-lbl">Habits</span>
+        </div>
+        <div class="tab active">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span class="tab-lbl">Wellbeing</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          <span class="tab-lbl">Profile</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

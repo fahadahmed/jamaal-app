@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Jamaal — Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..900&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="system.css">
+<style>
+  /* Welcome */
+  .welcome-avatar {
+    width: 84px; height: 84px;
+    border-radius: 99px;
+    background: var(--sage-soft);
+    border: 1px solid rgba(126,140,112,0.25);
+    color: var(--sage-deep);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    position: relative;
+    margin: 16px auto 28px;
+  }
+  .welcome-avatar::after {
+    content: "";
+    position: absolute;
+    bottom: 12px; right: 10px;
+    width: 10px; height: 10px;
+    border-radius: 99px;
+    background: var(--sun);
+  }
+
+  .value {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    margin-bottom: 8px;
+  }
+  .value .ico {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--bone);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .value .ico.sun { background: var(--sun); }
+  .value .ico.ink { background: var(--ink); }
+  .value .ico svg { width: 14px; height: 14px; stroke: var(--ink); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .value .ico.ink svg { stroke: var(--paper); }
+  .value .txt { font-size: 12px; line-height: 1.4; color: var(--ink); font-weight: 500; }
+  .value .txt span { display: block; font-size: 11px; color: var(--ink-3); font-weight: 400; margin-top: 1px; }
+
+  /* Philosophy "not" rows */
+  .not-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    background: var(--bone);
+    border-radius: 12px;
+    margin-bottom: 6px;
+  }
+  .not-row .x {
+    width: 18px; height: 18px; border-radius: 99px;
+    background: var(--ink); color: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .not-row .x svg { width: 8px; height: 8px; stroke: var(--paper); fill: none; stroke-width: 2.5; stroke-linecap: round; }
+  .not-row .txt {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--ink-3);
+    text-decoration: line-through;
+  }
+
+  /* Capacity options */
+  .cap-options {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+    margin-bottom: 14px;
+  }
+  .cap-opt {
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 8px 12px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .cap-opt.selected {
+    background: var(--ink); color: var(--paper); border-color: var(--ink);
+  }
+  .cap-opt .hours {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 28px;
+    line-height: 1;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+  }
+  .cap-opt.selected .hours { color: var(--sun); }
+  .cap-opt .lbl {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .cap-opt.selected .lbl { color: var(--paper); opacity: 0.7; }
+
+  /* Slider */
+  .slider-card {
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .slider-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 12px;
+  }
+  .slider-top .lbl {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .slider-top .val {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .slider-top .val .unit { font-size: 11px; color: var(--ink-3); margin-left: 3px; font-family: var(--mono); }
+  .slider-track {
+    height: 6px; background: var(--bone); border-radius: 99px;
+    position: relative; margin-bottom: 8px;
+  }
+  .slider-fill { height: 100%; background: var(--ink); border-radius: 99px; width: 38%; }
+  .slider-thumb {
+    width: 20px; height: 20px;
+    border-radius: 99px;
+    background: var(--ink);
+    border: 4px solid var(--sun);
+    position: absolute;
+    top: -7px;
+    left: calc(38% - 10px);
+  }
+  .slider-range {
+    display: flex; justify-content: space-between;
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  /* Notification rows */
+  .notif-card {
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .notif-row {
+    display: flex; align-items: center;
+    padding: 14px;
+    gap: 12px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .notif-row:last-child { border-bottom: none; }
+  .notif-ico {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--bone);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .notif-ico.sun { background: var(--sun); }
+  .notif-ico.ink { background: var(--ink); }
+  .notif-ico svg { width: 14px; height: 14px; stroke: var(--ink); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .notif-ico.ink svg { stroke: var(--paper); }
+  .notif-body { flex: 1; min-width: 0; }
+  .notif-title { font-family: var(--sans); font-size: 13px; font-weight: 500; color: var(--ink); }
+  .notif-sub { font-family: var(--sans); font-size: 11px; color: var(--ink-3); margin-top: 1px; }
+  .time-chip {
+    background: var(--sun); color: var(--ink);
+    padding: 5px 10px;
+    border-radius: 99px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+
+  /* iOS permission preview */
+  .perm {
+    background: var(--bone);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 8px;
+  }
+  .perm-lbl {
+    font-family: var(--mono); font-size: 9px;
+    text-align: center; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-3);
+    margin-bottom: 8px;
+  }
+  .perm-sheet {
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+  .perm-icon {
+    width: 38px; height: 38px;
+    border-radius: 99px;
+    background: var(--sage-soft);
+    color: var(--sage-deep);
+    margin: 0 auto 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 24px;
+    position: relative;
+  }
+  .perm-icon::after {
+    content: "";
+    position: absolute;
+    bottom: 6px; right: 5px;
+    width: 5px; height: 5px;
+    border-radius: 99px;
+    background: var(--sun);
+  }
+  .perm-heading {
+    font-family: var(--sans); font-size: 12px; font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .perm-body {
+    font-family: var(--sans); font-size: 11px; color: var(--ink-3);
+    line-height: 1.4; margin-bottom: 12px;
+  }
+  .perm-btns { display: flex; gap: 6px; }
+  .perm-btn {
+    flex: 1; padding: 8px 0;
+    border-radius: 8px;
+    font-family: var(--sans); font-size: 11px; font-weight: 600;
+    background: var(--bone); color: var(--ink-2);
+    border: 1px solid var(--line);
+    text-align: center;
+  }
+  .perm-btn.allow { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+  /* Ready */
+  .ready-content {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center;
+    padding: 0 22px;
+  }
+  .ready-glyph {
+    width: 80px; height: 80px;
+    border-radius: 99px;
+    background: var(--sage-soft);
+    border: 1px solid rgba(126,140,112,0.25);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+  }
+  .ready-glyph svg { width: 36px; height: 36px; stroke: var(--sage-deep); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .ready-title {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 40px;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+  .ready-body {
+    font-family: var(--sans); font-size: 13px;
+    color: var(--ink-3); line-height: 1.5;
+    margin-bottom: 24px; max-width: 230px;
+  }
+  .ready-hints { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+  .ready-hint {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: var(--snow);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    text-align: left;
+  }
+  .ready-hint .num {
+    font-family: var(--mono); font-size: 10px;
+    background: var(--ink); color: var(--paper);
+    padding: 2px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .ready-hint .txt { font-family: var(--sans); font-size: 12px; color: var(--ink-2); line-height: 1.4; }
+</style>
+</head>
+<body data-screen-label="00 Onboarding">
+
+<div class="page-header">
+  <div class="wordmark">Jamaal<span class="dot"></span></div>
+  <span class="crumb">Threads / Jamaal · Onboarding flow · 5 screens</span>
+  <h1>Meet your<br/>calm <em>companion</em>.</h1>
+  <nav>
+    <a href="../Jamaal.html">Index</a>
+    <a href="onboarding.html" class="on">Onboarding</a>
+    <a href="night-planning.html">Night planning</a>
+    <a href="habits.html">Habits</a>
+    <a href="wellbeing.html">Wellbeing</a>
+  </nav>
+</div>
+
+<div class="phones-row">
+
+  <!-- ── 01 Welcome ─────────────────────────────────── -->
+  <div class="phone-wrap" data-screen-label="01 Welcome">
+    <div class="phone-meta">
+      <span>01 — Meet Jamaal</span>
+      <span class="num">Step 1 <span class="dot"></span></span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span class="time">9:41</span><span class="meta">Onboarding</span></div>
+      <div class="progress-dots">
+        <span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <div class="scroll">
+        <div style="height:8px"></div>
+        <div class="welcome-avatar">j</div>
+        <div class="eyebrow" style="text-align:center;">Welcome</div>
+        <h2 class="title" style="text-align:center;">Hello.<br/>I'm <em>Jamaal</em>.</h2>
+        <p class="sub" style="text-align:center; max-width:240px; margin: 0 auto 22px;">I'll help you tend to your day — calmly, intelligently, without the overwhelm.</p>
+
+        <div class="value">
+          <div class="ico sun"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+          <div class="txt">One list, just today<span>Not projects. Not systems. Just now.</span></div>
+        </div>
+        <div class="value">
+          <div class="ico ink"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="txt">Intelligent, not intrusive<span>I watch patterns quietly. I speak only when it helps.</span></div>
+        </div>
+        <div class="value">
+          <div class="ico"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+          <div class="txt">Sustainable, always<span>Right amount of right things. Nothing more.</span></div>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="cta dark">Meet Jamaal <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 02 Philosophy ──────────────────────────────── -->
+  <div class="phone-wrap" data-screen-label="02 Philosophy">
+    <div class="phone-meta">
+      <span>02 — How it works</span>
+      <span class="num">Step 2 <span class="dot"></span></span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span class="time">9:41</span><span class="meta">Onboarding</span></div>
+      <div class="progress-dots">
+        <span class="dot done"></span><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <div class="scroll">
+        <div style="height:8px"></div>
+        <div class="eyebrow">Philosophy</div>
+        <h2 class="title">One <em>list</em>.<br/>Just today.</h2>
+        <p class="sub">Built around a single principle — focus on today, nothing else.</p>
+
+        <div class="card" style="margin-bottom:8px;">
+          <div class="eyebrow" style="margin-bottom:6px;">Every evening</div>
+          <div style="font-family:var(--display); font-variation-settings:'wdth' 92,'wght' 700; font-size:17px; line-height:1.15; margin-bottom:6px;">Plan tomorrow together</div>
+          <div style="font-family:var(--sans); font-size:12px; color:var(--ink-3); line-height:1.5;">I'll review your day, help you decide what carries forward, and make sure tomorrow looks balanced before you sleep.</div>
+        </div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="eyebrow" style="margin-bottom:6px;">During the day</div>
+          <div style="font-family:var(--display); font-variation-settings:'wdth' 92,'wght' 700; font-size:17px; line-height:1.15; margin-bottom:6px;">I stay out of your way</div>
+          <div style="font-family:var(--sans); font-size:12px; color:var(--ink-3); line-height:1.5;">Your list is ready when you open the app. I'll suggest what to focus on next when it might help — and stay quiet when it won't.</div>
+        </div>
+
+        <div class="section-lbl">What Jamaal isn't</div>
+        <div class="not-row">
+          <div class="x"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
+          <span class="txt">Projects or kanban boards</span>
+        </div>
+        <div class="not-row">
+          <div class="x"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
+          <span class="txt">Complex productivity systems</span>
+        </div>
+        <div class="not-row">
+          <div class="x"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></div>
+          <span class="txt">Overwhelming features</span>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="cta dark">Got it <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 03 Capacity ───────────────────────────────── -->
+  <div class="phone-wrap" data-screen-label="03 Capacity">
+    <div class="phone-meta">
+      <span>03 — Capacity</span>
+      <span class="num">Step 3 <span class="dot"></span></span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span class="time">9:41</span><span class="meta">Onboarding</span></div>
+      <div class="progress-dots">
+        <span class="dot done"></span><span class="dot done"></span><span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <div class="scroll">
+        <div style="height:8px"></div>
+        <div class="eyebrow">Capacity</div>
+        <h2 class="title">How much<br/>can you <em>focus</em>?</h2>
+        <p class="sub">On a typical day, how many hours of focused work feels realistic — not ideal, realistic.</p>
+
+        <div class="cap-options">
+          <div class="cap-opt">
+            <div class="hours">1–2</div>
+            <div class="lbl">Light</div>
+          </div>
+          <div class="cap-opt selected">
+            <div class="hours">3–4</div>
+            <div class="lbl">Moderate</div>
+          </div>
+          <div class="cap-opt">
+            <div class="hours">5–6</div>
+            <div class="lbl">Full on</div>
+          </div>
+        </div>
+
+        <div class="slider-card">
+          <div class="slider-top">
+            <span class="lbl">Daily focus hours</span>
+            <span class="val">3.0<span class="unit">HRS</span></span>
+          </div>
+          <div class="slider-track">
+            <div class="slider-fill"></div>
+            <div class="slider-thumb"></div>
+          </div>
+          <div class="slider-range">
+            <span>1 HR</span>
+            <span>8 HRS</span>
+          </div>
+        </div>
+
+        <div class="jamaal">
+          <div class="av">J</div>
+          <div>
+            <div class="name">Jamaal</div>
+            <div class="msg">Don't worry about getting this perfect. I'll learn your patterns over the first two weeks and adjust.</div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="cta dark">That looks right <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 04 Notifications ─────────────────────────── -->
+  <div class="phone-wrap" data-screen-label="04 Notifications">
+    <div class="phone-meta">
+      <span>04 — Notifications</span>
+      <span class="num">Step 4 <span class="dot"></span></span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span class="time">9:41</span><span class="meta">Onboarding</span></div>
+      <div class="progress-dots">
+        <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot active"></span><span class="dot"></span>
+      </div>
+      <div class="scroll">
+        <div style="height:8px"></div>
+        <div class="eyebrow">Notifications</div>
+        <h2 class="title">When should<br/>I <em>check in</em>?</h2>
+        <p class="sub">Two quiet reminders — one to plan your evening, one to start your morning.</p>
+
+        <div class="notif-card">
+          <div class="notif-row">
+            <div class="notif-ico ink"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="notif-body">
+              <div class="notif-title">Evening planning</div>
+              <div class="notif-sub">Jamaal nudges you to plan tomorrow</div>
+            </div>
+            <span class="time-chip">8:00 PM</span>
+          </div>
+          <div class="notif-row">
+            <div class="notif-ico sun"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg></div>
+            <div class="notif-body">
+              <div class="notif-title">Morning reminder</div>
+              <div class="notif-sub">See what's on for today</div>
+            </div>
+            <span class="time-chip">8:00 AM</span>
+          </div>
+          <div class="notif-row">
+            <div class="notif-ico"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+            <div class="notif-body">
+              <div class="notif-title">During-day nudges</div>
+              <div class="notif-sub">Next task suggestions</div>
+            </div>
+            <div class="toggle"><div class="thumb"></div></div>
+          </div>
+        </div>
+
+        <div class="perm">
+          <div class="perm-lbl">iOS will ask permission</div>
+          <div class="perm-sheet">
+            <div class="perm-icon">j</div>
+            <div class="perm-heading">"Jamaal" Would Like to Send You Notifications</div>
+            <div class="perm-body">Notifications may include alerts, sounds and icon badges.</div>
+            <div class="perm-btns">
+              <div class="perm-btn">Don't Allow</div>
+              <div class="perm-btn allow">Allow</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="cta dark">Allow notifications <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+        <div class="skip">Skip for now</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 05 Ready ─────────────────────────────────── -->
+  <div class="phone-wrap" data-screen-label="05 Ready">
+    <div class="phone-meta">
+      <span>05 — Ready</span>
+      <span class="num">Step 5 <span class="dot"></span></span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span class="time">9:41</span><span class="meta">Onboarding</span></div>
+      <div class="progress-dots">
+        <span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot done"></span><span class="dot active"></span>
+      </div>
+      <div class="ready-content">
+        <div class="ready-glyph">
+          <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+        </div>
+        <div class="eyebrow">Ready</div>
+        <h2 class="ready-title">You're <em>ready</em><br/>to begin</h2>
+        <p class="ready-body">Your list is waiting. Add your first task and let today begin.</p>
+
+        <div class="ready-hints">
+          <div class="ready-hint">
+            <span class="num">01</span>
+            <span class="txt">Add tasks and estimate how long each will take</span>
+          </div>
+          <div class="ready-hint">
+            <span class="num">02</span>
+            <span class="txt">Plan tomorrow each evening — Jamaal will remind you</span>
+          </div>
+          <div class="ready-hint">
+            <span class="num">03</span>
+            <span class="txt">Check Wellbeing anytime to see how your weeks are going</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="cta sun"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Start my day</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

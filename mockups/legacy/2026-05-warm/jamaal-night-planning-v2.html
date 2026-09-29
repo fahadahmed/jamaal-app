@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jamaal — Night Planning Full Screen</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:             #E8E4DC;
+    --bg-deep:        #DDD8CE;
+    --card:           #EDEAE3;
+    --border:         #CEC9BE;
+    --border-soft:    #D8D3C8;
+    --charcoal:       #2E2C28;
+    --charcoal-mid:   #5A5750;
+    --charcoal-soft:  #8C8880;
+    --charcoal-faint: #ABA79F;
+    --terracotta:     #B5623A;
+    --terracotta-soft:#EDD9CC;
+    --terracotta-mid: #C97A52;
+    --sage:           #6B8C72;
+    --sage-soft:      #D4E2D6;
+    --sage-mid:       #7FA386;
+    --font-display:   'Fraunces', serif;
+    --font-body:      'DM Sans', sans-serif;
+    --shadow-card:    0 1px 2px rgba(46,44,40,0.06), 0 3px 10px rgba(46,44,40,0.04);
+  }
+
+  body {
+    background: #C8C3B8;
+    font-family: var(--font-body);
+    padding: 40px 24px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-style: italic;
+    font-weight: 300;
+    color: #6B6660;
+    letter-spacing: 0.02em;
+  }
+
+  .phones-row {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* ── Phone shell ── */
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .step-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #6B6660;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .phone {
+    width: 320px;
+    height: 693px;
+    background: var(--bg);
+    border-radius: 44px;
+    border: 1px solid var(--border);
+    box-shadow:
+      0 32px 80px rgba(46,44,40,0.18),
+      0 8px 24px rgba(46,44,40,0.10),
+      inset 0 1px 0 rgba(255,255,255,0.5);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    padding: 16px 28px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .status-time {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--charcoal);
+  }
+  .status-right {
+    font-size: 12px;
+    color: var(--charcoal-soft);
+  }
+
+  /* ── Nav bar ── */
+  .nav-bar {
+    padding: 12px 22px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .nav-back {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+  }
+  .nav-back svg {
+    width: 16px; height: 16px;
+    stroke: var(--charcoal-soft);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .nav-back-label {
+    font-size: 13px;
+    color: var(--charcoal-soft);
+  }
+  .nav-close {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .nav-close svg {
+    width: 12px; height: 12px;
+    stroke: var(--charcoal-soft);
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+
+  /* ── Progress bar ── */
+  .progress-wrap {
+    padding: 14px 22px 0;
+    flex-shrink: 0;
+  }
+  .progress-track {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--terracotta);
+    transition: width 0.3s ease;
+  }
+  .p20  { width: 20%; }
+  .p40  { width: 40%; }
+  .p60  { width: 60%; }
+  .p80  { width: 80%; }
+  .p100 { width: 100%; background: var(--sage); }
+
+  /* ── Scroll content ── */
+  .screen-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px 22px 0;
+  }
+  .screen-content::-webkit-scrollbar { display: none; }
+
+  /* ── Eyebrow + title ── */
+  .eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--charcoal-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    margin-bottom: 6px;
+  }
+  .screen-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+  .screen-title em { font-style: italic; color: var(--terracotta); }
+  .screen-title em.sage { color: var(--sage); }
+  .screen-sub {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    line-height: 1.55;
+    margin-bottom: 22px;
+  }
+
+  /* ── Jamaal message ── */
+  .jamaal-msg {
+    border-radius: 14px;
+    padding: 13px 15px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .jamaal-msg.sage-bg {
+    background: var(--sage-soft);
+    border: 1px solid #B8D4BC;
+  }
+  .jamaal-msg.terra-bg {
+    background: var(--terracotta-soft);
+    border: 1px solid #DDC0AD;
+  }
+  .j-avatar {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-style: italic;
+    color: white;
+    font-weight: 300;
+  }
+  .j-avatar.sage-av  { background: var(--sage); }
+  .j-avatar.terra-av { background: var(--terracotta); }
+  .j-body {}
+  .j-name {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 3px;
+  }
+  .j-name.sage-name  { color: var(--sage); }
+  .j-name.terra-name { color: var(--terracotta); }
+  .j-text {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--charcoal);
+    line-height: 1.5;
+  }
+
+  /* ── Step 1: Stats ── */
+  .stats-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .stat-card {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1;
+    margin-bottom: 4px;
+    color: var(--charcoal);
+  }
+  .stat-num.t { color: var(--terracotta); }
+  .stat-num.s { color: var(--sage); }
+  .stat-lbl {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--charcoal-faint);
+  }
+  .completed-list {
+    margin-bottom: 16px;
+  }
+  .completed-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .completed-item:last-child { border-bottom: none; }
+  .check-circle {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--sage);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .check-circle svg {
+    width: 10px; height: 10px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .completed-title {
+    font-size: 13px;
+    color: var(--charcoal-mid);
+    text-decoration: line-through;
+    flex: 1;
+  }
+  .completed-effort {
+    font-size: 10px;
+    color: var(--charcoal-faint);
+  }
+
+  /* ── Step 2: Carry forward ── */
+  .carry-list { margin-bottom: 16px; }
+  .carry-card {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 13px 14px;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow-card);
+  }
+  .carry-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .carry-dot {
+    width: 3px;
+    height: 36px;
+    border-radius: 2px;
+    background: var(--terracotta);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .carry-info { flex: 1; }
+  .carry-title {
+    font-size: 14px;
+    color: var(--charcoal);
+    font-weight: 400;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .carry-meta {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .carry-effort-tag {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 7px;
+    background: var(--bg-deep);
+    color: var(--charcoal-soft);
+  }
+  .defer-hint {
+    font-size: 10px;
+    color: var(--charcoal-faint);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .defer-hint svg {
+    width: 9px; height: 9px;
+    stroke: var(--charcoal-faint);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+  .carry-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .c-btn {
+    flex: 1;
+    height: 34px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--charcoal-mid);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-family: var(--font-body);
+  }
+  .c-btn svg {
+    width: 11px; height: 11px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .c-btn.keep {
+    background: var(--sage-soft);
+    border-color: #B8D4BC;
+    color: var(--sage);
+  }
+  .c-btn.later {
+    background: var(--bg);
+    color: var(--charcoal-soft);
+  }
+  .c-btn.drop {
+    background: var(--terracotta-soft);
+    border-color: #DDC0AD;
+    color: var(--terracotta);
+  }
+
+  /* ── Step 3: Build tomorrow ── */
+  .tomorrow-list { margin-bottom: 12px; }
+  .t-section-label {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--charcoal-faint);
+    margin-bottom: 8px;
+    margin-top: 14px;
+  }
+  .t-task {
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    padding: 11px 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    box-shadow: var(--shadow-card);
+  }
+  .t-dot {
+    width: 3px; height: 28px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .t-dot.carried { background: var(--sage); }
+  .t-dot.new     { background: var(--terracotta); }
+  .t-title {
+    flex: 1;
+    font-size: 13px;
+    color: var(--charcoal);
+    font-weight: 400;
+  }
+  .t-effort {
+    font-size: 10px;
+    color: var(--charcoal-faint);
+    background: var(--bg-deep);
+    padding: 2px 7px;
+    border-radius: 7px;
+  }
+  .add-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 13px;
+    background: transparent;
+    border: 1.5px dashed var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    margin-bottom: 6px;
+  }
+  .add-row svg {
+    width: 14px; height: 14px;
+    stroke: var(--charcoal-faint);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .add-placeholder {
+    font-size: 13px;
+    color: var(--charcoal-faint);
+    font-weight: 300;
+    font-style: italic;
+  }
+
+  /* ── Step 4: Load check ── */
+  .load-section { margin-bottom: 18px; }
+  .load-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .load-header-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--charcoal-mid);
+  }
+  .load-state-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 10px;
+    background: var(--sage-soft);
+    color: var(--sage);
+    border: 1px solid #B8D4BC;
+  }
+  .big-load-track {
+    height: 8px;
+    background: var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .big-load-fill {
+    height: 100%;
+    border-radius: 5px;
+    width: 72%;
+    background: linear-gradient(90deg, var(--sage) 0%, var(--sage-mid) 100%);
+  }
+  .load-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .load-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 13px;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 11px;
+  }
+  .load-item-dot {
+    width: 3px; height: 24px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .load-item-dot.priority { background: var(--terracotta); }
+  .load-item-dot.normal   { background: var(--border); }
+  .load-item-title {
+    flex: 1;
+    font-size: 13px;
+    color: var(--charcoal);
+  }
+  .load-item-effort {
+    font-size: 11px;
+    color: var(--charcoal-faint);
+    font-weight: 500;
+  }
+
+  /* ── Step 5: Done ── */
+  .done-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 12px 0 0;
+  }
+  .done-glyph {
+    width: 72px; height: 72px;
+    border-radius: 22px;
+    background: var(--sage-soft);
+    border: 1px solid #B8D4BC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .done-glyph svg {
+    width: 32px; height: 32px;
+    stroke: var(--sage);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .done-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--charcoal);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .done-title em { font-style: italic; color: var(--sage); }
+  .done-sub {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--charcoal-soft);
+    line-height: 1.55;
+    margin-bottom: 24px;
+    max-width: 220px;
+  }
+  .done-pills {
+    display: flex;
+    gap: 7px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .done-pill {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    color: var(--charcoal-mid);
+  }
+  .done-pill.sage {
+    background: var(--sage-soft);
+    border-color: #B8D4BC;
+    color: var(--sage);
+  }
+  .done-streak {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    background: var(--terracotta-soft);
+    border: 1px solid #DDC0AD;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+  .done-streak svg {
+    width: 14px; height: 14px;
+    stroke: var(--terracotta);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .done-streak-text {
+    font-size: 12px;
+    color: var(--terracotta);
+    font-weight: 500;
+  }
+
+  /* ── Footer CTA ── */
+  .screen-footer {
+    padding: 12px 22px 28px;
+    flex-shrink: 0;
+  }
+  .cta {
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 400;
+  }
+  .cta.dark {
+    background: var(--charcoal);
+    color: rgba(255,255,255,0.82);
+    box-shadow: 0 2px 8px rgba(46,44,40,0.15);
+  }
+  .cta.sage-cta {
+    background: var(--sage);
+    color: rgba(255,255,255,0.9);
+    box-shadow: 0 2px 8px rgba(107,140,114,0.25);
+  }
+  .cta svg {
+    width: 16px; height: 16px;
+    stroke: rgba(255,255,255,0.6);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .secondary-link {
+    text-align: center;
+    font-size: 12px;
+    color: var(--charcoal-faint);
+    margin-top: 11px;
+    cursor: pointer;
+    font-weight: 300;
+  }
+</style>
+</head>
+<body>
+
+<h1>Night planning flow — full screen</h1>
+
+<div class="phones-row">
+
+  <!-- ══ STEP 1: Today review ══ -->
+  <div class="phone-wrap">
+    <span class="step-label">1 — Today review</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">8:47 PM</span>
+        <span class="status-right">Wed 13 May</span>
+      </div>
+      <div class="nav-bar">
+        <div></div>
+        <div class="nav-close">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill p20"></div></div>
+      </div>
+
+      <div class="screen-content">
+        <div style="height:18px"></div>
+        <div class="eyebrow">Evening planning</div>
+        <div class="screen-title">Here's how<br><em>today</em> went</div>
+        <div class="screen-sub">A quiet moment to see what you accomplished.</div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-num s">3</div>
+            <div class="stat-lbl">Done</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num t">2</div>
+            <div class="stat-lbl">Remaining</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">60%</div>
+            <div class="stat-lbl">Rate</div>
+          </div>
+        </div>
+
+        <div class="completed-list">
+          <div class="completed-item">
+            <div class="check-circle"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <span class="completed-title">Morning standup</span>
+            <span class="completed-effort">15m</span>
+          </div>
+          <div class="completed-item">
+            <div class="check-circle"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <span class="completed-title">Read design feedback</span>
+            <span class="completed-effort">15m</span>
+          </div>
+          <div class="completed-item">
+            <div class="check-circle"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <span class="completed-title">Update portfolio site</span>
+            <span class="completed-effort">1hr</span>
+          </div>
+        </div>
+
+        <div class="jamaal-msg sage-bg">
+          <div class="j-avatar sage-av">J</div>
+          <div class="j-body">
+            <div class="j-name sage-name">Jamaal</div>
+            <div class="j-text">A solid day. You made real progress. The remaining two can carry forward if they still matter.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <button class="cta dark">
+          <span>Review remaining tasks</span>
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2: Carry forward ══ -->
+  <div class="phone-wrap">
+    <span class="step-label">2 — Carry forward</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">8:48 PM</span>
+        <span class="status-right">Wed 13 May</span>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          <span class="nav-back-label">Back</span>
+        </div>
+        <div class="nav-close">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill p40"></div></div>
+      </div>
+
+      <div class="screen-content">
+        <div style="height:18px"></div>
+        <div class="eyebrow">Evening planning</div>
+        <div class="screen-title">What carries<br><em>forward?</em></div>
+        <div class="screen-sub">Keep for tomorrow, defer to later, or let go entirely.</div>
+
+        <div class="carry-list">
+          <div class="carry-card">
+            <div class="carry-top">
+              <div class="carry-dot"></div>
+              <div class="carry-info">
+                <div class="carry-title">Review project proposal</div>
+                <div class="carry-meta">
+                  <span class="carry-effort-tag">1 hour</span>
+                  <span class="defer-hint">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                    deferred twice
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="carry-actions">
+              <div class="c-btn keep">
+                <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                Keep
+              </div>
+              <div class="c-btn later">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                Later
+              </div>
+              <div class="c-btn drop">
+                <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                Drop
+              </div>
+            </div>
+          </div>
+
+          <div class="carry-card">
+            <div class="carry-top">
+              <div class="carry-dot"></div>
+              <div class="carry-info">
+                <div class="carry-title">Reply to client emails</div>
+                <div class="carry-meta">
+                  <span class="carry-effort-tag">30 mins</span>
+                </div>
+              </div>
+            </div>
+            <div class="carry-actions">
+              <div class="c-btn keep">
+                <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                Keep
+              </div>
+              <div class="c-btn later">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                Later
+              </div>
+              <div class="c-btn drop">
+                <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                Drop
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="jamaal-msg terra-bg">
+          <div class="j-avatar terra-av">J</div>
+          <div class="j-body">
+            <div class="j-name terra-name">Jamaal</div>
+            <div class="j-text">The proposal has come up a few times. Tomorrow might be the day to finally tackle it.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <button class="cta dark">
+          <span>Build tomorrow</span>
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 3: Build tomorrow ══ -->
+  <div class="phone-wrap">
+    <span class="step-label">3 — Build tomorrow</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">8:49 PM</span>
+        <span class="status-right">Wed 13 May</span>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          <span class="nav-back-label">Back</span>
+        </div>
+        <div class="nav-close">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill p60"></div></div>
+      </div>
+
+      <div class="screen-content">
+        <div style="height:18px"></div>
+        <div class="eyebrow">Evening planning</div>
+        <div class="screen-title">What's on for<br><em>tomorrow?</em></div>
+        <div class="screen-sub">Add anything new alongside what carried forward.</div>
+
+        <div class="tomorrow-list">
+          <div class="t-section-label">Carried forward</div>
+          <div class="t-task">
+            <div class="t-dot carried"></div>
+            <span class="t-title">Review project proposal</span>
+            <span class="t-effort">1 hr</span>
+          </div>
+          <div class="t-task">
+            <div class="t-dot carried"></div>
+            <span class="t-title">Reply to client emails</span>
+            <span class="t-effort">30m</span>
+          </div>
+
+          <div class="t-section-label">New</div>
+          <div class="t-task">
+            <div class="t-dot new"></div>
+            <span class="t-title">Weekly grocery run</span>
+            <span class="t-effort">1 hr</span>
+          </div>
+
+          <div class="add-row">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            <span class="add-placeholder">Add a task for tomorrow…</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <button class="cta dark">
+          <span>Check the load</span>
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 4: Load check ══ -->
+  <div class="phone-wrap">
+    <span class="step-label">4 — Load check</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">8:50 PM</span>
+        <span class="status-right">Wed 13 May</span>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-back">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          <span class="nav-back-label">Back</span>
+        </div>
+        <div class="nav-close">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill p80"></div></div>
+      </div>
+
+      <div class="screen-content">
+        <div style="height:18px"></div>
+        <div class="eyebrow">Evening planning</div>
+        <div class="screen-title">How does<br><em>tomorrow</em> look?</div>
+        <div class="screen-sub">Jamaal has reviewed your load for the day.</div>
+
+        <div class="load-section">
+          <div class="load-header-row">
+            <span class="load-header-label">Tomorrow's load</span>
+            <span class="load-state-badge">Balanced</span>
+          </div>
+          <div class="big-load-track">
+            <div class="big-load-fill"></div>
+          </div>
+
+          <div class="load-breakdown">
+            <div class="load-item">
+              <div class="load-item-dot priority"></div>
+              <span class="load-item-title">Review project proposal</span>
+              <span class="load-item-effort">1 hr</span>
+            </div>
+            <div class="load-item">
+              <div class="load-item-dot priority"></div>
+              <span class="load-item-title">Reply to client emails</span>
+              <span class="load-item-effort">30m</span>
+            </div>
+            <div class="load-item">
+              <div class="load-item-dot normal"></div>
+              <span class="load-item-title">Weekly grocery run</span>
+              <span class="load-item-effort">1 hr</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="jamaal-msg sage-bg">
+          <div class="j-avatar sage-av">J</div>
+          <div class="j-body">
+            <div class="j-name sage-name">Jamaal</div>
+            <div class="j-text">Tomorrow looks well-balanced — about 2.5 hours of focused work. A manageable, good day.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <button class="cta dark">
+          <span>That's tomorrow sorted</span>
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STEP 5: Done ══ -->
+  <div class="phone-wrap">
+    <span class="step-label">5 — Done</span>
+    <div class="phone">
+      <div class="status-bar">
+        <span class="status-time">8:50 PM</span>
+        <span class="status-right">Wed 13 May</span>
+      </div>
+      <div class="nav-bar">
+        <div></div>
+        <div class="nav-close" style="opacity:0;pointer-events:none">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill p100"></div></div>
+      </div>
+
+      <div class="screen-content">
+        <div style="height:24px"></div>
+        <div class="done-screen">
+          <div class="done-glyph">
+            <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div class="done-title"><em>Tomorrow</em><br>is ready</div>
+          <div class="done-sub">Rest well. Jamaal will be here when the day begins.</div>
+          <div class="done-pills">
+            <div class="done-pill sage">3 tasks</div>
+            <div class="done-pill sage">2.5 hrs</div>
+            <div class="done-pill">Balanced</div>
+          </div>
+          <div class="done-streak">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2"/><path d="M12 6v6l4 2"/></svg>
+            <span class="done-streak-text">4 nights planned in a row</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <button class="cta sage-cta">
+          <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+          <span>Good night</span>
+        </button>
+        <div class="secondary-link">See tomorrow's list →</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
