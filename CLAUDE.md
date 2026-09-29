@@ -81,7 +81,7 @@ Deterministic — same state + inputs always produce the same output, no ML/heur
 
 ## Design system
 
-ThreadsKit (shared package, also used by Riqa/Hashiya) supplies tokens/components: off-white #E8E4DC, charcoal #2E2C28, terracotta #B5623A, sage #6B8C72; Fraunces + DM Sans. iOS 26 Liquid Glass pass already applied to the HTML mockups (floating pill tab bar, translucent glass nav circles).
+ThreadsKit (shared package, also used by Riqa/Hashiya, v1.0.0) currently supplies **colour tokens only** — a cool palette with a teal accent (`#1F6A58` light / `#8FCBB8` dark), blue-based ink, terracotta as secondary (`terra`), light + dark baked in. This replaced the earlier warm palette (off-white/charcoal/terracotta/sage); there is no sage token. Full token table and open decisions: `docs/design/threadskit-usage.md`. Typography, spacing/radius and components are not in ThreadsKit yet; Fraunces + DM Sans remain the intended faces, unconfirmed upstream. Liquid Glass direction (floating pill tab bar, translucent glass nav circles) still applies.
 
 Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity slider, habit group completion ring, habit heatmap grid, wellbeing sparkline (Swift Charts), Night Planning 5-step wizard.
 
@@ -110,5 +110,6 @@ All new code or documentation work is tracked through a GitHub issue and lands v
 - [ ] Revisit the Anchor generated-vs-user-created positioning (flagged in `docs/schema/anchor.md` and `docs/journeys/onboarding.md`) — not settled, just parked
 - [ ] Fill in `docs/architecture/decisions/0001-anchor-object-type.md` — referenced by multiple docs as the rationale source but still an empty stub
 - [ ] `ci.yml` doesn't exist yet — only `sync-wiki.yml` is live under `.github/workflows/`. `Jamaal.xcodeproj` now exists, so a build/test workflow can be added whenever CI is prioritized
-- [ ] ThreadsKit isn't wired in yet (no dependency in `Jamaal.xcodeproj`, no `Package.resolved`, `docs/design/threadskit-usage.md` still empty) — also need the latest token set (a teal was added upstream, not yet reflected in this doc's color list)
+- [ ] ThreadsKit isn't wired in yet (no dependency in `Jamaal.xcodeproj`, no `Package.resolved`). Token docs are done; see open decisions in `docs/design/threadskit-usage.md` (no sage → habit ring/heatmap colour plan, font faces, mockups on the old palette)
+- [ ] `mockups/` is empty (README and `screens/` have no content) — the HTML reference screens referenced above still need to be added, re-skinned to the current palette
 - [ ] Reconcile this file against prior planning-chat data once it's provided (in progress)
