@@ -16,7 +16,7 @@ Top to bottom:
 6. **Also today** — collapsed section for anything the current capacity hides, with a count.
 7. **Add a task** — opens the add-task sheet.
 
-Tasks are grouped by primitive, not by category. Within Tasks, order comes from the rules engine (hidden Eisenhower quadrant, then due date — see [rules-engine.md](../architecture/rules-engine), module 1). The quadrant is never displayed.
+Tasks are grouped by primitive, not by category. Within Tasks, order comes from the rules engine: tasks with any importance first (hidden Eisenhower quadrant, then due date), then tasks with no importance — see [rules-engine.md](../architecture/rules-engine), module 1. The quadrant is never displayed. When the list has five or more unprioritised tasks, the companion may suggest picking one or two that matter most.
 
 An optional **category filter** narrows the whole list to one category; it never creates sections.
 
@@ -37,7 +37,7 @@ Set two ways: from Night Planning the evening before, or directly here if the da
 - **Complete**: tap the check.
 - **Detail sheet** (bottom sheet): title, notes as a tappable markdown checklist, category, effort estimate, importance, due date, deferral history; actions — Defer, Drop, and (pending decision) Start/Finish (see [task.md](../schema/task) open questions).
 - **Defer**: 1st and 2nd deferral moves the task to tomorrow instantly; from the 3rd a date picker opens with reason chips.
-- **Add task** (bottom sheet): title, effort (15 / 30 / 60 / 120 min), notes, importance, category, schedule (today / tomorrow / Later this week / Next week / Someday / pick a date).
+- **Add task** (bottom sheet): title, effort (15 / 30 / 60 / 120 min), notes, importance (default none), category, schedule (today / tomorrow / Later this week / Next week / Someday / pick a date). Choosing `medium`/`high` importance makes the date required (pre-filled with today, not clearable) and hides Someday. A task added with no importance and no date is a backlog task.
 
 ## During-day guidance
 

@@ -85,6 +85,7 @@ Resolved in this reconciliation:
 - [x] Rollover vs. deferral — unified as deferral with auto-defer safety net
 - [x] Eisenhower — hidden, derived, drives order / capacity visibility / suggestions
 - [x] Categories — editable list, label + filter only
+- [x] Importance rules — default none, set in Night Planning; medium/high require a date and never Someday; 3rd deferral eases to low; prompt at 5+ unprioritised tasks; any importance outranks none
 - [x] Notification permission — asked in onboarding, with an in-app fallback
 - [x] Habit vs. Anchor boundary — salah is an Anchor; groups hold Habits only
 - [x] Pricing / platforms / bundle ID — repo (CLAUDE.md) wins over v2

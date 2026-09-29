@@ -13,9 +13,9 @@ Tasks live in **one flat list** — no projects, no tags, no sub-lists. `categor
 | `id`            | `UUID`    | `UUID()`  | Stable identity across CloudKit sync. |
 | `title`         | `String`  | `""`      | |
 | `notes`         | `String?` | `nil`     | Optional lightweight markdown (checklists, bold/italic, links, inline code) — surfaced as a tappable checklist in the task detail. |
-| `dueDate`       | `Date?`   | `nil`     | Day granularity. `nil` = backlog / "Someday". |
+| `dueDate`       | `Date?`   | `nil`     | Day granularity. `nil` = backlog / "Someday". **Required when `priority` is `medium` or `high`.** |
 | `effortMinutes` | `Int?`    | `nil`     | Optional estimate: 15 / 30 / 60 / 120. `nil` = unestimated (counts as zero toward load). |
-| `priority`      | `String`  | `"none"`  | One of `none` / `low` / `medium` / `high`. **This is the *importance* axis** of the hidden Eisenhower lens (see below). Raw `String` for CloudKit-safe simplicity. |
+| `priority`      | `String`  | `"none"`  | One of `none` / `low` / `medium` / `high`. **This is the *importance* axis** of the hidden Eisenhower lens (see below). Default `none`. Medium and high carry extra rules — see [Importance rules](#importance-rules). Raw `String` for CloudKit-safe simplicity. |
 | `isCompleted`   | `Bool`    | `false`   | |
 | `completedAt`   | `Date?`   | `nil`     | Set when `isCompleted` flips true; cleared if un-completed. |
 | `droppedAt`     | `Date?`   | `nil`     | Set when the user drops a task (Night Planning carry-forward "Drop", or delete-from-detail). Soft-delete so history/wellbeing detection keep working. A dropped task never appears on Today. |
@@ -53,6 +53,16 @@ Rules: one category per task; categories are labels + an optional Today filter o
 | `reason`     | `String`  | `"unspecified"`| One of `tooMuch` / `notReady` / `noLonger` / `reschedule` / `unspecified`. Reason chips in the UI: Too much on / Not ready / No longer relevant. `unspecified` is used for automatic deferrals. |
 | `task`       | `Task?`   | `nil`          | Inverse of `Task.deferrals`. |
 
+## Importance rules
+
+Importance is chosen by the user, defaults to `none`, and is mainly set during **Night Planning's plan step** (it can also be set when adding a task or from the detail sheet).
+
+1. **Medium and high require a due date.** Choosing either reveals a due-date row, pre-filled with the day being planned (today when adding on Today; tomorrow when prioritising in Night Planning), which cannot be cleared. Invariant: `priority ∈ {medium, high}` ⇒ `dueDate != nil`. Enforced in the engine/view-model (SwiftData can't express it), and normalised on read.
+2. **No "Someday" for medium/high.** The Someday option is hidden in every date picker for these tasks, with a line such as "Important tasks need a day. Lower its importance to park it."
+3. **Important tasks can't keep slipping.** On a medium/high task's **3rd** deferral its `priority` is set to `low`, and the companion says so plainly ("This one keeps slipping, so I've eased it to low. Raise it again when it's real."). Never silent. Once it is `low` (or `none`), the date requirement and the Someday restriction no longer apply.
+4. **Prioritisation prompt.** If a day's plan has **five or more tasks with importance `none`** and fewer than two prioritised tasks, the companion prompts the user to pick one or two that matter most. It's a prompt, not a block. This appears in Night Planning's plan step (and can appear on Today).
+5. **Ordering.** Tasks with any importance (`low`/`medium`/`high`) always sort ahead of `none` tasks. Among tasks with importance, order is by quadrant, then due date, then `createdAt`; `none` tasks follow, ordered by due date then `createdAt`.
+
 ## Deferral behaviour
 
 A task is *deferred* whenever it moves to a later day without being completed. `deferralCount` increments and a `DeferralRecord` is written each time.
@@ -60,7 +70,7 @@ A task is *deferred* whenever it moves to a later day without being completed. `
 | Deferral # | What happens |
 | ---------- | ------------ |
 | 1st, 2nd   | Instant: task moves to tomorrow, no prompt. |
-| 3rd onwards | A date picker opens (quick options: Later this week / Next week / Someday, plus calendar) with reason chips. Companion copy: "This one keeps slipping. Pick a day that actually works." |
+| 3rd onwards | A date picker opens (quick options: Later this week / Next week / Someday, plus calendar) with reason chips. Companion copy: "This one keeps slipping. Pick a day that actually works." If the task was `medium`/`high`, its priority is first eased to `low` (see [Importance rules](#importance-rules)), which is what makes Someday available in this picker. |
 | 5th onwards | Rules engine also raises a *suggest removal* signal. |
 
 Where it happens:
@@ -74,7 +84,7 @@ Where it happens:
 These are computed by the rules engine at read time (module 1), not persisted:
 
 - **Urgency** — a task is *urgent* if `dueDate` is tomorrow or earlier (overdue included), or `deferralCount >= 3`. The "tomorrow" window is a tunable constant.
-- **Importance** — *important* if `priority` is `medium` or `high`.
+- **Importance** — *important* if `priority` is `medium` or `high`. Because those levels always have a due date, urgency is always defined for important tasks.
 - **Eisenhower quadrant** — from those two booleans. **Never shown to the user** as a matrix or label; it only drives ordering, capacity filtering and prompts.
 
   | | Important | Not important |
@@ -95,6 +105,9 @@ These are computed by the rules engine at read time (module 1), not persisted:
 
 - **Start / finish tracking**: only `completedAt` exists. Proposal: add `startedAt: Date?`, set by a **Start** action in the task detail that opens a focus view showing the markdown checklist; duration is derived from `startedAt`→`completedAt`, with no pause, no live timer and no penalty for overrunning, and it feeds Night Planning's review step. Needs confirmation before the task-detail screen is designed.
 - **Category colours**: ThreadsKit has only `accent` and `terra` as accents. User-created categories need a small palette (a few extra ThreadsKit tokens, or tints of existing ones) — a design/tokens decision, see [threadskit-usage](../design/threadskit-usage).
+- **Re-raising after an auto-downgrade**: if the user raises a downgraded task back to medium/high, its `deferralCount` is still 3+, so its next deferral downgrades it again immediately. Probably right ("keeps slipping"), but confirm — the alternative is to reset the count used for this rule when importance is re-raised.
+- **`low` vs. `none`**: both are "not important", so they fall in the same quadrants; `low` only ranks above `none` in the list and has an optional date. Collapse to three levels (none / medium / high)? The auto-downgrade target and the "any importance sorts first" rule currently rely on `low` existing.
+- **Prioritisation prompt**: soft (dismissible) as written. Should Night Planning instead require at least one priority task before Confirm when the threshold is hit?
 - **Manual ordering**: v2 let the user drag to override the engine's order (`isManuallyOrdered`, `autoReorderEnabled`). Not modelled yet; decide alongside Today's sort rules (see [today-list.md](../journeys/today-list)).
 - **Effort of Anchors and Habits**: only Tasks carry effort today, so only Tasks count toward load. Whether Anchor windows should reduce the available budget is open (see [rules-engine.md](../architecture/rules-engine)).
 - **Sharing/referral**: deferred to v1.1 (see CLAUDE.md), no schema impact for now.

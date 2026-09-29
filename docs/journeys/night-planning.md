@@ -27,10 +27,10 @@ Two parts on one step.
 | Choice | Effect |
 | ------ | ------ |
 | **Keep** | Moves to tomorrow. Counts as a deferral (`deferralCount += 1`, `DeferralRecord`). |
-| **Later** | Opens the date picker — Later this week / Next week / Someday / a specific date. Counts as a deferral. |
+| **Later** | Opens the date picker — Later this week / Next week / Someday / a specific date. Counts as a deferral. Someday is hidden for `medium`/`high` tasks. |
 | **Drop** | `droppedAt` set. The task leaves Today for good; history is kept. |
 
-From a task's **3rd** deferral onwards, Keep also opens the date picker with reason chips (Too much on / Not ready / No longer relevant) and the companion says "This one keeps slipping. Pick a day that actually works." From the 5th, the companion suggests dropping it. Choices apply immediately and are undoable until Confirm.
+From a task's **3rd** deferral onwards, Keep also opens the date picker with reason chips (Too much on / Not ready / No longer relevant) and the companion says "This one keeps slipping. Pick a day that actually works." If the task was `medium`/`high`, it is first eased to `low` (and the companion says so), which also makes Someday available. From the 5th, the companion suggests dropping it. Choices apply immediately and are undoable until Confirm.
 
 Skipped automatically when there's nothing incomplete; the review part is minimal on a user's first day (see [app-flow.md](app-flow)).
 
@@ -40,7 +40,7 @@ A brief wellbeing check-in: a mood on a 1–5 scale plus an optional free-text n
 
 ### 3. Plan tomorrow
 
-Select, reorder and add Tasks and Habits for tomorrow. Suggested candidates come from the hidden Eisenhower lens — important-but-not-urgent (`schedule`) tasks are surfaced, since this is the moment to schedule them. **Anchors are not planned here**: they're generated from `AnchorRule`s, so this step only shows tomorrow's already-generated Anchors as read-only context ("you have Fajr and the school run tomorrow").
+Select, reorder and add Tasks and Habits for tomorrow. **This is where importance gets set**: each task in the plan can be given `none` / `low` / `medium` / `high`; choosing `medium` or `high` reveals a due date pre-filled with tomorrow. If the plan has five or more tasks with no importance and fewer than two prioritised, the companion prompts the user to pick one or two that matter most (a prompt, not a block). Suggested candidates come from the hidden Eisenhower lens — important-but-not-urgent (`schedule`) tasks are surfaced, since this is the moment to schedule them. **Anchors are not planned here**: they're generated from `AnchorRule`s, so this step only shows tomorrow's already-generated Anchors as read-only context ("you have Fajr and the school run tomorrow").
 
 ### 4. Capacity & load check
 
