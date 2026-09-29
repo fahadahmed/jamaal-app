@@ -46,7 +46,7 @@ Tab bar (floating pill): **Today · Habits · Wellbeing · Settings**
 | Today | The list; capacity slider; entry to Night Planning; task detail / add task sheets |
 | Habits | Habit groups and habits; habit detail (heatmap, streaks); add habit / custom recurrence / group creation. **Proposed:** a segmented control "Habits \| Anchors" here, where Anchors lists `AnchorRule`s (add, edit, enable/disable) — see open questions |
 | Wellbeing | Score, sparkline, gathering-data state, recent patterns |
-| Settings | Capacity defaults, planning and nudge times, categories, notifications warning card, iCloud, appearance |
+| Settings | Medium-day length (default 180 min), planning and nudge times, categories, notifications warning card, iCloud, appearance |
 
 Night Planning is a full-screen modal launched from Today (or a notification). Onboarding runs once, before the tabs.
 
@@ -79,7 +79,7 @@ Legacy mockups are in `mockups/legacy/` — layout/flow reference only; they pre
 
 Resolved in this reconciliation:
 
-- [x] Capacity model — enum for the user, minute budget + effort estimates for the engine
+- [x] Capacity model — enum for the user (their own call), minute budget from a tunable medium-day length; load counts tasks, habit windows and anchors, each with an optional duration
 - [x] Night Planning step count/order — five steps, carry-forward in step 1
 - [x] Night Planning session — persisted (CloudKit resume)
 - [x] Rollover vs. deferral — unified as deferral with auto-defer safety net
@@ -102,3 +102,31 @@ Still open — settle before or during screen design:
 - [ ] Wellbeing score composition
 - [ ] Backlog visibility and manual ordering on Today
 - [ ] "Tonight vs. tomorrow" at odd hours
+
+## Gaps found in review
+
+Not covered anywhere in the docs yet (checked by search). Grouped by what they would change.
+
+**Would change screens or journeys**
+
+- **Trial and paywall.** CLAUDE.md says 14-day full-access trial, then subscription — but there is no paywall screen, trial-status UI, or "trial ended" behaviour (read-only? locked?) in the flow.
+- **Adaptive layout.** Navigation above is iPhone-only. iPad and macOS (both in v1) need a sidebar or split layout, and CLAUDE.md's "first-class iPhone Duo support" is undefined.
+- **Recurring tasks.** `Task` has no recurrence. Habits (self-paced) and Anchors (external) cover a lot, but "submit timesheet every Friday" fits neither cleanly. Decide: intentionally unsupported, or an Anchor/Task variant.
+- **Calendar and other apps.** The stated goal is to stop bouncing between reminder, task and calendar apps, but nothing says whether Jamaal reads calendar events, imports Reminders, or ignores them.
+- **Habit pause.** No way to pause a streak for travel or illness; matters for a non-punitive tone.
+- **Quick capture and system surfaces.** No widgets, share extension, App Intents/Siri, or Live Activities — likely important for a "Today" app, and they shape what data must be reachable outside the app.
+- **Privacy, export and account.** v2 called the app "privacy-first"; there is no data export/delete or privacy journey (also needed for App Store submission).
+
+**Would change the schema or engine**
+
+- **CloudKit duplicates.** CloudKit forbids unique constraints, so two devices can each create the same thing: the three default categories on first launch, generated Anchor instances, a `DayPlan` per date, the automatic day-rollover deferral (double-incrementing `deferralCount`). The engine must be idempotent, with a dedup strategy, before implementation.
+- **CloudKit schema is effectively append-only once deployed to production.** Every field name in these docs should be considered final before the first production schema deploy.
+- **Editing rules.** What happens to future instances when an `AnchorRule` is edited or disabled, and how deleting a category or archiving a habit group shows up in history, aren't specified.
+- **Anchor reminders.** Module 6 mentions during-day guidance for upcoming anchors, but there's no per-rule lead time or reminder setting.
+- **Day boundary.** "Tonight vs. tomorrow" (already open) also affects when auto-deferral and `DayPlan` closing run, and whether they run at all when the app hasn't been opened.
+
+**Quality and reach**
+
+- **Accessibility.** Beyond a "larger text" preference in v2, nothing on Dynamic Type, VoiceOver for the custom components (capacity slider, completion ring, heatmap), or colour-only states — the heatmap and load states must not rely on colour alone, and ThreadsKit's palette is small.
+- **Localisation.** No RTL layout, Arabic strings, or Hijri-date handling, though Islamic practice presets are a stated use case and the name is Arabic.
+- **Roadmap docs.** `docs/roadmap/phases.md`, `docs/architecture/overview.md` and `docs/Home.md` are empty, with the phase 2 pace checkpoint due end of October 2026.

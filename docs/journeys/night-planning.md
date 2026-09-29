@@ -44,7 +44,7 @@ Select, reorder and add Tasks and Habits for tomorrow. **This is where importanc
 
 ### 4. Capacity & load check
 
-Set tomorrow's capacity — `low` / `medium` / `high`. The step shows the computed load for the plan built in step 3 (light / balanced / full / overloaded / exhausting) and, if the day is overloaded, the companion suggests deferring something *before* the user confirms — the user can go back to step 3 or accept. Never blocks.
+Set tomorrow's capacity — `low` / `medium` / `high`. The step first shows what's already **committed** (tomorrow's anchors and habit windows, in minutes) and may suggest a level from it ("tomorrow has about 3 hours of fixed commitments — low might suit"); the user decides. It then shows the computed load for the whole plan (light / balanced / full / overloaded / exhausting), e.g. "Commitments take 70 of your 180 minutes, leaving 110 for tasks". If the day is overloaded, the companion suggests deferring a *task* (only tasks are movable) before the user confirms — the user can go back to step 3 or accept. If some items have no duration, a quiet note says how many. Never blocks.
 
 ### 5. Confirm
 

@@ -108,5 +108,4 @@ These are computed by the rules engine at read time (module 1), not persisted:
 - **Re-raising after an auto-downgrade**: if the user raises a downgraded task back to medium/high, its `deferralCount` is still 3+, so its next deferral downgrades it again immediately. Probably right ("keeps slipping"), but confirm — the alternative is to reset the count used for this rule when importance is re-raised.
 - **Prioritisation prompt**: soft (dismissible) as written. Should Night Planning instead require at least one priority task before Confirm when the threshold is hit?
 - **Manual ordering**: v2 let the user drag to override the engine's order (`isManuallyOrdered`, `autoReorderEnabled`). Not modelled yet; decide alongside Today's sort rules (see [today-list.md](../journeys/today-list)).
-- **Effort of Anchors and Habits**: only Tasks carry effort today, so only Tasks count toward load. Whether Anchor windows should reduce the available budget is open (see [rules-engine.md](../architecture/rules-engine)).
 - **Sharing/referral**: deferred to v1.1 (see CLAUDE.md), no schema impact for now.

@@ -19,7 +19,8 @@ protocol RuleModule {
 
 ## Decisions resolved here
 
-- **Capacity** stays an enum — `low` / `medium` / `high` — as the *user-facing* setting. Each level maps to a **minute budget**, and tasks carry optional effort estimates, so the engine can compute a load state (module 7). Defaults, all tunable constants: `low` 120, `medium` 180 (v2's baseline), `high` 240 minutes.
+- **Capacity** stays an enum — `low` / `medium` / `high` — as the *user-facing* setting. It is the user's own call about how much they have in them; it is not computed. Each level maps to a **minute budget**: the user sets what a *medium day* is (Settings, default 180 minutes — v2's baseline), `low` is ⅔ of that (120) and `high` is 4⁄3 (240).
+- **Load counts everything that takes time.** Tasks, habit windows and anchor rules each carry an optional duration (`effortMinutes`). The load check sums all three against the budget. Anchor and habit minutes are **committed** (can't be deferred); only task minutes are **movable**, so overload suggestions only ever propose deferring tasks.
 - **Deferral replaces rollover.** A task moving to a later day, by the user or automatically, is a deferral with a count and a record (see [task.md](../schema/task)). 3rd deferral = stale + date picker (and a medium/high task is eased to `low`); 5th = suggest removal.
 - **Importance**: three levels (`low` default, `medium`, `high`), set mainly in Night Planning; medium/high require a due date and can't be Someday; `low` tasks always sort after medium/high.
 - **Night Planning is 5 steps** with a Keep/Later/Drop carry-forward folded into step 1, and its session is **persisted** (CloudKit sync means a session can resume on another device).
@@ -40,7 +41,8 @@ The per-day record. Replaces the earlier `DailyCapacity`, widened because wellbe
 | `id`                     | `UUID`    | `UUID()`   | |
 | `date`                   | `Date`    | `.now`     | Day granularity, normalised to midnight. |
 | `capacity`               | `String`  | `"medium"` | `low` / `medium` / `high`. Written by Night Planning step 4 for tomorrow; editable on Today. |
-| `plannedEffortMinutes`   | `Int`     | `0`        | Sum of effort on tasks planned for the day, snapshotted at Night Planning confirm. |
+| `plannedEffortMinutes`   | `Int`     | `0`        | Total planned minutes for the day (tasks + habit windows + anchors), snapshotted at Night Planning confirm. |
+| `committedMinutes`       | `Int`     | `0`        | The part of that total that can't be deferred (habit windows + anchors). |
 | `completedEffortMinutes` | `Int`     | `0`        | Updated as tasks complete. |
 | `loadScore`              | `Int`     | `0`        | `plannedEffortMinutes / budget × 100`, snapshotted at confirm. |
 | `wasOverloaded`          | `Bool`    | `false`    | Load state was `overloaded` or worse at confirm. |
@@ -148,8 +150,8 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 
 ### 7. Capacity & load
 
-- **Input**: `DayPlan.capacity` for the day, tasks planned for that day with `effortMinutes`.
-- **Behavior**: `budget = minutes(capacity)`; `loadScore = plannedEffortMinutes / budget × 100`. State thresholds (from v2):
+- **Input**: `DayPlan.capacity` for the day; tasks planned for that day, the due habit windows and the day's anchors, each with `effortMinutes`; the user's medium-day minutes.
+- **Behavior**: `budget = minutes(capacity)` (medium = the user's medium-day setting, low = ⅔ of it, high = 4⁄3 of it); `committedMinutes` = habit windows + anchors; `plannedEffortMinutes` = committed + task minutes; `loadScore = plannedEffortMinutes / budget × 100`. Items with no duration count as zero, and the engine reports how many so the UI can nudge gently. State thresholds (from v2):
 
   | Load score | State | Response |
   | ---------- | ----- | -------- |
@@ -160,13 +162,14 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
   | > 140%     | `exhausting` | strong suggestion to defer something |
 
   Also decides what Today shows at each capacity level (proposed, tunable): **low** — Anchors, `doFirst` tasks and habits with a streak at risk; **medium** — everything due except `letGo` tasks; **high** — everything due. Anything not shown appears under a collapsed "also today" section with a count — nothing silently disappears.
-- **Signals**: `.loadState`, `.todayVisibility`.
+- **Suggested capacity**: from tomorrow's committed minutes the engine can suggest a level (e.g. committed minutes above half the medium budget → suggest `low`). The user always decides.
+- **Signals**: `.loadState`, `.committedMinutes`, `.suggestedCapacity`, `.missingDurations(count)`, `.todayVisibility`.
 
 ## Open questions
 
-- **Numbers are proposals**: budgets (120/180/240), the load thresholds, the rollover-to-stale threshold (3), removal suggestion (5), and the wellbeing window (7 vs. 14) are all constants, easy to tune.
-- **Unestimated tasks** count as zero toward load. Should the engine flag "N tasks have no estimate" so load isn't silently understated, or assume a default?
-- **Anchors and load**: should Anchor window durations reduce the free-time budget? Prayer windows and a school run take real time.
+- **Numbers are proposals**: the medium-day default (180) and the ⅔ / 4⁄3 multipliers for low/high, the load thresholds, the rollover-to-stale threshold (3), removal suggestion (5), and the wellbeing window (7 vs. 14) are all constants, easy to tune.
+- **Missing durations** count as zero, so load can be understated until durations are filled in. Current proposal: Night Planning's capacity step gently notes how many items have no duration, rather than guessing. Habit presets and the built-in anchor types ship default durations to keep this rare.
+- **Where the medium-day setting lives**: it changes computed load, so it should sync across devices. Preferences are per-device (`@AppStorage`); this one probably belongs in a small synced settings store (`NSUbiquitousKeyValueStore` or a `UserSettings` model). Decide before implementation.
 - **Wellbeing score composition**: v2's Wellbeing screen showed a single 0–100 score; this doc derives it from mood only. Decide whether completion rate and load also contribute.
 - **`AnchorRule.configData` shapes** remain a first pass, pending the Anchor positioning decision (see [ADR 0001](decisions/0001-anchor-object-type)).
 - **Notification limits**: iOS caps pending local notifications at 64 — confirm the reminder + nudge volume stays well under that (per-window habit reminders add up).

@@ -31,6 +31,7 @@ Anchor instances are generated from a persisted `AnchorRule` (confirmed in revie
 | `title`       | `String`  | `""`       |                                                                                                      |
 | `sourceKey`   | `String`  | `"custom"` | One of `prayerWindow` / `schoolRun` / `binNight` / `plantWatering` / `custom`.                       |
 | `configData`  | `String`  | `"{}"`     | JSON-encoded, shape depends on `sourceKey` (e.g. prayer calculation method + location for `prayerWindow`; weekday + time for `schoolRun`; interval in days for `plantWatering`). Placeholder pending the rules-engine design pass ([issue #7](https://github.com/fahadahmed/jamaal-app/issues/7)). |
+| `effortMinutes` | `Int?`  | `nil`      | How long attending takes (Fajr ≈ 10, school run ≈ 30) — **not** the window length (Fajr's window may be 90 minutes). Applies to every instance the rule generates and counts toward the day's committed time in the load check. `nil` = unknown, counts as zero. |
 | `isEnabled`   | `Bool`    | `true`     |                                                                                                      |
 | `createdAt`   | `Date`    | `.now`     |                                                                                                      |
 
@@ -45,6 +46,6 @@ Anchor instances are generated from a persisted `AnchorRule` (confirmed in revie
 - **Generated-vs-user-created positioning**: flagged for revisiting later, not settled — worth re-examining whether users should ever be able to create an `Anchor` (or `AnchorRule`) directly rather than everything being system-generated. This affects onboarding's step 6 (see [onboarding.md](../journeys/onboarding)) and potentially the Today List/Night Planning interactions too.
 - **`AnchorRule.configData` shape**: a JSON blob is a pragmatic placeholder, not a final design — each `sourceKey` needs its own decoded shape, to be defined alongside the rules-engine module boundaries ([issue #7](https://github.com/fahadahmed/jamaal-app/issues/7)).
 - **ADR 0001 is still empty**: this doc references it for "why Anchor is a third primitive" but there's no content there yet to point to — worth filling in now that the Habit/Anchor boundary is actually resolved.
-- **Anchors and capacity**: Anchor windows take real time out of the day but carry no effort estimate. Whether they should reduce the available budget in the load check is open — see [rules-engine.md](../architecture/rules-engine).
+- **Per-instance duration**: `effortMinutes` is one value per rule, so every prayer from a `prayerWindow` rule gets the same duration. Fine for v1; per-`sourceKey` shapes (e.g. different lengths per prayer) can go in `configData` later.
 - **Where users manage `AnchorRule`s in the app** (Habits tab section vs. Settings) is undecided — see [app-flow.md](../journeys/app-flow).
 - **Sharing/referral**: deferred to v1.1 (see CLAUDE.md), no schema impact for now.
