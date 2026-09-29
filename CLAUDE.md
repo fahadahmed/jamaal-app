@@ -32,7 +32,7 @@ jamaal-app/
 └── ci_scripts/            # reserved for Xcode Cloud, empty for now
 ```
 
-No `.xcworkspace` — JamaalCore is a Swift Package (added as a local package dependency directly into `Jamaal.xcodeproj`), not a separate `.xcodeproj`, so no workspace is needed. ThreadsKit lives in its own repo, added as a **remote** Swift Package dependency (pinned "Up to Next Major Version" from 1.0.0).
+No `.xcworkspace` — JamaalCore is a Swift Package (added as a local package dependency directly into `Jamaal.xcodeproj`), not a separate `.xcodeproj`, so no workspace is needed. ThreadsKit lives in its own repo, added as a **remote** Swift Package dependency (pinned "Up to Next Major Version" from 1.1.0).
 
 ## Xcode project settings (as created)
 
@@ -92,7 +92,7 @@ Modules emit typed signals; a separate message-template layer phrases them in Ja
 
 ## Design system
 
-ThreadsKit (shared package, also used by Riqa/Hashiya, v1.0.0) currently supplies **colour tokens only** — a cool palette with a teal accent (`#1F6A58` light / `#8FCBB8` dark), blue-based ink, terracotta as secondary (`terra`), light + dark baked in. This replaced the earlier warm palette (off-white/charcoal/terracotta/sage); there is no sage token. Full token table and open decisions: `docs/design/threadskit-usage.md`. Typography, spacing/radius and components are not in ThreadsKit yet; Fraunces + DM Sans remain the intended faces, unconfirmed upstream. Liquid Glass direction (floating pill tab bar, translucent glass nav circles) still applies.
+ThreadsKit (shared package, also used by Riqa/Hashiya; depend on **1.1.0 or later** — 1.0.0 has a contrast bug) currently supplies **colour tokens only** — a cool palette with a teal accent (`#1F6A58` light / `#8FCBB8` dark), blue-based ink, terracotta as secondary (`terra`), light + dark baked in. This replaced the earlier warm palette (off-white/charcoal/terracotta/sage); there is no sage token. Full token table and open decisions: `docs/design/threadskit-usage.md`. Typography, spacing/radius and components are not in ThreadsKit yet; Fraunces + DM Sans remain the intended faces, unconfirmed upstream. Liquid Glass direction (floating pill tab bar, translucent glass nav circles) still applies.
 
 Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity slider, habit group completion ring, habit heatmap grid, wellbeing sparkline (Swift Charts), Night Planning 5-step wizard.
 
