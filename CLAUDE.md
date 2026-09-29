@@ -62,7 +62,7 @@ Because CloudKit sync is in from v1:
 | ---------- | ---------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Task**   | User       | Completion              | Something you _do_                                                                                                                                           |
 | **Habit**  | User       | Streaks                 | Something you _cultivate_ — supports time-windowed occurrences (e.g. five daily prayers as a preset)                                                         |
-| **Anchor** | Generated  | Attendance, not streaks | Something your life _moves around_ — timing and the consequence of a miss are external to the user (prayer windows, school runs, bin night, watering plants) |
+| **Anchor** | User — as a recurring rule (instances generated) or a one-off | Attendance (attended / missed / skipped), not streaks | Something your life _moves around_ — timing and the consequence of a miss are external to the user (prayer windows, school runs, bin night, watering plants) |
 
 Full rationale for Anchor as a third type (vs. folding into Habit): `docs/architecture/decisions/0001-anchor-object-type.md`.
 
@@ -118,7 +118,6 @@ All new code or documentation work is tracked through a GitHub issue and lands v
 
 ## Open items to pick up next
 
-- [ ] Confirm the Anchor positioning — recommended framing (user creates a recurring commitment/`AnchorRule`, app generates instances) is written up in `docs/architecture/decisions/0001-anchor-object-type.md`, which is now drafted
 - [ ] `ci.yml` doesn't exist yet — only `sync-wiki.yml` is live under `.github/workflows/`. `Jamaal.xcodeproj` now exists, so a build/test workflow can be added whenever CI is prioritized
 - [ ] ThreadsKit isn't wired in yet (no dependency in `Jamaal.xcodeproj`, no `Package.resolved`). Token docs are done; see open decisions in `docs/design/threadskit-usage.md` (no sage → habit ring/heatmap colour plan, font faces, mockups on the old palette)
 - [ ] `mockups/` is empty (README and `screens/` have no content) — the HTML reference screens referenced above still need to be added, re-skinned to the current palette

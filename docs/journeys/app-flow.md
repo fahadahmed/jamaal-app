@@ -33,7 +33,7 @@ Triggered by the evening notification the user set up in onboarding (or the in-a
 ## Day 1 onward
 
 - **Morning**: optional morning nudge. Today shows the confirmed plan filtered by capacity. Tasks are ordered by the hidden Eisenhower lens; the user never sees quadrants.
-- **During the day**: tick tasks, tap Anchors attended/missed, complete habit windows (counted habits use a stepper), defer what won't fit. One guidance card at most. Streak-protection nudges as habit windows close.
+- **During the day**: tick tasks, tap Anchors attended (or "Not today"), complete habit windows (counted habits use a stepper), defer what won't fit. One guidance card at most. Streak-protection nudges as habit windows close.
 - **Evening**: Night Planning again. The review now has real material and the wellbeing sparkline starts filling in.
 - **If the user skips planning**: nothing is lost — incomplete dated tasks auto-defer at rollover and the 3rd-deferral date picker still catches chronic slippage.
 
@@ -119,7 +119,8 @@ Pricing (CLAUDE.md): free download, 14-day full-access trial, then subscription 
 | Onboarding | Mockup exists as 5 screens; **needs** planning-time, Task/Habit/Anchor creation steps |
 | Empty states, notifications-off fallback, during-day guidance | Mockups exist |
 | **Anchor rules list + add/edit rule (per-type forms)** | **New — no mockup** |
-| **Anchor row on Today (window, attended/missed)** | **New — no mockup** |
+| **Anchor row on Today (window, attended / not today / missed)** | **New — no mockup** |
+| **Add one-off Anchor (from Today's add choice and Night Planning step 3)** | **New — no mockup** |
 | **Category management (Settings)** | **New — no mockup** |
 | **Repeat picker (in add task / detail)** | **New — no mockup** |
 | **Paywall** | **New — no mockup** |
@@ -142,6 +143,7 @@ Resolved in this reconciliation:
 - [x] Importance rules — three levels (low default, medium, high), set in Night Planning; medium/high require a date and never Someday; 3rd deferral eases to low; prompt when a plan has 5+ tasks and fewer than two medium/high
 - [x] Notification permission — asked in onboarding, with an in-app fallback
 - [x] Habit vs. Anchor boundary — salah is an Anchor; groups hold Habits only
+- [x] Anchor positioning — recurring rules (instances generated) plus one-offs; `skipped` status; named "Anchors" in the UI; rules managed in the Habits tab's Anchors segment
 - [x] Pricing / platforms / bundle ID — repo (CLAUDE.md) wins over v2
 - [x] Trial and subscription — app-managed 14-day trial, then read-only with a calm paywall
 - [x] iPad, Mac and iPhone Duo — adaptive layout: system tab bar/sidebar, split-view Today, Duo handled by compact (outer) and regular (inner) layouts
@@ -151,7 +153,6 @@ Still open — settle before or during screen design:
 
 - [ ] Start/Finish tracking on tasks ([task.md](../schema/task))
 - [ ] Onboarding: which steps are skippable (proposal in [onboarding.md](onboarding))
-- [ ] Anchor positioning wording and where users manage rules (proposal: Habits tab segment)
 - [ ] `AnchorRule.configData` shapes (needed for the Anchor form screens)
 - [ ] Category colours and habit heatmap colours — ThreadsKit has no sage and only two accents ([threadskit-usage](../design/threadskit-usage))
 - [ ] Fonts (Fraunces + DM Sans intended, unconfirmed in ThreadsKit)

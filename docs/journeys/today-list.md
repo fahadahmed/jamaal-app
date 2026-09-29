@@ -10,11 +10,11 @@ Top to bottom:
 
 1. **Capacity slider** — today's `low` / `medium` / `high`.
 2. **Companion card** (when there is one) — at most one guidance card per day, inline-dismissible.
-3. **Anchors** — today's generated instances, sorted by `windowStart`. Each shows its window and `attendanceStatus`; tapping marks `attended` / `missed`.
+3. **Anchors** — today's Anchors (generated from rules, plus any one-offs), sorted by `windowStart`. Each shows its window and `attendanceStatus`; tapping marks `attended`, and "Not today" marks `skipped` (not a miss). `missed` is set automatically once the window passes with the Anchor still pending, or manually.
 4. **Habits** — today's due `HabitTimeWindow` occurrences with streak per window. Groups appear as a pill with proportional ring, emoji, name and count ("4/5"); tapping opens the group. Counted habits use an increment/decrement stepper in place of a single check.
 5. **Tasks** — due today or overdue, plus a collapsed backlog. Tapping toggles complete; the row opens the task detail sheet. Each row shows its category as a coloured label.
 6. **Also today** — collapsed section for anything the current capacity hides, with a count.
-7. **Add a task** — opens the add-task sheet.
+7. **Add** — opens a choice of **Task** (the add-task sheet) or **One-off Anchor** (title, date, window start/end, optional duration). Recurring Anchors are created and managed in the Habits tab's Anchors segment.
 
 Tasks are grouped by primitive, not by category. Within Tasks, order comes from the rules engine: hidden Eisenhower quadrant, then due date, which puts `low` tasks after `medium`/`high` — see [rules-engine.md](../architecture/rules-engine), module 1. The quadrant is never displayed. When the list has five or more tasks and fewer than two are `medium`/`high`, the companion may suggest picking one or two that matter most.
 
