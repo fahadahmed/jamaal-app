@@ -10,7 +10,8 @@ Top to bottom:
 
 1. **Capacity slider** — today's `low` / `medium` / `high`.
 2. **Companion card** (when there is one) — at most one guidance card per day, inline-dismissible.
-3. **Anchors** — today's Anchors (generated from rules, plus any one-offs), sorted by `windowStart`. Each shows its window and `attendanceStatus`; tapping marks `attended`, and "Not today" marks `skipped` (not a miss). `missed` is set automatically once the window passes with the Anchor still pending, or manually.
+3. **Anchors** — today's Anchors (those whose `occurrenceDate` is today: generated from rules, plus any one-offs), sorted by `windowStart`. Each shows its window and `attendanceStatus`; tapping marks `attended`, and "Not today" marks `skipped` (not a miss). `missed` is set automatically once the window passes with the Anchor still pending, or manually.
+   - **Grouped row per rule.** A rule that yields more than one Anchor today (five prayers, drop-off and pick-up) shows as **one collapsed row** — the rule's title, a count of attended out of those still counting (skipped excluded, e.g. "Salah 3/5"), and the next pending window ("Asr · until 17:58"). Tapping expands it into the individual Anchors, each tappable as above. A rule with a single Anchor today, and every one-off, is a plain row. Grouping is display-only, like a habit group: no state of its own, and everything else (load, wellbeing, Night Planning review) reads the individual instances. Groups sort by their earliest window start; when everything in a group is decided, the row shows a quiet done state.
 4. **Habits** — today's due `HabitTimeWindow` occurrences with streak per window. Groups appear as a pill with proportional ring, emoji, name and count ("4/5"); tapping opens the group. Counted habits use an increment/decrement stepper in place of a single check.
 5. **Tasks** — due today or overdue, plus a collapsed backlog. Tapping toggles complete; the row opens the task detail sheet. Each row shows its category as a coloured label.
 6. **Also today** — collapsed section for anything the current capacity hides, with a count.
@@ -57,6 +58,6 @@ A compact **sparkline** near the capacity slider shows the wellbeing score over 
 
 - **Backlog tasks (no `dueDate`)**: always visible in a collapsed "Backlog" section, or surfaced only in Night Planning's plan step?
 - **Manual ordering**: may the user drag to override the engine (v2 had a manual-order flag)? Affects whether a per-task order field is needed.
-- **Multi-day Anchors**: none of the current examples span days; confirm that's a hard invariant before relying on a simple date filter for "today's Anchors".
+- **Anchors that end after midnight** (Isha in summer): resolved — an Anchor belongs to the day its window *starts* (`occurrenceDate`). So a pending Isha can still be open when Night Planning runs late; it isn't shown as tomorrow's.
 - **Anchors under capacity**: Anchors are always shown at every capacity level (external, can't be deferred); confirm they never fold into "also today".
 - **Where the category filter lives** (Today header vs. filter sheet) is a design-pass decision.

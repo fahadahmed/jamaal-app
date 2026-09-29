@@ -118,7 +118,8 @@ Pricing (CLAUDE.md): free download, 14-day full-access trial, then subscription 
 | Settings | Mockup exists (capacity slider + day multipliers — multipliers dropped) |
 | Onboarding | Mockup exists as 5 screens; **needs** planning-time, Task/Habit/Anchor creation steps |
 | Empty states, notifications-off fallback, during-day guidance | Mockups exist |
-| **Anchor rules list + add/edit rule (per-type forms)** | **New — no mockup** |
+| **Anchor rules list + add/edit rule** — two forms: prayer times (location, method, madhab, prayers, Isha end; advanced adjustments) and the shared scheduled form (recurrence, named time slots, duration); "needs attention" state for undecodable rules | **New — no mockup** |
+| **Anchor group row on Today (collapsed "Salah 3/5" / expanded)** | **New — no mockup** |
 | **Anchor row on Today (window, attended / not today / missed)** | **New — no mockup** |
 | **Add one-off Anchor (from Today's add choice and Night Planning step 3)** | **New — no mockup** |
 | **Category management (Settings)** | **New — no mockup** |
@@ -144,6 +145,7 @@ Resolved in this reconciliation:
 - [x] Notification permission — asked in onboarding, with an in-app fallback
 - [x] Habit vs. Anchor boundary — salah is an Anchor; groups hold Habits only
 - [x] Anchor positioning — recurring rules (instances generated) plus one-offs; `skipped` status; named "Anchors" in the UI; rules managed in the Habits tab's Anchors segment
+- [x] `AnchorRule` config shapes — two families (computed prayer times; a shared scheduled recurrence + slots shape for school run, bin night, plant watering and custom); coarse device location for prayer times; Isha closes at Islamic midnight by default; Today shows a grouped row per rule with several Anchors a day; instances keyed by `(rule, occurrenceDate, slotKey)`
 - [x] Pricing / platforms / bundle ID — repo (CLAUDE.md) wins over v2
 - [x] Trial and subscription — app-managed 14-day trial, then read-only with a calm paywall
 - [x] iPad, Mac and iPhone Duo — adaptive layout: system tab bar/sidebar, split-view Today, Duo handled by compact (outer) and regular (inner) layouts
@@ -153,7 +155,7 @@ Still open — settle before or during screen design:
 
 - [ ] Start/Finish tracking on tasks ([task.md](../schema/task))
 - [ ] Onboarding: which steps are skippable (proposal in [onboarding.md](onboarding))
-- [ ] `AnchorRule.configData` shapes (needed for the Anchor form screens)
+- [ ] Anchor extras: pause a rule until a date (holidays), Jumu'ah on Fridays, reminder lead time ([anchor.md](../schema/anchor) open questions)
 - [ ] Category colours and habit heatmap colours — ThreadsKit has no sage and only two accents ([threadskit-usage](../design/threadskit-usage))
 - [ ] Fonts (Fraunces + DM Sans intended, unconfirmed in ThreadsKit)
 - [ ] Streaks for "N times a week" habits
@@ -179,7 +181,7 @@ Not covered anywhere in the docs yet (checked by search). Grouped by what they w
 
 - **CloudKit duplicates.** CloudKit forbids unique constraints, so two devices can each create the same thing: the three default categories on first launch, generated Anchor instances, a `DayPlan` per date, the automatic day-rollover deferral (double-incrementing `deferralCount`). The engine must be idempotent, with a dedup strategy, before implementation.
 - **CloudKit schema is effectively append-only once deployed to production.** Every field name in these docs should be considered final before the first production schema deploy.
-- **Editing rules.** What happens to future instances when an `AnchorRule` is edited or disabled, and how deleting a category or archiving a habit group shows up in history, aren't specified.
+- **Editing rules.** Resolved for Anchors (pending instances update in place, attended/missed/skipped are never rewritten — see [rules-engine.md](../architecture/rules-engine), module 3). Still unspecified: how deleting a category or archiving a habit group shows up in history.
 - **Anchor reminders.** Module 6 mentions during-day guidance for upcoming anchors, but there's no per-rule lead time or reminder setting.
 - **Day boundary.** "Tonight vs. tomorrow" (already open) also affects when auto-deferral and `DayPlan` closing run, and whether they run at all when the app hasn't been opened.
 
