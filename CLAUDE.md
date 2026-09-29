@@ -88,13 +88,13 @@ Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity s
 ## Business context (informs priority, not architecture)
 
 - Pricing: free download, 14-day full-access trial, then subscription only — $2.99/mo or $24.99/yr (no lifetime SKU)
-- Sharing/referral mechanic is confirmed in scope for v1 — **not yet reflected in the primitives or rules engine**, needs its own design pass before schema locks
+- Sharing/referral: **deferred to v1.1, not in scope for v1.** No referral mechanic is planned; the existing `Task.category` values of `personal`/`family`/`work` are just personal labels for the single user, not multi-account data sharing. Revisit if/when a real need shows up — no schema impact for now.
 - Target launch: as early as late Dec 2026 (aligned to January resolution surge) or realistically ~March 2027 given ~10–20 hrs/week alongside full-time work; native Android (Kotlin, not Flutter) is a later, separate effort post-iOS-traction
 - Phase 2 pace checkpoint: end of October 2026
 
 ## Working approach
 
-**Docs/flows-first.** This repo was restarted from scratch specifically because the previous JamaalCore attempt skipped this step. Finalize `docs/schema/*` and `docs/journeys/*` before writing feature code — architecture overview is done, schema and journeys are still stubs as of this handoff. Don't jump ahead to implementation without checking those docs are filled in first.
+**Docs/flows-first.** This repo was restarted from scratch specifically because the previous JamaalCore attempt skipped this step. `docs/schema/*`, `docs/journeys/*`, and `docs/architecture/rules-engine.md` are now filled in and resolved for v1 (see issues #5–#8) — implementation can begin. Don't skip this step for future primitives or major features; keep docs ahead of code.
 
 ## Git workflow
 
@@ -107,9 +107,8 @@ All new code or documentation work is tracked through a GitHub issue and lands v
 
 ## Open items to pick up next
 
-- [ ] Fill in `docs/schema/task.md`, `habit.md`, `anchor.md` with real field definitions (respecting CloudKit constraints above)
-- [ ] Fill in `docs/journeys/*.md` (today-list, night-planning, onboarding)
-- [ ] Confirm/revise the 6 rules-engine module boundaries before implementing
-- [ ] Design the sharing/referral mechanic and reflect it in schema once ready
-- [ ] Verify `.wiki.git` is initialized (create one page manually via GitHub's Wiki tab) before `sync-wiki.yml` will succeed
-- [ ] Once `Jamaal.xcodeproj` exists, `ci.yml`'s `xcodebuild` step will start working — it references scheme `Jamaal`, currently fails as expected until the project exists
+- [ ] Revisit the Anchor generated-vs-user-created positioning (flagged in `docs/schema/anchor.md` and `docs/journeys/onboarding.md`) — not settled, just parked
+- [ ] Fill in `docs/architecture/decisions/0001-anchor-object-type.md` — referenced by multiple docs as the rationale source but still an empty stub
+- [ ] `ci.yml` doesn't exist yet — only `sync-wiki.yml` is live under `.github/workflows/`. `Jamaal.xcodeproj` now exists, so a build/test workflow can be added whenever CI is prioritized
+- [ ] ThreadsKit isn't wired in yet (no dependency in `Jamaal.xcodeproj`, no `Package.resolved`, `docs/design/threadskit-usage.md` still empty) — also need the latest token set (a teal was added upstream, not yet reflected in this doc's color list)
+- [ ] Reconcile this file against prior planning-chat data once it's provided (in progress)
