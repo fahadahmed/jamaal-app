@@ -33,7 +33,7 @@ Triggered by the evening notification the user set up in onboarding (or the in-a
 ## Day 1 onward
 
 - **Morning**: optional morning nudge. Today shows the confirmed plan filtered by capacity. Tasks are ordered by the hidden Eisenhower lens; the user never sees quadrants.
-- **During the day**: tick tasks, tap Anchors attended (or "Not today"), complete habit windows (counted habits use a stepper), defer what won't fit. One guidance card at most. Streak-protection nudges as habit windows close.
+- **During the day**: tick tasks, tap Anchors attended (or "Not today"), complete habit windows (counted habits use a stepper), defer what won't fit. One guidance card at most. Window-closing reminders as habit windows close.
 - **Evening**: Night Planning again. The review now has real material and the wellbeing sparkline starts filling in.
 - **If the user skips planning**: nothing is lost — incomplete dated tasks auto-defer at rollover and the 3rd-deferral date picker still catches chronic slippage.
 
@@ -44,7 +44,7 @@ Tab bar (floating pill): **Today · Habits · Wellbeing · Settings**
 | Tab | Contains |
 | --- | -------- |
 | Today | The list; capacity slider; entry to Night Planning; task detail / add task sheets |
-| Habits | Habit groups and habits; habit detail (heatmap, streaks); add habit / custom recurrence / group creation. **Proposed:** a segmented control "Habits \| Anchors" here, where Anchors lists `AnchorRule`s (add, edit, enable/disable) — see open questions |
+| Habits | Habit groups and habits; habit detail (density grid and plain-language read); add habit / custom recurrence / group creation. **Proposed:** a segmented control "Habits \| Anchors" here, where Anchors lists `AnchorRule`s (add, edit, enable/disable) — see open questions |
 | Wellbeing | Score, sparkline, gathering-data state, recent patterns |
 | Settings | Medium-day length (default 180 min), planning and nudge times, categories, notifications warning card, iCloud, appearance |
 
@@ -158,7 +158,6 @@ Still open — settle before or during screen design:
 - [ ] Anchor extras: pause a rule until a date (holidays), Jumu'ah on Fridays, reminder lead time ([anchor.md](../schema/anchor) open questions)
 - [ ] Category colours and habit heatmap colours — ThreadsKit has no sage and only two accents ([threadskit-usage](../design/threadskit-usage))
 - [ ] Fonts (Fraunces + DM Sans intended, unconfirmed in ThreadsKit)
-- [ ] Streaks for "N times a week" habits
 - [ ] Wellbeing score composition
 - [ ] Backlog visibility and manual ordering on Today
 - [ ] "Tonight vs. tomorrow" at odd hours
@@ -173,7 +172,7 @@ Not covered anywhere in the docs yet (checked by search). Grouped by what they w
 - ~~**Adaptive layout.**~~ **Resolved** — see "Adaptive layout" and "iPhone Duo". Still to design: the regular-width variants (which double as Duo inner-display layouts) and a check of each screen at the outer display's compact size.
 - ~~**Recurring tasks.**~~ **Resolved** — simple repeat on Task, see [task.md](../schema/task#repeating-tasks).
 - **Calendar and other apps.** The stated goal is to stop bouncing between reminder, task and calendar apps, but nothing says whether Jamaal reads calendar events, imports Reminders, or ignores them.
-- **Habit pause.** No way to pause a streak for travel or illness; matters for a non-punitive tone.
+- **Habit pause.** No way to pause a habit for travel, illness or similar (the design project draws "Pause with reason", H-07). Under density, paused days should simply be unscheduled (empty cells), not misses; needs a schema field and a screen.
 - **Quick capture and system surfaces.** No widgets, share extension, App Intents/Siri, or Live Activities — likely important for a "Today" app, and they shape what data must be reachable outside the app.
 - **Privacy, export and account.** v2 called the app "privacy-first"; there is no data export/delete or privacy journey (also needed for App Store submission).
 

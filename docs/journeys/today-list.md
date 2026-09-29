@@ -12,7 +12,7 @@ Top to bottom:
 2. **Companion card** (when there is one) — at most one guidance card per day, inline-dismissible.
 3. **Anchors** — today's Anchors (those whose `occurrenceDate` is today: generated from rules, plus any one-offs), sorted by `windowStart`. Each shows its window and `attendanceStatus`; tapping marks `attended`, and "Not today" marks `skipped` (not a miss). `missed` is set automatically once the window passes with the Anchor still pending, or manually.
    - **Grouped row per rule.** A rule that yields more than one Anchor today (five prayers, drop-off and pick-up) shows as **one collapsed row** — the rule's title, a count of attended out of those still counting (skipped excluded, e.g. "Salah 3/5"), and the next pending window ("Asr · until 17:58"). Tapping expands it into the individual Anchors, each tappable as above. A rule with a single Anchor today, and every one-off, is a plain row. Grouping is display-only, like a habit group: no state of its own, and everything else (load, wellbeing, Night Planning review) reads the individual instances. Groups sort by their earliest window start; when everything in a group is decided, the row shows a quiet done state.
-4. **Habits** — today's due `HabitTimeWindow` occurrences with streak per window. Groups appear as a pill with proportional ring, emoji, name and count ("4/5"); tapping opens the group. Counted habits use an increment/decrement stepper in place of a single check.
+4. **Habits** — today's due `HabitTimeWindow` occurrences (no streak counters — density lives on the habit detail). Groups appear as a pill with proportional ring, emoji, name and count ("4/5"); tapping opens the group. Counted habits use an increment/decrement stepper in place of a single check.
 5. **Tasks** — due today or overdue, plus a collapsed backlog. Tapping toggles complete; the row opens the task detail sheet. Each row shows its category as a coloured label.
 6. **Also today** — collapsed section for anything the current capacity hides, with a count.
 7. **Add** — opens a choice of **Task** (the add-task sheet) or **One-off Anchor** (title, date, window start/end, optional duration). Recurring Anchors are created and managed in the Habits tab's Anchors segment.
@@ -25,7 +25,7 @@ An optional **category filter** narrows the whole list to one category; it never
 
 Sets today's capacity; the engine uses it to decide visibility (module 7):
 
-- **low** — Anchors, urgent-and-important tasks, and habits with a streak at risk. Everything else is under "also today".
+- **low** — Anchors, urgent-and-important tasks, and habits whose window is closing and not yet done. Everything else is under "also today".
 - **medium** — everything due except the least important, least urgent tasks.
 - **high** — everything due today.
 

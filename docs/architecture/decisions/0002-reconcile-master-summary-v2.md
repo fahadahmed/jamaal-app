@@ -21,7 +21,7 @@ Where the summary and the repo conflict on **structure, platform or business**, 
 | Deferral behaviour (instant ×2, date picker from 3rd, reason chips, suggest removal at 5) | [task.md](../../schema/task), `DeferralRecord` |
 | Carry-forward Keep/Later/Drop in Night Planning | [night-planning.md](../../journeys/night-planning) step 1 |
 | Habit groups (visual only, default collapsed), counted habits, per-day entries, heatmap states | [habit.md](../../schema/habit) |
-| Habit fatigue, streak protection, new-habit realism | rules-engine module 2 |
+| Habit fatigue, new-habit realism (streak protection dropped — see density decision) | rules-engine module 2 |
 | Wellbeing pattern detection, one nudge a day | rules-engine module 5, `NudgeLog` |
 | During-day guidance (one card a day), notification-denied fallback, empty states | rules-engine module 6, [today-list.md](../../journeys/today-list) |
 | Onboarding intro screens (meet Jamaal, concept, capacity, notifications) | [onboarding.md](../../journeys/onboarding) |
@@ -41,7 +41,7 @@ Where the summary and the repo conflict on **structure, platform or business**, 
 | Warm palette (off-white/charcoal/terracotta/sage) | ThreadsKit's cool palette ([threadskit-usage](../../design/threadskit-usage)) |
 | Fixed `personal`/`family`/`work` strings vs. "no tags ever" | Editable `TaskCategory` list (see below) |
 | `Task.status` string, `scheduledFor` non-optional, `sortOrder` | `isCompleted`/`completedAt`/`droppedAt`, optional `dueDate`; ordering derived |
-| Per-habit `currentStreak`, `isActive`, stored skip/fatigue fields | Per-window streaks, `isArchived`, fatigue derived from `HabitEntry` |
+| Per-habit `currentStreak`, `isActive`, stored skip/fatigue fields | Per-window density from `HabitEntry` (no streaks — decided after reviewing the design project), `isArchived`, fatigue derived |
 
 ## Merged / changed
 
