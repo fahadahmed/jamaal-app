@@ -1,8 +1,8 @@
 # Anchor
 
-> **Status: reviewed, resolved for v1.** Fields below reflect decisions made in review. See "Open questions" for what's still unsettled (mainly `AnchorRule`'s schedule representation, and ADR 0001 itself, which is still an empty stub).
+> **Status: reviewed, resolved for v1 — except the generated-vs-user-created positioning below, flagged for revisiting.** Fields below reflect decisions made in review. See "Open questions" for what's still unsettled (mainly `AnchorRule`'s schedule representation, and ADR 0001 itself, which is still an empty stub).
 
-Something the user's life **moves around**. **Generated** (not user-created directly), tracked via attendance rather than streaks. Timing and the consequence of a miss are external to the user. Examples: prayer windows (including salah — see [habit.md](habit) for why salah lives here and not as a Habit), school runs, bin night, watering plants.
+Something the user's life **moves around**. **Generated** (not user-created directly — flagged to revisit, see "Open questions"), tracked via attendance rather than streaks. Timing and the consequence of a miss are external to the user. Examples: prayer windows (including salah — see [habit.md](habit) for why salah lives here and not as a Habit), school runs, bin night, watering plants.
 
 Full rationale for Anchor as a third primitive (vs. folding into Habit) is meant to live in [ADR 0001](../architecture/decisions/0001-anchor-object-type) — that file is currently an empty stub and needs to be filled in.
 
@@ -42,6 +42,7 @@ Anchor instances are generated from a persisted `AnchorRule` (confirmed in revie
 
 ## Open questions
 
+- **Generated-vs-user-created positioning**: flagged for revisiting later, not settled — worth re-examining whether users should ever be able to create an `Anchor` (or `AnchorRule`) directly rather than everything being system-generated. This affects onboarding's step 6 (see [onboarding.md](../journeys/onboarding)) and potentially the Today List/Night Planning interactions too.
 - **`AnchorRule.configData` shape**: a JSON blob is a pragmatic placeholder, not a final design — each `sourceKey` needs its own decoded shape, to be defined alongside the rules-engine module boundaries ([issue #7](https://github.com/fahadahmed/jamaal-app/issues/7)).
 - **ADR 0001 is still empty**: this doc references it for "why Anchor is a third primitive" but there's no content there yet to point to — worth filling in now that the Habit/Anchor boundary is actually resolved.
 - **Sharing/referral**: same note as Task/Habit — deliberately left out of this draft, pending [issue #8](https://github.com/fahadahmed/jamaal-app/issues/8).
