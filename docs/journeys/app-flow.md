@@ -120,6 +120,8 @@ Pricing (CLAUDE.md): free download, 14-day full-access trial, then subscription 
 | Empty states, notifications-off fallback, during-day guidance | Mockups exist |
 | **Anchor rules list + add/edit rule** — two forms: prayer times (location, method, madhab, prayers, Isha end; advanced adjustments) and the shared scheduled form (recurrence, named time slots, duration); "needs attention" state for undecodable rules | **New — no mockup** |
 | **Anchor group row on Today (collapsed "Salah 3/5" / expanded)** | **New — no mockup** |
+| **Window bar (upcoming / open / closing soon / closed) and Anchor actions: attended, not today, someone else did it** | **New — design project has a window bar to reuse, under the "ritual" name** |
+| **Exceptions editor on an Anchor rule (term break, holiday, travel, illness; open-ended)** | **New — design project draws one under the "ritual" name** |
 | **Anchor row on Today (window, attended / not today / missed)** | **New — no mockup** |
 | **Add one-off Anchor (from Today's add choice and Night Planning step 3)** | **New — no mockup** |
 | **Category management (Settings)** | **New — no mockup** |
@@ -145,6 +147,7 @@ Resolved in this reconciliation:
 - [x] Notification permission — asked in onboarding, with an in-app fallback
 - [x] Habit vs. Anchor boundary — salah is an Anchor; groups hold Habits only
 - [x] Anchor positioning — recurring rules (instances generated) plus one-offs; `skipped` status; named "Anchors" in the UI; rules managed in the Habits tab's Anchors segment
+- [x] Ritual features adopted into Anchors — interval-from-last-done (`afterLast`), exceptions ranges, `delegated` status, derived window states with attended logged only while open; "ritual" label retired, prayers stay an opt-in preset, HabitGroup kept
 - [x] `AnchorRule` config shapes — two families (computed prayer times; a shared scheduled recurrence + slots shape for school run, bin night, plant watering and custom); coarse device location for prayer times; Isha closes at Islamic midnight by default; Today shows a grouped row per rule with several Anchors a day; instances keyed by `(rule, occurrenceDate, slotKey)`
 - [x] Pricing / platforms / bundle ID — repo (CLAUDE.md) wins over v2
 - [x] Trial and subscription — app-managed 14-day trial, then read-only with a calm paywall
@@ -155,7 +158,7 @@ Still open — settle before or during screen design:
 
 - [ ] Start/Finish tracking on tasks ([task.md](../schema/task))
 - [ ] Onboarding: which steps are skippable (proposal in [onboarding.md](onboarding))
-- [ ] Anchor extras: pause a rule until a date (holidays), Jumu'ah on Fridays, reminder lead time ([anchor.md](../schema/anchor) open questions)
+- [ ] Anchor extras: Jumu'ah on Fridays, reminder lead time, correcting a closed window ([anchor.md](../schema/anchor) open questions)
 - [ ] Category colours and habit heatmap colours — ThreadsKit has no sage and only two accents ([threadskit-usage](../design/threadskit-usage))
 - [ ] Fonts (Fraunces + DM Sans intended, unconfirmed in ThreadsKit)
 - [ ] Wellbeing score composition

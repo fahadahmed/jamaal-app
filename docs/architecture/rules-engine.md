@@ -109,13 +109,15 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 
 - **Input**: all enabled `AnchorRule`s, a generation horizon (today + tomorrow).
 - **Behavior**: decodes each rule's `configData` (two families, shapes in [anchor.md](../schema/anchor#configdata-shapes)) and generates concrete `Anchor` instances (`occurrenceDate`/`slotKey`/`windowStart`/`windowEnd`/`title`/`effortMinutes`, linked via `rule`, `attendanceStatus = pending`).
-  - **Scheduled rules** (`schoolRun`, `binNight`, `plantWatering`, `custom`): for each date in the horizon that matches the recurrence, one instance per slot, with the window at local wall-clock `start` for `windowMinutes` (or the whole day if `allDay`), until `endDate`.
+  - **Scheduled rules** (`schoolRun`, `binNight`, `plantWatering`, `custom`): for each date in the horizon that matches the recurrence, one instance per slot, with the window at local wall-clock `start` for `windowMinutes` (or the whole day if `allDay`), until `endDate`. Dates inside an `exceptions` range produce nothing.
+  - **`afterLast` rules** (plants): not date-driven. Generates one live instance per slot; when it is resolved (`attended` / `skipped` / `delegated`) the next window opens `minDays` later and closes at the end of day `maxDays`, and after a `missed` one it opens the next day. An exception pauses the interval clock. These are *floating* Anchors: they count toward the day's minutes but don't split the day (see module 7).
   - **Prayer rules**: for each date, computes the day's prayer times on-device from date, location, `method`, `madhab`, `highLatitude` and per-prayer adjustments, then builds windows Fajr → sunrise, Dhuhr → Asr, Asr → Maghrib, Maghrib → Isha, Isha → `ishaEnds`. Deterministic for the same inputs.
   - **Idempotent**, keyed by `(rule, occurrenceDate, slotKey)` — *not* window start, because a rule edit or a recalculated prayer time can move the window without changing which occurrence it is. An existing instance — including a `skipped`, `attended` or `missed` one — is never recreated or duplicated; two devices generating at once dedup to one.
   - **Rule edits, disabling and location changes** update *pending* instances from today onward in place (matched by key), remove pending instances the rule no longer produces, and never rewrite attended, missed or skipped ones.
   - **Undecodable `configData`** (invalid, or a newer `version` than this build understands) → the rule is skipped, flagged "needs attention", and never deleted or partially generated.
   - One-off Anchors (no `rule`) need no generation but are finalised like any other.
-- **Output**: new `Anchor` rows. Instances whose window has passed while still `pending` are finalised as `missed` at the next evaluation (`skipped` instances are left alone and never count as misses) — no consequence beyond the record; messaging is copy, not data.
+- **Window state and logging**: derives each Anchor's window state (`upcoming` / `open` / `closingSoon` / `closed`) from the clock and enforces the logging rules in [anchor.md](../schema/anchor#window-state-and-logging-rules) — `attended` only while open, `skipped`/`delegated` any time before it closes, `closed` final. Signal: `.windowState(anchor)`.
+- **Output**: new `Anchor` rows. Instances whose window has passed while still `pending` are finalised as `missed` at the next evaluation (`skipped` and `delegated` instances are left alone and never count as misses) — no consequence beyond the record; messaging is copy, not data.
 
 ### 4. Night Planning orchestration (5-step wizard state machine)
 
@@ -165,6 +167,7 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
   | > 140%     | `exhausting` | strong suggestion to defer something |
 
   Also decides what Today shows at each capacity level (proposed, tunable): **low** — Anchors, `doFirst` tasks and habits whose window is closing and not yet done; **medium** — everything due except `letGo` tasks; **high** — everything due. Anything not shown appears under a collapsed "also today" section with a count — nothing silently disappears.
+- **Anchors in the load**: `skipped` and `delegated` Anchors stop counting as committed minutes once set (nobody has to spend that time). `afterLast` Anchors count their minutes but are *floating* — they don't form the day's fixed spine. How fixed Anchors shape the day into free blocks belongs to the capacity-model decision, still open.
 - **Suggested capacity**: from tomorrow's committed minutes the engine can suggest a level (e.g. committed minutes above half the medium budget → suggest `low`). The user always decides.
 - **Signals**: `.loadState`, `.committedMinutes`, `.suggestedCapacity`, `.missingDurations(count)`, `.todayVisibility`.
 
