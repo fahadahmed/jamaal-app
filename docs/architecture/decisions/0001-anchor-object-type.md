@@ -12,7 +12,7 @@ Jamaal began (in the earlier planning chat) with two primitives, Task and Habit.
 
 ## Decision
 
-Add a third primitive, **Anchor**: something the user's life *moves around*, whose timing and the consequence of a miss are external. Anchors are tracked by **attendance** (`pending` / `attended` / `missed` / `skipped`), not streaks or completion.
+Add a third primitive, **Anchor**: something the user's life *moves around*, whose timing and the consequence of a miss are external. Anchors are tracked by **attendance** (`pending` / `attended` / `missed` / `skipped` / `delegated`), not streaks or completion.
 
 | Primitive | Created by | Tracked via | Nature |
 | --------- | ---------- | ----------- | ------ |
@@ -48,6 +48,8 @@ Why: "generated" alone doesn't fit how people actually have fixed-time commitmen
 Boundary: a one-off Anchor is fixed-time and attendance-tracked; a Task with a due date is flexible and completion-tracked.
 
 **`skipped` status.** An instance that doesn't apply (school holidays, a skipped bin night) gets a "Not today" action that sets `skipped`. It is not a miss, is ignored by wellbeing patterns, and is never regenerated. Otherwise holidays would read as misses, against the app's non-punitive tone.
+
+**Ritual features adopted.** The Claude Design flow spec independently arrived at the same third object under the name "ritual". Its useful additions were adopted into Anchors: an interval-from-last-done recurrence (`afterLast`, for plants), exceptions date ranges (term break, holiday, travel, illness), a `delegated` status (done by someone else), and derived window states with attendance loggable only while the window is open. Two differences stay: the name is "Anchor" (the design should be relabelled), and prayers are an opt-in preset a user can disable — not a pre-built, undeletable object — because Jamaal is a general app.
 
 **Naming.** Users see "Anchors" (not "Fixed times" or "Commitments"); onboarding teaches the three-way frame: things you *do*, *cultivate*, *attend*.
 
