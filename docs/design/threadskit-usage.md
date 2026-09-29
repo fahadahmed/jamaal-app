@@ -54,13 +54,14 @@ Built in `Jamaal/Components/` on top of the tokens above:
 - Habit group completion ring
 - Habit heatmap grid
 - Wellbeing sparkline (Swift Charts)
-- Night Planning 5-step wizard
+- Night Planning 5-step wizard (review & carry forward → reflect → plan → capacity & load check → confirm)
 
 Navigation chrome (floating pill tab bar, translucent nav circles) uses the iOS 26 Liquid Glass system APIs, tinted with `glassOn` where a tint is needed.
 
 ## Open decisions
 
-1. **Palette change vs. existing mockups.** ThreadsKit moved from the warm ceramic palette (off-white, charcoal, terracotta, sage) to the cool palette above — a major-version-level change per ThreadsKit's own versioning notes. Any HTML mockups made on the old palette need re-skinning before they are used as a design reference.
-2. **No sage.** There is no green-family token other than the teal `accent`. Habit rings, heatmap intensity and sparklines need a colour plan using `accent` (with opacity steps? a new token?) and `terra`. Per ThreadsKit's rule, a new colour is a new asset-catalog token upstream, not an `.opacity()` at the call site.
+1. **Palette change vs. existing mockups.** ThreadsKit moved from the warm ceramic palette (off-white, charcoal, terracotta, sage) to the cool palette above — a major-version-level change per ThreadsKit's own versioning notes. The existing HTML mockups (`mockups/legacy/`) are all on warm palettes and have little Liquid Glass styling, so they are layout/flow reference only.
+2. **No sage.** There is no green-family token other than the teal `accent`. Habit rings, heatmap intensity and sparklines need a colour plan using `accent` (with opacity steps? a new token?) and `terra`. The heatmap needs 3 states for binary habits (empty / missed / complete) and 5 for counted (empty / missed / partial-low / partial-high / complete); v2 mapped them to soft terracotta and three sage tints.
+   - **Category colours** (see [task.md](../schema/task)): editable categories need a small fixed set of label colours, and the two accents aren't enough. Per ThreadsKit's rule, a new colour is a new asset-catalog token upstream, not an `.opacity()` at the call site.
 3. **Fonts.** `CLAUDE.md` names Fraunces + DM Sans. ThreadsKit does not bundle any font yet, and its README does not name the faces. Confirm the faces and licensing upstream.
 4. **Dependency not wired yet.** ThreadsKit is not yet added to `Jamaal.xcodeproj`. Check the app's deployment target against ThreadsKit's iOS 18 / macOS 15 minimum when adding it.
