@@ -52,6 +52,7 @@ Where the summary and the repo conflict on **structure, platform or business**, 
 - **`DailyCapacity` → `DayPlan`**: widened with planned/completed effort, load score, overloaded flag and completion rate, because wellbeing patterns need per-day history. v2's `WellbeingSnapshot` is not restored — wellbeing stays derived.
 - **Rules engine**: six modules → seven (added Capacity & load). Numbering of the original six is unchanged.
 - **New models** (v2 had some in different form): `TaskCategory`, `DeferralRecord`, `HabitEntry`, `HabitGroup`, `DayPlan`, `NudgeLog`. Total persisted: Task, TaskCategory, DeferralRecord, Habit, HabitTimeWindow, HabitEntry, HabitGroup, Anchor, AnchorRule, DayPlan, NightPlanningSession, NudgeLog.
+- **Recurring tasks** (not in v2 or the earlier repo docs): simple repeat on `Task` — `repeatKind`, `repeatWeekdays`, `seriesID`; one live instance per series.
 - **`UserPreferences`** stay in `UserDefaults`/`@AppStorage`, per v2 (per-device; fits notification times).
 
 ## Not carried over

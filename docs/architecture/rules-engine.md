@@ -92,8 +92,9 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
   - Orders tasks for Today by quadrant (`doFirst`, then `schedule`, `fitIn`, `letGo`), then `dueDate`, then `createdAt` — so `low` tasks, which are never important, naturally follow all medium/high tasks. Manual drag ordering is an open question.
   - Enforces the importance rules from [task.md](../schema/task): medium/high need a due date and never Someday; a medium/high task's 3rd deferral eases it to `low`.
   - Runs the automatic deferral at day rollover for dated tasks the user never handled.
+  - Creates the next instance of a repeating task when the live one is completed or dropped (rules in [task.md](../schema/task#repeating-tasks)); dedups by `(seriesID, dueDate)`.
   - Escalation: `deferralCount >= 3` → stale and urgency raised; `>= 5` → suggest removal.
-- **Signals**: `.taskOrder`, `.stale(task)`, `.suggestRemoval(task)`, `.priorityEased(task)` (medium/high → low on 3rd deferral), `.pickPriorities` (5+ tasks in a plan and fewer than two `medium`/`high` → "pick one or two that matter most"), `.multipleDoFirst` (two or more `doFirst` tasks → companion asks "which matters most?").
+- **Signals**: `.taskOrder`, `.stale(task)`, `.suggestRemoval(task)`, `.priorityEased(task)` (medium/high → low on 3rd deferral), `.nextInstanceDue(series)`, `.pickPriorities` (5+ tasks in a plan and fewer than two `medium`/`high` → "pick one or two that matter most"), `.multipleDoFirst` (two or more `doFirst` tasks → companion asks "which matters most?").
 
 ### 2. Habit streak tracking & intelligence
 

@@ -35,9 +35,9 @@ Set two ways: from Night Planning the evening before, or directly here if the da
 ## Task interactions
 
 - **Complete**: tap the check.
-- **Detail sheet** (bottom sheet): title, notes as a tappable markdown checklist, category, effort estimate, importance, due date, deferral history; actions — Defer, Drop, and (pending decision) Start/Finish (see [task.md](../schema/task) open questions).
+- **Detail sheet** (bottom sheet): title, notes as a tappable markdown checklist, category, effort estimate, importance, due date, deferral history; actions — Defer, Drop (for a repeating task, skips only this occurrence), Stop repeating, and (pending decision) Start/Finish (see [task.md](../schema/task) open questions).
 - **Defer**: 1st and 2nd deferral moves the task to tomorrow instantly; from the 3rd a date picker opens with reason chips.
-- **Add task** (bottom sheet): title, effort (15 / 30 / 60 / 120 min), notes, importance (`low` by default), category, schedule (today / tomorrow / Later this week / Next week / Someday / pick a date). Choosing `medium`/`high` importance makes the date required (pre-filled with today, not clearable) and hides Someday. A `low` task with no date is a backlog task.
+- **Add task** (bottom sheet): title, effort (15 / 30 / 60 / 120 min), notes, importance (`low` by default), category, schedule (today / tomorrow / Later this week / Next week / Someday / pick a date), repeat (Never / Daily / Weekly + days / Monthly — needs a date, hides Someday). Choosing `medium`/`high` importance makes the date required (pre-filled with today, not clearable) and hides Someday. A `low` task with no date is a backlog task.
 
 ## During-day guidance
 

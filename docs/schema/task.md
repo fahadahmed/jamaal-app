@@ -20,6 +20,9 @@ Tasks live in **one flat list** — no projects, no tags, no sub-lists. `categor
 | `completedAt`   | `Date?`   | `nil`     | Set when `isCompleted` flips true; cleared if un-completed. |
 | `droppedAt`     | `Date?`   | `nil`     | Set when the user drops a task (Night Planning carry-forward "Drop", or delete-from-detail). Soft-delete so history/wellbeing detection keep working. A dropped task never appears on Today. |
 | `deferralCount` | `Int`     | `0`       | Times this task has been pushed to a later day — by the user (Keep/Later at night, defer from Today) or automatically (see below). Replaces the earlier `rolloverCount`. |
+| `repeatKind`    | `String`  | `"none"`  | One of `none` / `daily` / `weekly` / `monthly`. See [Repeating tasks](#repeating-tasks). |
+| `repeatWeekdays`| `String`  | `""`      | For `weekly`: ISO weekdays (Mon=1 … Sun=7), e.g. `"5"` for Fridays. Empty = same weekday as `dueDate`. |
+| `seriesID`      | `UUID?`   | `nil`     | Shared by every instance of a repeating task; `nil` for one-off tasks. |
 | `createdAt`     | `Date`    | `.now`    | |
 
 ## Relationships
@@ -62,6 +65,19 @@ Importance has three levels — `low` (the default and the baseline), `medium`, 
 3. **Important tasks can't keep slipping.** On a medium/high task's **3rd** deferral its `priority` is set to `low`, and the companion says so plainly ("This one keeps slipping, so I've eased it to low. Raise it again when it's real."). Never silent. Once it is `low`, the date requirement and the Someday restriction no longer apply.
 4. **Prioritisation prompt.** If a day's plan has **five or more tasks** and fewer than two of them are `medium`/`high`, the companion prompts the user to pick one or two that matter most. It's a prompt, not a block. This appears in Night Planning's plan step (and can appear on Today).
 5. **Ordering.** By quadrant (`doFirst`, `schedule`, `fitIn`, `letGo`), then due date, then `createdAt`. Because `low` tasks are never important, they always fall in `fitIn`/`letGo` and so sort after every `medium`/`high` task. A `low` task with no date is a backlog task.
+
+## Repeating tasks
+
+A simple repeat for recurring "do" items ("submit timesheet every Friday", "pay rent monthly"). Recurring things that are *self-paced* stay Habits, and things *externally timed and attendance-based* stay Anchors; a repeating Task is the completion-based case neither covers.
+
+- **Kinds**: daily; weekly on chosen days; monthly (same day-of-month as `dueDate`, clamped to month end). No end dates and no per-occurrence exceptions in v1.
+- **Requires a due date.** `repeatKind != none` ⇒ `dueDate != nil`. Someday is hidden for repeating tasks.
+- **One live instance per series.** Only one incomplete instance exists at a time, so a neglected weekly task never piles up into a backlog of copies.
+- **Next instance**: when the live instance is completed **or dropped**, the next is created with the next occurrence strictly after `max(dueDate, completion day)`. So finishing a weekly Friday task on a Sunday schedules the *next* Friday, not the one already passed.
+- **Copied to the next instance**: `title`, `notes`, `category`, `effortMinutes`, `priority`, repeat fields and `seriesID`. **Reset**: `isCompleted`, `deferralCount`, deferral records, `droppedAt`.
+- **Drop skips only this occurrence** — the series continues. A separate **Stop repeating** action in the detail sheet ends it (sets `repeatKind` to `none` on the live instance).
+- **Deferral rules apply per instance** (the 3rd-deferral easing of `medium`/`high` importance included). Moving an instance with Keep/Later changes only that instance's date; the following instance still follows the pattern.
+- **Idempotency**: two devices may both try to create the next instance. The engine treats `(seriesID, dueDate)` as its dedup key and removes duplicates (CloudKit has no unique constraints).
 
 ## Deferral behaviour
 

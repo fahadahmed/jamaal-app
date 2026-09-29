@@ -50,6 +50,31 @@ Tab bar (floating pill): **Today · Habits · Wellbeing · Settings**
 
 Night Planning is a full-screen modal launched from Today (or a notification). Onboarding runs once, before the tabs.
 
+### Adaptive layout (iPad and Mac)
+
+One design language, same four destinations, layout adapted to width:
+
+| | Compact width (iPhone) | Regular width (iPad, Mac) |
+| --- | --- | --- |
+| Navigation | Floating pill tab bar | Sidebar (adaptable tab/sidebar navigation) |
+| Task detail | Bottom sheet | Trailing inspector pane beside Today |
+| Add task | Bottom sheet | Popover / sheet |
+| Night Planning | Full-screen modal | Centred modal, fixed comfortable width |
+| Habits, Wellbeing, Settings | Full-screen pushes | Content pane with detail alongside where useful |
+
+Mac additionally gets menu-bar commands and keyboard shortcuts (new task, open Night Planning). Design the compact layout first, then the regular-width variants of Today, task detail and Night Planning; the rest stretch. **iPhone Duo** (CLAUDE.md lists it as first-class) is still undefined — see "Gaps found in review".
+
+## Trial and subscription
+
+Pricing (CLAUDE.md): free download, 14-day full-access trial, then subscription only ($2.99/mo or $24.99/yr).
+
+- **Trial**: app-managed. It starts at first launch with no payment up front and no card. Onboarding's final screen mentions it in one calm line ("14 days, everything included").
+- **Trial start date** must survive reinstalls and multiple devices, so it can't live only in local storage. Likely source: the app's original-download date from StoreKit (`AppTransaction`), with a synced fallback. Implementation detail to confirm.
+- **During the trial**: nothing changes. Settings has a trial-status row ("9 days left"). Reminders about the end are gentle and infrequent (e.g. days 12 and 14).
+- **Day 15 — paywall**: a calm full-screen paywall on next open. Monthly and yearly options, restore purchases, and a plain "Not now".
+- **Not subscribed → read-only**: Today, habits, wellbeing and history stay fully viewable, and ticking existing items off (complete a task, mark an Anchor attended, count a habit) still works so the day isn't held hostage. **Locked**: creating or editing tasks, habits, anchors and categories, Night Planning, and changing capacity. Data export always works. A slim banner explains and offers to subscribe.
+- **Subscribing** lifts everything immediately; nothing is lost either way.
+
 ## Screen inventory (from v2, updated)
 
 | Screen | Status |
@@ -71,6 +96,10 @@ Night Planning is a full-screen modal launched from Today (or a notification). O
 | **Anchor rules list + add/edit rule (per-type forms)** | **New — no mockup** |
 | **Anchor row on Today (window, attended/missed)** | **New — no mockup** |
 | **Category management (Settings)** | **New — no mockup** |
+| **Repeat picker (in add task / detail)** | **New — no mockup** |
+| **Paywall** | **New — no mockup** |
+| **Trial status row and read-only banner** | **New — no mockup** |
+| **Regular-width layouts: sidebar, Today + inspector, Night Planning modal** | **New — no mockup** |
 | Icon set, app icon | Exist (legacy palette) |
 
 Legacy mockups are in `mockups/legacy/` — layout/flow reference only; they predate ThreadsKit's cool palette.
@@ -89,6 +118,9 @@ Resolved in this reconciliation:
 - [x] Notification permission — asked in onboarding, with an in-app fallback
 - [x] Habit vs. Anchor boundary — salah is an Anchor; groups hold Habits only
 - [x] Pricing / platforms / bundle ID — repo (CLAUDE.md) wins over v2
+- [x] Trial and subscription — app-managed 14-day trial, then read-only with a calm paywall
+- [x] iPad and Mac navigation — sidebar on regular width, inspector for task detail
+- [x] Recurring tasks — simple repeat on Task, one live instance per series
 
 Still open — settle before or during screen design:
 
@@ -109,9 +141,9 @@ Not covered anywhere in the docs yet (checked by search). Grouped by what they w
 
 **Would change screens or journeys**
 
-- **Trial and paywall.** CLAUDE.md says 14-day full-access trial, then subscription — but there is no paywall screen, trial-status UI, or "trial ended" behaviour (read-only? locked?) in the flow.
-- **Adaptive layout.** Navigation above is iPhone-only. iPad and macOS (both in v1) need a sidebar or split layout, and CLAUDE.md's "first-class iPhone Duo support" is undefined.
-- **Recurring tasks.** `Task` has no recurrence. Habits (self-paced) and Anchors (external) cover a lot, but "submit timesheet every Friday" fits neither cleanly. Decide: intentionally unsupported, or an Anchor/Task variant.
+- ~~**Trial and paywall.**~~ **Resolved** — see "Trial and subscription". Still open: what the evening Night Planning notification does after the trial ends (proposal: stops), and whether the trial-end reminders are notifications or in-app only.
+- ~~**Adaptive layout.**~~ **Resolved for iPad and Mac** — see "Adaptive layout". **iPhone Duo** ("first-class" in CLAUDE.md) is still undefined: what device or mode does it mean, and what changes for it?
+- ~~**Recurring tasks.**~~ **Resolved** — simple repeat on Task, see [task.md](../schema/task#repeating-tasks).
 - **Calendar and other apps.** The stated goal is to stop bouncing between reminder, task and calendar apps, but nothing says whether Jamaal reads calendar events, imports Reminders, or ignores them.
 - **Habit pause.** No way to pause a streak for travel or illness; matters for a non-punitive tone.
 - **Quick capture and system surfaces.** No widgets, share extension, App Intents/Siri, or Live Activities — likely important for a "Today" app, and they shape what data must be reachable outside the app.
