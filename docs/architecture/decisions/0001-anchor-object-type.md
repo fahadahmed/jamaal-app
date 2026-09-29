@@ -6,9 +6,9 @@
 
 Jamaal began (in the earlier planning chat) with two primitives, Task and Habit. Salah — five daily prayers — was modelled as five binary habits in a "Salah" group. That fit badly:
 
-- A Habit is **self-paced**: the user decides when and whether to do it, and success is a streak the user builds.
+- A Habit is **self-paced**: the user decides when and whether to do it, and success is a pattern the user builds (shown as density, not streaks).
 - Prayer windows are **externally fixed**: the times come from the sun, and the window closing is a fact of the day, not a choice. The same is true of a school run, bin night or (less rigidly) watering plants on a schedule.
-- Streak framing is wrong for these. Missing Dhuhr should not read as "streak broken, start again" — attendance is the honest measure.
+- A shaded-grid of "how much did I do" is the wrong lens for these. Missing Dhuhr is not a gap in a pattern you are building — the window closed on something external, and attendance is the honest measure.
 
 ## Decision
 
@@ -17,7 +17,7 @@ Add a third primitive, **Anchor**: something the user's life *moves around*, who
 | Primitive | Created by | Tracked via | Nature |
 | --------- | ---------- | ----------- | ------ |
 | Task | User | Completion | Something you *do* |
-| Habit | User | Streaks | Something you *cultivate* |
+| Habit | User | Density | Something you *cultivate* |
 | Anchor | User — as a recurring rule (instances generated) or a one-off | Attendance | Something your life *moves around* |
 
 Recurring Anchors are generated from a persisted `AnchorRule` (`sourceKey` + `configData`), not computed ad hoc, so user-defined recurring commitments work without code changes.
@@ -33,7 +33,7 @@ Recurring Anchors are generated from a persisted `AnchorRule` (`sourceKey` + `co
 
 *The second alternative below is inferred from the schema docs, not recorded from the original discussion — correct it if it wasn't actually weighed.*
 
-- **Keep salah as a Habit group** (the v2 design): works visually, but streak semantics are wrong and prayer times have to be hand-entered and re-entered.
+- **Keep salah as a Habit group** (the v2 design): works visually, but attendance semantics are wrong and prayer times have to be hand-entered and re-entered.
 - **Model an Anchor as a Task with a fixed time window**: loses attendance semantics and pollutes the completion-based Task list with things that can't be deferred.
 
 ## Positioning

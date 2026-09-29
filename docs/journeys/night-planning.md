@@ -48,7 +48,7 @@ Set tomorrow's capacity — `low` / `medium` / `high`. The step first shows what
 
 ### 5. Confirm
 
-Locks tomorrow's plan, writes the `DayPlan` (capacity, planned effort, load score) and schedules tomorrow's notifications. The done screen: "Good night", and a planning-night streak counter.
+Locks tomorrow's plan, writes the `DayPlan` (capacity, planned effort, load score) and schedules tomorrow's notifications. The done screen: "Good night", and a plain count of nights planned (not a streak).
 
 ## State machine
 

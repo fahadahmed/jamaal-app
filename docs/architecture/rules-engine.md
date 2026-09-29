@@ -34,7 +34,7 @@ Not primitives — engine state, documented here rather than in `docs/schema/`.
 
 ### `DayPlan`
 
-The per-day record. Replaces the earlier `DailyCapacity`, widened because wellbeing pattern detection (heavy-day streaks, completion collapse) needs a history of how each day actually went, and that can't be reconstructed from tasks once their due dates have been deferred.
+The per-day record. Replaces the earlier `DailyCapacity`, widened because wellbeing pattern detection (runs of heavy days, completion collapse) needs a history of how each day actually went, and that can't be reconstructed from tasks once their due dates have been deferred.
 
 | Field                    | Type      | Default    | Notes |
 | ------------------------ | --------- | ---------- | ----- |
@@ -73,7 +73,7 @@ Lets a deterministic engine enforce "one nudge a day" and "don't repeat a warnin
 | Field         | Type      | Default    | Notes |
 | ------------- | --------- | ---------- | ----- |
 | `id`          | `UUID`    | `UUID()`   | |
-| `kind`        | `String`  | `""`       | `wellbeing` / `guidance` / `fatigue` / `streakProtection` / `overload`. |
+| `kind`        | `String`  | `""`       | `wellbeing` / `guidance` / `fatigue` / `windowClosing` / `overload`. |
 | `subjectKey`  | `String?` | `nil`      | The habit/task the nudge was about (UUID string), if any. |
 | `sentAt`      | `Date`    | `.now`     | |
 | `dismissedAt` | `Date?`   | `nil`      | |
@@ -96,14 +96,14 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
   - Escalation: `deferralCount >= 3` → stale and urgency raised; `>= 5` → suggest removal.
 - **Signals**: `.taskOrder`, `.stale(task)`, `.suggestRemoval(task)`, `.priorityEased(task)` (medium/high → low on 3rd deferral), `.nextInstanceDue(series)`, `.pickPriorities` (5+ tasks in a plan and fewer than two `medium`/`high` → "pick one or two that matter most"), `.multipleDoFirst` (two or more `doFirst` tasks → companion asks "which matters most?").
 
-### 2. Habit streak tracking & intelligence
+### 2. Habit density & intelligence
 
-- **Input**: `HabitEntry` history, `HabitTimeWindow` streak fields, current date.
-- **Behavior**: streaks per window per the rules in [habit.md](../schema/habit) (partial counted days don't advance a streak but are recorded). On top of streaks, detects:
+- **Input**: `HabitEntry` history, `HabitTimeWindow` targets and schedule, current date.
+- **Behavior**: derives each window's **density** — the per-day completion grid and rolling completion rate — per the rules in [habit.md](../schema/habit#density-not-streaks). There are no streaks: nothing resets or breaks, and a partial counted day is recorded as a partial, not a miss. From density it produces the plain-language read shown beside the grid, and detects:
   - **Fatigue** — more than 50% of due days missed over three weeks (counted habits use `completionRatio`, not binary) → suggest changing frequency.
-  - **Streak protection** — a meaningful streak at risk as its window closes.
+  - **Window closing** — a due window still open and unfinished as it nears its end (a light reminder, never a warning about losing something).
   - **New-habit realism** — four or more habits created in one week → suggest starting with one or two.
-- **Signals**: `.streakAtRisk`, `.habitFatigue`, `.newHabitOverload`.
+- **Signals**: `.densityRead(habit)`, `.windowClosing(window)`, `.habitFatigue`, `.newHabitOverload`.
 
 ### 3. Anchor generation (window-bound instances, attendance)
 
@@ -125,7 +125,7 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
   2. **Reflect** — mood 1–5 + optional note.
   3. **Plan tomorrow** — choose/reorder/add tasks and habits for tomorrow; tomorrow's Anchors shown read-only. This is where **importance is set** (due date pre-filled with tomorrow for medium/high); emits `.pickPriorities` when the plan has 5+ tasks and fewer than two are `medium`/`high`. Surfaces `schedule`-quadrant tasks as suggestions.
   4. **Capacity & load check** — set tomorrow's capacity (`low`/`medium`/`high`); shows the computed load state from module 7 and flags an overloaded day *before* confirming.
-  5. **Confirm** — locks the plan, upserts `DayPlan`, hands off to module 6 to schedule tomorrow's notifications. Done screen: "Good night" plus a planning-night streak (consecutive completed sessions — derived).
+  5. **Confirm** — locks the plan, upserts `DayPlan`, hands off to module 6 to schedule tomorrow's notifications. Done screen: "Good night" plus a plain count of nights planned ("12 nights planned" — derived from completed sessions, not a streak).
 - **Depends on module 6** (evening trigger) and **module 7** (load check).
 - **Output**: a completed `NightPlanningSession`, a `DayPlan` for tomorrow.
 
@@ -134,17 +134,17 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 - **Input**: `reflectionMood` history, `DayPlan` history (`wasOverloaded`, `completionRate`), `HabitEntry` history, `DeferralRecord`s.
 - **Behavior**: purely derived — no stored wellbeing model.
   - **Score**: shows "gathering data" until at least 7 days of mood exist, then a rolling score (window 7 or 14 days, TBD).
-  - **Pattern detection** over a rolling 7–14 days: `heavyStreak` (3+ overloaded days), `habitNeglect` (a habit missed 3+ days), `completionCollapse`, `avoidance` (a task deferred 4+ times), `weekendOverplan`.
+  - **Pattern detection** over a rolling 7–14 days: `heavyRun` (3+ overloaded days in a row), `habitNeglect` (a habit missed 3+ days), `completionCollapse`, `avoidance` (a task deferred 4+ times), `weekendOverplan`.
   - At most **one** wellbeing nudge per day (checked against `NudgeLog`).
 - **Signals**: `.wellbeingScore`, `.gatheringData`, `.pattern(kind)`.
 
 ### 6. Notification, nudge & guidance logic
 
-- **Input**: streaks at risk, upcoming Anchor windows, the planning time, capacity/load, `NudgeLog`.
+- **Input**: habit windows nearing their end, upcoming Anchor windows, the planning time, capacity/load, `NudgeLog`.
 - **Behavior**: schedules local notifications (`UNUserNotificationCenter`):
   - the **evening Night Planning prompt** (fixed, user-set time);
   - an optional **morning nudge**;
-  - per-window **habit reminders** and **streak-protection** nudges as a window's end approaches;
+  - per-window **habit reminders** and a light **window-closing** nudge as a window's end approaches;
   - **during-day guidance** — a highlighted task ("Start here" / "Good now") plus one companion card, max one per day. Chosen deterministically from time of day, remaining effort vs. remaining free time, a lighter-tasks-in-the-early-afternoon curve, and open habit windows.
 - **Trial and subscription**: when the trial ends unsubscribed, the evening Night Planning notification and habit/guidance nudges are cancelled and only a small number of trial-end reminders are sent (proposal: day 12, 14 and 15); everything returns on subscribing.
 - **Permission** is requested during onboarding, framed around the evening planning reminder.
@@ -164,7 +164,7 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
   | 110–140%   | `overloaded` | gentle warning |
   | > 140%     | `exhausting` | strong suggestion to defer something |
 
-  Also decides what Today shows at each capacity level (proposed, tunable): **low** — Anchors, `doFirst` tasks and habits with a streak at risk; **medium** — everything due except `letGo` tasks; **high** — everything due. Anything not shown appears under a collapsed "also today" section with a count — nothing silently disappears.
+  Also decides what Today shows at each capacity level (proposed, tunable): **low** — Anchors, `doFirst` tasks and habits whose window is closing and not yet done; **medium** — everything due except `letGo` tasks; **high** — everything due. Anything not shown appears under a collapsed "also today" section with a count — nothing silently disappears.
 - **Suggested capacity**: from tomorrow's committed minutes the engine can suggest a level (e.g. committed minutes above half the medium budget → suggest `low`). The user always decides.
 - **Signals**: `.loadState`, `.committedMinutes`, `.suggestedCapacity`, `.missingDurations(count)`, `.todayVisibility`.
 

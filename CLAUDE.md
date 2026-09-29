@@ -61,7 +61,7 @@ Because CloudKit sync is in from v1:
 | Primitive  | Created by | Tracked via             | Nature                                                                                                                                                       |
 | ---------- | ---------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Task**   | User       | Completion              | Something you _do_                                                                                                                                           |
-| **Habit**  | User       | Streaks                 | Something you _cultivate_ — supports time-windowed occurrences (e.g. five daily prayers as a preset)                                                         |
+| **Habit**  | User       | Density (a grid of days), not streaks | Something you _cultivate_ — supports time-windowed occurrences (e.g. five daily prayers as a preset)                                                         |
 | **Anchor** | User — as a recurring rule (instances generated) or a one-off | Attendance (attended / missed / skipped), not streaks | Something your life _moves around_ — timing and the consequence of a miss are external to the user (prayer windows, school runs, bin night, watering plants) |
 
 Full rationale for Anchor as a third type (vs. folding into Habit): `docs/architecture/decisions/0001-anchor-object-type.md`.
@@ -81,11 +81,11 @@ Notes feature was dropped in favor of optional lightweight markdown (checklists,
 Deterministic — same state + inputs always produce the same output, no ML/heuristics. Seven modules (numbering of the original six is stable; **boundaries are a draft, confirm before implementing** — see `docs/architecture/rules-engine.md`):
 
 1. Task scheduling (due dates, rollover)
-2. Habit streak tracking
+2. Habit density & intelligence (no streaks)
 3. Anchor generation (window-bound instances, attendance)
 4. Night Planning orchestration (5-step wizard state machine: review & carry forward → reflect → plan → capacity & load check → confirm)
 5. Wellbeing scoring ("gathering data" → active score)
-6. Notification/nudge logic (streak-protection, during-day guidance)
+6. Notification/nudge logic (window-closing reminders, during-day guidance)
 7. Capacity & load (budget from `low`/`medium`/`high`, load states, what Today shows)
 
 Modules emit typed signals; a separate message-template layer phrases them in Jamaal's companion voice.
