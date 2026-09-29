@@ -19,6 +19,6 @@ Walks a new user through setting up the app and creating one example of each pri
 ## Open questions
 
 - **Skippable steps**: proposal — steps 1–4 and 6–7 are required; step 5 (notifications) and step 8 (Anchor) can be skipped, since a non-Muslim user with no school run shouldn't be forced to invent an Anchor. Needs confirmation; it trades "all three primitives demonstrated" for honesty.
-- **Anchor setup premise** rests on the parked generated-vs-user-created positioning. Recommended framing (see [ADR 0001](../architecture/decisions/0001-anchor-object-type)): the user creates a *recurring commitment* (an `AnchorRule`); the app *generates* its instances. If that framing changes, step 8 changes with it.
+- **Anchor setup** follows the settled positioning ([ADR 0001](../architecture/decisions/0001-anchor-object-type)): onboarding step 8 creates a recurring commitment (an `AnchorRule`). One-off Anchors aren't part of onboarding; they're introduced from Today's add button.
 - **`AnchorRule.configData` shapes** must be settled before step 8's per-type forms can be designed, at least for the four built-in `sourceKey`s. Prayer times additionally need location permission and a calculation method.
 - **Sample content**: whether steps 6–8 pre-fill sample values the user can edit, or start blank with placeholders.

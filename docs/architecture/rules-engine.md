@@ -108,13 +108,13 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 ### 3. Anchor generation (window-bound instances, attendance)
 
 - **Input**: all enabled `AnchorRule`s, a generation horizon (today + tomorrow).
-- **Behavior**: decodes each rule's `configData` per `sourceKey` and generates concrete `Anchor` instances (`windowStart`/`windowEnd`/`title`, linked via `rule`, `attendanceStatus = pending`). Proposed `configData` shapes (placeholders, not locked):
+- **Behavior**: decodes each rule's `configData` per `sourceKey` and generates concrete `Anchor` instances (`windowStart`/`windowEnd`/`title`/`effortMinutes`, linked via `rule`, `attendanceStatus = pending`). Generation is **idempotent**, keyed by `(rule, windowStart)`: an existing instance — including a `skipped` one — is never recreated or duplicated. Editing or disabling a rule affects only future instances. One-off Anchors (no `rule`) need no generation but are finalised like any other. Proposed `configData` shapes (placeholders, not locked):
   - `prayerWindow`: `{ "calculationMethod": "ISNA", "latitude": 0.0, "longitude": 0.0, "prayers": ["fajr","dhuhr","asr","maghrib","isha"] }`
   - `schoolRun`: `{ "weekdays": [1,2,3,4,5], "time": "08:15", "label": "dropoff" }`
   - `binNight`: `{ "weekdays": [3], "time": "19:00" }` (or `"intervalDays"` for a fortnightly rotation)
   - `plantWatering`: `{ "intervalDays": 3, "time": "09:00" }`
   - `custom`: unstructured for now, until a real use case shows up.
-- **Output**: new `Anchor` rows. Instances whose window has passed while still `pending` are finalised as `missed` at the next evaluation (no consequence beyond the record — messaging is copy, not data).
+- **Output**: new `Anchor` rows. Instances whose window has passed while still `pending` are finalised as `missed` at the next evaluation (`skipped` instances are left alone and never count as misses) (no consequence beyond the record — messaging is copy, not data).
 
 ### 4. Night Planning orchestration (5-step wizard state machine)
 
@@ -173,6 +173,6 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 - **Missing durations** count as zero, so load can be understated until durations are filled in. Current proposal: Night Planning's capacity step gently notes how many items have no duration, rather than guessing. Habit presets and the built-in anchor types ship default durations to keep this rare.
 - **Where the medium-day setting lives**: it changes computed load, so it should sync across devices. Preferences are per-device (`@AppStorage`); this one probably belongs in a small synced settings store (`NSUbiquitousKeyValueStore` or a `UserSettings` model). Decide before implementation.
 - **Wellbeing score composition**: v2's Wellbeing screen showed a single 0–100 score; this doc derives it from mood only. Decide whether completion rate and load also contribute.
-- **`AnchorRule.configData` shapes** remain a first pass, pending the Anchor positioning decision (see [ADR 0001](decisions/0001-anchor-object-type)).
+- **`AnchorRule.configData` shapes** remain a first pass; the Anchor positioning is settled, so only the per-type forms need these shapes finalised (see [ADR 0001](decisions/0001-anchor-object-type)).
 - **Notification limits**: iOS caps pending local notifications at 64 — confirm the reminder + nudge volume stays well under that (per-window habit reminders add up).
 - **Manual ordering** of Today (see [task.md](../schema/task)).
