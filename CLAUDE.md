@@ -4,7 +4,7 @@ Context for Claude Code sessions in this repo. This is a handoff from planning d
 
 ## What Jamaal is
 
-A calm-focus multiplatform app (iOS, iPadOS, macOS, with first-class iPhone Duo support) built around three primitives — **Task**, **Habit**, **Anchor** — with a deterministic rules engine and a guided Night Planning flow. Built primarily for the developer's own use: a single unified "Today" list spanning personal, family, and work items, replacing a pattern of bouncing between reminder/task/calendar apps that never stuck.
+A calm-focus multiplatform app (iOS, iPadOS, macOS, with first-class iPhone Duo (the foldable iPhone) support — see `docs/journeys/app-flow.md`) built around three primitives — **Task**, **Habit**, **Anchor** — with a deterministic rules engine and a guided Night Planning flow. Built primarily for the developer's own use: a single unified "Today" list spanning personal, family, and work items, replacing a pattern of bouncing between reminder/task/calendar apps that never stuck.
 
 Deliberately a **general** productivity app, not an Islamic-only one — Islamic practice habits (Qur'an reading, dhikr) and general habits (exercise, running) are just different presets of the same Habit engine, not a separate mode. Salah is modeled separately as an Anchor, not a Habit — see `docs/schema/anchor.md` — since its timing is externally fixed (prayer windows) rather than self-paced, which is Anchor's defining trait.
 
@@ -68,16 +68,27 @@ Full rationale for Anchor as a third type (vs. folding into Habit): `docs/archit
 
 Notes feature was dropped in favor of optional lightweight markdown (checklists, bold/italic, links, inline code) scoped to individual tasks, surfaced as a tappable checklist during a task/anchor's timed session — not a separate notes destination.
 
+## Product principles (carried from the earlier planning chat)
+
+- **One flat list, no projects, no tags — ever.** `Task.category` is an editable label list (defaults personal/family/work), one per task, used as a label and optional filter, never a grouping axis.
+- **Jamaal is also the companion voice** — calm, supportive, non-judgmental; inline cards, never a chat UI; no punitive severity colours. Tagline: "One list. Just today. Beautifully ordered."
+- **Hidden Eisenhower**: quadrant derived from importance (`priority`) and urgency (due date, deferrals), never shown.
+- Effort estimates + capacity level → load state; deferral escalates at the 3rd deferral (date picker) and 5th (suggest removal).
+- Full reconciliation with the earlier planning chat: `docs/architecture/decisions/0002-reconcile-master-summary-v2.md`. End-to-end flow and coherence checklist: `docs/journeys/app-flow.md`.
+
 ## Rules engine (JamaalCore)
 
-Deterministic — same state + inputs always produce the same output, no ML/heuristics. Six modules proposed (**boundaries are a first draft, confirm before implementing**):
+Deterministic — same state + inputs always produce the same output, no ML/heuristics. Seven modules (numbering of the original six is stable; **boundaries are a draft, confirm before implementing** — see `docs/architecture/rules-engine.md`):
 
 1. Task scheduling (due dates, rollover)
 2. Habit streak tracking
 3. Anchor generation (window-bound instances, attendance)
-4. Night Planning orchestration (5-step wizard state machine)
+4. Night Planning orchestration (5-step wizard state machine: review & carry forward → reflect → plan → capacity & load check → confirm)
 5. Wellbeing scoring ("gathering data" → active score)
 6. Notification/nudge logic (streak-protection, during-day guidance)
+7. Capacity & load (budget from `low`/`medium`/`high`, load states, what Today shows)
+
+Modules emit typed signals; a separate message-template layer phrases them in Jamaal's companion voice.
 
 ## Design system
 
@@ -87,7 +98,7 @@ Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity s
 
 ## Business context (informs priority, not architecture)
 
-- Pricing: free download, 14-day full-access trial, then subscription only — $2.99/mo or $24.99/yr (no lifetime SKU)
+- Pricing: free download, 14-day full-access trial, then subscription only — $2.99/mo or $24.99/yr (no lifetime SKU). Trial is app-managed (no payment up front); when it ends without a subscription the app goes read-only, not locked — see `docs/journeys/app-flow.md`
 - Sharing/referral: **deferred to v1.1, not in scope for v1.** No referral mechanic is planned; the existing `Task.category` values of `personal`/`family`/`work` are just personal labels for the single user, not multi-account data sharing. Revisit if/when a real need shows up — no schema impact for now.
 - Target launch: as early as late Dec 2026 (aligned to January resolution surge) or realistically ~March 2027 given ~10–20 hrs/week alongside full-time work; native Android (Kotlin, not Flutter) is a later, separate effort post-iOS-traction
 - Phase 2 pace checkpoint: end of October 2026
@@ -107,9 +118,8 @@ All new code or documentation work is tracked through a GitHub issue and lands v
 
 ## Open items to pick up next
 
-- [ ] Revisit the Anchor generated-vs-user-created positioning (flagged in `docs/schema/anchor.md` and `docs/journeys/onboarding.md`) — not settled, just parked
-- [ ] Fill in `docs/architecture/decisions/0001-anchor-object-type.md` — referenced by multiple docs as the rationale source but still an empty stub
+- [ ] Confirm the Anchor positioning — recommended framing (user creates a recurring commitment/`AnchorRule`, app generates instances) is written up in `docs/architecture/decisions/0001-anchor-object-type.md`, which is now drafted
 - [ ] `ci.yml` doesn't exist yet — only `sync-wiki.yml` is live under `.github/workflows/`. `Jamaal.xcodeproj` now exists, so a build/test workflow can be added whenever CI is prioritized
 - [ ] ThreadsKit isn't wired in yet (no dependency in `Jamaal.xcodeproj`, no `Package.resolved`). Token docs are done; see open decisions in `docs/design/threadskit-usage.md` (no sage → habit ring/heatmap colour plan, font faces, mockups on the old palette)
 - [ ] `mockups/` is empty (README and `screens/` have no content) — the HTML reference screens referenced above still need to be added, re-skinned to the current palette
-- [ ] Reconcile this file against prior planning-chat data once it's provided (in progress)
+- [x] Reconcile against prior planning-chat data — done, see ADR 0002. Remaining open decisions are listed in `docs/journeys/app-flow.md` ("Still open")

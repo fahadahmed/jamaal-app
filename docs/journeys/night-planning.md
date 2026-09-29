@@ -1,38 +1,67 @@
 # Night Planning
 
-> **Status: draft, needs review.** First-pass proposal for the 5-step wizard named in CLAUDE.md's rules-engine module 4 ("Night Planning orchestration — 5-step wizard state machine").
+> **Status: reconciled with master summary v2 — draft, needs review.** Five steps, with the Keep/Later/Drop carry-forward folded into step 1. Session state machine and supporting models are defined in [rules-engine.md](../architecture/rules-engine) (module 4).
 
-A guided end-of-day flow: review the day, reflect, set tomorrow's capacity, plan tomorrow, confirm. Because it's a **state machine** (per CLAUDE.md), progress persists if the user closes the app mid-flow and resumes later the same night.
+A guided end-of-day flow: look back at the day, decide what happens to what's unfinished, reflect, plan tomorrow, check the load, confirm. It's a **state machine**, and its session is **persisted** (synced via CloudKit), so closing the app mid-flow resumes at the same step — even on another device.
+
+Presented as a full-screen modal with a progress bar; Back is available from step 2 onward and Close is always available.
+
+## Triggers
+
+- The fixed **evening notification** (user-set time, default 20:00), set up during onboarding.
+- User-opened any time from Today.
+- If notifications are denied: an in-app banner at planning time ("Start evening planning →").
+
+If opened after midnight, it plans for the *next* day from the user's point of view — exact rule for "tonight" vs. "tomorrow" at odd hours is open (see below).
 
 ## Steps
 
-### 1. Review today
+### 1. Review & carry forward
 
-Summarizes what happened: Tasks completed vs. rolled over, Habit windows completed vs. missed (per streak), Anchor `attendanceStatus` for the day. Read-only — no editing here, just a look back before reflecting.
+Two parts on one step.
+
+**Review (read-only):** what happened today — Tasks completed vs. incomplete, Habit windows completed / partial / missed (counted habits shown honestly, e.g. "2/3 water"), Anchor `attendanceStatus`.
+
+**Carry forward:** each incomplete task gets one of:
+
+| Choice | Effect |
+| ------ | ------ |
+| **Keep** | Moves to tomorrow. Counts as a deferral (`deferralCount += 1`, `DeferralRecord`). |
+| **Later** | Opens the date picker — Later this week / Next week / Someday / a specific date. Counts as a deferral. Someday is hidden for `medium`/`high` tasks. |
+| **Drop** | `droppedAt` set. The task leaves Today for good; history is kept. |
+
+From a task's **3rd** deferral onwards, Keep also opens the date picker with reason chips (Too much on / Not ready / No longer relevant) and the companion says "This one keeps slipping. Pick a day that actually works." If the task was `medium`/`high`, it is first eased to `low` (and the companion says so), which also makes Someday available. From the 5th, the companion suggests dropping it. Choices apply immediately and are undoable until Confirm.
+
+Skipped automatically when there's nothing incomplete; the review part is minimal on a user's first day (see [app-flow.md](app-flow)).
 
 ### 2. Reflect
 
-A brief wellbeing check-in. Feeds the wellbeing score (rules-engine module 5) and the Today List's sparkline. Exact input shape (a 1–5 scale? free text? both?) is an open question — no schema exists yet for a persisted "reflection" entry.
+A brief wellbeing check-in: a mood on a 1–5 scale plus an optional free-text note. Feeds the wellbeing score and the Today sparkline. This is the one **optional** step — it can be skipped without blocking the flow (a skipped night simply contributes no mood data).
 
-### 3. Set capacity
+### 3. Plan tomorrow
 
-Sets tomorrow's capacity value, consumed by the Today List's capacity slider (see [today-list.md](today-list)) to filter/reprioritize what's shown. Same open question on representation (enum vs. numeric) as in that doc.
+Select, reorder and add Tasks and Habits for tomorrow. **This is where importance gets set**: each task in the plan starts at `low` and can be raised to `medium` or `high`; choosing `medium` or `high` reveals a due date pre-filled with tomorrow. If the plan has five or more tasks and fewer than two are `medium`/`high`, the companion prompts the user to pick one or two that matter most (a prompt, not a block). Suggested candidates come from the hidden Eisenhower lens — important-but-not-urgent (`schedule`) tasks are surfaced, since this is the moment to schedule them. **Anchors are not planned here**: they're generated from `AnchorRule`s, so this step only shows tomorrow's already-generated Anchors as read-only context ("you have Fajr and the school run tomorrow").
 
-### 4. Plan tomorrow
+### 4. Capacity & load check
 
-Select/reorder/add `Task`s and `Habit`s for tomorrow. **Anchors are not planned here** — they're generated from `AnchorRule`, not user-scheduled per-day, so this step only surfaces already-generated Anchors for tomorrow as read-only context (e.g. "you have Fajr and the school run tomorrow"), not something the user adds to.
+Set tomorrow's capacity — `low` / `medium` / `high`. The step first shows what's already **committed** (tomorrow's anchors and habit windows, in minutes) and may suggest a level from it ("tomorrow has about 3 hours of fixed commitments — low might suit"); the user decides. It then shows the computed load for the whole plan (light / balanced / full / overloaded / exhausting), e.g. "Commitments take 70 of your 180 minutes, leaving 110 for tasks". If the day is overloaded, the companion suggests deferring a *task* (only tasks are movable) before the user confirms — the user can go back to step 3 or accept. If some items have no duration, a quiet note says how many. Never blocks.
 
 ### 5. Confirm
 
-Locks in tomorrow's plan. This is likely also where notification/nudge scheduling (rules-engine module 6) gets triggered for tomorrow's confirmed items — worth confirming when that module's design happens.
+Locks tomorrow's plan, writes the `DayPlan` (capacity, planned effort, load score) and schedules tomorrow's notifications. The done screen: "Good night", and a planning-night streak counter.
 
 ## State machine
 
-Each step's answer should persist as the user moves forward, so backing up doesn't lose data, and closing the app mid-wizard resumes at the same step later. No schema drafted yet for this persisted wizard state — needs its own model (e.g. `NightPlanningSession` with a `currentStep` field) once the rules-engine module design (#7) settles the exact shape.
+`reviewCarry → reflect → plan → capacity → confirm`. Each step's answers persist as the user moves forward, so backing up doesn't lose data.
+
+## Skipping
+
+- Step 2 (Reflect) is optional; everything else is required.
+- Steps with nothing to do (no incomplete tasks in step 1's carry-forward) are passed through.
+- Not doing Night Planning at all never loses a task — incomplete dated tasks are auto-deferred at rollover (see [task.md](../schema/task)).
 
 ## Open questions
 
-- **Reflection data shape**: numeric mood scale, free-text journal, both, or neither (just a capacity number with no separate reflection input)? Affects whether a new schema model is needed.
-- **Wizard state persistence**: needs its own model, not drafted here — see rules-engine module design (#7).
-- **When does this run**: a fixed time prompt (e.g. evening notification), user-initiated only, or both? Affects notification/nudge logic (module 6) more than this doc, but worth settling since it changes what "today" vs. "tomorrow" means if triggered at odd hours.
-- **Skipping**: can a step be skipped (e.g. skip reflection, just set capacity and plan)? If so, which steps are optional vs. required?
+- **"Tonight" vs. "tomorrow" at odd hours**: if the user opens Night Planning at 00:30, is `forDate` today or tomorrow? Proposal: anything before a configurable "day starts" hour (e.g. 04:00) still counts as the previous evening.
+- **Undo scope**: carry-forward choices are undoable until Confirm; confirm whether that persists after the wizard is closed but before Confirm (it should — they're already applied to tasks).
+- **Reflection depth**: mood 1–5 + note is the resolved shape; whether the note ever appears back to the user (e.g. in Wellbeing history) is a design question.
