@@ -40,7 +40,7 @@ A brief wellbeing check-in: a mood on a 1–5 scale plus an optional free-text n
 
 ### 3. Plan tomorrow
 
-Select, reorder and add Tasks and Habits for tomorrow. **This is where importance gets set**: each task in the plan can be given `none` / `low` / `medium` / `high`; choosing `medium` or `high` reveals a due date pre-filled with tomorrow. If the plan has five or more tasks with no importance and fewer than two prioritised, the companion prompts the user to pick one or two that matter most (a prompt, not a block). Suggested candidates come from the hidden Eisenhower lens — important-but-not-urgent (`schedule`) tasks are surfaced, since this is the moment to schedule them. **Anchors are not planned here**: they're generated from `AnchorRule`s, so this step only shows tomorrow's already-generated Anchors as read-only context ("you have Fajr and the school run tomorrow").
+Select, reorder and add Tasks and Habits for tomorrow. **This is where importance gets set**: each task in the plan starts at `low` and can be raised to `medium` or `high`; choosing `medium` or `high` reveals a due date pre-filled with tomorrow. If the plan has five or more tasks and fewer than two are `medium`/`high`, the companion prompts the user to pick one or two that matter most (a prompt, not a block). Suggested candidates come from the hidden Eisenhower lens — important-but-not-urgent (`schedule`) tasks are surfaced, since this is the moment to schedule them. **Anchors are not planned here**: they're generated from `AnchorRule`s, so this step only shows tomorrow's already-generated Anchors as read-only context ("you have Fajr and the school run tomorrow").
 
 ### 4. Capacity & load check
 

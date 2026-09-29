@@ -21,7 +21,7 @@ protocol RuleModule {
 
 - **Capacity** stays an enum — `low` / `medium` / `high` — as the *user-facing* setting. Each level maps to a **minute budget**, and tasks carry optional effort estimates, so the engine can compute a load state (module 7). Defaults, all tunable constants: `low` 120, `medium` 180 (v2's baseline), `high` 240 minutes.
 - **Deferral replaces rollover.** A task moving to a later day, by the user or automatically, is a deferral with a count and a record (see [task.md](../schema/task)). 3rd deferral = stale + date picker (and a medium/high task is eased to `low`); 5th = suggest removal.
-- **Importance**: defaults to `none`, set mainly in Night Planning; medium/high require a due date and can't be Someday; any importance outranks none in the list.
+- **Importance**: three levels (`low` default, `medium`, `high`), set mainly in Night Planning; medium/high require a due date and can't be Someday; `low` tasks always sort after medium/high.
 - **Night Planning is 5 steps** with a Keep/Later/Drop carry-forward folded into step 1, and its session is **persisted** (CloudKit sync means a session can resume on another device).
 - **Reflect step** captures a numeric mood (1–5) and an optional free-text note.
 - **Night Planning triggers** via a fixed evening notification (user-set time, default 20:00) in addition to being openable any time. Module 6 is therefore a hard dependency of module 4.
@@ -87,11 +87,11 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 - **Input**: today's date, all live tasks (not completed, not dropped), their deferral history.
 - **Behavior**:
   - Derives urgency, importance and the hidden **Eisenhower quadrant** per task (rules in [task.md](../schema/task)). The quadrant is never shown to the user.
-  - Orders tasks for Today: tasks with any importance first, by quadrant (`doFirst`, then `schedule`, `fitIn`, `letGo`), then `dueDate`, then `createdAt`; `priority: none` tasks follow, by `dueDate` then `createdAt`. Manual drag ordering is an open question.
+  - Orders tasks for Today by quadrant (`doFirst`, then `schedule`, `fitIn`, `letGo`), then `dueDate`, then `createdAt` — so `low` tasks, which are never important, naturally follow all medium/high tasks. Manual drag ordering is an open question.
   - Enforces the importance rules from [task.md](../schema/task): medium/high need a due date and never Someday; a medium/high task's 3rd deferral eases it to `low`.
   - Runs the automatic deferral at day rollover for dated tasks the user never handled.
   - Escalation: `deferralCount >= 3` → stale and urgency raised; `>= 5` → suggest removal.
-- **Signals**: `.taskOrder`, `.stale(task)`, `.suggestRemoval(task)`, `.priorityEased(task)` (medium/high → low on 3rd deferral), `.pickPriorities` (5+ tasks with no importance and fewer than two prioritised → "pick one or two that matter most"), `.multipleDoFirst` (two or more `doFirst` tasks → companion asks "which matters most?").
+- **Signals**: `.taskOrder`, `.stale(task)`, `.suggestRemoval(task)`, `.priorityEased(task)` (medium/high → low on 3rd deferral), `.pickPriorities` (5+ tasks in a plan and fewer than two `medium`/`high` → "pick one or two that matter most"), `.multipleDoFirst` (two or more `doFirst` tasks → companion asks "which matters most?").
 
 ### 2. Habit streak tracking & intelligence
 
@@ -119,7 +119,7 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 - **Behavior**: drives `NightPlanningSession` through `reviewCarry → reflect → plan → capacity → confirm`:
   1. **Review & carry forward** — read-only look back at the day (tasks done, habit windows incl. partials, Anchor attendance), then each incomplete task gets Keep (→ tomorrow) / Later (date picker, `Someday` allowed) / Drop. Applies the deferral rules from [task.md](../schema/task): 3rd+ deferral opens the date picker with reason chips.
   2. **Reflect** — mood 1–5 + optional note.
-  3. **Plan tomorrow** — choose/reorder/add tasks and habits for tomorrow; tomorrow's Anchors shown read-only. This is where **importance is set** (due date pre-filled with tomorrow for medium/high); emits `.pickPriorities` when the plan has 5+ unprioritised tasks. Surfaces `schedule`-quadrant tasks as suggestions.
+  3. **Plan tomorrow** — choose/reorder/add tasks and habits for tomorrow; tomorrow's Anchors shown read-only. This is where **importance is set** (due date pre-filled with tomorrow for medium/high); emits `.pickPriorities` when the plan has 5+ tasks and fewer than two are `medium`/`high`. Surfaces `schedule`-quadrant tasks as suggestions.
   4. **Capacity & load check** — set tomorrow's capacity (`low`/`medium`/`high`); shows the computed load state from module 7 and flags an overloaded day *before* confirming.
   5. **Confirm** — locks the plan, upserts `DayPlan`, hands off to module 6 to schedule tomorrow's notifications. Done screen: "Good night" plus a planning-night streak (consecutive completed sessions — derived).
 - **Depends on module 6** (evening trigger) and **module 7** (load check).
