@@ -83,7 +83,7 @@ Deterministic — same state + inputs always produce the same output, no ML/heur
 1. Task scheduling (due dates, rollover)
 2. Habit density & intelligence (no streaks)
 3. Anchor generation (window-bound instances, attendance)
-4. Night Planning orchestration (5-step wizard state machine: review & carry forward → reflect → plan → capacity & load check → confirm)
+4. Night Planning orchestration (5-step wizard state machine: review today → carry forward → build tomorrow → check the load → close the day; skippable)
 5. Wellbeing scoring ("gathering data" → active score)
 6. Notification/nudge logic (window-closing reminders, during-day guidance)
 7. Capacity & load (energy budget from `low`/`medium`/`high` for tasks; free time from the working day minus fixed commitments; soft day-end; what Today shows)

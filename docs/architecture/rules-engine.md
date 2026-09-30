@@ -24,8 +24,8 @@ protocol RuleModule {
 - **The day ends at a user-set time, not midnight** (proposal: 19:00). It is a *soft* planning boundary: overflow is named, never blocked, and one tap moves it to tomorrow. Midnight stays the hard rollover (auto-deferral, session auto-close, `DayPlan` close).
 - **Deferral replaces rollover.** A task moving to a later day, by the user or automatically, is a deferral with a count and a record (see [task.md](../schema/task)). 3rd deferral = stale + date picker (and a medium/high task is eased to `low`); 5th = suggest removal.
 - **Importance**: three levels (`low` default, `medium`, `high`), set mainly in Night Planning; medium/high require a due date and can't be Someday; `low` tasks always sort after medium/high.
-- **Night Planning is 5 steps** with a Keep/Later/Drop carry-forward folded into step 1, and its session is **persisted** (CloudKit sync means a session can resume on another device).
-- **Reflect step** captures a numeric mood (1–5) and an optional free-text note.
+- **Night Planning is five steps** — Review today → Carry forward → Build tomorrow → Check the load → Close the day — and its session is **persisted** (CloudKit sync means a session can resume on another device). Build tomorrow opens on tomorrow's fixed commitments with named free gaps; tasks are not placed into gaps. **Skip tonight** closes the flow without a plan.
+- **Mood** is one optional line at the end of the Review step: a numeric mood (1–5) and an optional free-text note. There is no separate Reflect step; wellbeing also derives from behaviour.
 - **Night Planning triggers** via a fixed evening notification (user-set time, default 20:00) in addition to being openable any time. Module 6 is therefore a hard dependency of module 4.
 - **Focus sessions** (the task timer) follow the design's locked decisions: an ambient chip on every tab (Live Activity deferred to v1.1), count-up overrun with no alarm or nudge, one timer at a time settled with Done / Defer / Drop, abandon logs partial time, auto-close at midnight (the day rollover). See [task.md](../schema/task#focus-sessions-begin--pause--finish) and module 8.
 - **Nudge limits**: at most one wellbeing nudge and one during-day guidance card per day.
@@ -43,12 +43,12 @@ The per-day record. Replaces the earlier `DailyCapacity`, widened because wellbe
 | `id`                     | `UUID`    | `UUID()`   | |
 | `date`                   | `Date`    | `.now`     | Day granularity, normalised to midnight. |
 | `capacity`               | `String`  | `"medium"` | `low` / `medium` / `high`. Written by Night Planning step 4 for tomorrow; editable on Today. |
-| `plannedTaskMinutes`     | `Int`     | `0`        | Minutes of tasks planned for the day, snapshotted at Night Planning confirm. Counts against the energy budget. |
-| `freeMinutes`            | `Int`     | `0`        | Free time in the working day at confirm, after fixed and flexible commitments. |
+| `plannedTaskMinutes`     | `Int`     | `0`        | Minutes of tasks planned for the day, snapshotted when the day is closed (step 5). Counts against the energy budget. |
+| `freeMinutes`            | `Int`     | `0`        | Free time in the working day when the day is closed, after fixed and flexible commitments. |
 | `committedMinutes`       | `Int`     | `0`        | Minutes of fixed Anchors, flexible Anchors and habit windows inside the working day — what can't be deferred. |
 | `completedEffortMinutes` | `Int`     | `0`        | Updated as tasks complete: actual focus time from sessions where there is one, else the estimate. |
-| `loadScore`              | `Int`     | `0`        | `plannedTaskMinutes / budget × 100`, snapshotted at confirm. |
-| `wasOverloaded`          | `Bool`    | `false`    | Load state was `overloaded` or worse at confirm. |
+| `loadScore`              | `Int`     | `0`        | `plannedTaskMinutes / budget × 100`, snapshotted when the day is closed. |
+| `wasOverloaded`          | `Bool`    | `false`    | Load state was `overloaded` or worse when the day was closed. |
 | `completionRate`         | `Double`  | `0`        | 0–1, finalised at day close. |
 | `planningCompletedAt`    | `Date?`   | `nil`      | When Night Planning confirmed this day's plan. |
 
@@ -60,14 +60,15 @@ Persists wizard progress so closing the app mid-flow resumes correctly.
 | ---------------- | --------- | -------------- | ----- |
 | `id`             | `UUID`    | `UUID()`       | |
 | `forDate`        | `Date`    | `.now`         | The day being planned *for* (tomorrow at session start). |
-| `currentStep`    | `String`  | `"reviewCarry"`| One of `reviewCarry` / `reflect` / `plan` / `capacity` / `confirm`. |
-| `reflectionMood` | `Int?`    | `nil`          | 1–5. |
-| `reflectionNote` | `String?` | `nil`          | |
-| `isComplete`     | `Bool`    | `false`        | |
+| `currentStep`    | `String`  | `"review"`     | One of `review` / `carry` / `build` / `load` / `close`. |
+| `mood`           | `Int?`    | `nil`          | 1–5, from the optional mood line on the Review step. |
+| `moodNote`       | `String?` | `nil`          | |
+| `isComplete`     | `Bool`    | `false`        | `true` once the day is closed (step 5). |
+| `skippedAt`      | `Date?`   | `nil`          | Set by **Skip tonight**; the session ends without a plan and no `DayPlan` is written. |
 | `createdAt`      | `Date`    | `.now`         | |
 | `completedAt`    | `Date?`   | `nil`          | |
 
-Carry-forward choices are **not** stored on the session: Keep/Later/Drop apply to the task immediately (`deferralCount`, `DeferralRecord`, `droppedAt`) and are undoable until Confirm. On Confirm the session upserts the `DayPlan` for `forDate`.
+Carry-forward choices are **not** stored on the session: Keep/Later/Drop apply to the task immediately (`deferralCount`, `DeferralRecord`, `droppedAt`) and are undoable until the day is closed. On *Close the day* the session upserts the `DayPlan` for `forDate`.
 
 ### `NudgeLog`
 
@@ -138,21 +139,22 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 
 ### 4. Night Planning orchestration (5-step wizard state machine)
 
-- **Input**: today's tasks (completed / incomplete), Habit entries, Anchor attendance, user input per step.
-- **Behavior**: drives `NightPlanningSession` through `reviewCarry → reflect → plan → capacity → confirm`:
-  1. **Review & carry forward** — read-only look back at the day (tasks done, habit windows incl. partials, Anchor attendance), then each incomplete task gets Keep (→ tomorrow) / Later (date picker, `Someday` allowed) / Drop. Applies the deferral rules from [task.md](../schema/task): 3rd+ deferral opens the date picker with reason chips.
-  2. **Reflect** — mood 1–5 + optional note.
-  3. **Plan tomorrow** — choose/reorder/add tasks and habits for tomorrow; tomorrow's Anchors shown read-only. This is where **importance is set** (due date pre-filled with tomorrow for medium/high); emits `.pickPriorities` when the plan has 5+ tasks and fewer than two are `medium`/`high`. Surfaces `schedule`-quadrant tasks as suggestions.
-  4. **Capacity & load check** — set tomorrow's capacity (`low`/`medium`/`high`); shows the computed load state from module 7 and flags an overloaded day *before* confirming.
-  5. **Confirm** — locks the plan, upserts `DayPlan`, hands off to module 6 to schedule tomorrow's notifications. Done screen: "Good night" plus a plain count of nights planned ("12 nights planned" — derived from completed sessions, not a streak).
-- **Depends on module 6** (evening trigger) and **module 7** (load check).
-- **Output**: a completed `NightPlanningSession`, a `DayPlan` for tomorrow.
+- **Input**: today's tasks (completed / incomplete), Habit entries, Anchor attendance, focus-session time, tomorrow's Anchors, user input per step.
+- **Behavior**: drives `NightPlanningSession` through `review → carry → build → load → close`, or to `skipped`:
+  1. **Review today** — read-only look back at the day (tasks done, habit windows incl. partials, Anchor attendance, time spent against estimates), ending in one optional mood line (`mood`, `moodNote`).
+  2. **Carry forward** — each incomplete task gets Keep (→ tomorrow) / Later (date picker, `Someday` hidden for `medium`/`high`) / Drop. Applies the deferral rules from [task.md](../schema/task): the 3rd+ deferral opens the date picker with reason chips, and eases a `medium`/`high` task to `low`. Passed through when nothing is incomplete.
+  3. **Build tomorrow** — opens on tomorrow's working day: fixed commitments drawn in, free gaps named by what surrounds them (`before the school run`, `between … and …`, `after …`) with their sizes, from module 7's free-block calculation. Then the user selects, reorders and adds tasks and habits (importance is set here; due date pre-filled with tomorrow for medium/high; `.pickPriorities` when the plan has 5+ tasks and fewer than two `medium`/`high`); `schedule`-quadrant tasks are suggested; a one-off Anchor can be added. Tasks are **not** assigned to gaps; `.taskDoesNotFit` flags any longer than the longest gap.
+  4. **Check the load** — set tomorrow's capacity (`low`/`medium`/`high`) with the engine's suggested level; shows budget used, the load state, and any overflow past the day's end from module 7; the companion offers one specific move (defer a task) and never blocks.
+  5. **Close the day** — locks the plan, upserts `DayPlan`, hands off to module 6 to schedule tomorrow's notifications. Done screen: what was planned, plus a plain count of nights planned ("12 nights planned" — derived from completed sessions, not a streak).
+  - **Skip tonight** (any step): sets `skippedAt`, writes no `DayPlan`, leaves already-applied carry-forward choices in place. If no plan was confirmed for today, module 6 shows one quiet morning card ("No plan for today — two minutes to pick?"), once.
+- **Depends on module 6** (evening trigger, notifications, morning card) and **module 7** (free blocks, load check).
+- **Output**: a completed or skipped `NightPlanningSession`, and a `DayPlan` for tomorrow unless skipped.
 
 ### 5. Wellbeing (scoring and pattern detection)
 
-- **Input**: `reflectionMood` history, `DayPlan` history (`wasOverloaded`, `completionRate`), `HabitEntry` history, `DeferralRecord`s.
+- **Input**: `NightPlanningSession.mood` history (optional), `DayPlan` history (`wasOverloaded`, `completionRate`), `HabitEntry` history, `DeferralRecord`s.
 - **Behavior**: purely derived — no stored wellbeing model.
-  - **Score**: shows "gathering data" until at least 7 days of mood exist, then a rolling score (window 7 or 14 days, TBD).
+  - **Score**: shows "gathering data" until at least 7 days of `DayPlan` history exist, then a rolling score (window 7 or 14 days, TBD). Behaviour (completion, load) drives it; mood, where given, is one extra input, so skipping the mood line never delays or breaks the score.
   - **Pattern detection** over a rolling 7–14 days: `heavyRun` (3+ overloaded days in a row), `habitNeglect` (a habit missed 3+ days), `completionCollapse`, `avoidance` (a task deferred 4+ times), `weekendOverplan`.
   - At most **one** wellbeing nudge per day (checked against `NudgeLog`).
 - **Signals**: `.wellbeingScore`, `.gatheringData`, `.pattern(kind)`.
@@ -162,7 +164,7 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 - **Input**: habit windows nearing their end, upcoming Anchor windows, the planning time, capacity/load, `NudgeLog`.
 - **Behavior**: schedules local notifications (`UNUserNotificationCenter`):
   - the **evening Night Planning prompt** (fixed, user-set time);
-  - an optional **morning nudge**;
+  - an optional **morning nudge**, which — if no plan was confirmed for today (Night Planning was skipped or missed) — carries a single quiet in-app **morning card** ("No plan for today — two minutes to pick?"), shown once and never repeated if dismissed;
   - per-window **habit reminders** and a light **window-closing** nudge as a window's end approaches;
   - **during-day guidance** — a highlighted task ("Start here" / "Good now") plus one companion card, max one per day. Chosen deterministically from time of day, remaining effort vs. remaining free time, a lighter-tasks-in-the-early-afternoon curve, and open habit windows.
 - **Trial and subscription**: when the trial ends unsubscribed, the evening Night Planning notification and habit/guidance nudges are cancelled and only a small number of trial-end reminders are sent (proposal: day 12, 14 and 15); everything returns on subscribing.
@@ -222,7 +224,7 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 - **Numbers are proposals**: the medium-day default (180), the ⅔ / 4⁄3 multipliers for low/high, the working day defaults (08:00–19:00), the load thresholds, the rollover-to-stale threshold (3), removal suggestion (5), and the wellbeing window (7 vs. 14) are all constants, easy to tune.
 - **Missing durations** count as zero, so load can be understated until durations are filled in. Current proposal: Night Planning's capacity step gently notes how many items have no duration, rather than guessing. Habit presets and the built-in anchor types ship default durations to keep this rare.
 - **Learning the normal day**: sessions now record actual focus time. Proposal: the app suggests a `mediumDayMinutes` from the last four weeks of actual time (never changes it on its own), and weekdays may default to different levels (weekends to `low`). Not confirmed.
-- **Wellbeing score composition**: v2's Wellbeing screen showed a single 0–100 score; this doc derives it from mood only. Decide whether completion rate and load also contribute.
+- **Wellbeing score composition**: v2's Wellbeing screen showed a single 0–100 score; this doc now derives it from behaviour (completion, load, patterns) with the optional mood as one extra input. The exact weighting is still to be decided — and X-04 in the design ("what makes 78 a 78") is the same open question.
 - **Prayer-time library**: `configData` fixes the settings, not the implementation. Choose a well-tested prayer-time library (or implementation) at build time and check its method list against the `method` values offered, plus its high-latitude handling.
 - **Notification limits**: iOS caps pending local notifications at 64 — confirm the reminder + nudge volume stays well under that. Habit reminders add up, and five prayers a day for several days ahead adds more if each gets a reminder.
 - **Manual ordering** of Today (see [task.md](../schema/task)).

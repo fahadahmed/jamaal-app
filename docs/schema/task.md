@@ -125,7 +125,7 @@ A task is *deferred* whenever it moves to a later day without being completed. `
 
 Where it happens:
 
-- **Night Planning step 1 (carry-forward):** each incomplete task gets Keep (→ tomorrow, counts as a deferral) / Later (date picker) / Drop. See [night-planning.md](../journeys/night-planning).
+- **Night Planning step 2 (Carry forward):** each incomplete task gets Keep (→ tomorrow, counts as a deferral) / Later (date picker) / Drop. See [night-planning.md](../journeys/night-planning).
 - **Today:** a task can be deferred directly from its detail sheet.
 - **Automatic:** if a dated task is still incomplete at day rollover and the user never handled it (skipped Night Planning), the engine defers it to today-again as an overdue item: `deferralCount += 1`, reason `unspecified`. So skipping planning never loses a task, and the 3-deferral rule still applies.
 
@@ -156,6 +156,6 @@ These are computed by the rules engine at read time (module 1), not persisted:
 - **Learning from actuals**: sessions record actual time against the estimate, but how that feeds back (suggested estimates on new tasks, calibrating the medium-day length) is part of the still-open capacity-model decision.
 - **Category colours**: ThreadsKit has only `accent` and `terra` as accents. User-created categories need a small palette (a few extra ThreadsKit tokens, or tints of existing ones) — a design/tokens decision, see [threadskit-usage](../design/threadskit-usage).
 - **Re-raising after an auto-downgrade**: if the user raises a downgraded task back to medium/high, its `deferralCount` is still 3+, so its next deferral downgrades it again immediately. Probably right ("keeps slipping"), but confirm — the alternative is to reset the count used for this rule when importance is re-raised.
-- **Prioritisation prompt**: soft (dismissible) as written. Should Night Planning instead require at least one priority task before Confirm when the threshold is hit?
+- **Prioritisation prompt**: soft (dismissible) as written. Should Night Planning instead require at least one priority task before the day can be closed when the threshold is hit?
 - **Manual ordering**: v2 let the user drag to override the engine's order (`isManuallyOrdered`, `autoReorderEnabled`). Not modelled yet; decide alongside Today's sort rules (see [today-list.md](../journeys/today-list)).
 - **Sharing/referral**: deferred to v1.1 (see CLAUDE.md), no schema impact for now.

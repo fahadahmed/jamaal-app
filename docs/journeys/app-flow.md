@@ -24,11 +24,11 @@ Jamaal is both the app and its companion voice — calm, supportive, non-judgmen
 
 Triggered by the evening notification the user set up in onboarding (or the in-app banner if they declined notifications, or by opening it from Today).
 
-- **Step 1 Review & carry forward** is light: there's little history. If everything is done or there's nothing incomplete, the carry-forward part is skipped; otherwise Keep/Later/Drop.
-- **Step 2 Reflect** — first mood entry (starts the seven-day "gathering data" clock for Wellbeing).
-- **Step 3 Plan tomorrow** — the step with the most value on day one: pick tasks and habits; tomorrow's Anchors appear read-only (they were generated the moment the `AnchorRule` was created).
-- **Step 4 Capacity & load check** — first time the user sees load states, introduced gently.
-- **Step 5 Confirm** — "Good night."
+- **Review today** is light: there's little history. The optional mood line is the first mood entry (and starts the seven-day "gathering data" clock for Wellbeing, along with the first `DayPlan`).
+- **Carry forward** — Keep/Later/Drop for anything incomplete; passed through if nothing is.
+- **Build tomorrow** — the step with the most value on day one: it opens on tomorrow's fixed commitments and named free gaps (generated the moment the `AnchorRule` was created), then the user picks tasks and habits.
+- **Check the load** — first time the user sees load states and the suggested level, introduced gently.
+- **Close the day** — "Tomorrow is ready." and "Good night". *Skip tonight* is available throughout.
 
 ## Day 1 onward
 
@@ -80,7 +80,7 @@ What this means for Jamaal:
 1. **Use the system tab bar and toolbars, never a custom floating bar.** The system moves them to the side on Duo automatically. The "floating pill tab bar" in the design direction must be the system Liquid Glass tab bar, not a hand-built one. Give every toolbar item both a title and a symbol, keep text-only buttons rare, and set visibility priority so *Add task* stays visible longest, then the Night Planning entry.
 2. **Today is a split view.** Inner display: Today list and task detail side by side; outer display: one pane at a time (list, push to detail). Build with a navigation split view so it adapts to the fold. This replaces the earlier "trailing inspector" idea wherever the two would differ.
 3. **Same functions and state on both displays.** Open or close the device mid-task and nothing resets. Night Planning's persisted session already supports this; selection, filters and the open sheet should survive too.
-4. **Night Planning** is task-oriented: prefer keeping its toolbar over a tab bar when space is tight. Back or Close sits first on the vertical axis, then the prominent action (Next, Confirm). On the inner display the *Plan tomorrow* step can show candidate tasks and tomorrow's plan side by side, collapsing to one pane on the outer display.
+4. **Night Planning** is task-oriented: prefer keeping its toolbar over a tab bar when space is tight. Back or Close sits first on the vertical axis, then the prominent action (Next, Close the day). On the inner display the *Plan tomorrow* step can show candidate tasks and tomorrow's plan side by side, collapsing to one pane on the outer display.
 5. **Custom components must not assume a width.** Capacity slider, completion ring, heatmap, sparkline and the wizard must resize and stay clear of the fold (reserved regions). For the heatmap grid, prefer an even number of columns so it divides cleanly (e.g. weeks as columns, in even counts).
 6. **Small adjustments when folding, not rearrangement.** Sheets, alerts and menus move for the fold automatically; don't move key controls dramatically.
 7. **Right-to-left**: side controls stay on the same side in RTL languages, which suits an Arabic-name app with Islamic-practice presets.
@@ -105,7 +105,8 @@ Pricing (CLAUDE.md): free download, 14-day full-access trial, then subscription 
 | Screen | Status |
 | ------ | ------ |
 | Today (with guidance highlight, companion card, capacity slider) | Mockup exists (legacy palette); needs Anchors section, category labels |
-| Night Planning — 5 steps | Mockup exists as 5 steps *without* Anchors read-only context and with a different step order; needs re-flow |
+| Night Planning — 5 steps (phone) and one-canvas step rail (wide) | Mockup exists with the right step order but needs: the optional mood line, tomorrow's fixed commitments and named gaps at the start of Build tomorrow (list on phone, proportional timeline on wide), the load step's free-time and overflow flags, *Skip tonight*, and the wide layout's Keep/Later/Drop (not "leftovers to backlog") |
+| **Morning card: "No plan for today"** | **New — no mockup** |
 | Task detail (normal / deferred / complete) | Mockup exists; add category and a **Begin** action |
 | Defer date picker (quick select / calendar, reason chips) | Mockup exists |
 | Add task (title, effort, notes, importance, schedule) | Mockup exists; **add category** |
@@ -140,7 +141,7 @@ Legacy mockups are in `mockups/legacy/` — layout/flow reference only; they pre
 Resolved in this reconciliation:
 
 - [x] Capacity model — two measures: an **energy budget** (low/medium/high, the user's call; minutes from a normal-day length; counts tasks only) and **free time** (working day minus fixed Anchors that cut it and flexible Anchors/habit minutes that subtract); a plan must fit both; meter headline is budget used with a quiet fit flag; **soft** day-end at a user-set time (default 19:00), midnight stays the hard rollover
-- [x] Night Planning step count/order — five steps, carry-forward in step 1
+- [x] Night Planning shape — the design's five steps (Review today → Carry forward → Build tomorrow → Check the load → Close the day); optional mood line on Review instead of a Reflect step; Build tomorrow opens on tomorrow's fixed commitments with named free gaps (tasks not placed into gaps); *Skip tonight* with one quiet morning card and no guilt
 - [x] Night Planning session — persisted (CloudKit resume)
 - [x] Rollover vs. deferral — unified as deferral with auto-defer safety net
 - [x] Eisenhower — hidden, derived, drives order / capacity visibility / suggestions

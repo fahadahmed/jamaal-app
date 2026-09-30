@@ -59,11 +59,12 @@ At most one card per day. The engine highlights a task with a "Start here" or "G
 
 ## Wellbeing
 
-A compact **sparkline** near the capacity slider shows the wellbeing score over recent days ("gathering data" until seven days exist). Tapping it opens the Wellbeing tab. It is fed by Night Planning's reflection step and the engine's derived signals, not by Today interactions directly.
+A compact **sparkline** near the capacity slider shows the wellbeing score over recent days ("gathering data" until seven days exist). Tapping it opens the Wellbeing tab. It is fed by the engine's derived signals and the optional mood line on Night Planning's Review step, not by Today interactions directly.
 
 ## Empty and edge states
 
 - Nothing due at all: an encouraging empty state ("Your day is blank"), not a blank screen. When everything is done: a quiet celebration.
+- No plan was confirmed for today (Night Planning skipped or missed): one quiet card at the top, "No plan for today — two minutes to pick?", opening a shortened Build tomorrow for today. Shown once; no guilt, no count.
 - Notifications denied: an in-app banner at planning time — "Start evening planning →".
 - All sections hidden by capacity: a visible "N more at higher capacity" affordance.
 
