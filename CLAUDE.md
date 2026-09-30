@@ -112,7 +112,7 @@ Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity s
 
 ## Working approach
 
-**Docs/flows-first.** This repo was restarted from scratch specifically because the previous JamaalCore attempt skipped this step. `docs/schema/*`, `docs/journeys/*`, and `docs/architecture/rules-engine.md` are now filled in and resolved for v1 (see issues #5–#8) — implementation can begin. Don't skip this step for future primitives or major features; keep docs ahead of code.
+**Docs/flows-first.** Screens and flows are locked in `docs/journeys/screens.md` (the register) before they are drawn or built. This repo was restarted from scratch specifically because the previous JamaalCore attempt skipped this step. `docs/schema/*`, `docs/journeys/*`, and `docs/architecture/rules-engine.md` are now filled in and resolved for v1 (see issues #5–#8) — implementation can begin. Don't skip this step for future primitives or major features; keep docs ahead of code.
 
 ## Git workflow
 

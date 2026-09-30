@@ -18,6 +18,7 @@ A deterministic **rules engine** (no machine learning) orders the day, checks th
 
 ## Where to start reading
 
+- **Every screen and flow:** the [Screens and flows register](journeys/screens).
 - **How a day works, end to end:** [App flow](journeys/app-flow), then [Today](journeys/today-list), [Night Planning](journeys/night-planning) and [Onboarding](journeys/onboarding).
 - **What is stored:** [Schema overview](schema/overview), then [Task](schema/task), [Habit](schema/habit) and [Anchor](schema/anchor).
 - **How it decides things:** [Architecture overview](architecture/overview) and the [Rules engine](architecture/rules-engine).
