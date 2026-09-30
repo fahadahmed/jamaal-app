@@ -14,12 +14,12 @@ Salah is **not** modeled here — it's an [Anchor](anchor) instead, since prayer
 | `title`          | `String`  | `""`                   | |
 | `notes`          | `String?` | `nil`                  | |
 | `presetKey`      | `String?` | `nil`                  | Built-in preset (e.g. `"quran"`, `"dhikr"`) vs. `nil` for custom. |
-| `kind`           | `String`  | `"binary"`             | One of `binary` / `counted` / `timed` / `avoid`. Fixes what `target` and `amount` mean — see [Habit kinds](#habit-kinds). |
+| `kind`           | `String`  | `"binary"`             | One of `binary` / `counted` / `timed` / `avoid`. Fixes what `target` and `amount` mean — see [Habit kinds](#habit-kinds). **Fixed at creation**: history is interpreted by kind (`amount` is a count, minutes or slips), so to change it the user archives the habit and creates a new one. Every other field stays editable (a changed `target` affects the future only). |
 | `frequency`      | `String`  | `"daily"`              | One of `daily` / `weekdays` / `custom`. |
 | `scheduledDays`  | `String`  | `"1,2,3,4,5,6,7"`      | ISO weekdays (Mon=1 … Sun=7) the habit is due. `weekdays` = `"1,2,3,4,5"`. Used when `targetPerWeek == 0`. |
 | `targetPerWeek`  | `Int`     | `0`                    | `0` = fixed days from `scheduledDays`; `1…7` = "N times a week, any days" (custom recurrence's times/week stepper). |
 | `pausesData`     | `String`  | `"[]"`                | JSON list of pauses (travel, illness, …) — see [Pauses](#pauses). |
-| `isArchived`     | `Bool`    | `false`                | Soft-delete, so history isn't lost. Editing or archiving never deletes history. |
+| `isArchived`     | `Bool`    | `false`                | Soft-delete, so history isn't lost. Editing or archiving never deletes history. Archived habits sit in a collapsed **Archived** section at the end of the Habits list, with **Restore**. |
 | `createdAt`      | `Date`    | `.now`                 | |
 
 ## Relationships
@@ -78,6 +78,24 @@ Relationship: `habits: [Habit]?` (optional).
 
 Collapsed card: completion ring (% complete today), emoji, name, "4/5 today" badge, 14-day aggregate heatmap. Expanded card: habit rows with check button and completion time. Whether a group is expanded is **local UI state** (per device, not synced) and defaults to collapsed. The Today strip shows a group pill with proportional ring and count.
 
+## Times of day
+
+A habit has one all-day window by default. The add-habit form has a **Times of day** section: **Add another time** (up to **four** windows) adds a labelled window with an optional start, end and reminder. Each window has its own `target`, its own entries and its own density grid (the detail screen shows one grid per time), so a medication taken morning and evening is one habit with two windows.
+
+## Weekly-target habits
+
+A habit with `targetPerWeek > 0` ("three times a week, any days") works differently from a fixed-day one:
+
+- **Today** shows it **every day of the week until the week's target is met**, then as done for the rest of the week.
+- Its days are **never `missed`**: the grid has only filled and empty days (no red), because the week is what matters and nothing breaks if a particular day is skipped.
+- A day **counts toward the week** when that day's own target is met (a timed habit's minutes reach the target, a counted habit's count does, and so on).
+- The plain-language read speaks in weeks (*"2 of 3 this week"*).
+- The week starts on the user's calendar's first weekday.
+
+## Correcting past days
+
+The last **14 days** of a habit's grid are tappable: binary toggles, counted uses a stepper, timed adds minutes (a `manual` session), avoid sets slips or *Held*. Older days are read-only. A correction to an avoid habit is an explicit engagement for that day.
+
 ## Habit kinds
 
 Created from a type picker with plain-language descriptions. `Habit.kind` fixes the meaning of `target` and `HabitEntry.amount`:
@@ -105,7 +123,7 @@ Created from a type picker with plain-language descriptions. `Habit.kind` fixes 
 - **Inverted logging.** The default expectation is abstaining; the user logs a **slip** (each tap adds one to `amount`, undoable). Wording stays neutral — no praise, no guilt.
 - **A day's outcome is derived when read, not stored as a default success:**
   - `missed` if slips exceed the allowance;
-  - `complete` if slips are within the allowance **and the user engaged with the app that day** — any recorded activity: a task completed, a habit or Anchor logged, a focus session, Night Planning closed, or an explicit **Held today** tap;
+  - `complete` if slips are within the allowance **and the user engaged that day**. A logical day is **engaged** if any of these exist for it: a `Task` completed that day; a `HabitEntry` with `amount > 0` for any habit, or an avoid entry whose `completedAt` is set (*Held today*, or a past-day correction); an `Anchor` whose `resolvedAt` falls on that day; a `WorkSession` with that `day`; or a `NightPlanningSession` for that date that was closed or skipped. **Opening the app alone doesn't count.**
   - otherwise `empty`. **Silence is never success:** a day when the app was never touched fills no cell.
   - The current day stays unresolved until it ends.
 - **No "days since the last slip" counter** — that would be a streak in disguise. The plain-language read speaks in numbers ("3 slips in the last 21 days").
@@ -157,7 +175,7 @@ The Qur'an and dhikr values are starting suggestions for the owner to correct. I
 ## Open questions
 
 - **`HabitTimeWindow` time representation**: `startMinute`/`endMinute` is a placeholder — simple and CloudKit-safe, but doesn't handle timezone travel gracefully. Anchor uses concrete `Date`s for its windows; keep the two consistent in the rules-engine implementation.
-- **Weekly-target habits** (`targetPerWeek > 0`): the grid still shows individual days, but the plain-language read should speak in weeks ("3 of 3 this week"). Exact wording is a copy/design task for the custom-recurrence and habit-detail screens.
+- **Weekly-target wording**: the copy for the weekly read (*"2 of 3 this week"*) and for a week that ended short is a design task for the custom-recurrence and habit-detail screens.
 - **Plain-language read**: the engine emits a typed `.densityRead` signal (completed / due over a rolling window, plus a suggestion when the rate is low); the message layer phrases it. Templates and thresholds (e.g. when to suggest a lighter cadence) still need writing.
 - **Avoid habits** need a design pass (H-06): the *Held today* affordance, how a slip is logged and undone, what counts as engagement, and the allowance UI.
 - **Detected habits** (the design's "second door": after three evenly spaced completions of a matching task title inside 21 days the app offers once to promote it, inheriting those completions as opening density) are **v1.1**. It needs no schema change — a `NudgeLog` kind and backdated `HabitEntry` rows — and in v1 habits are created by declaring them.
