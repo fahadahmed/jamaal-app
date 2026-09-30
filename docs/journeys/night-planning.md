@@ -20,7 +20,7 @@ The plan is always for a *specific date*, shown at the top: the **first date who
 
 What happened today, read-only: tasks completed vs. incomplete, habit windows completed / partial / missed (counted habits shown honestly, e.g. "2/3 water"), Anchor attendance, and time actually spent against what was estimated (from focus sessions), stated plainly with no praise or blame.
 
-At the end sits one **optional mood line**: a 1–5 tap and an optional free-text note ("How was today?"). It can be ignored without blocking anything; a night with no mood just contributes none. It feeds the wellbeing score as one input alongside behaviour.
+Nothing is asked of the user here: there is no mood line or other self-reporting. Wellbeing is derived from the behaviour this step shows.
 
 On a user's first day the review is minimal (see [app-flow.md](app-flow)).
 
@@ -79,12 +79,11 @@ Locks tomorrow's plan, writes the `DayPlan` (capacity, planned task minutes, fre
 
 ## Skipping
 
-- The mood line is optional; everything else is required *unless the whole night is skipped* (above).
+- Every step is required *unless the whole night is skipped* (above).
 - Steps with nothing to do (no incomplete tasks in *Carry forward*) are passed through.
 - Not doing Night Planning at all never loses a task.
 
 ## Open questions
 
 - **Late nights and rollover time** — resolved by the day boundary: the plan's target date is the first date whose working-day start is in the future, and a user-set rollover keeps a late evening on the same logical day. The one remaining edge is planning *after* a custom rollover has passed (say 03:30 with a 03:00 rollover): that counts as the new day, and the morning card path covers it.
-- **Mood note visibility**: whether the free-text note is ever shown back to the user (e.g. in Wellbeing history) is a design question.
 - **Undo scope**: carry-forward choices are undoable until the day is closed; confirm this persists if the wizard is closed but not finished (it should — they're already applied to tasks).

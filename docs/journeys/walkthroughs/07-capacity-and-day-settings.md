@@ -1,6 +1,6 @@
 # Journey 7 — Capacity and day settings
 
-> **Status: walked; gaps G-54 … G-57 raised, proposals waiting for a decision** (see the [gap log](overview#gap-log)). Register flow **F10**; screens **ST-02** (Capacity & day), the capacity slider and meter on **TD-01**, and the normal-day suggestion. Behaviour is in [Rules engine → module 7](../../architecture/rules-engine) and `UserSettings`; this page tests the screens that hold these numbers against how changing each one ripples through data that already exists.
+> **Status: done — gaps G-54 … G-57 raised, decided and applied** (see the [gap log](overview#gap-log)). The text below is the walkthrough as first written. Register flow **F10**; screens **ST-02** (Capacity & day), the capacity slider and meter on **TD-01**, and the normal-day suggestion. Behaviour is in [Rules engine → module 7](../../architecture/rules-engine) and `UserSettings`; this page tests the screens that hold these numbers against how changing each one ripples through data that already exists.
 
 **In one line:** the user tells Jamaal how much a normal day is, when their working day starts and ends, what each weekday is like, and — day by day — how much they have in them today; and the numbers behave sensibly when they change.
 

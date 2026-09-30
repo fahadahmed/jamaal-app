@@ -20,9 +20,9 @@
 
 ## NP-01 Review today
 
-- **Sees:** the day in plain counts (*"3 done · 2 left · 6/7 habits"*); the done items; habit windows complete, partial (*"Water 2 of 3"*) or missed; Anchor outcomes; **time spent against estimates**; and, at the end, the optional **mood line** (1–5 and a note).
+- **Sees:** the day in plain counts (*"3 done · 2 left · 6/7 habits"*); the done items; habit windows complete, partial (*"Water 2 of 3"*) or missed; Anchor outcomes; **time spent against estimates**. *(The optional mood line first drafted here was removed in Journey 8.)*
 - **Reads:** tasks completed on `reviewDate` and live tasks due on or before it; `HabitEntry`s for that date; Anchors whose `occurrenceDate` is that date; sessions whose `day` is that date.
-- **Writes:** `NightPlanningSession.mood`, `moodNote` (optional); `currentStep`.
+- **Writes:** `currentStep`.
 - **Assumes:**
   - the review reads the day *so far*: an Anchor still open at 20:05 (Isha) shows as open, not missed — ✓ (window state is derived; it resolves later);
   - a day with no data reads gently — ✓ (first day, or days the app wasn't opened: minimal, no blame).
@@ -84,7 +84,7 @@ Tomorrow's Today opens already shaped: the school run and dentist as fixed rows,
 
 | Model | Change |
 |---|---|
-| `NightPlanningSession` | + 1 for `forDate`: `mood`, `moodNote`, `isComplete` / `skippedAt`, `completedAt` |
+| `NightPlanningSession` | + 1 for `forDate`: `isComplete` / `skippedAt`, `completedAt` |
 | `DayPlan` | `forDate`: `capacity` (as soon as chosen), then the planning snapshot and `planningCompletedAt` on close |
 | `Task` | re-dated by Keep, Later, Move or pulling in; `droppedAt` by Drop; importance raised |
 | `DeferralRecord` | + 1 per **real** deferral only (a task moved after its due day arrived) |
