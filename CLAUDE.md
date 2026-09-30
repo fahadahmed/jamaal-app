@@ -38,6 +38,8 @@ No `.xcworkspace` — JamaalCore is a Swift Package (added as a local package de
 
 - Organization Identifier: `dev.fhdamd` → bundle ID `dev.fhdamd.Jamaal`
 - Interface: SwiftUI · Language: Swift · Storage: SwiftData
+- **Minimum OS: iOS 26 / macOS 26** (Liquid Glass is a system feature from 26; Duo-specific APIs from 27.1 are availability-gated)
+- CI: `.github/workflows/ci.yml` runs `JamaalCore` tests and the app's unit tests on the `xcode-27` runner
 - **Host in CloudKit: enabled** — cross-device sync (iPhone/iPad/Mac) is in scope for v1, not deferred
 - Testing System: **Swift Testing with XCTest UI Tests** (see Testing section below)
 - Team: Personal (free) — fine through development; paid Apple Developer Program ($99/year) only needed at TestFlight-with-others / production CloudKit / App Store submission time, not before

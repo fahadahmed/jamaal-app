@@ -36,7 +36,7 @@ Where the summary and the repo conflict on **structure, platform or business**, 
 | One-time purchase ($9.99–$24.99 by platform), no subscription | Free download, 14-day trial, then subscription ($2.99/mo or $24.99/yr) |
 | Bundle ID `app.jamaal.ios`, repo `jamaal-ios` | `dev.fhdamd.Jamaal`, `jamaal-app` |
 | iOS first; macOS v1.1; watchOS v1.2 | iOS/iPadOS/macOS together in v1; watchOS not planned |
-| iOS 17 floor; CloudKit optional | iOS 18 floor (ThreadsKit); CloudKit hosted from v1 |
+| iOS 17 floor; CloudKit optional | iOS 26 / macOS 26 floor (Liquid Glass is a system feature from 26; chosen at build setup, replacing an earlier iOS 18 assumption); CloudKit hosted from v1 |
 | Two primitives; salah as a habit group | Three primitives; salah is an Anchor ([ADR 0001](0001-anchor-object-type)) |
 | `NightPlanningSession` transient | Persisted, so it resumes across devices |
 | Warm palette (off-white/charcoal/terracotta/sage) | ThreadsKit's cool palette ([threadskit-usage](../../design/threadskit-usage)) |
