@@ -121,9 +121,9 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| HB-01 | **Habits overview** (C/R) | Tab 2, Habits segment | Groups (collapsed/expanded), habits, paused, empty | **Drawn** v3·13, 19 | v1 |
-| HB-02 | **Habit detail** | HB-01 | Density grid + plain-language read; **no streak numbers**; per kind: binary · counted · timed · avoid; paused; healthy / slipping | **Drawn** v3·14, 15 (streaks to remove) | v1 |
-| HB-03 | **Add / edit habit** | HB-01 | **Type picker** first (binary / counted / timed / avoid), then a kind form: counted target, timed minutes, avoid allowance; schedule; reminder; group | **Drawn** v3·16 (counted); **Spec** H-04, H-05 | v1 |
+| HB-01 | **Habits overview** (C/R) | Tab 2, Habits segment | Groups (collapsed/expanded), habits, paused, empty; a collapsed **Archived** section with Restore | **Drawn** v3·13, 19 | v1 |
+| HB-02 | **Habit detail** | HB-01 | Density grid (one per time of day) + plain-language read; **no streak numbers**; the last 14 days tappable to correct; per kind: binary · counted · timed · avoid; weekly-target (weeks, never *missed*); paused; healthy / slipping | **Drawn** v3·14, 15 (streaks to remove) | v1 |
+| HB-03 | **Add / edit habit** | HB-01 | **Type picker** first (binary / counted / timed / avoid; the kind is fixed after creation), then a kind form: counted target, timed minutes, avoid allowance; schedule; **Times of day** (up to four, each with optional start, end and reminder); group | **Drawn** v3·16 (counted); **Spec** H-04, H-05 | v1 |
 | HB-04 | Custom recurrence | HB-03 | Day picker, times a week | **Drawn** v3·17 | v1 |
 | HB-05 | Group create / assign | HB-03 / HB-01 | Visual bundle: name, emoji, members, collapsed preview | **Drawn** v3·18 | v1 |
 | HB-06 | **Pause with reason** | HB-02 | Travel · illness · cycle · other; open-ended allowed | **Spec** H-07 | v1 |
@@ -135,7 +135,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| AN-01 | **Anchor rules list** | Habits tab → Anchors segment | Rules with next instance; enabled/archived; "needs attention" | **None** (Flows I describes rituals) | v1 |
+| AN-01 | **Anchor rules list** | Habits tab → Anchors segment | Rules with next instance; enabled; "needs attention"; a collapsed **Archived** section with Restore | **None** (Flows I describes rituals) | v1 |
 | AN-02 | Rule detail | AN-01 | Schedule summary, exceptions, upcoming instances; edit · pause · archive | **None** | v1 |
 | AN-03 | **Add rule — type** | AN-01 | Prayer times · School run · Bin night · Plant watering · Custom | **None** | v1 |
 | AN-04 | **Prayer form** | AN-03 | Location, method, madhab, prayers, Isha end; advanced: adjustments, high-latitude rule | **None** | v1 |
@@ -175,7 +175,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 | ST-01 | Settings home | Tab 4 | Sections below; trial status row | **Drawn** v3·23 (to rework) | v1 |
 | ST-02 | **Capacity & day** | ST-01 | Normal-day length (+ quiet suggestion), default level per weekday, working-day start/end, rollover (Advanced) | **Drawn** v3·23 (to rework) | v1 |
 | ST-03 | **Notifications & times** | ST-01 | Evening planning time and morning list (synced); **Send reminders on this device** switch (local; on for iPhone, off for iPad and Mac); habit reminders; warning card if denied | **Drawn** v3·23, 24 | v1 |
-| ST-04 | **Categories** | ST-01 | List, rename, add, archive, colour from a fixed set | **None** | v1 |
+| ST-04 | **Categories** | ST-01 | List, rename, add, archive (with a collapsed **Archived** section and Restore), colour from a fixed set | **None** | v1 |
 | ST-05 | **Subscription** | ST-01 | Days left or status, manage, restore | **None** | v1 |
 | ST-06 | iCloud status | ST-01 | Signed in / problem | **None** | v1 |
 | ST-07 | Appearance | ST-01 | Theme, larger text | **None** | v1 |

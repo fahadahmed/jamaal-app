@@ -1,6 +1,6 @@
 # Journey 5 — Habits: create, log, pause
 
-> **Status: walked; gaps G-37 … G-44 raised, proposals waiting for a decision** (see the [gap log](overview#gap-log)). Register flow **F08**, screens **HB-01 … HB-09** and the Habits section of **TD-01**. Behaviour is in [Habit](../../schema/habit) and [Rules engine → module 2](../../architecture/rules-engine); this page tests it against the schema and engine.
+> **Status: done — gaps G-37 … G-44 raised, decided and applied** (see the [gap log](overview#gap-log)). The text below is the walkthrough as first written, with the proposals it raised. Register flow **F08**, screens **HB-01 … HB-09** and the Habits section of **TD-01**. Behaviour is in [Habit](../../schema/habit) and [Rules engine → module 2](../../architecture/rules-engine); this page tests it against the schema and engine.
 
 **In one line:** the user creates a habit of one of four kinds, logs it day by day from Today, reads how it is going from a grid that never "breaks", and can pause it when life gets in the way.
 

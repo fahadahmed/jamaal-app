@@ -205,7 +205,7 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
 - **Behavior**: schedules local notifications (`UNUserNotificationCenter`):
   - the **evening Night Planning prompt** (at `UserSettings.planningMinute`), **on devices whose "Send reminders on this device" switch is on**;
   - an optional **morning nudge**, which — if no plan was confirmed for today (Night Planning was skipped or missed) — carries a single quiet in-app **morning card** ("No plan for today — two minutes to pick?"), shown once and never repeated if dismissed;
-  - per-window **habit reminders** and a light **window-closing** nudge as a window's end approaches;
+  - per-window **habit reminders** (planned as near-term individual notifications and **cancelled when the habit is logged, paused, archived or its time is edited**, so nothing pings for what's done) and a light **window-closing** nudge as a window's end approaches;
   - **Anchor reminders** from `remindBeforeStartMinutes` / `remindBeforeEndMinutes` (prayer times remind at the start by default; everything else is off);
   - **during-day guidance** — a highlighted task ("Start here" / "Good now") plus one companion card, max one per day. Chosen deterministically from time of day, remaining effort vs. remaining free time, a lighter-tasks-in-the-early-afternoon curve, and open habit windows.
 - **Trial and subscription**: when the trial ends unsubscribed, the evening Night Planning notification and habit/guidance nudges are cancelled and only a small number of trial-end reminders are sent (proposal: day 12, 14 and 15); everything returns on subscribing.
