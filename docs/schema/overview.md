@@ -257,7 +257,7 @@ CloudKit can't enforce uniqueness, and two devices can each create the same thin
 | `Task.importance` | `low` (default) / `medium` / `high` |
 | `Task.repeatKind` | `none` / `daily` / `weekly` / `monthly` |
 | `DeferralRecord.reason` | `tooMuch` / `notReady` / `noLonger` / `reschedule` / `unspecified` |
-| `WorkSession.outcome` | `running` / `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed` |
+| `WorkSession.outcome` | `running` / `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed` / `manual` |
 | `TaskCategory.presetKey` | `personal` / `family` / `work` (seeded); `colorKey` values are not yet defined — they wait on the category colour decision |
 | `Habit.kind` | `binary` / `counted` / `timed` / `avoid` |
 | `Habit.frequency` | `daily` / `weekdays` / `custom` |

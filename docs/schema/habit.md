@@ -93,9 +93,9 @@ Created from a type picker with plain-language descriptions. `Habit.kind` fixes 
 
 ### Timed habits
 
-- Reuse the **focus engine** ([task.md](task#focus-sessions-begin--pause--finish)): a `WorkSession` can point at a habit window. Finishing or abandoning a session adds `round(actualSeconds / 60)` minutes to that day's entry — abandoning keeps the partial time. Several sessions in a day accumulate, and minutes can also be added by hand for time spent without the timer.
+- Reuse the **focus engine** ([task.md](task#focus-sessions-begin--pause--finish)): a `WorkSession` can point at a habit window. **The day's `HabitEntry.amount` is recomputed from that window's sessions** for the day — `round(total seconds ÷ 60)` over all of them, never per session — so nothing drifts and two devices converge by summing rows. **Minutes added by hand are stored as a finished session with `outcome = manual`** (no start or end time of its own), so everything that feeds the entry is a session and can be recomputed at any time. Stopping a session keeps the partial time.
 - The day is complete when minutes reach the target; density shows partial shades as it accumulates, exactly like a counted habit. Time beyond the target doesn't over-fill.
-- A running habit session shows in the same chip. If another Begin is tapped, the settle sheet offers only **Log it** (there is no defer or drop for a habit).
+- A running habit session shows in the same chip. If another Begin is tapped, the settle sheet offers **Log it** and **Stop for now** (there is no defer or drop for a habit).
 - For a timed window, `effortMinutes` defaults to the target minutes, so it counts as flexible time in the day's free-time calculation.
 
 ### Avoid habits
@@ -161,5 +161,5 @@ The Qur'an and dhikr values are starting suggestions for the owner to correct. I
 - **Plain-language read**: the engine emits a typed `.densityRead` signal (completed / due over a rolling window, plus a suggestion when the rate is low); the message layer phrases it. Templates and thresholds (e.g. when to suggest a lighter cadence) still need writing.
 - **Avoid habits** need a design pass (H-06): the *Held today* affordance, how a slip is logged and undone, what counts as engagement, and the allowance UI.
 - **Detected habits** (the design's "second door": after three evenly spaced completions of a matching task title inside 21 days the app offers once to promote it, inheriting those completions as opening density) are **v1.1**. It needs no schema change — a `NudgeLog` kind and backdated `HabitEntry` rows — and in v1 habits are created by declaring them.
-- **Timed habits**: whether minutes round per session or per day, and how manual minutes are labelled in history.
+- **Timed habits**: how manual minutes are labelled in history (they are `manual` sessions).
 - **Derived habit intelligence** (fatigue: >50% missed over 3 weeks; new-habit realism: 4+ new habits in a week) reads `HabitEntry` history at evaluation time; nothing extra is stored here. Whether a fatigue warning was already shown lives in the nudge log (see [rules-engine.md](../architecture/rules-engine)).

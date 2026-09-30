@@ -167,7 +167,7 @@ Resolved in this reconciliation:
 Still open — settle before or during screen design:
 
 - [ ] Onboarding: which steps are skippable (proposal in [onboarding.md](onboarding))
-- [ ] Anchor extras: Jumu'ah on Fridays, reminder lead time, correcting a closed window ([anchor.md](../schema/anchor) open questions)
+- [ ] Anchor extras: reminder lead time, correcting a closed window ([anchor.md](../schema/anchor) open questions; Jumu'ah is decided — a Friday label)
 - [ ] Category colours and habit heatmap colours — ThreadsKit has no sage and only two accents ([threadskit-usage](../design/threadskit-usage))
 - [ ] Fonts: Fraunces + Hanken Grotesk + JetBrains Mono (as Design draws them); bundling and licences still to confirm in ThreadsKit
 - [ ] Wellbeing score composition

@@ -83,7 +83,7 @@ A task can be worked in a **focus session**: the user taps **Begin**, a running 
 | `pausedSeconds`   | `Int`     | `0`         | Total time spent in completed pauses. |
 | `pausedAt`        | `Date?`   | `nil`       | Non-`nil` while an explicit pause is in progress. Backgrounding the app does **not** pause. |
 | `estimateMinutes` | `Int?`    | `nil`       | Snapshot of `Task.effortMinutes` at Begin, so later edits don't rewrite what was estimated. |
-| `outcome`         | `String`  | `"running"` | One of `running` / `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed`. |
+| `outcome`         | `String`  | `"running"` | One of `running` / `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed` / `manual`. `manual` is a habit's minutes **added by hand**: a finished session with no timing of its own (see [Habit → Timed habits](habit#timed-habits)). |
 | `actualSeconds`   | `Int`     | `0`         | Written when the session closes: elapsed minus pauses. |
 | `task`            | `Task?`   | `nil`       | Inverse of `Task.sessions`. |
 | `habitWindow`     | `HabitTimeWindow?` | `nil` | Set instead of `task` for a **timed habit's** session (see [habit.md](habit#timed-habits)). Exactly one of `task` / `habitWindow` is set. |
@@ -95,11 +95,12 @@ Derived, not stored: `elapsed = (endedAt ?? now) − startedAt − pausedSeconds
 `Idle → Running → Overrun`, with `Paused` reachable only by an explicit pause from Running or Overrun.
 
 - **Overrun counts up and says nothing.** No alarm, no colour change, no nudge, no haptic. The estimate is a guess we learn from, not a contract; "75 of 60" is shown neutrally.
-- **Finish** (from the chip, the focus screen, or later the Lock Screen): a finish sheet shows actual against estimate and offers one optional note line; the task is marked done (`isCompleted`, `completedAt = endedAt`). A quiet toast offers **undo for 5 seconds**, which reopens the session and un-completes the task.
-- **One timer at a time.** Tapping Begin on a second task, while one is live, raises a **settle sheet** naming the running task: **Done** (finished), **Defer to tomorrow** (`deferred` — a normal deferral with its count and record), or **Drop** (`dropped` — sets `droppedAt`). The new session only starts after the user chooses, and the elapsed time is logged whichever they pick.
-- **Abandon** ends the session as `abandoned`: the partial time is kept, the task stays live and undone. "Abandoning is not failing."
+- **Finish** (from the chip, the focus screen, or later the Lock Screen): a finish sheet shows actual against estimate and offers one optional note line, with two buttons — **Done** (the task is marked done: `isCompleted`, `completedAt = endedAt`) and **Stop for now** (the session ends as `abandoned`, the time is logged, the task stays live). A quiet toast offers **undo for 5 seconds**, which reopens the session and un-completes the task; the time since `endedAt` is added to `pausedSeconds`, so the undo window doesn't count as work.
+- **One timer at a time.** Tapping Begin on a second task, while one is live, raises a **settle sheet** naming the running task: **Done** (finished), **Stop for now** (`abandoned` — time logged, task stays live), **Defer to tomorrow** (`deferred` — a normal deferral with its count and record), or **Drop** (`dropped` — sets `droppedAt`). The new session only starts after the user chooses, and the elapsed time is logged whichever they pick.
+- **Stop for now** ends the session as `abandoned`: the partial time is kept, the task stays live and undone. "Abandoning is not failing."
+- **Resolving the task ends its session.** Ticking a task done, or deferring or dropping it from Today or its detail, while its session is live closes the session with the matching outcome — *done* → `finished`, *defer* → `deferred`, *drop* → `dropped` — and logs the time.
 - **Day rollover**: a session still running at the rollover (default midnight, user-set) auto-closes as `autoClosed` with its partial time, and `endedAt` is the boundary instant — not "now" — so a device that slept through it invents no phantom hours. The task is carried to tomorrow **without** counting a deferral (it was in progress), and tomorrow's list opens with a single row offering to pick it back up. The user-set end of the working day (default 19:00) is only a soft planning boundary and never stops a session; the rollover is the hard one.
-- **Multi-device**: at most one live session. If two devices each Begin, the later-started one is closed as `abandoned` (its time is logged) and the user sees the settle sheet on next open. (Proposal.)
+- **Multi-device**: at most one live session. If two devices each Begin, the later-started one is closed as `abandoned` (its time is logged) and the user sees one quiet line on next open: *"Two timers were running; the later one was stopped and its time logged."*
 
 Only tasks with time worth recording need a session; **Mark done** without one still works, and a task with no session simply has no actual time.
 

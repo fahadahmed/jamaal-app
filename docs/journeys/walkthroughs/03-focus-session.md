@@ -1,6 +1,6 @@
 # Journey 3 — A focus session
 
-> **Status: walked; gaps G-21 … G-26 raised, proposals waiting for a decision** (see the [gap log](overview#gap-log)). Register flow **F05**, screens **FS-01 … FS-07** (and **TD-06**). Behaviour is in [Task → Focus sessions](../../schema/task#focus-sessions-begin--pause--finish), [Habit → Timed habits](../../schema/habit#timed-habits) and [Rules engine → module 8](../../architecture/rules-engine); this page tests it against the schema and engine. `FS-08` (Lock Screen activity) is v1.1 and out of scope.
+> **Status: done — gaps G-21 … G-26 raised, decided and applied** (see the [gap log](overview#gap-log)). The text below is the walkthrough as first written, with the proposals it raised. Register flow **F05**, screens **FS-01 … FS-07** (and **TD-06**). Behaviour is in [Task → Focus sessions](../../schema/task#focus-sessions-begin--pause--finish), [Habit → Timed habits](../../schema/habit#timed-habits) and [Rules engine → module 8](../../architecture/rules-engine); this page tests it against the schema and engine. `FS-08` (Lock Screen activity) is v1.1 and out of scope.
 
 **In one line:** the user taps Begin on a task, a quiet chip follows them around the app while they work, they pause, overrun, finish or stop, and the real time is recorded so Night Planning and the load can be honest.
 
