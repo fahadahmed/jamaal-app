@@ -46,7 +46,7 @@ Tab bar (floating pill): **Today · Habits · Wellbeing · Settings**
 | Today | The list; capacity slider; entry to Night Planning; task detail / add task sheets |
 | Habits | Habit groups and habits; habit detail (density grid and plain-language read); add habit / custom recurrence / group creation. **Proposed:** a segmented control "Habits \| Anchors" here, where Anchors lists `AnchorRule`s (add, edit, enable/disable) — see open questions |
 | Wellbeing | Score, sparkline, gathering-data state, recent patterns |
-| Settings | Medium-day length (default 180 min), planning and nudge times, categories, notifications warning card, iCloud, appearance |
+| Settings | Normal-day length (default 180 min) and working-day start / end (defaults 08:00 / 19:00), planning and nudge times, categories, notifications warning card, iCloud, appearance |
 
 Night Planning is a full-screen modal launched from Today (or a notification). Onboarding runs once, before the tabs.
 
@@ -139,7 +139,7 @@ Legacy mockups are in `mockups/legacy/` — layout/flow reference only; they pre
 
 Resolved in this reconciliation:
 
-- [x] Capacity model — enum for the user (their own call), minute budget from a tunable medium-day length; load counts tasks, habit windows and anchors, each with an optional duration
+- [x] Capacity model — two measures: an **energy budget** (low/medium/high, the user's call; minutes from a normal-day length; counts tasks only) and **free time** (working day minus fixed Anchors that cut it and flexible Anchors/habit minutes that subtract); a plan must fit both; meter headline is budget used with a quiet fit flag; **soft** day-end at a user-set time (default 19:00), midnight stays the hard rollover
 - [x] Night Planning step count/order — five steps, carry-forward in step 1
 - [x] Night Planning session — persisted (CloudKit resume)
 - [x] Rollover vs. deferral — unified as deferral with auto-defer safety net
@@ -187,7 +187,7 @@ Not covered anywhere in the docs yet (checked by search). Grouped by what they w
 - **CloudKit schema is effectively append-only once deployed to production.** Every field name in these docs should be considered final before the first production schema deploy.
 - **Editing rules.** Resolved for Anchors (pending instances update in place, attended/missed/skipped are never rewritten — see [rules-engine.md](../architecture/rules-engine), module 3). Still unspecified: how deleting a category or archiving a habit group shows up in history.
 - **Anchor reminders.** Module 6 mentions during-day guidance for upcoming anchors, but there's no per-rule lead time or reminder setting.
-- **Day boundary.** "Tonight vs. tomorrow" (already open) also affects when auto-deferral and `DayPlan` closing run, and whether they run at all when the app hasn't been opened.
+- **Day boundary.** Partly resolved: the working day ends at a user-set time (soft planning boundary) and midnight is the hard rollover. "Tonight vs. tomorrow" at odd hours still affects when auto-deferral and `DayPlan` closing run, and whether they run at all when the app hasn't been opened.
 
 **Quality and reach**
 

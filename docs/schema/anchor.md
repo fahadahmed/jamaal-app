@@ -37,6 +37,7 @@ Anchor instances are generated from a persisted `AnchorRule` (not computed on th
 | `sourceKey`     | `String` | `"custom"` | One of `prayerWindow` / `schoolRun` / `binNight` / `plantWatering` / `custom`. |
 | `configData`    | `String` | `"{}"`     | JSON, versioned; shape depends on the rule's family — see [`configData` shapes](#configdata-shapes). |
 | `effortMinutes` | `Int?`   | `nil`      | How long attending takes (Fajr ≈ 10, school run ≈ 30) — **not** the window length (Fajr's window may be 90 minutes). Applies to every instance the rule generates. `nil` = unknown, counts as zero. |
+| `placement`     | `String` | `"fixed"`  | `fixed` or `flexible`. **Fixed** = a busy block from the window start for `effortMinutes`, which *cuts* the working day into free blocks (school run, an appointment). **Flexible** = it takes minutes but has no fixed position inside its window, so it only reduces total free time (bin night). `afterLast` rules are always flexible; one-off Anchors are always fixed. Used by the capacity check — see [rules-engine.md](../architecture/rules-engine), module 7. |
 | `isEnabled`     | `Bool`   | `true`     | |
 | `createdAt`     | `Date`   | `.now`     | |
 
@@ -96,6 +97,8 @@ Monthly patterns are intentionally not offered for Anchors; recurring monthly th
 | `binNight` | weekly, one weekday (default Wed) | "Bin night" 19:00, 180 min | 10 |
 | `plantWatering` | afterLast, 3–4 days | all-day | 10 |
 | `custom` | weekly, no default days | none — user adds at least one | none |
+
+**Placement defaults**: `schoolRun` fixed, `binNight` flexible, `plantWatering` flexible (always, as `afterLast`), `custom` fixed, and `prayerWindow` **fixed at the start of each window** — each prayer then cuts the day at its time, as the design draws it (Maghrib at 18:40 splitting the evening). The user can switch prayers to flexible. Only busy time inside the working day counts, so prayers after the day's end don't cut it.
 
 ### Prayer shape (`prayerWindow`)
 

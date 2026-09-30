@@ -19,14 +19,15 @@ protocol RuleModule {
 
 ## Decisions resolved here
 
-- **Capacity** stays an enum — `low` / `medium` / `high` — as the *user-facing* setting. It is the user's own call about how much they have in them; it is not computed. Each level maps to a **minute budget**: the user sets what a *medium day* is (Settings, default 180 minutes — v2's baseline), `low` is ⅔ of that (120) and `high` is 4⁄3 (240).
-- **Load counts everything that takes time.** Tasks, habit windows and anchor rules each carry an optional duration (`effortMinutes`). The load check sums all three against the budget. Anchor and habit minutes are **committed** (can't be deferred); only task minutes are **movable**, so overload suggestions only ever propose deferring tasks.
+- **Capacity** stays an enum — `low` / `medium` / `high` — as the *user-facing* setting. It is the user's own call about how much they have in them; it is not computed. Each level maps to a **minute budget for focused tasks**: the user sets what a *normal day* is (onboarding and Settings, default 180 minutes — v2's baseline; it is the `medium` level), `low` is ⅔ of that (120) and `high` is 4⁄3 (240).
+- **Two measures, kept apart.** The **energy budget** counts *tasks only* — the design defines a normal day as focused work outside meetings and life admin. **Free time** is the working day (from a start time to a user-set end time) minus fixed Anchors, which cut it into blocks, and the minutes of flexible Anchors and habits, which just subtract. A plan has to fit both: task minutes within the budget, and each task within a free block. Anchors and habits therefore no longer eat the energy budget; they shrink the time.
+- **The day ends at a user-set time, not midnight** (proposal: 19:00). It is a *soft* planning boundary: overflow is named, never blocked, and one tap moves it to tomorrow. Midnight stays the hard rollover (auto-deferral, session auto-close, `DayPlan` close).
 - **Deferral replaces rollover.** A task moving to a later day, by the user or automatically, is a deferral with a count and a record (see [task.md](../schema/task)). 3rd deferral = stale + date picker (and a medium/high task is eased to `low`); 5th = suggest removal.
 - **Importance**: three levels (`low` default, `medium`, `high`), set mainly in Night Planning; medium/high require a due date and can't be Someday; `low` tasks always sort after medium/high.
 - **Night Planning is 5 steps** with a Keep/Later/Drop carry-forward folded into step 1, and its session is **persisted** (CloudKit sync means a session can resume on another device).
 - **Reflect step** captures a numeric mood (1–5) and an optional free-text note.
 - **Night Planning triggers** via a fixed evening notification (user-set time, default 20:00) in addition to being openable any time. Module 6 is therefore a hard dependency of module 4.
-- **Focus sessions** (the task timer) follow the design's locked decisions: an ambient chip on every tab (Live Activity deferred to v1.1), count-up overrun with no alarm or nudge, one timer at a time settled with Done / Defer / Drop, abandon logs partial time, auto-close at the midnight wall. See [task.md](../schema/task#focus-sessions-begin--pause--finish) and module 8.
+- **Focus sessions** (the task timer) follow the design's locked decisions: an ambient chip on every tab (Live Activity deferred to v1.1), count-up overrun with no alarm or nudge, one timer at a time settled with Done / Defer / Drop, abandon logs partial time, auto-close at midnight (the day rollover). See [task.md](../schema/task#focus-sessions-begin--pause--finish) and module 8.
 - **Nudge limits**: at most one wellbeing nudge and one during-day guidance card per day.
 
 ## Supporting models
@@ -42,10 +43,11 @@ The per-day record. Replaces the earlier `DailyCapacity`, widened because wellbe
 | `id`                     | `UUID`    | `UUID()`   | |
 | `date`                   | `Date`    | `.now`     | Day granularity, normalised to midnight. |
 | `capacity`               | `String`  | `"medium"` | `low` / `medium` / `high`. Written by Night Planning step 4 for tomorrow; editable on Today. |
-| `plannedEffortMinutes`   | `Int`     | `0`        | Total planned minutes for the day (tasks + habit windows + anchors), snapshotted at Night Planning confirm. |
-| `committedMinutes`       | `Int`     | `0`        | The part of that total that can't be deferred (habit windows + anchors). |
-| `completedEffortMinutes` | `Int`     | `0`        | Updated as tasks complete. |
-| `loadScore`              | `Int`     | `0`        | `plannedEffortMinutes / budget × 100`, snapshotted at confirm. |
+| `plannedTaskMinutes`     | `Int`     | `0`        | Minutes of tasks planned for the day, snapshotted at Night Planning confirm. Counts against the energy budget. |
+| `freeMinutes`            | `Int`     | `0`        | Free time in the working day at confirm, after fixed and flexible commitments. |
+| `committedMinutes`       | `Int`     | `0`        | Minutes of fixed Anchors, flexible Anchors and habit windows inside the working day — what can't be deferred. |
+| `completedEffortMinutes` | `Int`     | `0`        | Updated as tasks complete: actual focus time from sessions where there is one, else the estimate. |
+| `loadScore`              | `Int`     | `0`        | `plannedTaskMinutes / budget × 100`, snapshotted at confirm. |
 | `wasOverloaded`          | `Bool`    | `false`    | Load state was `overloaded` or worse at confirm. |
 | `completionRate`         | `Double`  | `0`        | 0–1, finalised at day close. |
 | `planningCompletedAt`    | `Date?`   | `nil`      | When Night Planning confirmed this day's plan. |
@@ -78,6 +80,20 @@ Lets a deterministic engine enforce "one nudge a day" and "don't repeat a warnin
 | `subjectKey`  | `String?` | `nil`      | The habit/task the nudge was about (UUID string), if any. |
 | `sentAt`      | `Date`    | `.now`     | |
 | `dismissedAt` | `Date?`   | `nil`      | |
+
+### `UserSettings`
+
+The few settings that change *computed* results, so they must be identical on every device. A single row, synced via CloudKit. (Notification and appearance preferences stay per-device below.)
+
+| Field              | Type   | Default | Notes |
+| ------------------ | ------ | ------- | ----- |
+| `id`               | `UUID` | `UUID()`| |
+| `mediumDayMinutes` | `Int`  | `180`   | The user's *normal day* of focused work; the `medium` budget. `low` = ⅔, `high` = 4⁄3. Set in onboarding, editable in Settings. |
+| `dayStartMinute`   | `Int`  | `480`   | Minutes since midnight when the working day starts (08:00). Free time for tomorrow's plan starts here; for today it starts at the later of now and this. |
+| `dayEndMinute`     | `Int`  | `1140`  | Minutes since midnight when the working day ends (19:00; users pick, typically 19:00–20:00). The soft planning boundary. |
+| `createdAt`        | `Date` | `.now`  | |
+
+CloudKit has no unique constraints, so two devices can each seed a row. The engine keeps the earliest-created row and deletes the rest.
 
 ### Preferences (not SwiftData)
 
@@ -156,8 +172,9 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 
 ### 7. Capacity & load
 
-- **Input**: `DayPlan.capacity` for the day; tasks planned for that day, the due habit windows and the day's anchors, each with `effortMinutes`; the user's medium-day minutes.
-- **Behavior**: `budget = minutes(capacity)` (medium = the user's medium-day setting, low = ⅔ of it, high = 4⁄3 of it); `committedMinutes` = habit windows + anchors; `plannedEffortMinutes` = committed + task minutes; `loadScore = plannedEffortMinutes / budget × 100`. Items with no duration count as zero, and the engine reports how many so the UI can nudge gently. State thresholds (from v2):
+Two independent measures, deliberately kept apart.
+
+**Energy budget (the user's call).** `low` / `medium` / `high` sets a budget of *focused-task minutes*: `budget = minutes(level)` (medium = `UserSettings.mediumDayMinutes`, low = ⅔, high = 4⁄3). Only **tasks** count: `loadScore = plannedTaskMinutes / budget × 100`. Items with no duration count as zero, and the engine reports how many so the UI can nudge gently. State thresholds (from v2):
 
   | Load score | State | Response |
   | ---------- | ----- | -------- |
@@ -167,10 +184,26 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
   | 110–140%   | `overloaded` | gentle warning |
   | > 140%     | `exhausting` | strong suggestion to defer something |
 
-  Also decides what Today shows at each capacity level (proposed, tunable): **low** — Anchors, `doFirst` tasks and habits whose window is closing and not yet done; **medium** — everything due except `letGo` tasks; **high** — everything due. Anything not shown appears under a collapsed "also today" section with a count — nothing silently disappears.
-- **Anchors in the load**: `skipped` and `delegated` Anchors stop counting as committed minutes once set (nobody has to spend that time). `afterLast` Anchors count their minutes but are *floating* — they don't form the day's fixed spine. How fixed Anchors shape the day into free blocks belongs to the capacity-model decision, still open.
-- **Suggested capacity**: from tomorrow's committed minutes the engine can suggest a level (e.g. committed minutes above half the medium budget → suggest `low`). The user always decides.
-- **Signals**: `.loadState`, `.committedMinutes`, `.suggestedCapacity`, `.missingDurations(count)`, `.todayVisibility`.
+**Free time (the physical day).** The working day runs from `dayStartMinute` to `dayEndMinute`; for today it starts at the later of now and `dayStartMinute`. Subtract:
+
+- **fixed Anchors** (`placement: fixed`): each is a busy block from `windowStart` for `effortMinutes`, and it **cuts** the day into free blocks;
+- **flexible Anchors** (`placement: flexible`, and every `afterLast` Anchor) and **habit windows**: their minutes come off the total free time but don't cut it, because their position within the day isn't fixed.
+
+Only busy time inside the working day counts, so an Anchor after the day's end (Isha at 20:15) doesn't fragment it. `skipped` and `delegated` Anchors, and anything already done, stop counting. The result is `freeMinutes` (blocks minus flexible minutes, floor 0) and `longestFreeBlock`.
+
+**A plan has to fit both:**
+
+- **Energy** — the load state above.
+- **Time** — if `plannedTaskMinutes > freeMinutes`, the overflow is `plannedTaskMinutes − freeMinutes`, phrased "2h 10m past 19:00".
+- **Fit** — a planned task with an estimate longer than `longestFreeBlock` gets a `.taskDoesNotFit` flag at planning time ("the 90-minute review doesn't fit before the school run"). Quiet, never blocking.
+
+**Soft, never blocking.** Nothing is refused. Overflow is *named*: the meter turns terracotta and reads "N min past 19:00", with one tap to move the overflow to tomorrow — deterministically, taking tasks from the bottom of Today's order (quadrant, then due date) until the plan fits; the user can adjust. Adding a task that tips the day over shows "Day is full · offer tomorrow" at capture, never blocking. The **day's end is a planning boundary only**; midnight remains the hard rollover.
+
+**Today visibility by level** (proposed, tunable): **low** — Anchors, `doFirst` tasks and habits whose window is closing and not yet done; **medium** — everything due except `letGo` tasks; **high** — everything due. Anything not shown appears under a collapsed "also today" section with a count — nothing silently disappears.
+
+**Suggested capacity**: the highest level whose budget fits within `freeMinutes` (never below `low`) — for example, 2 hours free against a 3-hour normal day suggests `low`. The user always decides.
+
+- **Signals**: `.loadState`, `.timeOverflow(minutes)`, `.taskDoesNotFit(task)`, `.freeBlocks`, `.suggestedCapacity`, `.missingDurations(count)`, `.todayVisibility`.
 
 ### 8. Focus sessions (state machine)
 
@@ -178,7 +211,7 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 - **Behavior**: a small deterministic state machine over `WorkSession` (`Idle → Running → Overrun`, `Paused` only by explicit pause; outcomes `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed` — full rules in [task.md](../schema/task#focus-sessions-begin--pause--finish)).
   - Derives elapsed time from `startedAt`, so a killed or backgrounded app never loses or invents time.
   - Enforces **one live session**: a second Begin is refused until the first is settled (Done / Defer / Drop); on a cross-device conflict the later-started is closed as `abandoned`.
-  - **Auto-closes at the midnight wall** (`autoClosed`), carries the task to tomorrow without counting a deferral, and emits a pick-it-back-up signal for tomorrow's list.
+  - **Auto-closes at midnight, the day rollover** (`autoClosed`; the softer working-day end doesn't stop a session), carries the task to tomorrow without counting a deferral, and emits a pick-it-back-up signal for tomorrow's list.
   - **Approaching edge**: while a session runs, finds the next Anchor whose window opens soon (threshold proposal: 30 minutes, tunable) and emits a signal the chip phrases as "Maghrib in 12 min". It never blocks or interrupts.
   - **Overrun** is a state, not an event: it emits no notification, colour change or nudge.
 - **Signals**: `.sessionState`, `.sessionAutoClosed(task)`, `.pickUpRow(task)`, `.anchorApproaching(anchor, minutes)`.
@@ -186,9 +219,9 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 
 ## Open questions
 
-- **Numbers are proposals**: the medium-day default (180) and the ⅔ / 4⁄3 multipliers for low/high, the load thresholds, the rollover-to-stale threshold (3), removal suggestion (5), and the wellbeing window (7 vs. 14) are all constants, easy to tune.
+- **Numbers are proposals**: the medium-day default (180), the ⅔ / 4⁄3 multipliers for low/high, the working day defaults (08:00–19:00), the load thresholds, the rollover-to-stale threshold (3), removal suggestion (5), and the wellbeing window (7 vs. 14) are all constants, easy to tune.
 - **Missing durations** count as zero, so load can be understated until durations are filled in. Current proposal: Night Planning's capacity step gently notes how many items have no duration, rather than guessing. Habit presets and the built-in anchor types ship default durations to keep this rare.
-- **Where the medium-day setting lives**: it changes computed load, so it should sync across devices. Preferences are per-device (`@AppStorage`); this one probably belongs in a small synced settings store (`NSUbiquitousKeyValueStore` or a `UserSettings` model). Decide before implementation.
+- **Learning the normal day**: sessions now record actual focus time. Proposal: the app suggests a `mediumDayMinutes` from the last four weeks of actual time (never changes it on its own), and weekdays may default to different levels (weekends to `low`). Not confirmed.
 - **Wellbeing score composition**: v2's Wellbeing screen showed a single 0–100 score; this doc derives it from mood only. Decide whether completion rate and load also contribute.
 - **Prayer-time library**: `configData` fixes the settings, not the implementation. Choose a well-tested prayer-time library (or implementation) at build time and check its method list against the `method` values offered, plus its high-latitude handling.
 - **Notification limits**: iOS caps pending local notifications at 64 — confirm the reminder + nudge volume stays well under that. Habit reminders add up, and five prayers a day for several days ahead adds more if each gets a reminder.

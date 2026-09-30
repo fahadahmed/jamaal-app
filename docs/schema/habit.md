@@ -39,7 +39,7 @@ A window is one *occurrence slot* in the day that keeps its own completion histo
 | `startMinute`       | `Int`   | `0`      | Minutes since midnight. See open question. |
 | `endMinute`         | `Int`   | `1439`   | `1439` = no real window boundary. |
 | `targetCount`       | `Int`   | `1`      | `1` = binary; `2+` = counted. |
-| `effortMinutes`     | `Int?`  | `nil`    | How long one occurrence takes (e.g. 15 for a Qur'an reading window). Counts toward the day's committed time in the load check. For a counted window it is the time for the *whole* target, not per increment. Presets ship a sensible default; `nil` = unknown, counts as zero. |
+| `effortMinutes`     | `Int?`  | `nil`    | How long one occurrence takes (e.g. 15 for a Qur'an reading window). Counts as *flexible* time: it reduces the day's total free time but doesn't cut it into blocks (see [rules-engine.md](../architecture/rules-engine), module 7). For a counted window it is the time for the *whole* target, not per increment. Presets ship a sensible default; `nil` = unknown, counts as zero. |
 | `reminderMinute`    | `Int?`  | `nil`    | Minutes since midnight; `nil` = no reminder. UI default when the toggle is switched on: 20:00. Reminders were per-habit in v2; per-window here because windows are the unit of completion history and timing. |
 
 Relationship: `entries: [HabitEntry]?` (optional).
