@@ -1,6 +1,6 @@
 # Journey 10 — Notifications denied; problems and recovery
 
-> **Status: walked; gaps G-76 … G-83 raised, proposals waiting for a decision** (see the [gap log](overview#gap-log)). Register flows **F13** (notifications denied) and **F15** (problems); screens **SY-01**, **ST-03**, **ST-06**, **SY-05**, **OB-03** and **AN-07**. Behaviour is in [Rules engine → module 6](../../architecture/rules-engine) and [Architecture → Persistence and sync](../../architecture/overview); this page tests what the app does when the things it depends on — permission to notify, iCloud, the local store, newer data from another device — are not as hoped.
+> **Status: done — gaps G-76 … G-83 raised, decided and applied** (see the [gap log](overview#gap-log)). The text below is the walkthrough as first written. Register flows **F13** (notifications denied) and **F15** (problems); screens **SY-01**, **ST-03**, **ST-06**, **SY-05**, **OB-03** and **AN-07**. Behaviour is in [Rules engine → module 6](../../architecture/rules-engine) and [Architecture → Persistence and sync](../../architecture/overview); this page tests what the app does when the things it depends on — permission to notify, iCloud, the local store, newer data from another device — are not as hoped.
 
 **In one line:** when a reminder can't be delivered, or sync, storage or another device's data misbehaves, the app keeps working, says plainly what is wrong only when it matters, and never loses anything.
 

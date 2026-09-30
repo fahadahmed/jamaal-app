@@ -253,6 +253,8 @@ CloudKit can't enforce uniqueness, and two devices can each create the same thin
 
 ## Raw values
 
+**Reading an unknown value.** An older app may read a raw value a newer app wrote. Every raw-string read falls back to an inert `unknown` case: the row is **kept and never rewritten or deleted**, shown neutrally or hidden, excluded from counts and the wellbeing score, and the older app shows a quiet *"Update Jamaal to see this"* where a row can't be displayed.
+
 | Field | Values |
 | ----- | ------ |
 | `Task.importance` | `low` (default) / `medium` / `high` |

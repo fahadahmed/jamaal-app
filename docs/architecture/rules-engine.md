@@ -287,6 +287,16 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 - **The paywall** appears on the first open of each logical day while unsubscribed, at most once a day and never during a focus session; *Not now* is final for the day. The entitlement is checked when an action *starts*: a running session can always finish, an open Night Planning session ends as skipped at rollover, and subscribing lifts every lock at once.
 - **Delete my data** asks twice, deletes every record locally **and** in iCloud, and resets the app to first launch. Export and delete are always available.
 
+## Permissions and problems
+
+**Notification permission** is read on launch and every foreground, in three states: *not asked* (a *Turn on reminders* button shows the system prompt in context), *denied or turned off later* (a link to system Settings), *granted*. The planner schedules only when this device's **switch is on and** permission is granted. Denial costs more than the planning prompt — Anchor, habit, morning and trial reminders too — so the Settings warning card lists what isn't being delivered, and a configured reminder (an Anchor rule's or a habit's reminder row) carries one quiet line saying notifications are off. The **Today banner** appears only when the switch is on and permission is off, at most once per logical day, dismissible, with *Don't remind me* stored locally; a device that is quiet by choice shows none. It is separate from the always-available **Plan tomorrow** row.
+
+**Tapping a notification:** planning → Night Planning for the target date (the ordinary locked sheet if read-only); Anchor or habit → Today at that row; trial → `ST-05`. v1 notifications have no action buttons and use the default interruption level.
+
+**iCloud problems** (`ST-06`): *Signed in*, *Not signed in*, *Restricted*, *Storage full*, *Sync is having trouble* (three consecutive failures over at least a day). **Offline is never a problem.** The last four surface on Today as one quiet dismissible line (back after a day if still true) that says the data is safe on this device and what would fix it. On an **account change or sign-out** the app pauses rollover and sync-dependent work and shows *"Your iCloud account changed"* with **Export my data** first; the system's behaviour there must be verified by a real-device spike (Phase 3, before TestFlight).
+
+**A store that won't open** shows a recovery screen, not a crash: **Try again**, or **Reset this device's data** (two confirmations; the iCloud copy downloads again; never silent). **Unknown raw values** from a newer version are kept inert — see the [schema overview](../schema/overview#raw-values).
+
 ## Open questions
 
 - **Numbers are proposals**: the medium-day default (180), the ⅔ / 4⁄3 multipliers for low/high, the working day defaults (08:00–19:00), the load thresholds, the rollover-to-stale threshold (3), removal suggestion (5), the wellbeing window (14 days, 7 active days to start), and the normal-day suggestion thresholds (28 days of history, 14 data days, a 30-minute difference, 15-minute rounding) are all constants, easy to tune.
