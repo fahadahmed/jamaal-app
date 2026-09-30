@@ -1,6 +1,6 @@
 # Journey 8 — Wellbeing
 
-> **Status: walked; gaps G-59 … G-65 and G-67 raised (G-58 and G-66 withdrawn: mood removed), proposals waiting for a decision** (see the [gap log](overview#gap-log)). Register flow **F11**; screens **WB-01 … WB-03** (**WB-04** is v1.1) and the sparkline strip **TD-02** on Today. Behaviour is in [Rules engine → module 5](../../architecture/rules-engine); this page tests it against the data the first seven journeys actually leave behind.
+> **Status: done — gaps G-59 … G-65 and G-67 raised, decided and applied (G-58 and G-66 withdrawn: mood removed)** (see the [gap log](overview#gap-log)). The text below is the walkthrough as first written. Register flow **F11**; screens **WB-01 … WB-03** (**WB-04** is v1.1) and the sparkline strip **TD-02** on Today. Behaviour is in [Rules engine → module 5](../../architecture/rules-engine); this page tests it against the data the first seven journeys actually leave behind.
 
 **In one line:** after a week or two of real use, the user opens the Wellbeing tab and gets a plain, unjudged read of how their days have been going, derived only from what they did, and — when a pattern shows — one gentle suggestion they can take or leave.
 
