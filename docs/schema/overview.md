@@ -144,6 +144,9 @@ windowStart: Date = .now
 windowEnd: Date = .now
 effortMinutes: Int? = nil
 attendanceStatus: String = "pending"
+resolvedAt: Date? = nil
+remindBeforeStartMinutes: Int? = nil
+remindBeforeEndMinutes: Int? = nil
 generatedAt: Date = .now
 ```
 
@@ -293,6 +296,7 @@ Safe to add without breaking anything, so they are *not* blockers: `Task.sortOrd
 - [x] Every model that two devices can create twice has a dedup key
 - [x] Dates classified as floating or instant
 - [x] Learning decision made (suggest only), so `UserSettings.weekdayLevels` is in the schema
+- [x] Journey 4 (Anchors) added `Anchor.resolvedAt`, `remindBeforeStartMinutes` and `remindBeforeEndMinutes`
 - [x] Journey 1 (first launch) added `UserSettings.planningMinute`, `morningMinute` and `onboardingCompletedAt`
 - [ ] `TaskCategory.colorKey` values (waits on the category colour decision — they are strings, so can follow)
 - [ ] Habit preset definitions (`presetKey` is a string, so can follow)
