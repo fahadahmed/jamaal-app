@@ -27,6 +27,7 @@ Where the summary and the repo conflict on **structure, platform or business**, 
 | Onboarding intro screens (meet Jamaal, concept, capacity, notifications) | [onboarding.md](../../journeys/onboarding) |
 | Screen inventory and navigation | [app-flow.md](../../journeys/app-flow) |
 | Domain `jamaal.app`; marketing site lives outside this repo | CLAUDE.md |
+| Focus-session timer (from the Claude Design flow spec, not v2) | [task.md](../../schema/task#focus-sessions-begin--pause--finish), rules-engine module 8 |
 
 ## Superseded — repo wins
 

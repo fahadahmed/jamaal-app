@@ -66,7 +66,7 @@ Because CloudKit sync is in from v1:
 
 Full rationale for Anchor as a third type (vs. folding into Habit): `docs/architecture/decisions/0001-anchor-object-type.md`.
 
-Notes feature was dropped in favor of optional lightweight markdown (checklists, bold/italic, links, inline code) scoped to individual tasks, surfaced as a tappable checklist during a task/anchor's timed session — not a separate notes destination.
+Notes feature was dropped in favor of optional lightweight markdown (checklists, bold/italic, links, inline code) scoped to individual tasks, surfaced as a tappable checklist during a task's focus session (timed), plus optional timestamped lines on the finish and defer sheets — not a separate notes destination.
 
 ## Product principles (carried from the earlier planning chat)
 
@@ -78,7 +78,7 @@ Notes feature was dropped in favor of optional lightweight markdown (checklists,
 
 ## Rules engine (JamaalCore)
 
-Deterministic — same state + inputs always produce the same output, no ML/heuristics. Seven modules (numbering of the original six is stable; **boundaries are a draft, confirm before implementing** — see `docs/architecture/rules-engine.md`):
+Deterministic — same state + inputs always produce the same output, no ML/heuristics. Eight modules (numbering of the original six is stable; **boundaries are a draft, confirm before implementing** — see `docs/architecture/rules-engine.md`):
 
 1. Task scheduling (due dates, rollover)
 2. Habit density & intelligence (no streaks)
@@ -87,6 +87,7 @@ Deterministic — same state + inputs always produce the same output, no ML/heur
 5. Wellbeing scoring ("gathering data" → active score)
 6. Notification/nudge logic (window-closing reminders, during-day guidance)
 7. Capacity & load (budget from `low`/`medium`/`high`, load states, what Today shows)
+8. Focus sessions (task timer state machine: Begin / pause / finish, one live session, midnight auto-close)
 
 Modules emit typed signals; a separate message-template layer phrases them in Jamaal's companion voice.
 

@@ -66,6 +66,7 @@ Built in `Jamaal/Components/` on top of the tokens above:
 - Habit group completion ring
 - Habit heatmap grid
 - Wellbeing sparkline (Swift Charts)
+- Ambient session chip and focus screen (timer numeral in the display face with monospaced digits; the chip is filled only while a session is live)
 - Window bar (Anchor window states: upcoming / open / closing soon / closed; the design draws it 6 pt tall and pill-shaped)
 - Night Planning 5-step wizard (review & carry forward → reflect → plan → capacity & load check → confirm)
 
