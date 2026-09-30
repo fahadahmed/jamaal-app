@@ -174,7 +174,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 |---|---|---|---|---|---|
 | ST-01 | Settings home | Tab 4 | Sections below; trial status row | **Drawn** v3·23 (to rework) | v1 |
 | ST-02 | **Capacity & day** | ST-01 | Normal-day length (+ quiet suggestion), default level per weekday, working-day start/end, rollover (Advanced) | **Drawn** v3·23 (to rework) | v1 |
-| ST-03 | **Notifications & times** | ST-01 | Evening planning time, morning list, habit reminders; warning card if denied | **Drawn** v3·23, 24 | v1 |
+| ST-03 | **Notifications & times** | ST-01 | Evening planning time and morning list (synced); **Send reminders on this device** switch (local; on for iPhone, off for iPad and Mac); habit reminders; warning card if denied | **Drawn** v3·23, 24 | v1 |
 | ST-04 | **Categories** | ST-01 | List, rename, add, archive, colour from a fixed set | **None** | v1 |
 | ST-05 | **Subscription** | ST-01 | Days left or status, manage, restore | **None** | v1 |
 | ST-06 | iCloud status | ST-01 | Signed in / problem | **None** | v1 |
@@ -187,7 +187,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 |---|---|---|---|---|
 | OB-01 | Meet Jamaal | Companion intro | **Drawn** v3·25 | v1 |
 | OB-02 | The idea | One list, three ways of tracking; not projects or tags | **Drawn** v3·26 (copy to fix) | v1 |
-| OB-03 | iCloud check | Silent when fine; problem state | **None** | v1 |
+| OB-03 | iCloud check | Waits briefly for sync; silent when fine; problem state; **Welcome back** for a second device (skips onboarding) | **None** | v1 |
 | OB-04 | **Your normal day** | Normal-day length, working-day end, capacity slider | **Drawn** v3·27 (to extend) | v1 |
 | OB-05 | **Reminders & evening time** | Evening time, morning list, permission request | **Drawn** v3·28 | v1 |
 | OB-06 | First task | Category intro | **None** | v1 |

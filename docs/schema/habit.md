@@ -136,7 +136,17 @@ Colours come from the design's density tokens — three fill steps plus a miss c
 
 ## Presets
 
-`presetKey` identifies a built-in (Qur'an reading, dhikr, exercise, running). Whether presets need bundled config (default windows, target counts, labels) that ships with the app rather than as user data is still open.
+`presetKey` identifies a built-in. The catalogue is **bundled app data**, not user data; every preset uses one all-day window, and everything is editable after creation.
+
+| Preset (`presetKey`) | `kind` | `target` | Schedule | `effortMinutes` |
+| --- | --- | --- | --- | --- |
+| Qur'an reading (`quran`) | `timed` | 15 min | daily | 15 |
+| Dhikr (`dhikr`) | `counted` | 33 | daily | — |
+| Exercise (`exercise`) | `timed` | 30 min | 3 times a week | 30 |
+| Running (`running`) | `timed` | 30 min | 3 times a week | 30 |
+| Something else | `binary` | 1 | daily | — |
+
+The Qur'an and dhikr values are starting suggestions for the owner to correct. In onboarding, "Something else" is a binary daily habit with just a title; the other kinds come from the Habits tab.
 
 ## CloudKit constraints applied
 
@@ -149,7 +159,6 @@ Colours come from the design's density tokens — three fill steps plus a miss c
 - **`HabitTimeWindow` time representation**: `startMinute`/`endMinute` is a placeholder — simple and CloudKit-safe, but doesn't handle timezone travel gracefully. Anchor uses concrete `Date`s for its windows; keep the two consistent in the rules-engine implementation.
 - **Weekly-target habits** (`targetPerWeek > 0`): the grid still shows individual days, but the plain-language read should speak in weeks ("3 of 3 this week"). Exact wording is a copy/design task for the custom-recurrence and habit-detail screens.
 - **Plain-language read**: the engine emits a typed `.densityRead` signal (completed / due over a rolling window, plus a suggestion when the rate is low); the message layer phrases it. Templates and thresholds (e.g. when to suggest a lighter cadence) still need writing.
-- **Presets**: is `presetKey` enough, or do presets need bundled config?
 - **Avoid habits** need a design pass (H-06): the *Held today* affordance, how a slip is logged and undone, what counts as engagement, and the allowance UI.
 - **Detected habits** (the design's "second door": after three evenly spaced completions of a matching task title inside 21 days the app offers once to promote it, inheriting those completions as opening density) are **v1.1**. It needs no schema change — a `NudgeLog` kind and backdated `HabitEntry` rows — and in v1 habits are created by declaring them.
 - **Timed habits**: whether minutes round per session or per day, and how manual minutes are labelled in history.

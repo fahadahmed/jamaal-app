@@ -1,6 +1,6 @@
 # Journey 1 — First launch and onboarding
 
-> **Status: walked; gaps G-01 … G-10 raised** (see the [gap log](overview#gap-log)). Register flow **F01**, screens **OB-01 → OB-09 → TD-01**. The behaviour is in [Onboarding](../onboarding); this page tests it against the schema.
+> **Status: done — gaps G-01 … G-10 raised, decided and applied** (see the [gap log](overview#gap-log); only G-08, category colours, remains open). The text below is the walkthrough as first written, with the *proposals* it raised; the decisions are now in the schema, engine and onboarding docs. Register flow **F01**, screens **OB-01 → OB-09 → TD-01**. The behaviour is in [Onboarding](../onboarding); this page tests it against the schema.
 
 **In one line:** a new user meets Jamaal, tells it what a normal day looks like, agrees when it may speak, creates one real Task, Habit and Anchor, and lands on a Today that is not empty.
 

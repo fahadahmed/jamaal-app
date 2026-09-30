@@ -27,7 +27,8 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 - **Today**, add task, deferral, importance and categories, the capacity meter, and repeating tasks.
 - The **focus timer**: ambient chip and focus screen (Live Activity waits for v1.1).
 - **Habits**: the four kinds, the density grid and pauses.
-- **Anchors**: rules, one-offs, prayer times, exceptions and window states.
+- **Anchors**: rules, one-offs, prayer times (using `adhan`), exceptions and window states.
+- **Enrol in the paid Apple Developer Program and create the CloudKit container** before any real-device sync testing (required for iCloud and push).
 
 ## Phase 4 — The evening ritual
 
