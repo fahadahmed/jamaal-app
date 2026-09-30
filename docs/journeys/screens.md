@@ -71,11 +71,11 @@ Each flow lists its trigger, the screens it passes through, its branches and its
 
 **F12 Trial, paywall, read-only.** Days 1–14 nothing changes (`ST-05` shows days left). Quiet reminders around days 12–15. Day 15 → `SB-01` paywall (monthly, yearly, restore, Not now). Not subscribed → read-only (`SB-03` banner): viewing and *living the day* work (ticking off, logging, Anchor outcomes, timers); shaping the plan (creating, editing, Night Planning, capacity) is locked, with a calm sheet when a locked control is tapped. The paywall shows once on the first open of each logical day. Subscribe → everything returns.
 
-**F13 Notifications denied.** `OB-05` or a later denial → `SY-01`: an in-app banner at planning time and a warning card in `ST-03` with a deep link to system settings.
+**F13 Notifications denied.** Permission is *not asked* (OB-05 skipped), *denied*, or *turned off later* — re-checked on every foreground. `ST-03`'s warning card lists what isn't being delivered (planning prompt, Anchor, habit and morning reminders) with a button (*Turn on reminders* or a link to system Settings); where a reminder is configured, one quiet line says notifications are off. `SY-01`'s Today banner appears only when this device's switch is on and permission is off, once per logical day, dismissible, with *Don't remind me*; it is separate from the always-available **Plan tomorrow** row. Tapping a notification opens Night Planning (planning), Today at that row (Anchor, habit) or `ST-05` (trial).
 
 **F14 Categories.** `ST-04` (list, rename, add, archive, colour from a fixed set); the picker inside `TK-01` / `TK-02`; optional Today filter.
 
-**F15 Problems.** iCloud issue → `OB-03` (onboarding) or `SY-05` (later); an Anchor rule that can't be decoded → `AN-07`; two devices that both started a session → the later one is closed as abandoned and the settle sheet is shown on next open.
+**F15 Problems.** iCloud issue → `OB-03` (onboarding) or `SY-05` (later); an Anchor rule that can't be decoded → `AN-07`; two devices that both started a session → the later one is closed as abandoned and one quiet line says so on next open; a local store that won't open → a recovery screen (*Try again* / *Reset this device's data*); an iCloud account change → a notice with *Export my data* first; a value from a newer version → kept and shown as *Update Jamaal to see this*.
 
 ## 4. Screen register
 
@@ -177,7 +177,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 | ST-03 | **Notifications & times** | ST-01 | Evening planning time and morning list (synced); **Send reminders on this device** switch (local; on for iPhone, off for iPad and Mac); habit reminders; warning card if denied | **Drawn** v3·23, 24 | v1 |
 | ST-04 | **Categories** | ST-01 | List, rename, add, archive (with a collapsed **Archived** section and Restore), colour from a fixed set | **None** | v1 |
 | ST-05 | **Subscription** | ST-01 | Days left or status, manage, restore | **None** | v1 |
-| ST-06 | iCloud status | ST-01 | Signed in / problem | **None** | v1 |
+| ST-06 | iCloud status | ST-01 | Signed in · Not signed in · Restricted · Storage full · Sync trouble (three failures over a day); offline is never a problem | **None** | v1 |
 | ST-07 | Appearance | ST-01 | Theme, larger text | **None** | v1 |
 | ST-08 | About, privacy, data export | ST-01 | Privacy statement, Export my data (JSON), Delete my data (two confirmations; local and iCloud) | **None** | v1 |
 
@@ -202,11 +202,11 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 | SB-01 | **Paywall** | Calm full-screen; monthly, yearly, restore, Not now | **None** | v1 |
 | SB-02 | Trial reminders | Notification copy only (days 12, 14, 15) | **None** | v1 |
 | SB-03 | Read-only banner | Explains what is locked; offers to subscribe | **None** | v1 |
-| SY-01 | Notifications-denied fallbacks | Banner at planning time; Settings warning card | **Drawn** v3·24 | v1 |
+| SY-01 | Notifications-denied fallbacks | Today banner (switch on, permission off; once a day; *Don't remind me*); Settings warning card listing what isn't delivered | **Drawn** v3·24 | v1 |
 | SY-02 | Empty and finished states | Four fixed lines (today, first launch, habits, history) | **Drawn** (inconsistent — see brief) | v1 |
 | SY-03 | Undo toast | Quiet, 5 seconds | **Spec** T-06 | v1 |
 | SY-04 | Sheets vs panels | Sheets on compact; panels beside the list on regular | **Drawn** v3·D2 | v1 |
-| SY-05 | Problem states | iCloud unavailable; the quiet notice when a timer clash stopped one session | **None** | v1 |
+| SY-05 | Problem states | iCloud problem line (dismissible; says the data is safe); account-changed notice; store-won't-open recovery screen; the quiet timer-clash line | **None** | v1 |
 | SY-06 | App icon and launch screen | Three icon directions exist in the earlier mockups | **None** (legacy palette) | v1 |
 
 ### Layout variants that need their own frames
