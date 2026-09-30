@@ -261,7 +261,9 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
   - Derives elapsed time from `startedAt`, so a killed or backgrounded app never loses or invents time.
   - Enforces **one live session**: a second Begin is refused until the first is settled (Done / Defer / Drop); on a cross-device conflict the later-started is closed as `abandoned`.
   - **Auto-closes at the day rollover** (default midnight, user-set; `autoClosed`, `endedAt` = the boundary instant; the softer working-day end doesn't stop a session), carries the task to tomorrow without counting a deferral, and emits a pick-it-back-up signal for tomorrow's list.
-  - **Approaching edge**: while a session runs, finds the next Anchor whose window opens soon (threshold proposal: 30 minutes, tunable) and emits a signal the chip phrases as "Maghrib in 12 min". It never blocks or interrupts.
+  - **Closes with the task**: when a task is resolved (done, deferred, dropped) while its session is live, the session closes with the matching outcome.
+  - **Settle options**: *Done*, *Stop for now*, *Defer*, *Drop* for a task; *Log it* / *Stop for now* for a habit.
+  - **Approaching edge** (shown in the chip, never blocking): the single most urgent Anchor line wins — an **open, still-pending Anchor that is closing soon** (*"Asr closes in 10 min"*) outranks a **fixed** Anchor whose window **opens** within 30 minutes (threshold tunable; *"Maghrib in 12 min"*). Flexible Anchors never appear. It never blocks or interrupts.
   - **Overrun** is a state, not an event: it emits no notification, colour change or nudge.
 - **Signals**: `.sessionState`, `.sessionAutoClosed(task)`, `.pickUpRow(task)`, `.anchorApproaching(anchor, minutes)`.
 - **Output**: session transitions written to `WorkSession`, task effects from the settle sheet (done / deferral / drop), and no scheduled notifications — sessions never nag. The Lock Screen Live Activity (v1.1) is driven locally by the same state, not by a push.

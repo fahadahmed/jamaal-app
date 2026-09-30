@@ -112,9 +112,9 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 | FS-02 | **Focus screen** | Chip | Timer numeral (monospaced digits), note checklist, Pause, Finish | **Spec** T-02 | v1 |
 | FS-03 | Overrun | FS-02 | Same as running; "75 of 60", no red, no alarm | **Spec** T-03 | v1 |
 | FS-04 | Paused | FS-02 | Explicit pause only | **Spec** T-04 | v1 |
-| FS-05 | **Finish sheet** | Finish | Actual vs estimate; optional note line | **Spec** T-05 | v1 |
+| FS-05 | **Finish sheet** | Finish | Actual vs estimate; optional note line; **Done** or **Stop for now** | **Spec** T-05 | v1 |
 | FS-06 | Done + undo toast | FS-05 | 5-second undo | **Spec** T-06 | v1 |
-| FS-07 | **Switch-task settle sheet** | Begin while running | Done · Defer to tomorrow · Drop the running task (habit: Log it) | **Spec** T-08 | v1 |
+| FS-07 | **Switch-task settle sheet** | Begin while running | Done · Stop for now · Defer to tomorrow · Drop the running task (habit: Log it · Stop for now) | **Spec** T-08 | v1 |
 | FS-08 | Lock Screen activity / Dynamic Island | System | Live Activity | **Spec** T-07 | **v1.1** |
 
 ### Habits (`HB`)
@@ -129,7 +129,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 | HB-06 | **Pause with reason** | HB-02 | Travel · illness · cycle · other; open-ended allowed | **Spec** H-07 | v1 |
 | HB-07 | Edit / archive | HB-02 | History is never deleted | **Spec** H-09 | v1 |
 | HB-08 | Avoid logging | TD-01 / HB-02 | **Log a slip**, **Held today**, allowance — *needs a design pass* | **Spec** H-06 (title only) | v1 |
-| HB-09 | Add minutes by hand | TD-01 / HB-02 | Timed habits only | **None** | v1 |
+| HB-09 | Add minutes by hand | TD-01 / HB-02 | Timed habits only; stored as a `manual` session | **None** | v1 |
 
 ### Anchors (`AN`)
 
@@ -206,7 +206,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 | SY-02 | Empty and finished states | Four fixed lines (today, first launch, habits, history) | **Drawn** (inconsistent — see brief) | v1 |
 | SY-03 | Undo toast | Quiet, 5 seconds | **Spec** T-06 | v1 |
 | SY-04 | Sheets vs panels | Sheets on compact; panels beside the list on regular | **Drawn** v3·D2 | v1 |
-| SY-05 | Problem states | iCloud unavailable; sync conflict notice | **None** | v1 |
+| SY-05 | Problem states | iCloud unavailable; the quiet notice when a timer clash stopped one session | **None** | v1 |
 | SY-06 | App icon and launch screen | Three icon directions exist in the earlier mockups | **None** (legacy palette) | v1 |
 
 ### Layout variants that need their own frames

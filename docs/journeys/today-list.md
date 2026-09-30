@@ -46,10 +46,10 @@ Beginning a task starts a **focus session** ([task.md](../schema/task#focus-sess
 
 - **The chip** sits above the tab bar and is present on **every tab**, as global chrome. It shows the task title and a count-up timer (monospaced digits so the numerals don't jitter). It is filled only while a session is live, and it looks the same when overrun — no red, no alarm.
 - **Tapping the chip** opens the **focus screen**: the timer, the task's note beneath it with tappable checkboxes, and **Pause** and **Finish**.
-- **Finish** opens a sheet showing actual against estimate with one optional note line, then a quiet 5-second **undo** toast.
+- **Finish** opens a sheet showing actual against estimate with one optional note line and two buttons — **Done** (the task is complete) and **Stop for now** (time logged, task stays) — then, for Done, a quiet 5-second **undo** toast.
 - **Timed habits** use the same chip: **Begin** on a timed habit row starts a session against that habit's window; the chip reads the same, and finishing adds the minutes to today's entry.
-- **Beginning a second task** raises the settle sheet: Done, Defer to tomorrow, or Drop the running one first.
-- **Near a fixed Anchor** the chip simply says "Maghrib in 12 min". It never blocks.
+- **Beginning a second task** raises the settle sheet: Done, Stop for now, Defer to tomorrow, or Drop the running one first.
+- **Near an Anchor** the chip shows one line, never blocking: an open Anchor about to close (*"Asr closes in 10 min"*) takes priority over a fixed Anchor about to open (*"Maghrib in 12 min"*).
 - **After the day rolls over** (default midnight), a session that was still running was auto-closed at the boundary; tomorrow's list opens with one row offering to pick that task back up.
 - On wide layouts (iPad, Mac, Duo unfolded) the chip lives in the right-hand panel; see [app-flow.md](app-flow).
 - The Lock Screen Live Activity and Dynamic Island version is **v1.1**.

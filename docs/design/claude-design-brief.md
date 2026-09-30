@@ -179,8 +179,8 @@ Navigation chrome is the **system** tab bar and toolbars with the iOS 26 Liquid 
 | T-02 Focus screen | new | Timer, note checklist, Pause, Finish |
 | T-03 Overrun | new | "75 of 60", neutral |
 | T-04 Paused | new | Explicit pause only |
-| T-05 / T-06 Finish sheet + undo | new | Actual vs estimate, note line, 5 s toast |
-| T-08 Switch task | new | Settle sheet for the running task |
+| T-05 / T-06 Finish sheet + undo | new | Actual vs estimate, note line, **Done** and **Stop for now**, 5 s toast |
+| T-08 Switch task | new | Settle sheet for the running task: Done · Stop for now · Defer · Drop |
 | T-07 Lock Screen activity | **v1.1 — draw last** | Live Activity and Dynamic Island |
 
 ### Habits and Anchors
