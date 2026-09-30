@@ -54,6 +54,7 @@ Where the summary and the repo conflict on **structure, platform or business**, 
 - **Rules engine**: six modules → seven (added Capacity & load). Numbering of the original six is unchanged.
 - **New models** (v2 had some in different form): `TaskCategory`, `DeferralRecord`, `HabitEntry`, `HabitGroup`, `DayPlan`, `NudgeLog`. Total persisted: Task, TaskCategory, DeferralRecord, Habit, HabitTimeWindow, HabitEntry, HabitGroup, Anchor, AnchorRule, DayPlan, NightPlanningSession, NudgeLog.
 - **Habit kinds** (design H-04…H-09): v2's binary and counted, plus timed (reuses the focus timer) and avoid (inverted logging — specified as a proposal because the design only has a title), plus pause with a reason. Grouped sets stay `HabitGroup`; the design's detected-habit offer is v1.1.
+- **Day boundary** (not in v2): a user-set rollover (default midnight) with logical dates and floating calendar dates, so the design's midnight wall becomes a setting, and a lazy idempotent catch-up replaces any assumption that the app runs at midnight.
 - **Recurring tasks** (not in v2 or the earlier repo docs): simple repeat on `Task` — `repeatKind`, `repeatWeekdays`, `seriesID`; one live instance per series.
 - **`UserPreferences`** stay in `UserDefaults`/`@AppStorage`, per v2 (per-device; fits notification times).
 
