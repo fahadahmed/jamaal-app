@@ -149,6 +149,8 @@ Navigation chrome is the **system** tab bar and toolbars with the iOS 26 Liquid 
 - **Day rollover** is a user-set time (default midnight); the day **end** (default 19:00) is a soft planning boundary only.
 - **Trial:** 14 days, app-managed, no payment up front; after that, **read-only** with a calm paywall. Read-only still lets you tick items off; it locks creating, editing, Night Planning and capacity.
 
+> The stable IDs and the full list (with entry points, states and what is already drawn) are in the repo's **Screens and flows register** (`docs/journeys/screens.md`); name Design frames with those IDs (`TD-01`, `NP-03`, …). The tables below are the same list in summary.
+
 ## 7. Screen inventory
 
 **Status:** *keep* = works as drawn · *rework* = change it · *new* = not drawn yet. Numbers refer to v3.

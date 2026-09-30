@@ -100,6 +100,8 @@ Pricing (CLAUDE.md): free download, 14-day full-access trial, then subscription 
 - **Notifications around the trial** are deliberately few and quiet. Proposal for the design pass: a short reminder on day 12 and day 14, and one on day 15; nothing after that (the in-app banner carries it from then on). No badge counts, no repeats, gentle wording, and they respect Focus modes. The evening Night Planning notification **stops** once the trial ends unsubscribed, and returns on subscribing. If notification permission is denied, the in-app banner covers everything.
 - **Subscribing** lifts everything immediately; nothing is lost either way.
 
+> **The authoritative screen and flow list is now the [Screens and flows register](screens)** (stable IDs, entry points, variants, what Design has drawn, phase). The inventory below is the earlier working list; where they differ, the register wins.
+
 ## Screen inventory (from v2, updated)
 
 | Screen | Status |
