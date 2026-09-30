@@ -209,7 +209,7 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
   - per-window **habit reminders** (planned as near-term individual notifications and **cancelled when the habit is logged, paused, archived or its time is edited**, so nothing pings for what's done) and a light **window-closing** nudge as a window's end approaches;
   - **Anchor reminders** from `remindBeforeStartMinutes` / `remindBeforeEndMinutes` (prayer times remind at the start by default; everything else is off);
   - **during-day guidance** — a highlighted task ("Start here" / "Good now") plus one companion card, max one per day. Chosen deterministically from time of day, remaining effort vs. remaining free time, a lighter-tasks-in-the-early-afternoon curve, and open habit windows.
-- **Trial and subscription**: when the trial ends unsubscribed, the evening Night Planning notification and habit/guidance nudges are cancelled and only a small number of trial-end reminders are sent (proposal: day 12, 14 and 15); everything returns on subscribing.
+- **Trial and subscription**: when access is `readOnly`, the planner stops scheduling **everything** — the evening prompt, morning nudge, habit, guidance and Anchor reminders (owner may revisit keeping Anchor window reminders) — except the trial-end reminders at 09:00 on days 12, 14 and 15, which are never scheduled on a device whose *Send reminders* switch is off and are cancelled on subscribing; everything returns on subscribing. See [Access and the trial](#access-and-the-trial).
 - **Permission** is requested during onboarding, framed around the evening planning reminder.
 - **Fallback if notifications are denied**: an in-app banner at planning time ("Start evening planning →") and a warning card in Settings with a deep link to iOS Settings.
 - **Output**: scheduled notifications and in-app cards; `NudgeLog` rows.
@@ -271,6 +271,21 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
   - **Overrun** is a state, not an event: it emits no notification, colour change or nudge.
 - **Signals**: `.sessionState`, `.sessionAutoClosed(task)`, `.pickUpRow(task)`, `.anchorApproaching(anchor, minutes)`.
 - **Output**: session transitions written to `WorkSession`, task effects from the settle sheet (done / deferral / drop), and no scheduled notifications — sessions never nag. The Lock Screen Live Activity (v1.1) is driven locally by the same state, not by a push.
+
+## Access and the trial
+
+**`AccessState`** is a pure function in JamaalCore of `(now, trialStart, entitlement)`: **`trial`** (before the trial ends), **`subscribed`** (an active entitlement, including a billing grace period or retry, so a failed card never locks anyone out), or **`readOnly`** (otherwise). StoreKit supplies the entitlement at the app layer; the last-known entitlement is cached locally (per device, not synced) and used while offline, and an expiry only takes effect when StoreKit confirms it. Nothing is stored in the schema beyond `UserSettings.firstLaunchAt`.
+
+**Trial dates.** The trial start is the **earlier of** StoreKit's original-download date and `firstLaunchAt`, so a reinstall or second device never restarts it. The trial is **14 logical days, day 1 being the start day**, and ends at the rollover after the 14th day; "days left" counts logical days.
+
+**What read-only locks** is a gate on *user actions*, not a data state:
+
+- **Always allowed (living the day):** complete and un-complete tasks; every kind of habit logging (check, stepper, slip, *Held*, minutes by hand, correcting the last 14 days); Anchors attended, not today, someone else, or marked done after all; **Begin, pause, finish and stop** focus sessions, tick a note's checklist, pick a session back up; every undo; notification and appearance preferences; data export and delete.
+- **Needs a subscription (shaping the plan):** create or edit a task, habit, group, Anchor rule, one-off Anchor or category; **Drop or Defer** by hand and Keep / Later; Night Planning and the morning card; the overload **Move**; pause, archive and restore; the capacity level, normal day and every day setting.
+- A locked control stays **visible**; tapping it opens one calm sheet (*"Adding and planning need a subscription"* — **Subscribe** / **Not now**). Pure planning toolbar items (*Plan tomorrow*) are hidden.
+- **The engine keeps running** while read-only (auto-deferral, `DayPlan` finalisation, session auto-close, Anchor generation, a repeating task's next instance) so the record and the wellbeing score stay coherent; only notifications stop.
+- **The paywall** appears on the first open of each logical day while unsubscribed, at most once a day and never during a focus session; *Not now* is final for the day. The entitlement is checked when an action *starts*: a running session can always finish, an open Night Planning session ends as skipped at rollover, and subscribing lifts every lock at once.
+- **Delete my data** asks twice, deletes every record locally **and** in iCloud, and resets the app to first launch. Export and delete are always available.
 
 ## Open questions
 
