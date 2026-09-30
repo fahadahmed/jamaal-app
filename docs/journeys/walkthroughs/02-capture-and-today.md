@@ -45,7 +45,7 @@
 
 - **Sees:** the three default categories (and any the user added) as chips, plus *None*. A category is a small coloured label.
 - **Writes:** `Task.category`.
-- **Assumes:** categories are always available — ✓ (seeded); chip colours exist — **✗ G-08** (still open from Journey 1).
+- **Assumes:** categories are always available — ✓ (seeded); chip colours exist — **✗ G-08** (closed in Journey 11, G-84).
 
 ### TK-04 Note editor
 

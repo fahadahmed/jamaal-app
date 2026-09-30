@@ -1,6 +1,6 @@
 # Journey 11 — Categories
 
-> **Status: walked; gaps G-84 … G-89 raised, proposals waiting for a decision** (see the [gap log](overview#gap-log)). Register flow **F14**; screens **ST-04** (Categories), **TK-06** (Category picker), **TD-03** (Category filter), the category field on **TK-01 / TK-02**, the chips in **OB-06** and the label on every Today row. Behaviour is in [Task → TaskCategory](../../schema/task#taskcategory); this page tests it against everything the ten earlier journeys now assume of categories. It also closes **G-08**, the one item still open from Journey 1.
+> **Status: done — gaps G-84 … G-89 raised, decided and applied** (see the [gap log](overview#gap-log)). The text below is the walkthrough as first written. Register flow **F14**; screens **ST-04** (Categories), **TK-06** (Category picker), **TD-03** (Category filter), the category field on **TK-01 / TK-02**, the chips in **OB-06** and the label on every Today row. Behaviour is in [Task → TaskCategory](../../schema/task#taskcategory); this page tests it against everything the ten earlier journeys now assume of categories. It also closes **G-08**, the one item still open from Journey 1.
 
 **In one line:** the user keeps a short list of personal labels — *Personal*, *Family*, *Work*, plus their own — puts at most one on a task, and can narrow Today to one of them, without categories ever becoming projects, sections or tags.
 

@@ -112,7 +112,7 @@ Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity s
 
 ## Working approach
 
-**Docs/flows-first.** Screens and flows are locked in `docs/journeys/screens.md` (the register) before they are drawn or built. This repo was restarted from scratch specifically because the previous JamaalCore attempt skipped this step. `docs/schema/*`, `docs/journeys/*`, and `docs/architecture/rules-engine.md` are now filled in and resolved for v1 (see issues #5–#8) — implementation can begin. Don't skip this step for future primitives or major features; keep docs ahead of code.
+**Docs/flows-first.** Screens and flows are locked in `docs/journeys/screens.md` (the register) before they are drawn or built, and all eleven journeys have been walked against the schema and engine (`docs/journeys/walkthroughs/overview.md`: 89 gaps decided and applied; the remaining owner items are listed at its end). This repo was restarted from scratch specifically because the previous JamaalCore attempt skipped this step. `docs/schema/*`, `docs/journeys/*`, and `docs/architecture/rules-engine.md` are now filled in and resolved for v1 (see issues #5–#8) — implementation can begin. Don't skip this step for future primitives or major features; keep docs ahead of code.
 
 ## Git workflow
 
@@ -127,5 +127,6 @@ All new code or documentation work is tracked through a GitHub issue and lands v
 
 - [x] CI: `.github/workflows/ci.yml` builds and tests `JamaalCore` and the app's unit tests on every code PR and push to `main` (docs-only changes skip it). XCUITest joins once it covers real screens
 - [x] ThreadsKit 1.1.0 is wired into `Jamaal.xcodeproj` (remote, Up to Next Major) with `Package.resolved` committed. Remaining design decisions are in `docs/design/threadskit-usage.md` (category colours, font bundling and licences)
+- [ ] Open owner items (region table review, Anchor reminders while read-only, category hues, fonts, merge order of the stacked PRs, paid programme and iCloud spike) are collected in `docs/journeys/walkthroughs/overview.md#open-owner-items`
 - [ ] `mockups/` is empty (README and `screens/` have no content) — the HTML reference screens referenced above still need to be added, re-skinned to the current palette
 - [x] Reconcile against prior planning-chat data — done, see ADR 0002. Remaining open decisions are listed in `docs/journeys/app-flow.md` ("Still open")

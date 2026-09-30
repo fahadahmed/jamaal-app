@@ -38,14 +38,14 @@ An editable list, seeded on first launch with three defaults. Refines the earlie
 | Field        | Type      | Default    | Notes |
 | ------------ | --------- | ---------- | ----- |
 | `id`         | `UUID`    | `UUID()`   | |
-| `name`       | `String`  | `""`       | User-renamable. |
+| `name`       | `String`  | `""`       | User-renamable. Trimmed, 1–24 characters, unique ignoring case among all categories (archived included). |
 | `presetKey`  | `String?` | `nil`      | `"personal"` / `"family"` / `"work"` for the seeded defaults, `nil` for user-created. Mirrors `Habit.presetKey`. |
-| `colorKey`   | `String`  | `"accent"` | Key into a small fixed set of ThreadsKit-derived colours — never a free colour picker. See open questions. |
+| `colorKey`   | `String`  | `"accent"` | One of `accent` (teal) / `blue` / `ochre` / `plum` / `slate` — a fixed set of ThreadsKit label tokens, never a free colour picker; `terra` is excluded because it carries warning and overload. Unknown value → `slate`. Seeds: Personal `accent`, Family `ochre`, Work `blue`. |
 | `sortOrder`  | `Int`     | `0`        | |
-| `isArchived` | `Bool`    | `false`    | Soft-delete; tasks keep their label. Defaults can be renamed or archived but not hard-deleted. |
+| `isArchived` | `Bool`    | `false`    | Soft-delete; tasks keep and still show their label. Defaults can be renamed or archived but not hard-deleted. |
 | `createdAt`  | `Date`    | `.now`     | |
 
-Rules: one category per task; categories are labels + an optional Today filter only; they never create sections, never nest, never carry their own settings. That is what keeps this compatible with "no projects, no tags — ever".
+Rules: one category per task; at most **eight active** categories; a label is always a dot plus the name; an archived category is absent from the picker and filter (except as the current selection on a task being edited, shown *"— archived"*), and a repeating task copies it; a new task has none, unless a Today filter is active, in which case it inherits it; categories are labels + an optional Today filter only; they never create sections, never nest, never carry their own settings. That is what keeps this compatible with "no projects, no tags — ever".
 
 ### `DeferralRecord`
 
@@ -169,7 +169,7 @@ These are computed by the rules engine at read time (module 1), not persisted:
 ## Open questions
 
 - **Learning from actuals**: sessions record actual time against the estimate, but how that feeds back (suggested estimates on new tasks, calibrating the medium-day length) is part of the still-open capacity-model decision.
-- **Category colours**: ThreadsKit has only `accent` and `terra` as accents. User-created categories need a small palette (a few extra ThreadsKit tokens, or tints of existing ones) — a design/tokens decision, see [threadskit-usage](../design/threadskit-usage).
+- **Category colours** are decided (five label tokens; new ThreadsKit 1.2.0 tokens `blue`, `ochre`, `plum`, `slate`) — the hues are to be confirmed against the Claude Design tokens before they are cut; see [threadskit-usage](../design/threadskit-usage).
 - **Re-raising after an auto-downgrade**: if the user raises a downgraded task back to medium/high, its `deferralCount` is still 3+, so its next deferral downgrades it again immediately. Probably right ("keeps slipping"), but confirm — the alternative is to reset the count used for this rule when importance is re-raised.
 - **Prioritisation prompt**: soft (dismissible) as written. Should Night Planning instead require at least one priority task before the day can be closed when the threshold is hit?
 - **Manual ordering**: **none in v1.** Today's order comes from the engine (quadrant, then due date); the user steers it with importance and dates. This is a **working hypothesis to validate in real use** — if the order feels wrong, a per-task `sortOrder` can be added later without a migration problem.

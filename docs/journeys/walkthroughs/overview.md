@@ -1,6 +1,6 @@
 # Journey walkthroughs
 
-> **Status: in progress — one journey at a time.** Each walkthrough walks a journey screen by screen to test the schema and our working assumptions *before* code, and doubles as the per-screen spec Claude Design redraws from. Screen IDs are from the [Screens and flows register](../screens).
+> **Status: complete — all eleven journeys walked; 89 gaps found (G-01 … G-89, G-58 and G-66 withdrawn), every one decided and applied.** Each journey was walked one at a time. Each walkthrough walks a journey screen by screen to test the schema and our working assumptions *before* code, and doubles as the per-screen spec Claude Design redraws from. Screen IDs are from the [Screens and flows register](../screens).
 
 ## Method
 
@@ -17,7 +17,7 @@ Then each walkthrough ends with the **data that exists afterwards** (an end-stat
 
 | # | Journey | Register flow | Status |
 |---|---------|---------------|--------|
-| 1 | [First launch and onboarding](01-first-launch) | F01 | **Done** — G-01 … G-10 decided and applied (G-08 open) |
+| 1 | [First launch and onboarding](01-first-launch) | F01 | **Done** — G-01 … G-10 decided and applied (G-08 closed by G-84) |
 | 2 | [Capture a task, and living in Today](02-capture-and-today) | F03, F04, TD-01 | **Done** — G-11 … G-20 decided and applied |
 | 3 | [A focus session](03-focus-session) | F05 | **Done** — G-21 … G-26 decided and applied |
 | 4 | [Anchors: an Anchor's day; creating Anchors](04-anchors) | F06, F07 | **Done** — G-27 … G-36 decided and applied |
@@ -27,7 +27,7 @@ Then each walkthrough ends with the **data that exists afterwards** (an end-stat
 | 8 | [Wellbeing](08-wellbeing) | F11 | **Done** — gaps G-58 … G-67 decided and applied (mood removed) |
 | 9 | [Trial, paywall and read-only](09-trial-paywall-read-only) | F12 | **Done** — gaps G-68 … G-75 decided and applied |
 | 10 | [Notifications denied; problems and recovery](10-notifications-and-problems) | F13, F15 | **Done** — gaps G-76 … G-83 decided and applied |
-| 11 | [Categories](11-categories) | F14 | **Walked** — gaps G-84 … G-89 proposed (closes G-08) |
+| 11 | [Categories](11-categories) | F14 | **Done** — gaps G-84 … G-89 decided and applied (closes G-08) |
 
 The order follows a new user's life (first launch first), so each journey can assume the data the earlier ones created. It can be reordered.
 
@@ -44,7 +44,7 @@ The order follows a new user's life (first launch first), so each journey can as
 | G-05 | J1 · OB-08 | **A rule created mid-day would mark today's earlier windows missed.** Creating prayer times at 21:00 would generate Fajr → Asr for today, each already closed, and the next evaluation would finalise them as *missed* on the very first screen. | Generation never creates an instance whose window ended before the rule's `createdAt` (and the same for slots added by a later edit). Engine rule, no new field. | **Applied** — engine rule in module 3 |
 | G-06 | J1 · OB-03 | **CloudKit development needs a paid developer account.** `CLAUDE.md` says the free Personal Team is fine through development, but iCloud and push can't be provisioned on it, and the project's iCloud container list is empty. Simulator builds and CI are unaffected; real-device sync testing is not. | Decide **when to enrol** (before any sync testing — Phase 3 at the latest), then create the container identifier. Correct the `CLAUDE.md` note. | **Applied** — enrol before any real-device sync testing (Phase 3 at the latest); CLAUDE.md corrected |
 | G-07 | J1 · OB-04 | **Day settings can contradict each other.** Nothing forbids a working-day end before its start, or a rollover after the start. | Document the validation: `rolloverMinute < dayStartMinute < dayEndMinute`, with at least two hours between start and end. | **Applied** — validation rule on `UserSettings` |
-| G-08 | J1 · OB-06 | **Category chips have no colours.** The first-task screen introduces the three default categories, but `TaskCategory.colorKey` values aren't defined. | Tied to the category-colour decision (register #9); placeholders until then. | **Open** — placeholders until the category-colour decision (register #9) |
+| G-08 | J1 · OB-06 | **Category chips have no colours.** The first-task screen introduces the three default categories, but `TaskCategory.colorKey` values aren't defined. | Tied to the category-colour decision (register #9); placeholders until then. | **Applied** — closed by G-84 (five label colours; hues to confirm against Design) |
 | G-09 | J1 · OB-08 | **Prayer times can't be built until a prayer-time library is chosen** (and its method list checked against the `method` values offered). | Choose the library (the design suggested `adhan`) at the start of the Anchor work. | **Applied** — `adhan-swift` 1.5.0; MIT licence verified, builds on Xcode 27 |
 | G-10 | J1 · OB-07 | **"Something else" can't host the full type picker in onboarding.** | In onboarding, "Something else" is a binary daily habit with just a title; the other kinds come from the Habits tab. | **Applied** — "Something else" is a binary daily habit |
 | G-11 | J2 · TK-01 | **Effort can't express long tasks.** The chip "2h+" stores what? A three-hour task can't be said, yet load and the "doesn't fit a gap" flag both rely on real durations. | The four chips are shortcuts; **Other…** is a 15-minute stepper up to 8 hours. | **Applied** — Other… stepper (15-minute steps, up to 8 h) |
@@ -120,9 +120,33 @@ The order follows a new user's life (first launch first), so each journey can as
 | G-81 | J10 · launch | **A store that fails to open would crash the app with no way back.** | A recovery screen: Try again, or Reset this device's data (two confirmations; iCloud copy re-downloads). Never silent. | **Applied** |
 | G-82 | J10 · schema | **An older app reading an unknown raw value from a newer one has no fallback.** | Every raw read falls back to an inert `unknown`; rows kept and never rewritten; excluded from counts and the score; a quiet *Update Jamaal* where not displayable. | **Applied** |
 | G-83 | J10 · register | **`F15` contradicts Journey 3** (settle sheet vs the quiet line for a timer clash). | Correct the register to the quiet line. | **Applied** |
-| G-84 | J11 · OB-06/ST-04 | **Category colours are undefined (G-08)**, and the only accents (`accent`, `terra`) can't carry them (`terra` means warning). | Five fixed label colours as ThreadsKit tokens: `accent` (teal, existing default), `blue`, `ochre`, `plum`, `slate`; defaults Personal=accent, Family=ochre, Work=blue. A label is a dot plus the name in ink. ThreadsKit 1.2.0; hues to confirm against Design. Unknown key → `slate`. | Proposed |
-| G-85 | J11 · ST-04 | **Names have no rules, and user-created duplicates across devices aren't merged.** | Trimmed, 1–24 characters, unique ignoring case (archived included). The engine dedups user-created categories by normalised name, keeping the earliest and moving the tasks. | Proposed |
-| G-86 | J11 · TK-06 | **Tasks under an archived category aren't specified** (Today, picker, repeats, history). | The task keeps and shows its label; archived is absent from picker and filter except as the current selection when editing; repeats copy it; found under *All*; history unchanged. Settles the app-flow open question. | Proposed |
-| G-87 | J11 · TD-03 | **"Narrows the whole list" is undefined** (Anchors and habits have no category; meter; Start here; persistence; empty result). | Filters Tasks only; Anchors and habits always shown; meter, load and *Also today* whole-day; Start here from visible tasks; local, clears at rollover and relaunch; *"Nothing in Family today."* with *Show all*. | Proposed |
-| G-88 | J11 · TK-01 | **New tasks' default category is unspecified.** | None, unless a filter is active, then inherit it. | Proposed |
-| G-89 | J11 · ST-04 | **Nothing limits the list or orders it.** | At most eight active; drag to reorder; picker and filter share the order; merged duplicates take the earliest's position. | Proposed |
+| G-84 | J11 · OB-06/ST-04 | **Category colours are undefined (G-08)**, and the only accents (`accent`, `terra`) can't carry them (`terra` means warning). | Five fixed label colours as ThreadsKit tokens: `accent` (teal, existing default), `blue`, `ochre`, `plum`, `slate`; defaults Personal=accent, Family=ochre, Work=blue. A label is a dot plus the name in ink. ThreadsKit 1.2.0; hues to confirm against Design. Unknown key → `slate`. | **Applied** |
+| G-85 | J11 · ST-04 | **Names have no rules, and user-created duplicates across devices aren't merged.** | Trimmed, 1–24 characters, unique ignoring case (archived included). The engine dedups user-created categories by normalised name, keeping the earliest and moving the tasks. | **Applied** |
+| G-86 | J11 · TK-06 | **Tasks under an archived category aren't specified** (Today, picker, repeats, history). | The task keeps and shows its label; archived is absent from picker and filter except as the current selection when editing; repeats copy it; found under *All*; history unchanged. Settles the app-flow open question. | **Applied** |
+| G-87 | J11 · TD-03 | **"Narrows the whole list" is undefined** (Anchors and habits have no category; meter; Start here; persistence; empty result). | Filters Tasks only; Anchors and habits always shown; meter, load and *Also today* whole-day; Start here from visible tasks; local, clears at rollover and relaunch; *"Nothing in Family today."* with *Show all*. | **Applied** |
+| G-88 | J11 · TK-01 | **New tasks' default category is unspecified.** | None, unless a filter is active, then inherit it. | **Applied** |
+| G-89 | J11 · ST-04 | **Nothing limits the list or orders it.** | At most eight active; drag to reorder; picker and filter share the order; merged duplicates take the earliest's position. | **Applied** |
+
+## Open owner items
+
+What the walkthroughs could not settle alone, in one place. None blocks starting `JamaalCore`.
+
+**Decisions and reviews**
+
+- **Anchor window reminders while read-only** (G-72): the default stops them with everything else; the alternative keeps just those. Revisit before building notifications.
+- **Region → calculation-method table and preset values** ([anchor.md](../../schema/anchor#prayer-method-suggestion), [habit.md](../../schema/habit#presets)): the owner reviews them (Qur'an 15 min timed, dhikr 33 counted); the freeze checklist item *Habit preset definitions* is still unchecked.
+- **Avoid-habit screen (`HB-08`):** pick one of Design's two drawn treatments.
+- **Category label hues** (G-84): confirm against the Claude Design tokens before ThreadsKit 1.2.0 is cut.
+- **Fonts:** bundling and licences for Fraunces, Hanken Grotesk and JetBrains Mono, in ThreadsKit.
+- **Family Sharing** for the subscription, and whether an import from the JSON export is wanted later (v1 has export only).
+- **Constants to tune in real use:** the wellbeing weights and pattern thresholds, the load thresholds, and the other numbers in the rules engine's open questions.
+- **Owner review of the schema** before `JamaalCore` models are written.
+
+**Work outside the docs**
+
+- **Merge the stacked PRs in order:** #61 → #63 → #65 → #67 → #69 → #71 → #73 → #75 → #77 → #79 → #81 → #82 → the one after it.
+- **ThreadsKit 1.2.0:** the five category label tokens, then bump the dependency.
+- **macOS destination** in Xcode, then verify the build and add macOS to CI.
+- **Paid Apple Developer Program** enrolment and the CloudKit container (Phase 3 at the latest), then the **real-device iCloud spike** (G-80).
+- **Claude Design redraw** from the register and the brief; `mockups/` is still empty.
+- **Start `JamaalCore` models**, tests first (14 SwiftData models), then the engine modules in dependency order.

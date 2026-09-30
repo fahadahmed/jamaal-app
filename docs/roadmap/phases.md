@@ -11,13 +11,14 @@
 
 ## Phase 1 — Docs and flows first *(done)*
 
-Schema, journeys and the rules engine are specified; the earlier planning was reconciled into the repo; the design project was reviewed and its decisions folded in; the schema is a freeze candidate ([Schema overview](../schema/overview)).
+Schema, journeys and the rules engine are specified; the earlier planning was reconciled into the repo; the design project was reviewed and its decisions folded in; the schema is a freeze candidate ([Schema overview](../schema/overview)). All eleven [journey walkthroughs](../journeys/walkthroughs/overview) are done: 89 gaps found, decided and applied, tested against the schema, which needed no further fields after the freeze work.
 
 ## Phase 2 — Foundations *(current; pace checkpoint end of October 2026)*
 
 - ~~Wire ThreadsKit 1.1.0 or later into `Jamaal.xcodeproj`.~~ **Done.**
 - ~~Add a build-and-test workflow (`ci.yml`).~~ **Done** (`JamaalCore` tests and the app's unit tests on the `xcode-27` runner).
 - ~~Day boundary first~~ **Done:** `CalendarDate` (floating calendar dates) and `DayBoundary` (logical date, catch-up days, Night Planning's target day) are in `JamaalCore`, tests first.
+- **ThreadsKit 1.2.0** with the five category label tokens (hues confirmed against Design first), then bump the app's dependency.
 - Implement the 14 models in `JamaalCore` with a versioned schema, tests first.
 - Implement the deterministic rules-engine modules in order of dependency, each with Swift Testing coverage: task scheduling, habit density, Anchor generation, capacity and load, focus sessions, then Night Planning orchestration, wellbeing and notification logic.
 - **Checkpoint:** is the pace holding at 10–20 hours a week, and are the models and the first engine modules done or clearly on track? If not, the launch estimate moves toward March 2027 or scope moves to v1.1.
@@ -27,8 +28,9 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 - **Today**, add task, deferral, importance and categories, the capacity meter, and repeating tasks.
 - The **focus timer**: ambient chip and focus screen (Live Activity waits for v1.1).
 - **Habits**: the four kinds, the density grid and pauses.
-- **Anchors**: rules, one-offs, prayer times (using `adhan`), exceptions and window states.
+- **Anchors**: rules, one-offs, prayer times (using `adhan-swift`), exceptions and window states.
 - **Enrol in the paid Apple Developer Program and create the CloudKit container** before any real-device sync testing (required for iCloud and push).
+- **Real-device iCloud spike** (first thing after enrolment): verify what happens to the synced store on sign-out or an account change (G-80), and that two devices converge on the dedup keys.
 
 ## Phase 4 — The evening ritual
 
@@ -51,4 +53,4 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 
 ## Open items that could move things
 
-Decisions still open are listed at the end of [App flow](../journeys/app-flow): avoid-habit design, category colours, fonts, whether to read calendar events, widgets and quick capture, and the accessibility and localisation plan.
+Decisions still open are listed at the end of [App flow](../journeys/app-flow): avoid-habit design, fonts, whether to read calendar events, widgets and quick capture, and the accessibility and localisation plan.
