@@ -1,6 +1,6 @@
 # Journey 4 — Anchors: an Anchor's day, and creating them
 
-> **Status: walked; gaps G-27 … G-36 raised, proposals waiting for a decision** (see the [gap log](overview#gap-log)). Register flows **F06** (an Anchor's day) and **F07** (creating and managing Anchors); screens **AN-01 … AN-11** and the Anchors section of **TD-01**. Behaviour is in [Anchor](../../schema/anchor) and [Rules engine → module 3](../../architecture/rules-engine); this page tests it against the schema and engine.
+> **Status: done — gaps G-27 … G-36 raised, decided and applied** (see the [gap log](overview#gap-log)). The text below is the walkthrough as first written, with the proposals it raised. Register flows **F06** (an Anchor's day) and **F07** (creating and managing Anchors); screens **AN-01 … AN-11** and the Anchors section of **TD-01**. Behaviour is in [Anchor](../../schema/anchor) and [Rules engine → module 3](../../architecture/rules-engine); this page tests it against the schema and engine.
 
 **In one line:** the user sees today's fixed commitments with how much time is left to honour each, marks them attended, not today or done by someone else, and — when something new appears in their life — creates a rule or a one-off for it.
 
