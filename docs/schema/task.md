@@ -84,8 +84,9 @@ A task can be worked in a **focus session**: the user taps **Begin**, a running 
 | `outcome`         | `String`  | `"running"` | One of `running` / `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed`. |
 | `actualSeconds`   | `Int`     | `0`         | Written when the session closes: elapsed minus pauses. |
 | `task`            | `Task?`   | `nil`       | Inverse of `Task.sessions`. |
+| `habitWindow`     | `HabitTimeWindow?` | `nil` | Set instead of `task` for a **timed habit's** session (see [habit.md](habit#timed-habits)). Exactly one of `task` / `habitWindow` is set. |
 
-Derived, not stored: `elapsed = (endedAt ?? now) − startedAt − pausedSeconds − (pausedAt.map { now − $0 } ?? 0)`; a session is *paused* when `pausedAt != nil`, and *overrun* when `elapsed` passes `estimateMinutes`. The model is subject-agnostic on purpose: a habit relationship can be added later for timed habits (additively, so it is CloudKit-safe) once the habit-types decision is made.
+Derived, not stored: `elapsed = (endedAt ?? now) − startedAt − pausedSeconds − (pausedAt.map { now − $0 } ?? 0)`; a session is *paused* when `pausedAt != nil`, and *overrun* when `elapsed` passes `estimateMinutes`. A session belongs to either a task or a timed habit's window. Everything below is written for tasks; for a habit session there is no task to complete, defer or drop — finishing or abandoning simply adds the minutes to that day's habit entry, and the settle sheet offers only **Log it**.
 
 ### States and outcomes
 

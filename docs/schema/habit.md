@@ -1,6 +1,6 @@
 # Habit
 
-> **Status: reconciled with master summary v2, then updated to density-not-streaks — draft, needs review.** The v1-resolved window model is kept; v2's counted habits, groups, schedules, reminders and completion history are folded in; streaks are replaced by density. See [ADR 0002](../architecture/decisions/0002-reconcile-master-summary-v2).
+> **Status: reconciled with master summary v2, then updated to density-not-streaks, four habit kinds and pauses — draft, needs review.** The v1-resolved window model is kept; v2's counted habits, groups, schedules, reminders and completion history are folded in; streaks are replaced by density. See [ADR 0002](../architecture/decisions/0002-reconcile-master-summary-v2).
 
 Something the user **cultivates**. Created by the user, tracked by **density** (a grid of days shaded by how much was done) — not streaks. Islamic practice habits (Qur'an reading, dhikr) and general habits (exercise, running) are just different presets of this same engine — see CLAUDE.md.
 
@@ -14,10 +14,12 @@ Salah is **not** modeled here — it's an [Anchor](anchor) instead, since prayer
 | `title`          | `String`  | `""`                   | |
 | `notes`          | `String?` | `nil`                  | |
 | `presetKey`      | `String?` | `nil`                  | Built-in preset (e.g. `"quran"`, `"dhikr"`) vs. `nil` for custom. |
+| `kind`           | `String`  | `"binary"`             | One of `binary` / `counted` / `timed` / `avoid`. Fixes what `targetCount` and `completedCount` mean — see [Habit kinds](#habit-kinds). |
 | `frequency`      | `String`  | `"daily"`              | One of `daily` / `weekdays` / `custom`. |
 | `scheduledDays`  | `String`  | `"1,2,3,4,5,6,7"`      | ISO weekdays (Mon=1 … Sun=7) the habit is due. `weekdays` = `"1,2,3,4,5"`. Used when `targetPerWeek == 0`. |
 | `targetPerWeek`  | `Int`     | `0`                    | `0` = fixed days from `scheduledDays`; `1…7` = "N times a week, any days" (custom recurrence's times/week stepper). |
-| `isArchived`     | `Bool`    | `false`                | Soft-delete, so history isn't lost. |
+| `pausesData`     | `String`  | `"[]"`                | JSON list of pauses (travel, illness, …) — see [Pauses](#pauses). |
+| `isArchived`     | `Bool`    | `false`                | Soft-delete, so history isn't lost. Editing or archiving never deletes history. |
 | `createdAt`      | `Date`    | `.now`                 | |
 
 ## Relationships
@@ -38,7 +40,7 @@ A window is one *occurrence slot* in the day that keeps its own completion histo
 | `label`             | `String`| `""`     | e.g. `"Morning"`; empty for a single-window habit. |
 | `startMinute`       | `Int`   | `0`      | Minutes since midnight. See open question. |
 | `endMinute`         | `Int`   | `1439`   | `1439` = no real window boundary. |
-| `targetCount`       | `Int`   | `1`      | `1` = binary; `2+` = counted. |
+| `targetCount`       | `Int`   | `1`      | Meaning depends on `Habit.kind`: `binary` = 1; `counted` = N times; `timed` = N **minutes**; `avoid` = the allowance (most slips still fine), `0` = none. |
 | `effortMinutes`     | `Int?`  | `nil`    | How long one occurrence takes (e.g. 15 for a Qur'an reading window). Counts as *flexible* time: it reduces the day's total free time but doesn't cut it into blocks (see [rules-engine.md](../architecture/rules-engine), module 7). For a counted window it is the time for the *whole* target, not per increment. Presets ship a sensible default; `nil` = unknown, counts as zero. |
 | `reminderMinute`    | `Int?`  | `nil`    | Minutes since midnight; `nil` = no reminder. UI default when the toggle is switched on: 20:00. Reminders were per-habit in v2; per-window here because windows are the unit of completion history and timing. |
 
@@ -53,12 +55,12 @@ The per-day completion log the earlier draft was missing. Needed for the heatmap
 | `id`            | `UUID`    | `UUID()` | |
 | `date`          | `Date`    | `.now`   | Day granularity. |
 | `targetCount`   | `Int`     | `1`      | Snapshot of the window's target that day (so editing the target later doesn't rewrite history). |
-| `completedCount`| `Int`     | `0`      | Incremented / decremented by the stepper (binary habits: 0 or 1). |
+| `completedCount`| `Int`     | `0`      | By kind: binary 0 or 1; counted the count so far (stepper); **timed the minutes so far**; **avoid the slips so far**. |
 | `completedAt`   | `Date?`   | `nil`    | When the target was reached. |
 | `skippedReason` | `String?` | `nil`    | Optional, user-supplied. |
 | `window`        | `HabitTimeWindow?` | `nil` | Inverse of `entries`. |
 
-Derived, not stored: `isComplete` (`completedCount >= targetCount`), `completionRatio`, `isPartial`, `remainingCount`.
+Derived, not stored: for binary, counted and timed, `isComplete` (`completedCount >= targetCount`), `completionRatio`, `isPartial`, `remainingCount`; for `avoid` the day's outcome follows the [avoid rules](#avoid-habits) instead.
 
 ### `HabitGroup`
 
@@ -78,6 +80,47 @@ Relationship: `habits: [Habit]?` (optional).
 
 Collapsed card: completion ring (% complete today), emoji, name, "4/5 today" badge, 14-day aggregate heatmap. Expanded card: habit rows with check button and completion time. The Today strip shows a group pill with proportional ring and count.
 
+## Habit kinds
+
+Created from a type picker with plain-language descriptions. `Habit.kind` fixes the meaning of `targetCount` and `HabitEntry.completedCount`:
+
+| Kind | The question | `targetCount` | `completedCount` | On Today |
+| ---- | ------------ | ------------- | ---------------- | -------- |
+| `binary` | Did I do it? | 1 | 0 or 1 | tap the check |
+| `counted` | Did I do it N times? | N | times so far | stepper |
+| `timed` | Did I do it for N minutes? | N minutes | minutes so far | **Begin** (focus chip), or add minutes by hand |
+| `avoid` | Did I avoid it? | allowance (0 = none) | slips so far | **Log a slip** |
+
+"Grouped set" from the design stays [`HabitGroup`](#habitgroup) (visual), and "time-windowed" is covered by habit windows and, for things timed by the world, [Anchors](anchor).
+
+### Timed habits
+
+- Reuse the **focus engine** ([task.md](task#focus-sessions-begin--pause--finish)): a `WorkSession` can point at a habit window. Finishing or abandoning a session adds `round(actualSeconds / 60)` minutes to that day's entry — abandoning keeps the partial time. Several sessions in a day accumulate, and minutes can also be added by hand for time spent without the timer.
+- The day is complete when minutes reach the target; density shows partial shades as it accumulates, exactly like a counted habit. Time beyond the target doesn't over-fill.
+- A running habit session shows in the same chip. If another Begin is tapped, the settle sheet offers only **Log it** (there is no defer or drop for a habit).
+- For a timed window, `effortMinutes` defaults to the target minutes, so it counts as flexible time in the day's free-time calculation.
+
+### Avoid habits
+
+> **Proposal — the design has only a title for this (H-06, "inverted logging"), so these semantics need a design pass before they are treated as settled.**
+
+- **Inverted logging.** The default expectation is abstaining; the user logs a **slip** (each tap adds one to `completedCount`, undoable). Wording stays neutral — no praise, no guilt.
+- **A day's outcome is derived when read, not stored as a default success:**
+  - `missed` if slips exceed the allowance;
+  - `complete` if slips are within the allowance **and the user engaged with the app that day** — any recorded activity: a task completed, a habit or Anchor logged, a focus session, Night Planning closed, or an explicit **Held today** tap;
+  - otherwise `empty`. **Silence is never success:** a day when the app was never touched fills no cell.
+  - The current day stays unresolved until it ends.
+- **No "days since the last slip" counter** — that would be a streak in disguise. The plain-language read speaks in numbers ("3 slips in the last 21 days").
+- An avoid habit has a single all-day window; reminders work as for any habit.
+
+## Pauses
+
+`Habit.pausesData` is a JSON list of date ranges when the habit is paused, with a reason: `[{ "from": "2026-10-12", "to": "2026-10-19", "reason": "travel" }]`. `to` may be `null` (open-ended, until the user resumes). `reason` is `travel`, `illness`, `cycle` or `other`, for display only.
+
+- Paused days are **unscheduled**: no cell fills, nothing counts against the habit, they are left out of the density read's denominators, reminders don't fire, and the habit is hidden from Today and from Night Planning's habit list.
+- The habit's detail shows "Paused — resumes 19 Oct" and lets the user end or edit the pause.
+- Editing or ending a pause affects only the future; past days keep their entries.
+
 ## Density, not streaks
 
 Habits are tracked by **density**, not streaks. There is no streak counter, no "best", and nothing that resets or "breaks" — a missed day is one unfilled cell in a grid, not the loss of everything before it. (Decided when reviewing the design project; supersedes the earlier per-window `currentStreak` / `longestStreak` model.)
@@ -89,7 +132,7 @@ Habits are tracked by **density**, not streaks. There is no streak counter, no "
 
 ## Density states
 
-Each due day is one cell in the habit's grid, shaded by how much was done. Binary habits use `empty`, `missed`, `complete`; counted habits add two partial steps: `partialLow` (1–49%) and `partialHigh` (50–99%). Days the habit isn't scheduled stay `empty` (unfilled), never `missed`. A gradient is only justified for counted habits.
+Each due day is one cell in the habit's grid, shaded by how much was done. Binary and avoid habits use `empty`, `missed`, `complete`; counted and timed habits add two partial steps: `partialLow` (1–49%) and `partialHigh` (50–99%). Days the habit isn't scheduled stay `empty` (unfilled), never `missed`. A gradient is only justified for counted and timed habits.
 
 Colours come from the design's density tokens — three fill steps plus a miss colour (`d1`, `d2`, `d3`, `missed`) — which ThreadsKit doesn't have yet; see [threadskit-usage](../design/threadskit-usage). Grid rules from the design: cells never hold a numeral (a label goes beside the grid, not in it), the grid fills from the trailing edge so right-to-left layouts reverse correctly, and cell size is 18 pt with a 3 pt gap and 3 pt radius.
 
@@ -109,4 +152,7 @@ Colours come from the design's density tokens — three fill steps plus a miss c
 - **Weekly-target habits** (`targetPerWeek > 0`): the grid still shows individual days, but the plain-language read should speak in weeks ("3 of 3 this week"). Exact wording is a copy/design task for the custom-recurrence and habit-detail screens.
 - **Plain-language read**: the engine emits a typed `.densityRead` signal (completed / due over a rolling window, plus a suggestion when the rate is low); the message layer phrases it. Templates and thresholds (e.g. when to suggest a lighter cadence) still need writing.
 - **Presets**: is `presetKey` enough, or do presets need bundled config?
+- **Avoid habits** need a design pass (H-06): the *Held today* affordance, how a slip is logged and undone, what counts as engagement, and the allowance UI.
+- **Detected habits** (the design's "second door": after three evenly spaced completions of a matching task title inside 21 days the app offers once to promote it, inheriting those completions as opening density) are **v1.1**. It needs no schema change — a `NudgeLog` kind and backdated `HabitEntry` rows — and in v1 habits are created by declaring them.
+- **Timed habits**: whether minutes round per session or per day, and how manual minutes are labelled in history.
 - **Derived habit intelligence** (fatigue: >50% missed over 3 weeks; new-habit realism: 4+ new habits in a week) reads `HabitEntry` history at evaluation time; nothing extra is stored here. Whether a fatigue warning was already shown lives in the nudge log (see [rules-engine.md](../architecture/rules-engine)).

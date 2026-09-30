@@ -129,6 +129,7 @@ Pricing (CLAUDE.md): free download, 14-day full-access trial, then subscription 
 | **Repeat picker (in add task / detail)** | **New — no mockup** |
 | **Focus sessions:** running chip on Today (T-01), focus screen with note checklist (T-02), overrun (T-03), paused (T-04), finish sheet with undo (T-05, T-06), switch-task settle sheet (T-08); the Lock Screen activity (T-07) is v1.1 | **New — design project has drawn specs; screens not yet drawn** |
 | **Carried-over row after an auto-closed session** (X-02) | **New — no mockup** |
+| **Habit type picker** (H-04, four kinds: binary / counted / timed / avoid), **timed habit** (H-05) on the focus engine, **avoid habit** (H-06, needs a design pass), **pause with reason** (H-07), **density read** (H-08), **edit / archive** (H-09) | **New — design project lists them; screens not yet drawn** |
 | **Paywall** | **New — no mockup** |
 | **Trial status row and read-only banner** | **New — no mockup** |
 | **Regular-width layouts: sidebar, Today + inspector, Night Planning modal** | **New — no mockup** |
@@ -156,6 +157,7 @@ Resolved in this reconciliation:
 - [x] Trial and subscription — app-managed 14-day trial, then read-only with a calm paywall
 - [x] iPad, Mac and iPhone Duo — adaptive layout: system tab bar/sidebar, split-view Today, Duo handled by compact (outer) and regular (inner) layouts
 - [x] Recurring tasks — simple repeat on Task, one live instance per series
+- [x] Habit kinds — binary, counted, **timed** (minutes; reuses the timer) and **avoid** (inverted logging; proposal, needs a design pass); pause with a reason; grouped sets stay `HabitGroup`; detected habits are v1.1
 - [x] Timer — focus sessions adopted from the design: ambient chip on every tab (Live Activity v1.1), count-up overrun with no nudge, explicit pause only, one timer at a time with a settle sheet, abandon logs partial time, auto-close at midnight; notes "smaller yes" (checklist in session, timestamped lines on finish/defer)
 
 Still open — settle before or during screen design:
@@ -178,7 +180,7 @@ Not covered anywhere in the docs yet (checked by search). Grouped by what they w
 - ~~**Adaptive layout.**~~ **Resolved** — see "Adaptive layout" and "iPhone Duo". Still to design: the regular-width variants (which double as Duo inner-display layouts) and a check of each screen at the outer display's compact size.
 - ~~**Recurring tasks.**~~ **Resolved** — simple repeat on Task, see [task.md](../schema/task#repeating-tasks).
 - **Calendar and other apps.** The stated goal is to stop bouncing between reminder, task and calendar apps, but nothing says whether Jamaal reads calendar events, imports Reminders, or ignores them.
-- **Habit pause.** No way to pause a habit for travel, illness or similar (the design project draws "Pause with reason", H-07). Under density, paused days should simply be unscheduled (empty cells), not misses; needs a schema field and a screen.
+- ~~**Habit pause.**~~ **Resolved** — pause with a reason (travel, illness, cycle, other); paused days are unscheduled, not missed. See [habit.md](../schema/habit#pauses).
 - **Quick capture and system surfaces.** No widgets, share extension, App Intents/Siri, or Live Activities — likely important for a "Today" app, and they shape what data must be reachable outside the app.
 - **Privacy, export and account.** v2 called the app "privacy-first"; there is no data export/delete or privacy journey (also needed for App Store submission).
 

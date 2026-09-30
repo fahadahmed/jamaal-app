@@ -116,8 +116,12 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 
 ### 2. Habit density & intelligence
 
-- **Input**: `HabitEntry` history, `HabitTimeWindow` targets and schedule, current date.
-- **Behavior**: derives each window's **density** — the per-day completion grid and rolling completion rate — per the rules in [habit.md](../schema/habit#density-not-streaks). There are no streaks: nothing resets or breaks, and a partial counted day is recorded as a partial, not a miss. From density it produces the plain-language read shown beside the grid, and detects:
+- **Input**: `HabitEntry` history, `HabitTimeWindow` targets and schedule, the habit's `kind` and `pausesData`, focus sessions on habit windows, current date.
+- **Behavior**: derives each window's **density** — the per-day completion grid and rolling completion rate — per the rules in [habit.md](../schema/habit#density-not-streaks). There are no streaks: nothing resets or breaks, and a partial counted or timed day is recorded as a partial, not a miss. Behaviour by kind (rules in [habit.md](../schema/habit#habit-kinds)):
+  - **Timed**: a habit session's `actualSeconds` becomes minutes on that day's entry; the window completes when minutes reach the target.
+  - **Avoid**: a day is `missed` when slips exceed the allowance, `complete` only when slips are within it **and** the user engaged that day (any recorded activity or an explicit *Held today* tap), otherwise `empty` — silence is never success. Derived when read, not stored as a default success.
+  - **Pauses**: paused days are unscheduled — no cell, not counted, out of denominators, no reminders, hidden from Today and Night Planning.
+  From density it produces the plain-language read shown beside the grid, and detects:
   - **Fatigue** — more than 50% of due days missed over three weeks (counted habits use `completionRatio`, not binary) → suggest changing frequency.
   - **Window closing** — a due window still open and unfinished as it nears its end (a light reminder, never a warning about losing something).
   - **New-habit realism** — four or more habits created in one week → suggest starting with one or two.
@@ -210,7 +214,7 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 ### 8. Focus sessions (state machine)
 
 - **Input**: `WorkSession` rows, the current time, today's and tomorrow's Anchors.
-- **Behavior**: a small deterministic state machine over `WorkSession` (`Idle → Running → Overrun`, `Paused` only by explicit pause; outcomes `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed` — full rules in [task.md](../schema/task#focus-sessions-begin--pause--finish)).
+- **Behavior**: a small deterministic state machine over `WorkSession` (for a task or a timed habit's window; one live session across both) (`Idle → Running → Overrun`, `Paused` only by explicit pause; outcomes `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed` — full rules in [task.md](../schema/task#focus-sessions-begin--pause--finish)).
   - Derives elapsed time from `startedAt`, so a killed or backgrounded app never loses or invents time.
   - Enforces **one live session**: a second Begin is refused until the first is settled (Done / Defer / Drop); on a cross-device conflict the later-started is closed as `abandoned`.
   - **Auto-closes at midnight, the day rollover** (`autoClosed`; the softer working-day end doesn't stop a session), carries the task to tomorrow without counting a deferral, and emits a pick-it-back-up signal for tomorrow's list.
@@ -228,4 +232,4 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 - **Prayer-time library**: `configData` fixes the settings, not the implementation. Choose a well-tested prayer-time library (or implementation) at build time and check its method list against the `method` values offered, plus its high-latitude handling.
 - **Notification limits**: iOS caps pending local notifications at 64 — confirm the reminder + nudge volume stays well under that. Habit reminders add up, and five prayers a day for several days ahead adds more if each gets a reminder.
 - **Manual ordering** of Today (see [task.md](../schema/task)).
-- **Timed and avoid habits** would reuse the focus engine (a habit relationship on `WorkSession`, a per-window target in minutes) but depend on the habit-types decision — not part of this pass.
+- **Avoid habits** are specified here as a proposal (the design has only a title); they need a design pass (H-06) before being treated as settled. **Detected habits** (offer to promote a repeating task) are v1.1.

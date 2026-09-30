@@ -61,7 +61,7 @@ Because CloudKit sync is in from v1:
 | Primitive  | Created by | Tracked via             | Nature                                                                                                                                                       |
 | ---------- | ---------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Task**   | User       | Completion              | Something you _do_                                                                                                                                           |
-| **Habit**  | User       | Density (a grid of days), not streaks | Something you _cultivate_ — supports time-windowed occurrences (e.g. five daily prayers as a preset)                                                         |
+| **Habit**  | User       | Density (a grid of days), not streaks | Something you _cultivate_ — four kinds: binary, counted, timed (minutes; uses the focus timer) and avoid (log a slip); can be paused with a reason |
 | **Anchor** | User — as a recurring rule (instances generated) or a one-off | Attendance (attended / missed / skipped), not streaks | Something your life _moves around_ — timing and the consequence of a miss are external to the user (prayer windows, school runs, bin night, watering plants) |
 
 Full rationale for Anchor as a third type (vs. folding into Habit): `docs/architecture/decisions/0001-anchor-object-type.md`.
