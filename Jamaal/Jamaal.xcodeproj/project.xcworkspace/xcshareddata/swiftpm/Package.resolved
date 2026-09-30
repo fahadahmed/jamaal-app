@@ -1,0 +1,15 @@
+{
+  "originHash" : "e73a96e6232e50afed9b98c490dc8c490894a8afa66b8843c330fc037fe19bcc",
+  "pins" : [
+    {
+      "identity" : "threads-kit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/fahadahmed/threads-kit.git",
+      "state" : {
+        "revision" : "dce4313c39d0edbf21c5eec876b1cd8718c300ac",
+        "version" : "1.1.0"
+      }
+    }
+  ],
+  "version" : 3
+}

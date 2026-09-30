@@ -6,6 +6,13 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		EC0A00000000000000000001 /* ThreadsTokens in Frameworks */ = {isa = PBXBuildFile; productRef = EC0A00000000000000000011 /* ThreadsTokens */; };
+		EC0A00000000000000000002 /* JamaalCore in Frameworks */ = {isa = PBXBuildFile; productRef = EC0A00000000000000000012 /* JamaalCore */; };
+		EC0A00000000000000000003 /* ThreadsTokens in Frameworks */ = {isa = PBXBuildFile; productRef = EC0A00000000000000000013 /* ThreadsTokens */; };
+		EC0A00000000000000000004 /* JamaalCore in Frameworks */ = {isa = PBXBuildFile; productRef = EC0A00000000000000000014 /* JamaalCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		EC072FD03066637B000ED989 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -64,11 +71,15 @@
 		EC072FBB30666379000ED989 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				EC0A00000000000000000001 /* ThreadsTokens in Frameworks */,
+				EC0A00000000000000000002 /* JamaalCore in Frameworks */,
 			);
 		};
 		EC072FCC3066637B000ED989 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				EC0A00000000000000000003 /* ThreadsTokens in Frameworks */,
+				EC0A00000000000000000004 /* JamaalCore in Frameworks */,
 			);
 		};
 		EC072FD63066637B000ED989 /* Frameworks */ = {
@@ -116,6 +127,10 @@
 				EC072FC03066637A000ED989 /* Jamaal */,
 			);
 			name = Jamaal;
+			packageProductDependencies = (
+				EC0A00000000000000000011 /* ThreadsTokens */,
+				EC0A00000000000000000012 /* JamaalCore */,
+			);
 			productName = Jamaal;
 			productReference = EC072FBE3066637A000ED989 /* Jamaal.app */;
 			productType = "com.apple.product-type.application";
@@ -137,6 +152,10 @@
 				EC072FD23066637B000ED989 /* JamaalTests */,
 			);
 			name = JamaalTests;
+			packageProductDependencies = (
+				EC0A00000000000000000013 /* ThreadsTokens */,
+				EC0A00000000000000000014 /* JamaalCore */,
+			);
 			productName = JamaalTests;
 			productReference = EC072FCF3066637B000ED989 /* JamaalTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -194,6 +213,10 @@
 			);
 			mainGroup = EC072FB530666379000ED989;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				EC0A00000000000000000021 /* XCRemoteSwiftPackageReference "threads-kit" */,
+				EC0A00000000000000000022 /* XCLocalSwiftPackageReference "../JamaalCore" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EC072FBF3066637A000ED989 /* Products */;
 			projectDirPath = "";
@@ -565,6 +588,45 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		EC0A00000000000000000022 /* XCLocalSwiftPackageReference "../JamaalCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../JamaalCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		EC0A00000000000000000021 /* XCRemoteSwiftPackageReference "threads-kit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/fahadahmed/threads-kit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EC0A00000000000000000011 /* ThreadsTokens */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC0A00000000000000000021 /* XCRemoteSwiftPackageReference "threads-kit" */;
+			productName = ThreadsTokens;
+		};
+		EC0A00000000000000000012 /* JamaalCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = JamaalCore;
+		};
+		EC0A00000000000000000013 /* ThreadsTokens */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC0A00000000000000000021 /* XCRemoteSwiftPackageReference "threads-kit" */;
+			productName = ThreadsTokens;
+		};
+		EC0A00000000000000000014 /* JamaalCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = JamaalCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EC072FB630666379000ED989 /* Project object */;
 	validationLevel = 1;

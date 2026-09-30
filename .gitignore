@@ -38,6 +38,8 @@ playground.xcworkspace
 .build/
 .swiftpm/
 Package.resolved
+# The app pins its dependencies for reproducible builds; libraries (JamaalCore) don't.
+!Jamaal/Jamaal.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
 # CocoaPods (unused, but ignore if ever added)
 Pods/
