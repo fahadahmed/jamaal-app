@@ -209,6 +209,7 @@ mediumDayMinutes: Int = 180
 dayStartMinute: Int = 480
 dayEndMinute: Int = 1140
 rolloverMinute: Int = 0
+weekdayLevels: String = "{\"6\":\"low\",\"7\":\"low\"}"
 firstLaunchAt: Date? = nil
 createdAt: Date = .now
 ```
@@ -263,7 +264,8 @@ CloudKit can't enforce uniqueness, and two devices can each create the same thin
 | `AnchorRule.placement` | `fixed` / `flexible` |
 | `DayPlan.capacity` | `low` / `medium` / `high` |
 | `NightPlanningSession.currentStep` | `review` / `carry` / `build` / `load` / `close` |
-| `NudgeLog.kind` | `wellbeing` / `guidance` / `fatigue` / `windowClosing` / `overload` / `morningPlanCard` / `habitPromotion` |
+| `NudgeLog.kind` | `wellbeing` / `guidance` / `fatigue` / `windowClosing` / `overload` / `morningPlanCard` / `habitPromotion` / `normalDaySuggestion` |
+| `UserSettings.weekdayLevels` keys | ISO weekday `"1"`…`"7"` → `low` / `medium` / `high` |
 | `Habit.pausesData` reasons | `travel` / `illness` / `cycle` / `other` |
 | Anchor exception reasons (in `configData`) | `term` / `holiday` / `travel` / `illness` / `other` |
 
@@ -276,7 +278,7 @@ CloudKit can't enforce uniqueness, and two devices can each create the same thin
 
 ## Additive later (deliberately not in the schema yet)
 
-Safe to add without breaking anything, so they are *not* blockers: `Task.sortOrder` (manual ordering, open), `AnchorRule.sortOrder`, weekday default levels in `UserSettings` (waits on the learning decision), a per-tap event log for habit counters, `ThreadsKit`-dependent colour keys for categories, and the detected-habit offer's supporting data (v1.1).
+Safe to add without breaking anything, so they are *not* blockers: `Task.sortOrder` (manual ordering, open), `AnchorRule.sortOrder`, a per-tap event log for habit counters, `ThreadsKit`-dependent colour keys for categories, and the detected-habit offer's supporting data (v1.1).
 
 ## Freeze checklist
 
@@ -287,6 +289,7 @@ Safe to add without breaking anything, so they are *not* blockers: `Task.sortOrd
 - [x] `AnchorRule.isArchived` so a rule is never hard-deleted; unused `HabitEntry.skippedReason` removed; `HabitGroup.isExpanded` made local
 - [x] Every model that two devices can create twice has a dedup key
 - [x] Dates classified as floating or instant
+- [x] Learning decision made (suggest only), so `UserSettings.weekdayLevels` is in the schema
 - [ ] `TaskCategory.colorKey` values (waits on the category colour decision — they are strings, so can follow)
 - [ ] Habit preset definitions (`presetKey` is a string, so can follow)
 - [ ] Review by the owner, then implement the models in `JamaalCore` with tests first

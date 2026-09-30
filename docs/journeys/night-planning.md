@@ -51,9 +51,9 @@ Below that, **select, reorder and add Tasks and Habits** for tomorrow (paused ha
 
 ### 4. Check the load
 
-Set tomorrow's capacity — `low` / `medium` / `high`. The step shows what tomorrow leaves (total free time and the longest gap) and the engine may suggest a level ("about 2 hours free — low might suit"); the user decides. It then shows **budget used** ("2h 15m of 3h", with the load state light / balanced / full / overloaded / exhausting) and, only when relevant, **overflow** past the day's end ("40 min past 19:00").
+Set tomorrow's capacity — `low` / `medium` / `high`, pre-selected to that weekday's default. The step shows what tomorrow leaves (total free time and the longest gap) and the engine may suggest a level ("about 2 hours free — low might suit"); the user decides. It then shows **budget used** ("2h 15m of 3h", with the load state light / balanced / full / overloaded / exhausting) and, only when relevant, **overflow** past the day's end ("40 min past 19:00").
 
-When the day is overfull the companion offers one specific move — "Groceries could wait until Wednesday. Want me to move it?" — with **Move** and **Keep as planned**. Overflow is soft: named, never blocked, one tap to move. It only ever suggests deferring *tasks* (fixed commitments and habits can't be). If some items have no duration, a quiet note says how many. Never blocks.
+When the day is overfull the companion offers one specific move — "Groceries could wait until Wednesday. Want me to move it?" — with **Move** and **Keep as planned**. Overflow is soft: named, never blocked, one tap to move. It only ever suggests deferring *tasks* (fixed commitments and habits can't be). If some items have no duration, a quiet note says how many. At most once in a while (never within 28 days of a "Not now") a single quiet line may offer to update the user's normal day from their actual focus time — "You usually do about 2h 40m — set your normal day to that?" Never blocks.
 
 ### 5. Close the day
 
@@ -64,7 +64,7 @@ Locks tomorrow's plan, writes the `DayPlan` (capacity, planned task minutes, fre
 **Skip tonight** is available at every step. It closes the flow without a plan:
 
 - A session left unfinished at the day rollover ends as skipped, so the morning card can offer the plan. Nothing is lost: incomplete dated tasks auto-defer at rollover as usual (see [task.md](../schema/task)), and carry-forward choices already made stay applied.
-- No `DayPlan` is written; tomorrow simply uses the user's default level.
+- No `DayPlan` is written; tomorrow simply uses that weekday's default level (`UserSettings.weekdayLevels`; weekends are `low`, other days `medium` unless changed).
 - **If no plan was confirmed for today**, the morning list shows **one quiet card** — "No plan for today — two minutes to pick?" — that opens a shortened Build tomorrow for today. No guilt, no missed-night count, no streak, and the card doesn't repeat if dismissed.
 
 ## State machine
