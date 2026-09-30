@@ -140,7 +140,7 @@ Navigation chrome is the **system** tab bar and toolbars with the iOS 26 Liquid 
 ## 6. Behaviour cheat sheet (so the screens are right)
 
 - **Importance** has three levels — low (default), medium, high — set mainly in Night Planning. Choosing medium or high **requires a due date** (pre-filled, can't be cleared) and **hides "Someday"**. A medium or high task deferred for the **3rd** time is eased to low, and the companion says so. Low tasks always sort after medium and high.
-- **Deferral:** the 1st and 2nd are instant (to tomorrow); from the **3rd** a date picker opens (Later this week / Next week / Someday / a date) with reason chips **Too much on · Not ready · Not relevant**; from the 5th the companion suggests dropping it.
+- **Deferral** means a task moved to a later day **after its due day has arrived**; rescheduling something due later (pushing tomorrow's task to Thursday, the overload *Move*) is not a deferral. The 1st and 2nd deferral are instant (to tomorrow); from the **3rd** a date picker opens (Later this week / Next week / Someday / a date) with reason chips **Too much on · Not ready · Not relevant**; from the 5th the companion suggests dropping it. At most one deferral per task per day.
 - **Capacity** is the user's own call: **low / medium / high**. Medium is their *normal day* (default 3h, set in onboarding), low is two-thirds, high is four-thirds. The budget counts **tasks only**. A separate **free-time** measure takes the working day (default 08:00–19:00) minus fixed Anchors (which cut it into gaps) and the minutes of flexible Anchors and habits. The meter shows **budget used** (*"2h 15m of 3h"*) with a load state (light / balanced / full / overloaded / exhausting), and turns terracotta past the day's end with one tap to move the overflow. A quiet flag appears if a task is longer than the longest gap. Never blocking.
 - **Anchors:** recurring rules (prayer times, school run, bin night, plant watering, custom) generate instances; one-offs are added directly. Statuses: **attended · missed · skipped ("Not today") · delegated ("Someone else did it")** — skipped and delegated are not misses. **Attended can only be logged while the window is open**; an upcoming Anchor's control is disabled and says when it opens. A rule that produces several Anchors a day shows as **one collapsed row** ("Salah 3/5 · Asr · until 17:58") that expands. A plants-style rule has a multi-day window and shows every day it is open.
 - **Habits** come in four kinds: **binary**, **counted** (stepper), **timed** (a target in minutes; **Begin** uses the same chip; "12 of 20 min") and **avoid** (**Log a slip** and **Held today**; a day fills only if the app was used that day — silence is never success; no days-since-slip counter). A habit can be **paused with a reason** (travel, illness, cycle, other); paused days are empty cells, not misses, and the habit is hidden from Today.
@@ -148,7 +148,12 @@ Navigation chrome is the **system** tab bar and toolbars with the iOS 26 Liquid 
 - **Notes:** one markdown note per task (checklists, bold, italic, links, inline code), shown as a tappable checklist under the timer. **No** list-row preview, **no** habit notes.
 - **Repeating tasks:** daily / weekly on days / monthly; needs a date; one live instance per series; Drop skips only this occurrence, Stop repeating ends the series.
 - **Day rollover** is a user-set time (default midnight); the day **end** (default 19:00) is a soft planning boundary only.
-- **Trial:** 14 days, app-managed, no payment up front; after that, **read-only** with a calm paywall. Read-only still lets you tick items off; it locks creating, editing, Night Planning and capacity.
+- **Wellbeing** is derived only from behaviour — **no self-reporting anywhere (no mood)**. Score 0–100 over 14 days from tasks (35%), Anchors attended (25%), habits (20%) and load (20%); "gathering data" until 7 active days. Trend is words (*steadier / about the same / heavier*), never a coloured number. When a pattern shows, **one inline card** offers one change with **Not now** (for example *"The last three days were heavy. Lighten Saturday?"*); never a notification.
+- **Categories** are labels only: five label colours (teal, blue, ochre, plum, slate), a label is always a **dot plus the name**, at most eight active, archived ones restorable. The Today filter narrows **Tasks only**; Anchors, habits and the meter stay whole-day.
+- **Notifications denied** is three states (not asked, denied, turned off later). Settings lists what isn't being delivered; where a reminder is configured one quiet line says notifications are off; the Today banner appears only if this device's switch is on and permission off, once a day, dismissible, *Don't remind me*. The always-available **Plan tomorrow** row is separate.
+- **Problems** are quiet and never alarming: iCloud states (not signed in, restricted, storage full, sync trouble; offline is never one) say *your data is safe on this device* and what would fix it; an iCloud account change offers **Export my data** first; a store that won't open shows a recovery screen (*Try again* / *Reset this device's data*); a newer-version value reads *Update Jamaal to see this*.
+- **Night Planning entry:** a **Plan tomorrow** action in Today's toolbar, a quiet row after the planning time, and the evening notification or banner. The morning card opens a shortened flow (Build → Load → Close). Tomorrow's habits are shown read-only; tasks are pulled in and pushed out, never reordered; gaps under 20 minutes aren't shown.
+- **Trial:** 14 logical days, app-managed, no payment up front. After that the app is **read-only** with a calm paywall shown once on the first open of each day. *Living the day* still works (tick tasks, log habits, mark Anchors, run a timer); *shaping the plan* is locked (creating or editing anything, manual Defer and Drop, Night Planning, capacity). **Locked controls stay visible**; tapping one opens a calm sheet (*"Adding and planning need a subscription"* — Subscribe / Not now). Export and delete always work.
 
 > The stable IDs and the full list (with entry points, states and what is already drawn) are in the repo's **Screens and flows register** (`docs/journeys/screens.md`); name Design frames with those IDs (`TD-01`, `NP-03`, …). The tables below are the same list in summary.
 
@@ -165,7 +170,9 @@ Navigation chrome is the **system** tab bar and toolbars with the iOS 26 Liquid 
 | X-01 Overloaded | new | "More than four things": the meter, the named overflow, one-tap move |
 | X-02 Carried-over arrival | new | The single "pick it back up" row after an auto-closed session |
 | Morning card | new | "No plan for today — two minutes to pick?" once |
-| Banners | new | Notifications off (24, keep and align), trial status, read-only |
+| Banners | new | Notifications off (24, keep and align), trial ending, read-only — one at a time, most pressing first |
+| Category filter (`TD-03`) | new | Header control: *All* + categories; a clear chip; empty result *"Nothing in Family today."* + *Show all* |
+| Plan tomorrow | new | Toolbar action and a quiet row after the planning time |
 | Add (Task / One-off Anchor) | new | The Add button offers a choice |
 
 ### Tasks and the timer
@@ -213,12 +220,14 @@ Navigation chrome is the **system** tab bar and toolbars with the iOS 26 Liquid 
 ### Wellbeing, Settings, Onboarding
 | Screen | Status | Notes |
 |---|---|---|
-| 20 / 21 Wellbeing | keep | Score is derived from behaviour only (no self-reporting). X-04 (what makes 78 a 78) is open |
+| 20 / 21 Wellbeing | keep | Score derived from behaviour only (tasks, Anchors, habits, load); trend in words; the strained state carries one pattern card with **Not now**; the "why" view is v1.1 |
 | 22 Gathering data | keep | |
 | 23 Settings | rework | Normal-day length + occasional quiet suggestion ("You usually do about 2h 40m — set your normal day to that?"), default level per weekday, working-day start / end, rollover (Advanced), categories management, trial status |
-| **Category management** | new | Editable list, default personal / family / work |
+| **Category management** (`ST-04`) | new | Editable, reorderable list; five label colours; at most eight; collapsed **Archived** with Restore |
+| **Subscription** (`ST-05`), **iCloud status** (`ST-06`), **Privacy and export** (`ST-08`) | new | Days left or status, manage, restore · signed in / problem · privacy statement, Export my data, Delete my data (two confirmations) |
+| **Problem states** (`SY-05`) | new | iCloud line, account-changed notice with Export first, store-recovery screen |
 | 25–29 Onboarding | rework | Meet Jamaal → the idea → (iCloud check, silent) → **your normal day + when the working day ends + the capacity slider** → reminders with the evening time → **first Task, first Habit, first Anchor** (the Anchor step is skippable: "Not now") → ready |
-| **Paywall** | new | Calm, full-screen, monthly and yearly, restore, "Not now" |
+| **Paywall** | new | Calm, full-screen, monthly and yearly, restore, "Not now"; plus the locked-control sheet (*Adding and planning need a subscription*) |
 
 ## 8. Adaptive layouts
 
@@ -231,13 +240,27 @@ Navigation chrome is the **system** tab bar and toolbars with the iOS 26 Liquid 
 
 ## 9. Open decisions — draw provisionally and mark clearly
 
-- **Category label colours.** The palette has no spare hues. Draw placeholders and mark them; a small set of new tokens will be added to ThreadsKit once chosen.
-- **Avoid habits (H-06).** Semantics are a proposal: log a slip; a day is complete only if slips are within the allowance **and** the user engaged with the app that day; no days-since-slip counter. Draw two treatments for the owner to choose between.
-- **Wellbeing score derivation (X-04).** Draw the score and its sparkline as now; the "why" view waits.
+- **Category label colours** — decided as five (`accent` teal, `blue`, `ochre`, `plum`, `slate`; defaults Personal teal, Family ochre, Work blue), but the **hues are for Design to propose**: pick them from the palette family so they clear 4.5:1 and never resemble terracotta (terracotta means warning and overload). They become new ThreadsKit tokens.
+- **Avoid habits (H-06).** Semantics are decided (log a slip; a day is complete only if slips are within the allowance **and** the user engaged that day; no days-since-slip counter). Draw two treatments for the owner to choose between.
+- **Wellbeing "why" view (X-04 / WB-04)** is v1.1; draw the score, trend words, sparkline and the pattern card only.
 - **Natural-language capture (A-02, A-03, A-05).** Not adopted; leave out.
-- **Jumu'ah** (Friday's replacement for Dhuhr) and **Anchor reminder lead time** are undecided; leave them out of the Anchor forms.
-- **Correcting a closed Anchor window** (forgot to tap) is undecided.
+- **Decided since the first brief** (draw them): Jumu'ah is a *Friday label* option on the prayer rule; Anchor reminders exist (prayer times remind at the start by default, everything else off, a closing reminder is opt-in); a **missed** Anchor offers *Mark as done after all* until the end of that day.
 - **Fonts** are not bundled in ThreadsKit yet; design with Fraunces, Hanken Grotesk and JetBrains Mono.
+
+## 9a. Screens to draw, in batches
+
+Attach to the Design project: this brief, `docs/journeys/screens.md` (the register — name frames by its IDs) and the per-screen specs in `docs/journeys/walkthroughs/` (`01`–`11`). The register's status column says what is **None** (not drawn), **Spec** (specified, not drawn) or **Drawn** (rework if the brief says so). 30 screens are None and 17 are Spec. Draw in this order; each batch is reviewable on its own:
+
+1. **Today and capture** — `TD-01` and its states (empty, all done, overloaded, carried-over `TD-06`, morning card `TD-07`, banners `TD-05`: notifications off · trial ending · read-only), category filter `TD-03`, Add `TD-04`, `TK-01`, `TK-02`, note editor `TK-04`, repeat picker `TK-05`, category picker `TK-06`.
+2. **The timer** — `FS-01` chip, `FS-02` focus screen, `FS-03` overrun, `FS-04` paused, `FS-05` finish sheet, `FS-06` done + undo, `FS-07` switch-task sheet, `SY-03` undo toast. (`FS-08` Live Activity is v1.1: last.)
+3. **Habits and Anchors** — `HB-06` pause, `HB-07` edit/archive, `HB-08` avoid (two options), `HB-09` minutes by hand; `AN-01` rules list, `AN-02` rule detail, `AN-03` type, `AN-04` prayer form with `AN-11` location, `AN-05` scheduled form, `AN-06` exceptions, `AN-07` needs attention, `AN-08` one-off, `AN-09` rows on Today, `AN-10` actions; Archived sections with Restore.
+4. **Night Planning** — `NP-01` … `NP-05`, `NP-06` skip, and the shortened morning flow; wide canvas `NP-07`.
+5. **Wellbeing, Settings, Onboarding, Subscription, System** — `WB-01` … `WB-03` (and the pattern card); `ST-01` … `ST-08` (Capacity & day, Notifications & times with its warning card, Categories, Subscription, iCloud status, Appearance, privacy and export); `OB-03`, `OB-06`, `OB-07`, `OB-08`; `SB-01` paywall, `SB-02` reminder copy, `SB-03` read-only banner and the locked-control sheet; `SY-01` banner, `SY-02` empty lines, `SY-05` problem states (incl. account-changed notice and store-recovery screen), `SY-06` icon and launch.
+6. **Wide layouts** — iPad two-panel and Duo inner display for the screens above, then the macOS sidebar.
+
+## 9b. Paste-ready prompt
+
+> Redraw Jamaal's screens using the attached brief, register and walkthroughs. Styling comes from this project (v3 screens, tokens page, flow spec) unless the brief says a locked behaviour conflicts. Work in the six batches of §9a, phone first, and **stop after each batch** for review. Name every frame with its register ID (`TD-01`, `NP-03`…). Mark anything provisional (category hues, the avoid-habit options) clearly. Follow the acceptance checklist in §10: no streaks, no mood or self-reporting, no red severity, no praise, scolding or exclamation marks, terracotta as the only filled button, and every locked or problem state calm and quiet.
 
 ## 10. Acceptance checklist
 
