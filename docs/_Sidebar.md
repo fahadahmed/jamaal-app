@@ -26,6 +26,7 @@
 ### Design
 
 - [ThreadsKit Usage](design/threadskit-usage)
+- [Claude Design brief](design/claude-design-brief)
 
 ---
 
