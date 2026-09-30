@@ -69,7 +69,7 @@ Built in `Jamaal/Components/` on top of the tokens above:
 - Capacity meter (8 pt tall pill: budget used; terracotta when overloaded or past the day's end)
 - Ambient session chip and focus screen (timer numeral in the display face with monospaced digits; the chip is filled only while a session is live)
 - Window bar (Anchor window states: upcoming / open / closing soon / closed; the design draws it 6 pt tall and pill-shaped)
-- Night Planning 5-step wizard (review & carry forward → reflect → plan → capacity & load check → confirm)
+- Night Planning 5-step wizard (review today → carry forward → build tomorrow → check the load → close the day), including the tomorrow-gaps list and the wide-layout proportional timeline
 
 Navigation chrome (floating pill tab bar, translucent nav circles) uses the iOS 26 Liquid Glass **system** components, tinted with `glassOn` where a tint is needed. It must be the system tab bar and toolbars, not custom-built ones, so iPad sidebars and iPhone Duo's side-mounted controls adapt automatically (see [app-flow.md](../journeys/app-flow#iphone-duo-foldable-iphone)).
 
