@@ -46,7 +46,7 @@ Tab bar (floating pill): **Today · Habits · Wellbeing · Settings**
 | Today | The list; capacity slider; entry to Night Planning; task detail / add task sheets |
 | Habits | Habit groups and habits; habit detail (density grid and plain-language read); add habit / custom recurrence / group creation. **Proposed:** a segmented control "Habits \| Anchors" here, where Anchors lists `AnchorRule`s (add, edit, enable/disable) — see open questions |
 | Wellbeing | Score, sparkline, gathering-data state, recent patterns |
-| Settings | Normal-day length (default 180 min), working-day start / end (defaults 08:00 / 19:00) and, under Advanced, the day-rollover time (default midnight), planning and nudge times, categories, notifications warning card, iCloud, appearance |
+| Settings | Normal-day length (default 180 min, with an occasional quiet suggestion from actual focus time), default level per weekday (weekends low), working-day start / end (defaults 08:00 / 19:00) and, under Advanced, the day-rollover time (default midnight), planning and nudge times, categories, notifications warning card, iCloud, appearance |
 
 Night Planning is a full-screen modal launched from Today (or a notification). Onboarding runs once, before the tabs.
 
@@ -145,6 +145,7 @@ Resolved in this reconciliation:
 - [x] Night Planning shape — the design's five steps (Review today → Carry forward → Build tomorrow → Check the load → Close the day); optional mood line on Review instead of a Reflect step; Build tomorrow opens on tomorrow's fixed commitments with named free gaps (tasks not placed into gaps); *Skip tonight* with one quiet morning card and no guilt
 - [x] Night Planning session — persisted (CloudKit resume)
 - [x] Rollover vs. deferral — unified as deferral with auto-defer safety net
+- [x] Learning the normal day — **suggest only**: the app proposes a normal-day length from the last four weeks of actual focus time and never changes it by itself; weekday default levels (weekends low) live in `UserSettings`
 - [x] Day boundary — user-set rollover (default midnight), logical dates, floating calendar dates (noon UTC), lazy idempotent catch-up, one deferral per task per logical day, session close at the boundary instant
 - [x] Eisenhower — hidden, derived, drives order / capacity visibility / suggestions
 - [x] Categories — editable list, label + filter only
