@@ -95,7 +95,9 @@ Modules emit typed signals; a separate message-template layer phrases them in Ja
 
 ## Design system
 
-ThreadsKit (shared package, also used by Riqa/Hashiya; depend on **1.1.0 or later** — 1.0.0 has a contrast bug) currently supplies **colour tokens only** — a cool palette with a teal accent (`#1F6A58` light / `#8FCBB8` dark), blue-based ink, terracotta as secondary (`terra`), light + dark baked in. This replaced the earlier warm palette (off-white/charcoal/terracotta/sage); there is no sage token. Full token table and open decisions: `docs/design/threadskit-usage.md`. Typography, spacing/radius and components are not in ThreadsKit yet; Fraunces + DM Sans remain the intended faces, unconfirmed upstream. Liquid Glass direction (floating pill tab bar, translucent glass nav circles) still applies.
+ThreadsKit (shared package, also used by Riqa/Hashiya; depend on **1.1.0 or later** — 1.0.0 has a contrast bug) currently supplies **colour tokens only** — a cool palette with a teal accent (`#1F6A58` light / `#8FCBB8` dark), blue-based ink, terracotta as secondary (`terra`), light + dark baked in. This replaced the earlier warm palette (off-white/charcoal/terracotta/sage); there is no sage token. Full token table and open decisions: `docs/design/threadskit-usage.md`. Typography, spacing/radius and components are not in ThreadsKit yet; Fraunces + Hanken Grotesk + JetBrains Mono remain the intended faces, unconfirmed upstream. Liquid Glass direction (floating pill tab bar, translucent glass nav circles) still applies.
+
+**Precedence: styling is taken from the Claude Design project** (the v3 screens, its tokens page and flow spec) **unless it conflicts with functionality locked in this repo.** The self-contained hand-off is `docs/design/claude-design-brief.md`. Type: Fraunces (display), Hanken Grotesk (text) and JetBrains Mono (labels), as Design draws them — not DM Sans.
 
 Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity slider, habit group completion ring, habit heatmap grid, wellbeing sparkline (Swift Charts), Night Planning 5-step wizard.
 
