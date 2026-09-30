@@ -24,7 +24,7 @@ Jamaal is both the app and its companion voice — calm, supportive, non-judgmen
 
 Triggered by the evening notification the user set up in onboarding (or the in-app banner if they declined notifications, or by opening it from Today).
 
-- **Review today** is light: there's little history. The optional mood line is the first mood entry (and starts the seven-day "gathering data" clock for Wellbeing, along with the first `DayPlan`).
+- **Review today** is light: there's little history. The first `DayPlan` starts the seven-day "gathering data" clock for Wellbeing.
 - **Carry forward** — Keep/Later/Drop for anything incomplete; passed through if nothing is.
 - **Build tomorrow** — the step with the most value on day one: it opens on tomorrow's fixed commitments and named free gaps (generated the moment the `AnchorRule` was created), then the user picks tasks and habits.
 - **Check the load** — first time the user sees load states and the suggested level, introduced gently.
@@ -107,7 +107,7 @@ Pricing (CLAUDE.md): free download, 14-day full-access trial, then subscription 
 | Screen | Status |
 | ------ | ------ |
 | Today (with guidance highlight, companion card, capacity slider) | Mockup exists (legacy palette); needs Anchors section, category labels |
-| Night Planning — 5 steps (phone) and one-canvas step rail (wide) | Mockup exists with the right step order but needs: the optional mood line, tomorrow's fixed commitments and named gaps at the start of Build tomorrow (list on phone, proportional timeline on wide), the load step's free-time and overflow flags, *Skip tonight*, and the wide layout's Keep/Later/Drop (not "leftovers to backlog") |
+| Night Planning — 5 steps (phone) and one-canvas step rail (wide) | Mockup exists with the right step order but needs: tomorrow's fixed commitments and named gaps at the start of Build tomorrow (list on phone, proportional timeline on wide), the load step's free-time and overflow flags, *Skip tonight*, and the wide layout's Keep/Later/Drop (not "leftovers to backlog") |
 | **Morning card: "No plan for today"** | **New — no mockup** |
 | Task detail (normal / deferred / complete) | Mockup exists; add category and a **Begin** action |
 | Defer date picker (quick select / calendar, reason chips) | Mockup exists |
@@ -144,7 +144,7 @@ Legacy mockups are in `mockups/legacy/` — layout/flow reference only; they pre
 Resolved in this reconciliation:
 
 - [x] Capacity model — two measures: an **energy budget** (low/medium/high, the user's call; minutes from a normal-day length; counts tasks only) and **free time** (working day minus fixed Anchors that cut it and flexible Anchors/habit minutes that subtract); a plan must fit both; meter headline is budget used with a quiet fit flag; **soft** day-end at a user-set time (default 19:00), midnight stays the hard rollover
-- [x] Night Planning shape — the design's five steps (Review today → Carry forward → Build tomorrow → Check the load → Close the day); optional mood line on Review instead of a Reflect step; Build tomorrow opens on tomorrow's fixed commitments with named free gaps (tasks not placed into gaps); *Skip tonight* with one quiet morning card and no guilt
+- [x] Night Planning shape — the design's five steps (Review today → Carry forward → Build tomorrow → Check the load → Close the day); no Reflect step or mood line (no self-reporting); Build tomorrow opens on tomorrow's fixed commitments with named free gaps (tasks not placed into gaps); *Skip tonight* with one quiet morning card and no guilt
 - [x] Night Planning session — persisted (CloudKit resume)
 - [x] Rollover vs. deferral — unified as deferral with auto-defer safety net
 - [x] Learning the normal day — **suggest only**: the app proposes a normal-day length from the last four weeks of actual focus time and never changes it by itself; weekday default levels (weekends low) live in `UserSettings`

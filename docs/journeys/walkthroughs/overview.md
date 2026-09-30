@@ -24,7 +24,7 @@ Then each walkthrough ends with the **data that exists afterwards** (an end-stat
 | 5 | [Habits: create, log, pause](05-habits) | F08 | **Done** — G-37 … G-44 decided and applied |
 | 6 | [Night Planning](06-night-planning) | F09 | **Done** — gaps G-45 … G-53 decided and applied |
 | 7 | [Capacity and day settings](07-capacity-and-day-settings) | F10 | **Done** — gaps G-54 … G-57 decided and applied |
-| 8 | [Wellbeing](08-wellbeing) | F11 | **Walked** — gaps G-58 … G-66 proposed |
+| 8 | [Wellbeing](08-wellbeing) | F11 | **Walked** — gaps G-59 … G-65 and G-67 proposed (G-58, G-66 withdrawn) |
 | 9 | Trial, paywall and read-only | F12 | |
 | 10 | Notifications denied; problems and recovery | F13, F15 | |
 | 11 | Categories | F14 | |
@@ -94,12 +94,13 @@ The order follows a new user's life (first launch first), so each journey can as
 | G-55 | J7 · ST-02 | **The normal-day suggestion (and wellbeing) read `DayPlan`s that don't exist for unplanned days.** A `DayPlan` is only written when a day is planned or the slider moved. | The rollover step **creates `DayPlan(D)` if missing** for any ended day with activity, then finalises it; days with no activity get none. | **Applied** |
 | G-56 | J7 · TD-01/ST-02 | **Derived Low and High budgets are untidy** (⅔ and 4⁄3 of a 3h25m day reads *"Low · 2h 17m"*). | Round Low and High to the nearest 5 minutes, for display **and** calculation. | **Applied** |
 | G-57 | J7 · ST-02 | **Nothing relates the planning time to the end of the working day.** | A quiet note in Settings when planning time is before the working day ends; never blocked. | **Applied** |
-| G-58 | J8 · WB-01 | **Mood is attached to the wrong day.** It lives on the `NightPlanningSession` whose `forDate` is tomorrow, but describes the reviewed day. | Read a session's mood as the mood for `forDate − 1`; a morning session has none. | Proposed |
+| G-58 | J8 · WB-01 | ~~Mood is attached to the wrong day.~~ | Moot: **mood removed** (G-67). | **Withdrawn** |
 | G-59 | J8 · TD-02/WB-03 | **"Seven days of history" is undefined.** `DayPlan`s exist only for active days; calendar days since install is a different count. | An **active day** has a `DayPlan`. Gathering data lasts until 7 active days lie in the last 14 logical days. | Proposed |
 | G-60 | J8 · WB-01 | **`completionRate` has no denominator.** Deferred tasks are re-dated, so "due that day" can't be recounted. | At rollover: completed that day ÷ (completed + deferred or dropped that day). Days with neither aren't counted. | Proposed |
 | G-61 | J8 · WB-01 | **`wasOverloaded` is only a planning snapshot.** A skipped night leaves zero load, and a plan isn't the day as lived. | Rollover finalisation also sets planned minutes, `loadScore` and `wasOverloaded` from the day as lived (module 7, that day's level). | Proposed |
-| G-62 | J8 · WB-01/TD-02 | **The score has no recipe (X-04).** Inputs are listed but not weights, window or trend. | 14-day window over active days: completion 45%, load 25%, habits 20%, mood 10% (weights rescale without mood). Sparkline per day over trailing 14 days, shown from 7 active days. Trend words, not numbers. Strained when any pattern is active. | Proposed |
+| G-62 | J8 · WB-01/TD-02 | **The score has no recipe (X-04).** Inputs are listed but not weights, window or trend. | 14-day window over active days: completion 50%, load 30%, habits 20%. Sparkline per day over trailing 14 days, shown from 7 active days. Trend words, not numbers. Strained when any pattern is active. | Proposed |
 | G-63 | J8 · WB-02 | **Patterns aren't computable as written**, and `avoidance` duplicates the per-task deferral escalation. | Define `heavyRun` (3 consecutive overloaded), `habitNeglect` (3 scheduled misses; excludes paused, weekly-target, avoid), `completionCollapse` (last 3 < half of prior 14 and < 40%), `weekendOverplan` (2 of last 3 weekends). Remove `avoidance`. | Proposed |
 | G-64 | J8 · WB-02 | **Only "Lighten Saturday" is drawn, and what it writes isn't said.** | One definite action per pattern: low day tomorrow; weekday default to low; normal day to the recent average (15 min); pause or shrink the habit. Always with *Not now*. | Proposed |
 | G-65 | J8 · WB-02 | **The nudge has no home and no memory of "Not now".** | An inline card (tab, and once a day on Today), never a notification in v1. One a day; a dismissed pattern isn't offered for 7 days. A preference turns cards off. | Proposed |
-| G-66 | J8 · WB-01 | **The mood note is stored but never shown.** | v1: the number feeds the score; the note is kept and exported, not displayed. Revisit with a History surface. | Proposed |
+| G-66 | J8 · WB-01 | ~~The mood note is stored but never shown.~~ | Moot: **mood removed** (G-67). | **Withdrawn** |
+| G-67 | J8 · NP-01 | **Self-reporting doesn't belong in a behaviour-derived score.** The Review step's optional mood line, and `NightPlanningSession.mood` / `moodNote`, would feed it. | **Remove mood entirely** (owner decision): fields, Review line and score input. Wellbeing is completion of tasks and habits around the Anchors, nothing else. | **Applied** |

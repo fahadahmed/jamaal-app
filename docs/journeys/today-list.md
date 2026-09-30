@@ -61,7 +61,7 @@ At most one card per day. The engine highlights a task with a "Start here" or "G
 
 ## Wellbeing
 
-A compact **sparkline** near the capacity slider shows the wellbeing score over recent days ("gathering data" until seven days exist). Tapping it opens the Wellbeing tab. It is fed by the engine's derived signals and the optional mood line on Night Planning's Review step, not by Today interactions directly.
+A compact **sparkline** near the capacity slider shows the wellbeing score over recent days ("gathering data" until seven days exist). Tapping it opens the Wellbeing tab. It is fed by the engine's derived signals not by Today interactions directly.
 
 ## Empty and edge states
 

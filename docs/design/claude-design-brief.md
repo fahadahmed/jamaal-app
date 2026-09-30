@@ -40,7 +40,7 @@ Principles that shape every screen:
    - Onboarding "I'll speak twice a day. Nothing else, ever." — habit and Anchor reminders, and a rare trial reminder, can exist (opt-in or few). Suggested: *"Once at night to plan, once in the morning with your list. Anything else is yours to switch on."*
    - (The owner decides the final wording; these show the facts the copy must respect.)
 4. **Capacity needs a level control.** v3 shows minutes only ("2h 15m of 3h"). Keep that as *budget used*, and add the **low / medium / high** control (§6). The Preferences screen's "Learned from 34 days / Energy by day" becomes: normal-day length, **default level per weekday** (weekends low), working-day start and end, and — under Advanced — the day-rollover time.
-5. **Night Planning's flow** follows §7 (five steps, optional mood line, tomorrow's gaps, *Skip tonight*), and the wide layout keeps **Keep / Later / Drop per task** — important tasks can't be parked as Someday, so "leftovers go back to the backlog" can't stand.
+5. **Night Planning's flow** follows §7 (five steps, no mood line, tomorrow's gaps, *Skip tonight*), and the wide layout keeps **Keep / Later / Drop per task** — important tasks can't be parked as Someday, so "leftovers go back to the backlog" can't stand.
 6. **Habit groups stay** as a purely visual bundle; screen 18 keeps a naming form.
 7. **Navigation chrome is the system component.** v3 draws a floating tab capsule; it must be the system tab bar and toolbars with the Liquid Glass look, because the system bar is what moves to the side on iPhone Duo and becomes a sidebar on iPad.
 8. **Importance is three levels and dropping is soft.** v3 draws importance as "Matters 4 of 5" and offers "Edit / Delete". Redraw importance as **low / medium / high** and call the action **Drop** (it is a soft delete with a 5-second undo).
@@ -202,7 +202,7 @@ Navigation chrome is the **system** tab bar and toolbars with the iOS 26 Liquid 
 ### Night Planning (five steps)
 | Step | Status | Notes |
 |---|---|---|
-| 1 Review today | rework | Plain counts, time spent vs estimate; one **optional mood line** (1–5 + note) at the end |
+| 1 Review today | rework | Plain counts, time spent vs estimate; no mood line (nothing is self-reported) |
 | 2 Carry forward | rework | Keep / Later / Drop per task; 3rd-slip behaviour |
 | 3 Build tomorrow | rework | **Opens on tomorrow's working day**: fixed commitments drawn in and free gaps **named** ("before the school run · 2h 40m free"); list on phone, proportional timeline on wide; then a plain task list (not placed into gaps), flags for tasks longer than the longest gap, **Add one-off Anchor** |
 | 4 Check the load | rework | Level slider pre-selected to the weekday default, budget used, overflow past the day's end, one specific suggested move |
@@ -213,7 +213,7 @@ Navigation chrome is the **system** tab bar and toolbars with the iOS 26 Liquid 
 ### Wellbeing, Settings, Onboarding
 | Screen | Status | Notes |
 |---|---|---|
-| 20 / 21 Wellbeing | keep | Score is derived from behaviour; mood is one optional input. X-04 (what makes 78 a 78) is open |
+| 20 / 21 Wellbeing | keep | Score is derived from behaviour only (no self-reporting). X-04 (what makes 78 a 78) is open |
 | 22 Gathering data | keep | |
 | 23 Settings | rework | Normal-day length + occasional quiet suggestion ("You usually do about 2h 40m — set your normal day to that?"), default level per weekday, working-day start / end, rollover (Advanced), categories management, trial status |
 | **Category management** | new | Editable list, default personal / family / work |

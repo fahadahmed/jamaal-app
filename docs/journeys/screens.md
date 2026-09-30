@@ -63,7 +63,7 @@ Each flow lists its trigger, the screens it passes through, its branches and its
 
 **F08 Habit lifecycle.** Habits tab → Add → `HB-03` (type picker first) → kind-specific form → optional `HB-04` (custom recurrence) and `HB-05` (group). Logging: check, stepper, **Begin** (timed), **Log a slip** / **Held today** (avoid). Pause → `HB-06`; edit or archive → `HB-07`. Detail `HB-02` shows the density grid and the plain-language read.
 
-**F09 Night Planning.** Trigger: evening notification, banner, or the **Plan tomorrow** action on Today. `NP-01 Review (optional mood) → NP-02 Carry forward → NP-03 Build tomorrow → NP-04 Check the load → NP-05 Close the day`. **Skip tonight** at any step (`NP-06`). If no plan was confirmed, the next morning shows `TD-07`, which opens the shortened flow for today (Build → Load → Close). A night that already has a session is resumed, not restarted. On wide layouts the five steps are one canvas (`NP-07`).
+**F09 Night Planning.** Trigger: evening notification, banner, or the **Plan tomorrow** action on Today. `NP-01 Review → NP-02 Carry forward → NP-03 Build tomorrow → NP-04 Check the load → NP-05 Close the day`. **Skip tonight** at any step (`NP-06`). If no plan was confirmed, the next morning shows `TD-07`, which opens the shortened flow for today (Build → Load → Close). A night that already has a session is resumed, not restarted. On wide layouts the five steps are one canvas (`NP-07`).
 
 **F10 Capacity and day settings.** Slider on `TD-01` (level for today) · `ST-02` (normal-day length, weekday defaults, working-day start and end, rollover under Advanced) · the quiet normal-day suggestion line (Settings, and at most once in `NP-04`).
 
@@ -151,7 +151,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| NP-01 | **Review today** | Evening entry | Plain counts, time spent vs estimate; optional mood (1–5 + note) | **Drawn** v3·05 (mood missing) | v1 |
+| NP-01 | **Review today** | Evening entry | Plain counts, time spent vs estimate | **Drawn** v3·05 (remove the mood line) | v1 |
 | NP-02 | **Carry forward** | NP-01 | Keep · Later · Drop per task; 3rd-deferral behaviour; skipped if nothing incomplete | **Drawn** v3·06 | v1 |
 | NP-03 | **Build tomorrow** | NP-02 | Opens on tomorrow's working day: fixed commitments and named free gaps (list on compact, proportional timeline on regular); task and habit list; importance and date; flag for tasks that won't fit a gap; Add one-off Anchor | **Drawn** v3·07 (gaps missing) | v1 |
 | NP-04 | **Check the load** | NP-03 | Level (weekday default pre-selected), suggested level, budget used, overflow past the day's end, one move | **Drawn** v3·08 | v1 |
@@ -247,5 +247,5 @@ Each has a recommendation so the register can be locked in one pass.
 | 8 | **Avoid habits (`HB-08`).** Design has only a title. | Design draws **two options** from the brief; the owner picks; the screen stays in v1 because it was chosen for v1. |
 | 9 | **Category colours (`ST-04`).** No spare hues in the palette. | Decide a small set of label colours (new ThreadsKit tokens) before drawing `ST-04`; placeholders until then. |
 | 10 | **Onboarding skippability.** | Notifications (`OB-05`) and the Anchor step (`OB-08`) skippable; everything else required. |
-| 11 | **Mood note visibility** (`NP-01`). | Not shown back in v1. |
+| 11 | **Mood** (`NP-01`). | **Removed** — no self-reporting anywhere; wellbeing derives from behaviour only. |
 | 12 | **Search.** None designed. | **None in v1** — "one list, today only". |

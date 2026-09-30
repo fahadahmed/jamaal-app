@@ -1,10 +1,10 @@
 # Journey 8 — Wellbeing
 
-> **Status: walked; gaps G-58 … G-66 raised, proposals waiting for a decision** (see the [gap log](overview#gap-log)). Register flow **F11**; screens **WB-01 … WB-03** (**WB-04** is v1.1) and the sparkline strip **TD-02** on Today. Behaviour is in [Rules engine → module 5](../../architecture/rules-engine); this page tests it against the data the first seven journeys actually leave behind.
+> **Status: walked; gaps G-59 … G-65 and G-67 raised (G-58 and G-66 withdrawn: mood removed), proposals waiting for a decision** (see the [gap log](overview#gap-log)). Register flow **F11**; screens **WB-01 … WB-03** (**WB-04** is v1.1) and the sparkline strip **TD-02** on Today. Behaviour is in [Rules engine → module 5](../../architecture/rules-engine); this page tests it against the data the first seven journeys actually leave behind.
 
-**In one line:** after a week or two of real use, the user opens the Wellbeing tab and gets a plain, unjudged read of how their days have been going, and — when a pattern shows — one gentle suggestion they can take or leave.
+**In one line:** after a week or two of real use, the user opens the Wellbeing tab and gets a plain, unjudged read of how their days have been going, derived only from what they did, and — when a pattern shows — one gentle suggestion they can take or leave.
 
-**Preconditions:** Journeys 1–7 done. Example: three weeks of use; most days planned at night, a few skipped; the last three days overloaded; *Morning run* missed on its scheduled days; mood given on some nights.
+**Preconditions:** Journeys 1–7 done. Example: three weeks of use; most days planned at night, a few skipped; the last three days overloaded; *Morning run* missed on its scheduled days.
 
 ---
 
@@ -19,19 +19,17 @@
 ## WB-03 Gathering data
 
 - **Sees:** *"Jamaal needs about a week of days to say anything useful"* and seven dots filled as days accumulate.
-- **Reads:** the count of **active days** (G-59). Nothing is shown about mood or patterns.
-- **Assumes:** ✓ once G-59 is defined; it never asks the user to do more than live normally (the mood line stays optional).
+- **Reads:** the count of **active days** (G-59). Nothing else is shown.
+- **Assumes:** ✓ once G-59 is defined; it never asks the user to do more than live normally.
 
 ## WB-01 Steady
 
 - **Sees:** the **score** (0–100), its **trend** against the previous period, a **plain read** in Jamaal's voice (*"Steady. Most days done, loads mostly light."*), **completion** for the window, and **heavy days** (a count or small strip). No colours that scold.
-- **Reads:** `DayPlan`s for the window (`completionRate`, `loadScore`, `wasOverloaded`), `HabitEntry`s, `NightPlanningSession.mood`.
+- **Reads:** `DayPlan`s for the window (`completionRate`, `loadScore`, `wasOverloaded`), `HabitEntry`s, `NightPlanningSession`.
 - **Assumes:**
   - the score has a recipe — **✗ G-62** (the docs list inputs but no weights; design's X-04 asks "what makes 78 a 78");
   - `completionRate` is meaningful — **✗ G-60** (tasks are re-dated when deferred, so "tasks due that day" can't be recounted afterwards; the denominator isn't defined);
   - `wasOverloaded` exists for days that weren't planned — **✗ G-61** (today it is written only when Night Planning closes a day, as a *planned* snapshot; a skipped night leaves a `DayPlan` with zero load, and a planned load isn't the load the day actually had);
-  - mood belongs to the right day — **✗ G-58** (`mood` lives on the `NightPlanningSession` whose `forDate` is *tomorrow*, but the mood is about the reviewed day);
-  - the mood note can be seen again — **✗ G-66** (the docs leave it open, and storing a note nothing ever shows is odd).
 
 ## WB-02 Strained, and the suggested action
 
@@ -58,7 +56,6 @@ Week one: the strip says *"Gathering data · 3 of 7"*. By the second week there 
 | Model | Change |
 |---|---|
 | `DayPlan` | one per active day, finalised at rollover with lived completion and load (G-60, G-61) |
-| `NightPlanningSession` | `mood` / `moodNote`, read against `forDate − 1` (G-58) |
 | `NudgeLog` | + 1 per wellbeing card shown, + `dismissedAt` on *Not now* (G-65) |
 | `UserSettings` | `weekdayLevels` or `mediumDayMinutes` when an action is taken (G-64) |
 
@@ -68,21 +65,20 @@ No stored wellbeing model and no new fields: everything is derived, which keeps 
 
 If the proposals are accepted:
 
-1. **Mood belongs to the reviewed day (G-58):** mood is read as the mood for `forDate − 1` of its session (the day the Review step looked at). A shortened morning session has no Review and so no mood.
-2. **Active days (G-59):** a logical day is **active** if it has a `DayPlan` (G-55 gives one to every day with activity). *Gathering data* lasts until **7 active days** fall inside the last 14 logical days; the dots count active days. A quiet stretch (travel, illness) simply lowers the count and the score pauses rather than falling.
-3. **Completion (G-60):** at rollover, `completionRate` = tasks completed that day ÷ (tasks completed that day + tasks the rollover auto-deferred or the user deferred or dropped that day). Days with neither are not counted in the window.
-4. **Lived load (G-61):** finalising `DayPlan(D)` at rollover also sets `plannedTaskMinutes`, `loadScore` and `wasOverloaded` from the day **as lived** (module 7's definition for today: live-due plus completed, actual minutes, that day's level — `DayPlan.capacity` or the weekday default). The Night Planning snapshot still serves the plan preview and the closing screen, and is overwritten at rollover.
-5. **The score (G-62, X-04):** a whole number 0–100 over the **last 14 logical days**, from four parts, each 0–100, averaged over active days: **completion 45%** (mean `completionRate`), **load 25%** (share of active days that were not overloaded), **habits 20%** (mean density of due windows, paused habits excluded, weekly-target habits by week), **mood 10%** (mean of (mood − 1) ÷ 4, only over days with a mood). With no mood at all, the other three weights are scaled up to 100%; skipping mood never costs anything. The sparkline plots the score at each of the last 14 days, each over its own trailing 14 days, shown only where at least 7 active days exist. **Trend** = this score minus the score 14 days earlier, shown as *steadier / about the same / heavier*, never as a number with a colour. The page is **strained** when any pattern is active, otherwise **steady**.
-6. **Patterns (G-63):**
+1. **Active days (G-59):** a logical day is **active** if it has a `DayPlan` (G-55 gives one to every day with activity). *Gathering data* lasts until **7 active days** fall inside the last 14 logical days; the dots count active days. A quiet stretch (travel, illness) simply lowers the count and the score pauses rather than falling.
+2. **Completion (G-60):** at rollover, `completionRate` = tasks completed that day ÷ (tasks completed that day + tasks the rollover auto-deferred or the user deferred or dropped that day). Days with neither are not counted in the window.
+3. **Lived load (G-61):** finalising `DayPlan(D)` at rollover also sets `plannedTaskMinutes`, `loadScore` and `wasOverloaded` from the day **as lived** (module 7's definition for today: live-due plus completed, actual minutes, that day's level — `DayPlan.capacity` or the weekday default). The Night Planning snapshot still serves the plan preview and the closing screen, and is overwritten at rollover.
+4. **The score (G-62, X-04):** a whole number 0–100 over the **last 14 logical days**, from three parts, each 0–100, averaged over active days: **completion 50%** (mean `completionRate`: tasks finished against those that had to move), **load 30%** (share of active days that were not overloaded — load is tasks against the budget and the free time the Anchors leave), **habits 20%** (mean density of due windows, paused habits excluded, weekly-target habits by week). Nothing is self-reported. The sparkline plots the score at each of the last 14 days, each over its own trailing 14 days, shown only where at least 7 active days exist. **Trend** = this score minus the score 14 days earlier, shown as *steadier / about the same / heavier*, never as a number with a colour. The page is **strained** when any pattern is active, otherwise **steady**.
+5. **Patterns (G-63):**
    - `heavyRun` — 3 or more consecutive active days with `wasOverloaded`.
    - `habitNeglect` — a habit with 3 consecutive *scheduled* days missed; paused, archived, weekly-target and avoid habits are excluded.
    - `completionCollapse` — the mean `completionRate` of the last 3 active days is below half of the mean over the prior 14 days, and below 40%.
    - `weekendOverplan` — a weekend day overloaded on 2 of the last 3 weekends.
    - `avoidance` **is removed from module 5**: a task deferred 4+ times is already handled where it lives (the 3rd-deferral easing message, the 5th-deferral removal suggestion).
-7. **Actions (G-64):** each pattern offers one change that writes a definite setting, always with *Not now*:
+6. **Actions (G-64):** each pattern offers one change that writes a definite setting, always with *Not now*:
    - `heavyRun` → *"Make tomorrow a low day"* — `DayPlan(tomorrow).capacity = low`.
    - `weekendOverplan` → *"Lighten Saturday"* (or Sunday) — that weekday's `weekdayLevels` entry set to `low`.
    - `completionCollapse` → *"Lower your normal day to X"* — `mediumDayMinutes` set to the recent average, rounded to 15 minutes (the same change as the normal-day suggestion, never made on its own).
    - `habitNeglect` → *"Pause it, or make it smaller?"* — opens the habit's pause sheet (`HB-06`) or its edit form.
-8. **Delivery and cooldown (G-65):** a wellbeing nudge is **an inline card**, on the Wellbeing tab and, at most once a day, on Today — **never a notification in v1** (nothing nags; there is already a per-device switch for other reminders). At most one per day; after *Not now* the same pattern isn't offered again for **7 days** (`NudgeLog.subjectKey` = pattern, plus the habit or weekday where relevant). The *Wellbeing nudges* preference turns the cards off, leaving the score.
-9. **Mood note (G-66):** in v1 the mood number is used by the score and the note is **stored but not shown back**; the note is included in data export. Revisit with a History surface after launch.
+7. **Delivery and cooldown (G-65):** a wellbeing nudge is **an inline card**, on the Wellbeing tab and, at most once a day, on Today — **never a notification in v1** (nothing nags; there is already a per-device switch for other reminders). At most one per day; after *Not now* the same pattern isn't offered again for **7 days** (`NudgeLog.subjectKey` = pattern, plus the habit or weekday where relevant). The *Wellbeing nudges* preference turns the cards off, leaving the score.
+8. **No self-reporting (owner decision):** there is no mood line, note or any other self-reported input anywhere; removed from `NightPlanningSession`, the Review step and the score.
