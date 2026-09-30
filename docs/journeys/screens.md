@@ -18,6 +18,8 @@
 
 Sources of behaviour: [Today](today-list) · [Night Planning](night-planning) · [Onboarding](onboarding) · [App flow](app-flow) · [Schema](../schema/overview) · [Rules engine](../architecture/rules-engine) · [Claude Design brief](../design/claude-design-brief).
 
+**Testing the register against the schema:** each flow is walked screen by screen in the [journey walkthroughs](walkthroughs/overview), which raise gaps in a running log before any code depends on them.
+
 ## 2. App map
 
 ```
