@@ -25,7 +25,7 @@ protocol RuleModule {
 - **Deferral replaces rollover.** A task moved to a later day **after its due day has arrived** — by the user or automatically — is a deferral with a count and a record (see [task.md](../schema/task#deferral-behaviour)); moving a task that is due later is *rescheduling* and counts for nothing. 3rd deferral = stale + date picker (and a medium/high task is eased to `low`); 5th = suggest removal.
 - **Importance**: three levels (`low` default, `medium`, `high`), set mainly in Night Planning; medium/high require a due date and can't be Someday; `low` tasks always sort after medium/high.
 - **Night Planning is five steps** — Review today → Carry forward → Build tomorrow → Check the load → Close the day — and its session is **persisted** (CloudKit sync means a session can resume on another device). Build tomorrow opens on tomorrow's fixed commitments with named free gaps; tasks are not placed into gaps. **Skip tonight** closes the flow without a plan.
-- **There is no self-reporting** — no mood line, no Reflect step. Wellbeing is derived only from how well tasks and habits are being completed around the day's Anchors.
+- **There is no self-reporting** — no mood line, no Reflect step. Wellbeing is derived only from how well tasks and habits are being completed and Anchors attended.
 - **Night Planning triggers** via a fixed evening notification (user-set time, default 20:00) in addition to being openable any time. Module 6 is therefore a hard dependency of module 4.
 - **Focus sessions** (the task timer) follow the design's locked decisions: an ambient chip on every tab (Live Activity deferred to v1.1), count-up overrun with no alarm or nudge, one timer at a time settled with Done / Defer / Drop, abandon logs partial time, auto-close at midnight (the day rollover). See [task.md](../schema/task#focus-sessions-begin--pause--finish) and module 8.
 - **Nudge limits**: at most one wellbeing nudge and one during-day guidance card per day.
@@ -191,9 +191,9 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
 
 ### 5. Wellbeing (scoring and pattern detection)
 
-- **Input**: `DayPlan` history (`wasOverloaded`, `completionRate`), `HabitEntry` history, `DeferralRecord`s.
+- **Input**: `DayPlan` history (`wasOverloaded`, `completionRate`), Anchor attendance (`attended` / `missed`; `skipped` and `delegated` excluded), `HabitEntry` history, `DeferralRecord`s.
 - **Behavior**: purely derived — no stored wellbeing model.
-  - **Score**: shows "gathering data" until at least 7 days of `DayPlan` history exist, then a rolling score (window 7 or 14 days, TBD). Only behaviour drives it (task completion, load against the free time the Anchors leave, habit completion); nothing is self-reported.
+  - **Score**: shows "gathering data" until at least 7 days of `DayPlan` history exist, then a rolling score (window 7 or 14 days, TBD). Only behaviour drives it (task completion, Anchor attendance, habit completion, load against the free time the Anchors leave); nothing is self-reported.
   - **Pattern detection** over a rolling 7–14 days: `heavyRun` (3+ overloaded days in a row), `habitNeglect` (a habit missed 3+ days), `completionCollapse`, `avoidance` (a task deferred 4+ times), `weekendOverplan`.
   - At most **one** wellbeing nudge per day (checked against `NudgeLog`).
 - **Signals**: `.wellbeingScore`, `.gatheringData`, `.pattern(kind)`.
