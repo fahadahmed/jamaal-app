@@ -19,7 +19,7 @@ CloudKit's production schema is effectively **append-only**. Once deployed you c
 - **JSON-in-a-string fields** (CloudKit-safe, no extra models): `AnchorRule.configData` (versioned; unknown newer versions must be left untouched, never deleted) and `Habit.pausesData`. Dates inside them are ISO `yyyy-MM-dd` strings and times `"HH:mm"`.
 - **Soft delete, not hard delete**, wherever history matters: `Task.droppedAt`, and `isArchived` on `TaskCategory`, `Habit`, `HabitGroup` and `AnchorRule`.
 - **Derived values are never stored** unless noted (elapsed time, density, urgency, Eisenhower quadrant, window state, load state, streak-like numbers — there are none).
-- **Local-only state** (not in the schema): notification and appearance preferences, whether a habit group is expanded, the engine's "last processed day".
+- **Local-only state** (not in the schema): appearance preferences, the per-device "Send reminders on this device" switch, whether a habit group is expanded, the engine's "last processed day". (The planning and morning times are **synced** in `UserSettings`.)
 
 ## Field manifest
 
@@ -210,6 +210,9 @@ dayStartMinute: Int = 480
 dayEndMinute: Int = 1140
 rolloverMinute: Int = 0
 weekdayLevels: String = "{\"6\":\"low\",\"7\":\"low\"}"
+planningMinute: Int = 1200
+morningMinute: Int = 480
+onboardingCompletedAt: Date? = nil
 firstLaunchAt: Date? = nil
 createdAt: Date = .now
 ```
@@ -290,6 +293,7 @@ Safe to add without breaking anything, so they are *not* blockers: `Task.sortOrd
 - [x] Every model that two devices can create twice has a dedup key
 - [x] Dates classified as floating or instant
 - [x] Learning decision made (suggest only), so `UserSettings.weekdayLevels` is in the schema
+- [x] Journey 1 (first launch) added `UserSettings.planningMinute`, `morningMinute` and `onboardingCompletedAt`
 - [ ] `TaskCategory.colorKey` values (waits on the category colour decision — they are strings, so can follow)
 - [ ] Habit preset definitions (`presetKey` is a string, so can follow)
 - [ ] Review by the owner, then implement the models in `JamaalCore` with tests first

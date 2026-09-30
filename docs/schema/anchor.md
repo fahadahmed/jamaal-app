@@ -40,7 +40,7 @@ Anchor instances are generated from a persisted `AnchorRule` (not computed on th
 | `placement`     | `String` | `"fixed"`  | `fixed` or `flexible`. **Fixed** = a busy block from the window start for `effortMinutes`, which *cuts* the working day into free blocks (school run, an appointment). **Flexible** = it takes minutes but has no fixed position inside its window, so it only reduces total free time (bin night). `afterLast` rules are always flexible; one-off Anchors are always fixed. Used by the capacity check — see [rules-engine.md](../architecture/rules-engine), module 7. |
 | `isEnabled`     | `Bool`   | `true`     | Paused / resumed by the user. |
 | `isArchived`    | `Bool`   | `false`    | Soft-delete. A rule is **never hard-deleted**: `Anchor.rule == nil` means a one-off, so deleting a rule would make all its past instances look like one-offs. Archiving hides the rule and removes its future pending instances; history stays linked. |
-| `createdAt`     | `Date`   | `.now`     | |
+| `createdAt`     | `Date`   | `.now`     | Also the floor for generation: an instance is never created for a window that ended before it (see [rules-engine.md](../architecture/rules-engine), module 3). |
 
 ## `configData` shapes
 

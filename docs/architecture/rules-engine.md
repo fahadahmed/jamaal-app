@@ -94,14 +94,19 @@ The few settings that change *computed* results, so they must be identical on ev
 | `dayEndMinute`     | `Int`  | `1140`  | Minutes since midnight when the working day ends (19:00; users pick, typically 19:00–20:00). The soft planning boundary. |
 | `rolloverMinute`   | `Int`  | `0`     | Minutes since midnight when the app's day rolls over (00:00 by default; the UI offers 00:00–06:00, for people who are up late or work nights). Must be earlier than `dayStartMinute`. See [The day boundary](#the-day-boundary). |
 | `weekdayLevels`    | `String` | `"{\"6\":\"low\",\"7\":\"low\"}"` | JSON map of ISO weekday (Mon=1 … Sun=7) → default capacity level (`low` / `medium` / `high`); a weekday not listed is `medium`. Weekends default to `low`. The level a day uses when no `DayPlan` was confirmed (for example after *Skip tonight*), and the one Night Planning pre-selects. Editable in Settings. |
+| `planningMinute`   | `Int`  | `1200`  | Minutes since midnight for the evening Night Planning prompt (20:00). Synced, so every device agrees; whether a given device *sends* it is a separate local switch (see Preferences). |
+| `morningMinute`    | `Int`  | `480`   | Minutes since midnight for the optional morning list nudge (08:00). Synced. |
+| `onboardingCompletedAt` | `Date?` | `nil` | Set when onboarding finishes. Synced, so a second device on the same account knows the account is already set up and skips onboarding ("Welcome back"). |
 | `firstLaunchAt`    | `Date?`| `nil`   | When the app was first launched; the synced fallback for the trial start date if StoreKit's original-download date is unavailable. Set once, by the first device. |
 | `createdAt`        | `Date` | `.now`  | |
 
 CloudKit has no unique constraints, so two devices can each seed a row. The engine keeps the earliest-created row and deletes the rest.
 
+**Validation** (the settings layer enforces it, not the engine): `rolloverMinute < dayStartMinute < dayEndMinute`, with at least **two hours** between `dayStartMinute` and `dayEndMinute`. The UI offers a rollover of 00:00–06:00 only.
+
 ### Preferences (not SwiftData)
 
-Planning time (default 20:00), morning nudge on/off and time (default 08:00), during-day guidance on/off, wellbeing nudges on/off, appearance, larger text, auto-reorder — kept in `UserDefaults`/`@AppStorage`. These are per-device, which suits notification times; if cross-device sync of preferences is wanted later, `NSUbiquitousKeyValueStore` is the CloudKit-friendly upgrade.
+Morning nudge on/off, during-day guidance on/off, wellbeing nudges on/off, appearance, larger text, auto-reorder — kept in `UserDefaults`/`@AppStorage`, per device. **The planning and morning times are not here**: they are synced in `UserSettings` so every device agrees. What *is* local is a **"Send reminders on this device" switch**: notifications are local to each device, so without it an iPhone, iPad and Mac would all fire the same prompt. It defaults **on for iPhone and off for iPad and Mac**, and the user can change it. `NSUbiquitousKeyValueStore` remains the upgrade path if more preferences ever need to sync.
 
 ## The day boundary
 
@@ -159,6 +164,7 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
 
 - **Input**: all enabled `AnchorRule`s, a generation horizon (today + tomorrow).
 - **Behavior**: decodes each rule's `configData` (two families, shapes in [anchor.md](../schema/anchor#configdata-shapes)) and generates concrete `Anchor` instances (`occurrenceDate`/`slotKey`/`windowStart`/`windowEnd`/`title`/`effortMinutes`, linked via `rule`, `attendanceStatus = pending`).
+  - **A window that has already closed is never generated.** An instance is only created for a window that ends after the rule's `createdAt` (and, for slots added by a later edit, after the edit). Otherwise creating prayer times at 21:00 would produce Fajr to Asr already closed, and the next evaluation would finalise them as *missed* on day one.
   - **Scheduled rules** (`schoolRun`, `binNight`, `plantWatering`, `custom`): for each date in the horizon that matches the recurrence, one instance per slot, with the window at local wall-clock `start` for `windowMinutes` (or the whole day if `allDay`), until `endDate`. Dates inside an `exceptions` range produce nothing.
   - **`afterLast` rules** (plants): not date-driven. Generates one live instance per slot; when it is resolved (`attended` / `skipped` / `delegated`) the next window opens `minDays` later and closes at the end of day `maxDays`, and after a `missed` one it opens the next day. An exception pauses the interval clock. These are *floating* Anchors: they count toward the day's minutes but don't split the day (see module 7).
   - **Prayer rules**: for each date, computes the day's prayer times on-device from date, location, `method`, `madhab`, `highLatitude` and per-prayer adjustments, then builds windows Fajr → sunrise, Dhuhr → Asr, Asr → Maghrib, Maghrib → Isha, Isha → `ishaEnds`. Deterministic for the same inputs.
@@ -195,7 +201,7 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
 
 - **Input**: habit windows nearing their end, upcoming Anchor windows, the planning time, capacity/load, `NudgeLog`.
 - **Behavior**: schedules local notifications (`UNUserNotificationCenter`):
-  - the **evening Night Planning prompt** (fixed, user-set time);
+  - the **evening Night Planning prompt** (at `UserSettings.planningMinute`), **on devices whose "Send reminders on this device" switch is on**;
   - an optional **morning nudge**, which — if no plan was confirmed for today (Night Planning was skipped or missed) — carries a single quiet in-app **morning card** ("No plan for today — two minutes to pick?"), shown once and never repeated if dismissed;
   - per-window **habit reminders** and a light **window-closing** nudge as a window's end approaches;
   - **during-day guidance** — a highlighted task ("Start here" / "Good now") plus one companion card, max one per day. Chosen deterministically from time of day, remaining effort vs. remaining free time, a lighter-tasks-in-the-early-afternoon curve, and open habit windows.
@@ -265,7 +271,7 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 - **Numbers are proposals**: the medium-day default (180), the ⅔ / 4⁄3 multipliers for low/high, the working day defaults (08:00–19:00), the load thresholds, the rollover-to-stale threshold (3), removal suggestion (5), the wellbeing window (7 vs. 14), and the normal-day suggestion thresholds (28 days of history, 14 data days, a 30-minute difference, 15-minute rounding) are all constants, easy to tune.
 - **Missing durations** count as zero, so load can be understated until durations are filled in. Current proposal: Night Planning's capacity step gently notes how many items have no duration, rather than guessing. Habit presets and the built-in anchor types ship default durations to keep this rare.
 - **Wellbeing score composition**: v2's Wellbeing screen showed a single 0–100 score; this doc now derives it from behaviour (completion, load, patterns) with the optional mood as one extra input. The exact weighting is still to be decided — and X-04 in the design ("what makes 78 a 78") is the same open question.
-- **Prayer-time library**: `configData` fixes the settings, not the implementation. Choose a well-tested prayer-time library (or implementation) at build time and check its method list against the `method` values offered, plus its high-latitude handling.
+- **Prayer-time library**: decided — **`adhan`** (the Swift version; the design project cites it as MIT-licensed, which the build setup should verify before adopting). `configData` fixes the settings, not the implementation; check the library's method list against the `method` values offered, plus its high-latitude handling.
 - **Notification limits**: iOS caps pending local notifications at 64 — confirm the reminder + nudge volume stays well under that. Habit reminders add up, and five prayers a day for several days ahead adds more if each gets a reminder.
 - **Manual ordering** of Today (see [task.md](../schema/task)).
 - **Avoid habits** are specified here as a proposal (the design has only a title); they need a design pass (H-06) before being treated as settled. **Detected habits** (offer to promote a repeating task) are v1.1.
