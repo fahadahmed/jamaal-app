@@ -19,7 +19,7 @@ protocol RuleModule {
 
 ## Decisions resolved here
 
-- **Capacity** stays an enum — `low` / `medium` / `high` — as the *user-facing* setting. It is the user's own call about how much they have in them; it is not computed. Each level maps to a **minute budget for focused tasks**: the user sets what a *normal day* is (onboarding and Settings, default 180 minutes — v2's baseline; it is the `medium` level), `low` is ⅔ of that (120) and `high` is 4⁄3 (240). The app never changes that number by itself: it **suggests** a new one from the last four weeks of actual focus time, and the user accepts or ignores it. Weekday default levels (weekends `low`) are stored in `UserSettings`.
+- **Capacity** stays an enum — `low` / `medium` / `high` — as the *user-facing* setting. It is the user's own call about how much they have in them; it is not computed. Each level maps to a **minute budget for focused tasks**: the user sets what a *normal day* is (onboarding and Settings, default 180 minutes — v2's baseline; it is the `medium` level), `low` is ⅔ of that (120) and `high` is 4⁄3 (240), each **rounded to the nearest 5 minutes** for display and calculation alike (a 205-minute normal day gives low 135 and high 275). The app never changes that number by itself: it **suggests** a new one from the last four weeks of actual focus time, and the user accepts or ignores it. Weekday default levels (weekends `low`) are stored in `UserSettings`.
 - **Two measures, kept apart.** The **energy budget** counts *tasks only* — the design defines a normal day as focused work outside meetings and life admin. **Free time** is the working day (from a start time to a user-set end time) minus fixed Anchors, which cut it into blocks, and the minutes of flexible Anchors and habits, which just subtract. A plan has to fit both: task minutes within the budget, and each task within a free block. Anchors and habits therefore no longer eat the energy budget; they shrink the time.
 - **The day ends at a user-set time, not midnight** (proposal: 19:00). It is a *soft* planning boundary: overflow is named, never blocked, and one tap moves it to tomorrow. The **day rollover** — by default midnight, user-set — stays the hard boundary (auto-deferral, session auto-close, `DayPlan` close); see [The day boundary](#the-day-boundary).
 - **Deferral replaces rollover.** A task moved to a later day **after its due day has arrived** — by the user or automatically — is a deferral with a count and a record (see [task.md](../schema/task#deferral-behaviour)); moving a task that is due later is *rescheduling* and counts for nothing. 3rd deferral = stale + date picker (and a medium/high task is eased to `low`); 5th = suggest removal.
@@ -89,7 +89,7 @@ The few settings that change *computed* results, so they must be identical on ev
 | Field              | Type   | Default | Notes |
 | ------------------ | ------ | ------- | ----- |
 | `id`               | `UUID` | `UUID()`| |
-| `mediumDayMinutes` | `Int`  | `180`   | The user's *normal day* of focused work; the `medium` budget. `low` = ⅔, `high` = 4⁄3. Set in onboarding, editable in Settings. |
+| `mediumDayMinutes` | `Int`  | `180`   | The user's *normal day* of focused work; the `medium` budget. `low` = ⅔, `high` = 4⁄3 (rounded to 5 minutes). Set in onboarding, editable in Settings. |
 | `dayStartMinute`   | `Int`  | `480`   | Minutes since midnight when the working day starts (08:00). Free time for tomorrow's plan starts here; for today it starts at the later of now and this. |
 | `dayEndMinute`     | `Int`  | `1140`  | Minutes since midnight when the working day ends (19:00; users pick, typically 19:00–20:00). The soft planning boundary. |
 | `rolloverMinute`   | `Int`  | `0`     | Minutes since midnight when the app's day rolls over (00:00 by default; the UI offers 00:00–06:00, for people who are up late or work nights). Must be earlier than `dayStartMinute`. See [The day boundary](#the-day-boundary). |
@@ -102,7 +102,7 @@ The few settings that change *computed* results, so they must be identical on ev
 
 CloudKit has no unique constraints, so two devices can each seed a row. The engine keeps the earliest-created row and deletes the rest.
 
-**Validation** (the settings layer enforces it, not the engine): `rolloverMinute < dayStartMinute < dayEndMinute`, with at least **two hours** between `dayStartMinute` and `dayEndMinute`. The UI offers a rollover of 00:00–06:00 only.
+**Validation** (the settings layer enforces it, not the engine): `rolloverMinute < dayStartMinute < dayEndMinute`, with at least **two hours** between `dayStartMinute` and `dayEndMinute`. The UI offers a rollover of 00:00–06:00 only. **The rollover can be changed only when the current time of day is after both the old and the new value** (so both give the same logical date right now); otherwise the control is disabled (*"Available after 03:00"*) and the new value applies from the next boundary. A quiet note appears in Settings when `planningMinute` is earlier than `dayEndMinute`; it never blocks.
 
 ### Preferences (not SwiftData)
 
@@ -119,7 +119,7 @@ Morning nudge on/off, during-day guidance on/off, wellbeing nudges on/off, appea
 **Rollover is lazy and idempotent.** The engine can't rely on running at the boundary — the app may be closed or the device asleep. On launch, foreground, background refresh and when synced data arrives, it processes every logical day that has ended since it last ran (tracked locally per device), oldest first. For each ended day *D*:
 
 1. **Auto-defer** each live, dated task due on or before *D* that wasn't completed, dropped or already deferred that day — a deferral with reason `unspecified` (see [task.md](../schema/task#deferral-behaviour)).
-2. **Finalise `DayPlan(D)`**: completion rate and completed minutes.
+2. **Create and finalise `DayPlan(D)`**: create it if missing, for any ended day with activity (a completed task, a session, a decided Anchor, a habit entry or a Night Planning session; days with none get no row), then set completion rate and completed minutes.
 3. **Close live focus sessions** at the boundary instant (`autoClosed`, `endedAt` = the rollover time, *not* "now"), so a device that slept through midnight never invents phantom hours.
 4. **End an unfinished Night Planning session** for *D* as skipped, so the morning card can offer the plan (already-applied carry-forward choices stay).
 
@@ -218,7 +218,7 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
 
 Two independent measures, deliberately kept apart.
 
-**Energy budget (the user's call).** `low` / `medium` / `high` sets a budget of *focused-task minutes*: `budget = minutes(level)` (medium = `UserSettings.mediumDayMinutes`, low = ⅔, high = 4⁄3). Only **tasks** count: `loadScore = plannedTaskMinutes / budget × 100`, where **for today** `plannedTaskMinutes` is the effort of every live task due **on or before today** plus every task **completed today** (by logical date), so finishing work doesn't make the meter fall. A completed task counts its **actual** focus time where it has sessions, otherwise its estimate — matching `DayPlan.completedEffortMinutes`. Items with no duration count as zero, and the engine reports how many so the UI can nudge gently (new tasks preselect 30 minutes, so this should be rare). State thresholds (from v2):
+**Energy budget (the user's call).** `low` / `medium` / `high` sets a budget of *focused-task minutes*: `budget = minutes(level)` (medium = `UserSettings.mediumDayMinutes`, low = ⅔, high = 4⁄3, the last two rounded to 5 minutes). Only **tasks** count: `loadScore = plannedTaskMinutes / budget × 100`, where **for today** `plannedTaskMinutes` is the effort of every live task due **on or before today** plus every task **completed today** (by logical date), so finishing work doesn't make the meter fall. A completed task counts its **actual** focus time where it has sessions, otherwise its estimate — matching `DayPlan.completedEffortMinutes`. Items with no duration count as zero, and the engine reports how many so the UI can nudge gently (new tasks preselect 30 minutes, so this should be rare). State thresholds (from v2):
 
   | Load score | State | Response |
   | ---------- | ----- | -------- |

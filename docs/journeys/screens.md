@@ -173,7 +173,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
 | ST-01 | Settings home | Tab 4 | Sections below; trial status row | **Drawn** v3·23 (to rework) | v1 |
-| ST-02 | **Capacity & day** | ST-01 | Normal-day length (+ quiet suggestion), default level per weekday, working-day start/end, rollover (Advanced) | **Drawn** v3·23 (to rework) | v1 |
+| ST-02 | **Capacity & day** | ST-01 | Normal-day length (+ quiet suggestion), default level per weekday, working-day start/end, rollover (Advanced; changeable only after both old and new times have passed today), note when planning time precedes day end | **Drawn** v3·23 (to rework) | v1 |
 | ST-03 | **Notifications & times** | ST-01 | Evening planning time and morning list (synced); **Send reminders on this device** switch (local; on for iPhone, off for iPad and Mac); habit reminders; warning card if denied | **Drawn** v3·23, 24 | v1 |
 | ST-04 | **Categories** | ST-01 | List, rename, add, archive (with a collapsed **Archived** section and Restore), colour from a fixed set | **None** | v1 |
 | ST-05 | **Subscription** | ST-01 | Days left or status, manage, restore | **None** | v1 |
