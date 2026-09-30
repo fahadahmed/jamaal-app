@@ -1,6 +1,6 @@
 # Journey 2 — Capture a task, and living in Today
 
-> **Status: walked; gaps G-11 … G-20 raised, proposals waiting for a decision** (see the [gap log](overview#gap-log)). Register flows **F03** (capture) and **F04** (complete, defer, drop), on **TD-01 Today**. Behaviour is in [Today](../today-list) and [Task](../../schema/task); this page tests it against the schema and engine.
+> **Status: done — gaps G-11 … G-20 raised, decided and applied** (see the [gap log](overview#gap-log)). The text below is the walkthrough as first written, with the proposals it raised. Register flows **F03** (capture) and **F04** (complete, defer, drop), on **TD-01 Today**. Behaviour is in [Today](../today-list) and [Task](../../schema/task); this page tests it against the schema and engine.
 
 **In one line:** the user adds a task in a couple of taps, sees where it lands on Today, and through the day ticks things off, opens one, defers or drops it, and watches the capacity meter respond.
 

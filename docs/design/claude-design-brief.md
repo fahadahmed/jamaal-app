@@ -43,7 +43,8 @@ Principles that shape every screen:
 5. **Night Planning's flow** follows §7 (five steps, optional mood line, tomorrow's gaps, *Skip tonight*), and the wide layout keeps **Keep / Later / Drop per task** — important tasks can't be parked as Someday, so "leftovers go back to the backlog" can't stand.
 6. **Habit groups stay** as a purely visual bundle; screen 18 keeps a naming form.
 7. **Navigation chrome is the system component.** v3 draws a floating tab capsule; it must be the system tab bar and toolbars with the Liquid Glass look, because the system bar is what moves to the side on iPhone Duo and becomes a sidebar on iPad.
-8. **Natural-language capture is not adopted yet.** Flow screens A-02, A-03 and A-05 (live parse, ambiguous date, "landed") are out of scope until decided. Only A-04 is adopted, as **"Day is full · offer tomorrow"**.
+8. **Importance is three levels and dropping is soft.** v3 draws importance as "Matters 4 of 5" and offers "Edit / Delete". Redraw importance as **low / medium / high** and call the action **Drop** (it is a soft delete with a 5-second undo).
+9. **Natural-language capture is not adopted yet.** Flow screens A-02, A-03 and A-05 (live parse, ambiguous date, "landed") are out of scope until decided. Only A-04 is adopted, as **"Day is full · offer tomorrow"**.
 
 ### Design's own inconsistencies — resolve inside Design
 
@@ -170,7 +171,7 @@ Navigation chrome is the **system** tab bar and toolbars with the iOS 26 Liquid 
 ### Tasks and the timer
 | Screen | Status | Notes |
 |---|---|---|
-| 10 Add task | rework | Effort chips 15m / 30m / 1h / 2h+, importance (low default), category, schedule incl. repeat; medium/high reveals the required date and hides Someday |
+| 10 Add task | rework | Opens on Task with a **Task \| Anchor** switch (no chooser screen); effort chips 15m / 30m / 1h / 2h+ with an **Other…** stepper and **30m preselected**; importance low / medium / high (low default), category, schedule incl. repeat; medium/high reveals the required date and hides Someday |
 | 11 Task detail | rework | Note checklist, category, deferral history, **Begin**, Mark done, Defer, Drop, Stop repeating |
 | 12 Defer (3rd slip) | rework | Reason chips; the easing message for medium/high |
 | A-04 Day is full | new | "Offer tomorrow" — never blocks |

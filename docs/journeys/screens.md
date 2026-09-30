@@ -51,7 +51,7 @@ Each flow lists its trigger, the screens it passes through, its branches and its
 
 **F02 The daily loop.** Morning: optional morning nudge → `TD-01` showing the confirmed plan (or the morning card `TD-07` if no plan). Day: F03–F06. Evening: the planning notification (or banner) → F09. Rollover (default midnight) is invisible except `TD-06` when a session was auto-closed.
 
-**F03 Capture a task.** `TD-01 → TD-04 (Add chooser) → TK-01`. Branches: medium/high importance → date row required, Someday hidden · repeat chosen → date required · day already full → "Day is full · offer tomorrow" (`TK-01` state, never blocks) · no importance and no date → backlog task. End: row appears in `TD-01`.
+**F03 Capture a task.** `TD-01 → Add sheet (Task | Anchor switch) = TK-01`. Branches: medium/high importance → date row required, Someday hidden · repeat chosen → date required · day already full → "Day is full · offer tomorrow" (`TK-01` state, never blocks) · no importance and no date → backlog task. End: row appears in `TD-01`.
 
 **F04 Complete, defer or drop a task.** Tap the check → done (quiet completion feedback). Tap the row → `TK-02` → Mark done / Begin / Defer / Drop / Stop repeating. Defer: 1st and 2nd are instant to tomorrow; from the 3rd `TK-03` (reason chips; a medium/high task is eased to low first, which un-hides Someday). Drop: soft delete with undo toast `SY-03`. Note: a one-line timestamped note can be appended on finish and defer.
 
@@ -59,7 +59,7 @@ Each flow lists its trigger, the screens it passes through, its branches and its
 
 **F06 An Anchor's day.** `TD-01` shows Anchors (plain rows, grouped rows, window bar). Tap Attended only while the window is open; Not today and Someone else did it until it closes; a closed window becomes missed. Tap a grouped row to expand it.
 
-**F07 Create and manage Anchors.** Habits tab → Anchors segment `AN-01` → Add → `AN-03` (choose type) → `AN-04` (prayer times: location prompt → `AN-11`) or `AN-05` (shared scheduled form) → optional `AN-06` exceptions. One-offs: Add chooser `TD-04` (or `NP-03`) → `AN-08`. Edit from `AN-02`; delete archives. An undecodable rule shows `AN-07`.
+**F07 Create and manage Anchors.** Habits tab → Anchors segment `AN-01` → Add → `AN-03` (choose type) → `AN-04` (prayer times: location prompt → `AN-11`) or `AN-05` (shared scheduled form) → optional `AN-06` exceptions. One-offs: the Anchor side of the Add sheet (`TD-04`) or `NP-03` → `AN-08`. Edit from `AN-02`; delete archives. An undecodable rule shows `AN-07`.
 
 **F08 Habit lifecycle.** Habits tab → Add → `HB-03` (type picker first) → kind-specific form → optional `HB-04` (custom recurrence) and `HB-05` (group). Logging: check, stepper, **Begin** (timed), **Log a slip** / **Held today** (avoid). Pause → `HB-06`; edit or archive → `HB-07`. Detail `HB-02` shows the density grid and the plain-language read.
 
@@ -88,7 +88,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 | TD-01 | **Today** (C/R; Duo inner = list + panel) | Tab 1, launch | Capacity slider and meter; companion card slot; **Anchors** (plain rows, grouped rows "Salah 3/5", window bars, three actions); **Habits** (binary, counted stepper, timed "12 of 20 min", avoid, paused hidden); **Tasks** (category label, effort; importance not shown); **Also today** (collapsed, count); Add; chip host. States: default · guidance ("Start here" / "Good now") · first launch · all done · overloaded · past the day's end | **Drawn** v3·01, 02, 03, 04; **Spec** X-01 | v1 |
 | TD-02 | Wellbeing strip | On TD-01 | Sparkline; "gathering data" until seven days | **Drawn** (in v3·01) | v1 |
 | TD-03 | Category filter | TD-01 header | Narrows the list to one category; never creates sections | **None** | v1 |
-| TD-04 | Add chooser | TD-01 Add | Task · One-off Anchor | **None** | v1 |
+| TD-04 | Add sheet entry: **Task \| Anchor** switch | TD-01 Add | The add sheet opens on Task; the switch at the top reaches the one-off Anchor form (`AN-08`). No separate chooser screen | **None** | v1 |
 | TD-05 | Banners | TD-01 top | Notifications off · trial status · read-only | **Drawn** v3·24 (notifications off); others **None** | v1 |
 | TD-06 | Carried-over row | TD-01 | One row to pick a session's task back up after auto-close | **Spec** X-02 | v1 |
 | TD-07 | Morning card "No plan for today" | TD-01 | Shown once; opens a shortened NP-03 | **None** | v1 |
@@ -97,7 +97,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| TK-01 | **Add task** (sheet / panel) | TD-04 | Title; effort 15m/30m/1h/2h+; importance (low default); category; schedule; repeat; note. States: medium/high (date required, Someday hidden) · repeat · "Day is full · offer tomorrow" | **Drawn** v3·10; **Spec** A-04 | v1 |
+| TK-01 | **Add task** (sheet / panel) | TD-04 | Title; effort (15m/30m/1h/2h+ shortcuts, Other… stepper, 30 preselected); importance (low default); category; schedule; repeat; note. States: medium/high (date required, Someday hidden) · repeat · "Day is full · offer tomorrow" | **Drawn** v3·10; **Spec** A-04 | v1 |
 | TK-02 | **Task detail** (sheet / panel) | Row tap | Title, note checklist, category, effort, importance, due, deferral history; Begin · Mark done · Defer · Drop · Stop repeating. States: normal · deferred · repeating · running · complete | **Drawn** v3·11 | v1 |
 | TK-03 | **Defer / Later** picker | Defer from TK-02 or NP-02 | Later this week · Next week · Someday (low only) · a date; reason chips from the 3rd; the easing message | **Drawn** v3·12 | v1 |
 | TK-04 | Note editor | TK-02 | Markdown subset (checklists, bold, italic, links, code); no headings, tables, images | **Spec** (Flows H) | v1 |
@@ -229,7 +229,7 @@ Not extra screens, but frames Design must draw: **Today** (compact, iPad two-pan
 
 ## 6. Out of v1 (decided)
 
-Natural-language capture (live parse chips, ambiguous date, "landed" — Design A-02, A-03, A-05) · Live Activity and Dynamic Island (`FS-08`, **v1.1**) · detected habits (the offer to promote a repeating task, **v1.1**) · sharing and referral (**v1.1**) · native Android (later) · Jumu'ah handling and Anchor reminder lead time (undecided, left out of the forms).
+Natural-language capture (live parse chips, ambiguous date, "landed" — Design A-02, A-03, A-05) · manual ordering of Today (engine order only) · recovering a dropped task after the 5-second undo (no History screen) · Live Activity and Dynamic Island (`FS-08`, **v1.1**) · detected habits (the offer to promote a repeating task, **v1.1**) · sharing and referral (**v1.1**) · native Android (later) · Jumu'ah handling and Anchor reminder lead time (undecided, left out of the forms).
 
 ## 7. Decisions still needed before this can be locked
 

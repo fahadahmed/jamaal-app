@@ -14,7 +14,7 @@ Tasks live in **one flat list** — no projects, no tags, no sub-lists. `categor
 | `title`         | `String`  | `""`      | |
 | `notes`         | `String?` | `nil`     | Optional lightweight markdown (checklists, bold/italic, links, inline code) — one note per task. Shown as a tappable checklist in the task detail and beneath the timer during a focus session. The finish and defer sheets can **append** an optional timestamped line ("Left a voicemail, call back Tuesday") rather than overwrite, so the note becomes the record of the attempts. No headings, tables or images. |
 | `dueDate`       | `Date?`   | `nil`     | Day granularity. `nil` = backlog / "Someday". **Required when `importance` is `medium` or `high`.** |
-| `effortMinutes` | `Int?`    | `nil`     | Optional estimate: 15 / 30 / 60 / 120. `nil` = unestimated (counts as zero toward load). |
+| `effortMinutes` | `Int?`    | `nil`     | Optional estimate in minutes. The UI offers 15 / 30 / 60 / 120 as shortcuts and an **Other…** stepper in 15-minute steps up to 8 hours, so any task can be expressed; **30 is preselected** on a new task (the user can change it or choose *No estimate*, which stores `nil`). `nil` counts as zero toward load. |
 | `importance`      | `String`  | `"low"`   | One of `low` / `medium` / `high` — there is no "none"; `low` is the baseline. **This is the *importance* axis** of the hidden Eisenhower lens (see below). Medium and high carry extra rules — see [Importance rules](#importance-rules). Raw `String` for CloudKit-safe simplicity. |
 | `isCompleted`   | `Bool`    | `false`   | |
 | `completedAt`   | `Date?`   | `nil`     | Set when `isCompleted` flips true; cleared if un-completed. |
@@ -55,7 +55,7 @@ Rules: one category per task; categories are labels + an optional Today filter o
 | `deferredOn` | `Date`    | `.now`         | When the user (or the engine) deferred it (an instant). |
 | `day`        | `Date`    | `.now`         | The **logical date** this deferral counts for — a floating calendar date. With `task` it is the idempotency key: a task gains at most one deferral per `day`, and a later same-day choice refines this record (see [The day boundary](../architecture/rules-engine#the-day-boundary)). |
 | `deferredTo` | `Date?`   | `nil`          | `nil` = Someday. |
-| `reason`     | `String`  | `"unspecified"`| One of `tooMuch` / `notReady` / `noLonger` / `reschedule` / `unspecified`. Reason chips in the UI: Too much on / Not ready / No longer relevant. `unspecified` is used for automatic deferrals. |
+| `reason`     | `String`  | `"unspecified"`| One of `tooMuch` / `notReady` / `noLonger` / `reschedule` / `unspecified`. Reason chips in the UI: Too much on / Not ready / No longer relevant. `unspecified` is used for automatic deferrals. A **user** deferral with no chip (the instant 1st and 2nd) is `reschedule`; one made with a chip stores that chip's value. |
 | `task`       | `Task?`   | `nil`          | Inverse of `Task.deferrals`. |
 
 ## Importance rules
@@ -114,7 +114,18 @@ A simple repeat for recurring "do" items ("submit timesheet every Friday", "pay 
 - **Copied to the next instance**: `title`, `notes`, `category`, `effortMinutes`, `importance`, repeat fields and `seriesID`. **Reset**: `isCompleted`, `deferralCount`, deferral records, `droppedAt`.
 - **Drop skips only this occurrence** — the series continues. A separate **Stop repeating** action in the detail sheet ends it (sets `repeatKind` to `none` on the live instance).
 - **Deferral rules apply per instance** (the 3rd-deferral easing of `medium`/`high` importance included). Moving an instance with Keep/Later changes only that instance's date; the following instance still follows the pattern.
+- **Un-completing a repeating task**: un-ticking it after the next instance exists removes that next instance **if it is untouched** (not completed, deferred, dropped, edited or timed); otherwise the un-tick is refused with *"This one already repeated"*, so there are never two live instances.
 - **Idempotency**: two devices may both try to create the next instance. The engine treats `(seriesID, dueDate)` as its dedup key and removes duplicates (CloudKit has no unique constraints).
+
+## Quick dates
+
+Used by the schedule row and the defer picker. They follow the user's calendar's **first weekday**:
+
+- **Today** and **Tomorrow** — as named.
+- **Later this week** — three days from now, but only if that is still in the current week; otherwise it isn't offered.
+- **Next week** — the first day of next week.
+- **Someday** — no date (`nil`); hidden for `medium` and `high` importance.
+- **Pick a date** — the calendar.
 
 ## Deferral behaviour
 
@@ -160,5 +171,5 @@ These are computed by the rules engine at read time (module 1), not persisted:
 - **Category colours**: ThreadsKit has only `accent` and `terra` as accents. User-created categories need a small palette (a few extra ThreadsKit tokens, or tints of existing ones) — a design/tokens decision, see [threadskit-usage](../design/threadskit-usage).
 - **Re-raising after an auto-downgrade**: if the user raises a downgraded task back to medium/high, its `deferralCount` is still 3+, so its next deferral downgrades it again immediately. Probably right ("keeps slipping"), but confirm — the alternative is to reset the count used for this rule when importance is re-raised.
 - **Prioritisation prompt**: soft (dismissible) as written. Should Night Planning instead require at least one priority task before the day can be closed when the threshold is hit?
-- **Manual ordering**: v2 let the user drag to override the engine's order (`isManuallyOrdered`, `autoReorderEnabled`). Not modelled yet; decide alongside Today's sort rules (see [today-list.md](../journeys/today-list)).
+- **Manual ordering**: **none in v1.** Today's order comes from the engine (quadrant, then due date); the user steers it with importance and dates. This is a **working hypothesis to validate in real use** — if the order feels wrong, a per-task `sortOrder` can be added later without a migration problem.
 - **Sharing/referral**: deferred to v1.1 (see CLAUDE.md), no schema impact for now.

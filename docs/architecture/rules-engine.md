@@ -214,7 +214,7 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
 
 Two independent measures, deliberately kept apart.
 
-**Energy budget (the user's call).** `low` / `medium` / `high` sets a budget of *focused-task minutes*: `budget = minutes(level)` (medium = `UserSettings.mediumDayMinutes`, low = ⅔, high = 4⁄3). Only **tasks** count: `loadScore = plannedTaskMinutes / budget × 100`. Items with no duration count as zero, and the engine reports how many so the UI can nudge gently. State thresholds (from v2):
+**Energy budget (the user's call).** `low` / `medium` / `high` sets a budget of *focused-task minutes*: `budget = minutes(level)` (medium = `UserSettings.mediumDayMinutes`, low = ⅔, high = 4⁄3). Only **tasks** count: `loadScore = plannedTaskMinutes / budget × 100`, where **for today** `plannedTaskMinutes` is the effort of every live task due **on or before today** plus every task **completed today** (by logical date), so finishing work doesn't make the meter fall. A completed task counts its **actual** focus time where it has sessions, otherwise its estimate — matching `DayPlan.completedEffortMinutes`. Items with no duration count as zero, and the engine reports how many so the UI can nudge gently (new tasks preselect 30 minutes, so this should be rare). State thresholds (from v2):
 
   | Load score | State | Response |
   | ---------- | ----- | -------- |
@@ -273,5 +273,5 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 - **Wellbeing score composition**: v2's Wellbeing screen showed a single 0–100 score; this doc now derives it from behaviour (completion, load, patterns) with the optional mood as one extra input. The exact weighting is still to be decided — and X-04 in the design ("what makes 78 a 78") is the same open question.
 - **Prayer-time library**: decided — **`adhan`** (the Swift version; the design project cites it as MIT-licensed, which the build setup should verify before adopting). `configData` fixes the settings, not the implementation; check the library's method list against the `method` values offered, plus its high-latitude handling.
 - **Notification limits**: iOS caps pending local notifications at 64 — confirm the reminder + nudge volume stays well under that. Habit reminders add up, and five prayers a day for several days ahead adds more if each gets a reminder.
-- **Manual ordering** of Today (see [task.md](../schema/task)).
+- **Manual ordering** of Today: none in v1 — a working hypothesis to validate in real use (see [task.md](../schema/task)).
 - **Avoid habits** are specified here as a proposal (the design has only a title); they need a design pass (H-06) before being treated as settled. **Detected habits** (offer to promote a repeating task) are v1.1.
