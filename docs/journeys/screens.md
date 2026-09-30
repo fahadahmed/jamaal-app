@@ -73,7 +73,7 @@ Each flow lists its trigger, the screens it passes through, its branches and its
 
 **F13 Notifications denied.** Permission is *not asked* (OB-05 skipped), *denied*, or *turned off later* — re-checked on every foreground. `ST-03`'s warning card lists what isn't being delivered (planning prompt, Anchor, habit and morning reminders) with a button (*Turn on reminders* or a link to system Settings); where a reminder is configured, one quiet line says notifications are off. `SY-01`'s Today banner appears only when this device's switch is on and permission is off, once per logical day, dismissible, with *Don't remind me*; it is separate from the always-available **Plan tomorrow** row. Tapping a notification opens Night Planning (planning), Today at that row (Anchor, habit) or `ST-05` (trial).
 
-**F14 Categories.** `ST-04` (list, rename, add, archive, colour from a fixed set); the picker inside `TK-01` / `TK-02`; optional Today filter.
+**F14 Categories.** `ST-04` (list, rename, reorder, add, archive and restore, one of five label colours; at most eight active); the picker inside `TK-01` / `TK-02`; optional Today filter (Tasks only; the meter stays whole-day; local, clears at rollover).
 
 **F15 Problems.** iCloud issue → `OB-03` (onboarding) or `SY-05` (later); an Anchor rule that can't be decoded → `AN-07`; two devices that both started a session → the later one is closed as abandoned and one quiet line says so on next open; a local store that won't open → a recovery screen (*Try again* / *Reset this device's data*); an iCloud account change → a notice with *Export my data* first; a value from a newer version → kept and shown as *Update Jamaal to see this*.
 
@@ -86,8 +86,8 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
 | TD-01 | **Today** (C/R; Duo inner = list + panel) | Tab 1, launch | Capacity slider and meter; companion card slot; **Anchors** (plain rows, grouped rows "Salah 3/5", window bars, three actions); **Habits** (binary, counted stepper, timed "12 of 20 min", avoid, paused hidden); **Tasks** (category label, effort; importance not shown); **Also today** (collapsed, count); **Plan tomorrow** (toolbar action, and a quiet row after the planning time); Add; chip host. States: default · guidance ("Start here" / "Good now") · first launch · all done · overloaded · past the day's end | **Drawn** v3·01, 02, 03, 04; **Spec** X-01 | v1 |
-| TD-02 | Wellbeing strip | On TD-01 | Sparkline; "gathering data" until seven days | **Drawn** (in v3·01) | v1 |
-| TD-03 | Category filter | TD-01 header | Narrows the list to one category; never creates sections | **None** | v1 |
+| TD-02 | Wellbeing strip | On TD-01 | Sparkline; "gathering data" until seven active days | **Drawn** (in v3·01) | v1 |
+| TD-03 | Category filter | TD-01 header | Narrows **Tasks only** to one category (Anchors and habits always shown; meter, load and *Also today* whole-day); *Start here* from visible tasks; local, clears at rollover and relaunch; empty result *"Nothing in Family today."* + *Show all*; never creates sections | **None** | v1 |
 | TD-04 | Add sheet entry: **Task \| Anchor** switch | TD-01 Add | The add sheet opens on Task; the switch at the top reaches the one-off Anchor form (`AN-08`). No separate chooser screen | **None** | v1 |
 | TD-05 | Banners | TD-01 top | Notifications off · trial status · read-only | **Drawn** v3·24 (notifications off); others **None** | v1 |
 | TD-06 | Carried-over row | TD-01 | One row to pick a session's task back up after auto-close | **Spec** X-02 | v1 |
@@ -102,7 +102,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 | TK-03 | **Defer / Later** picker | Defer from TK-02 or NP-02 | Later this week · Next week · Someday (low only) · a date; reason chips from the 3rd; the easing message | **Drawn** v3·12 | v1 |
 | TK-04 | Note editor | TK-02 | Markdown subset (checklists, bold, italic, links, code); no headings, tables, images | **Spec** (Flows H) | v1 |
 | TK-05 | Repeat picker | TK-01 / TK-02 | Daily · weekly days · monthly | **None** | v1 |
-| TK-06 | Category picker | TK-01 / TK-02 | Pick or none | **None** | v1 |
+| TK-06 | Category picker | TK-01 / TK-02 | Pick or none; archived shown only as the current selection; a new task inherits an active filter's category | **None** | v1 |
 
 ### Focus sessions (`FS`)
 
@@ -245,7 +245,7 @@ Each has a recommendation so the register can be locked in one pass.
 | 6 | **Calendar events / Reminders import.** The app's goal is fewer apps, but nothing reads a calendar. | **Out of v1**; one-off Anchors cover fixed-time events. |
 | 7 | **"What makes this score" (`WB-04`).** | **v1.1**; ship the score and plain read without a derivation view. |
 | 8 | **Avoid habits (`HB-08`).** Design has only a title. | Design draws **two options** from the brief; the owner picks; the screen stays in v1 because it was chosen for v1. |
-| 9 | **Category colours (`ST-04`).** No spare hues in the palette. | Decide a small set of label colours (new ThreadsKit tokens) before drawing `ST-04`; placeholders until then. |
+| 9 | **Category colours (`ST-04`).** | **Decided** (Journey 11): `accent`, `blue`, `ochre`, `plum`, `slate`; new ThreadsKit 1.2.0 tokens; hues to confirm against Design. |
 | 10 | **Onboarding skippability.** | Notifications (`OB-05`) and the Anchor step (`OB-08`) skippable; everything else required. |
 | 11 | **Mood** (`NP-01`). | **Removed** — no self-reporting anywhere; wellbeing derives from behaviour only. |
 | 12 | **Search.** None designed. | **None in v1** — "one list, today only". |

@@ -240,7 +240,7 @@ CloudKit can't enforce uniqueness, and two devices can each create the same thin
 | Model | Key | When duplicates exist |
 | ----- | --- | --------------------- |
 | `UserSettings` | single row | keep the earliest `createdAt`; delete the rest |
-| `TaskCategory` | `presetKey` (seeded defaults only) | keep the earliest per `presetKey`; move tasks onto it. User-created categories have no key |
+| `TaskCategory` | `presetKey` (seeded defaults), else the **normalised name** (trimmed, case-folded) | keep the earliest; move tasks onto it. A category has no settings of its own, so merging identical labels loses nothing |
 | `Task` | `(seriesID, dueDate)` for a repeating task's next instance | keep the earliest `createdAt` |
 | `DeferralRecord` | `(task, day)` | one per task per day; keep the earliest and refine its reason / `deferredTo` to the latest choice |
 | `WorkSession` | at most one live (`endedAt == nil`) | the earliest `startedAt` stays live; the other closes as `abandoned` with its time logged |
@@ -261,7 +261,7 @@ CloudKit can't enforce uniqueness, and two devices can each create the same thin
 | `Task.repeatKind` | `none` / `daily` / `weekly` / `monthly` |
 | `DeferralRecord.reason` | `tooMuch` / `notReady` / `noLonger` / `reschedule` / `unspecified` |
 | `WorkSession.outcome` | `running` / `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed` / `manual` |
-| `TaskCategory.presetKey` | `personal` / `family` / `work` (seeded); `colorKey` values are not yet defined — they wait on the category colour decision |
+| `TaskCategory.presetKey` | `personal` / `family` / `work` (seeded); `colorKey`: `accent` / `blue` / `ochre` / `plum` / `slate` |
 | `Habit.kind` | `binary` / `counted` / `timed` / `avoid` |
 | `Habit.frequency` | `daily` / `weekdays` / `custom` |
 | `Habit.presetKey` | `quran` / `dhikr` / `exercise` / `running` (more as presets are defined) |
@@ -298,6 +298,6 @@ Safe to add without breaking anything, so they are *not* blockers: `Task.sortOrd
 - [x] Learning decision made (suggest only), so `UserSettings.weekdayLevels` is in the schema
 - [x] Journey 4 (Anchors) added `Anchor.resolvedAt`, `remindBeforeStartMinutes` and `remindBeforeEndMinutes`
 - [x] Journey 1 (first launch) added `UserSettings.planningMinute`, `morningMinute` and `onboardingCompletedAt`
-- [ ] `TaskCategory.colorKey` values (waits on the category colour decision — they are strings, so can follow)
+- [x] `TaskCategory.colorKey` values decided (`accent` / `blue` / `ochre` / `plum` / `slate`); the tokens ship in ThreadsKit 1.2.0
 - [ ] Habit preset definitions (`presetKey` is a string, so can follow)
 - [ ] Review by the owner, then implement the models in `JamaalCore` with tests first

@@ -41,15 +41,15 @@ The per-day record. Replaces the earlier `DailyCapacity`, widened because wellbe
 | Field                    | Type      | Default    | Notes |
 | ------------------------ | --------- | ---------- | ----- |
 | `id`                     | `UUID`    | `UUID()`   | |
-| `date`                   | `Date`    | `.now`     | Day granularity, normalised to midnight. |
+| `date`                   | `Date`    | `.now`     | A floating calendar date (12:00 UTC of the logical date), see [The day boundary](#the-day-boundary). One row per date: created by Night Planning, by moving the slider, or by the rollover for any day with activity. |
 | `capacity`               | `String`  | `"medium"` | `low` / `medium` / `high`. Written by Night Planning step 4 for tomorrow; editable on Today. |
-| `plannedTaskMinutes`     | `Int`     | `0`        | Minutes of tasks planned for the day, snapshotted when the day is closed (step 5). Counts against the energy budget. |
-| `freeMinutes`            | `Int`     | `0`        | Free time in the working day when the day is closed, after fixed and flexible commitments. |
+| `plannedTaskMinutes`     | `Int`     | `0`        | Minutes of tasks planned for the day, snapshotted when the day is closed (step 5) as the *plan*, then **overwritten at rollover from the day as lived**. Counts against the energy budget. |
+| `freeMinutes`            | `Int`     | `0`        | Free time in the working day when the day is closed (plan, then as lived at rollover), after fixed and flexible commitments. |
 | `committedMinutes`       | `Int`     | `0`        | Minutes of fixed Anchors, flexible Anchors and habit windows inside the working day — what can't be deferred. |
 | `completedEffortMinutes` | `Int`     | `0`        | Updated as tasks complete: actual focus time from sessions where there is one, else the estimate. |
-| `loadScore`              | `Int`     | `0`        | `plannedTaskMinutes / budget × 100`, snapshotted when the day is closed. |
-| `wasOverloaded`          | `Bool`    | `false`    | Load state was `overloaded` or worse when the day was closed. |
-| `completionRate`         | `Double`  | `0`        | 0–1, finalised at day close. |
+| `loadScore`              | `Int`     | `0`        | `plannedTaskMinutes / budget × 100`, snapshotted when the day is closed, then recomputed at rollover from the day as lived. |
+| `wasOverloaded`          | `Bool`    | `false`    | Load state was `overloaded` or worse — set from the day **as lived** at rollover (a skipped night still gets a true value). |
+| `completionRate`         | `Double`  | `0`        | 0–1, finalised at rollover: tasks completed that day ÷ (completed + deferred or dropped that day). |
 | `planningCompletedAt`    | `Date?`   | `nil`      | When Night Planning confirmed this day's plan. |
 
 ### `NightPlanningSession`

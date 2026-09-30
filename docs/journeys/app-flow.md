@@ -162,17 +162,21 @@ Resolved in this reconciliation:
 - [x] iPad, Mac and iPhone Duo — adaptive layout: system tab bar/sidebar, split-view Today, Duo handled by compact (outer) and regular (inner) layouts
 - [x] Recurring tasks — simple repeat on Task, one live instance per series
 - [x] Habit kinds — binary, counted, **timed** (minutes; reuses the timer) and **avoid** (inverted logging; proposal, needs a design pass); pause with a reason; grouped sets stay `HabitGroup`; detected habits are v1.1
-- [x] Timer — focus sessions adopted from the design: ambient chip on every tab (Live Activity v1.1), count-up overrun with no nudge, explicit pause only, one timer at a time with a settle sheet, abandon logs partial time, auto-close at midnight; notes "smaller yes" (checklist in session, timestamped lines on finish/defer)
+- [x] Timer — focus sessions adopted from the design: ambient chip on every tab (Live Activity v1.1), count-up overrun with no nudge, explicit pause only, one timer at a time with a settle sheet, abandon logs partial time, auto-close at the day rollover; notes "smaller yes" (checklist in session, timestamped lines on finish/defer)
 
-Still open — settle before or during screen design:
+Settled by the journey walkthroughs (all eleven walked; see the [gap log](walkthroughs/overview)):
 
-- [ ] Onboarding: which steps are skippable (proposal in [onboarding.md](onboarding))
-- [ ] Anchor extras: reminder lead time, correcting a closed window ([anchor.md](../schema/anchor) open questions; Jumu'ah is decided — a Friday label)
-- [ ] Category colours and habit heatmap colours — ThreadsKit has no sage and only two accents ([threadskit-usage](../design/threadskit-usage))
+- [x] Onboarding: only notifications (`OB-05`) and the Anchor step (`OB-08`) are skippable
+- [x] Anchor extras: reminders (per rule; prayer times remind at the start by default) and late correction of a closed window
+- [x] Category colours: five label tokens, ThreadsKit 1.2.0, hues to confirm against Design; habit heatmap colours come from Design's `d1`–`d3` ([threadskit-usage](../design/threadskit-usage))
+- [x] Wellbeing score composition: tasks 35 / Anchors 25 / habits 20 / load 20, no self-reporting
+- [x] Backlog and manual ordering on Today: no backlog screen and no manual ordering in v1 (a hypothesis to validate)
+- [x] "Tonight vs. tomorrow" at odd hours: the day boundary and the planning target rule
+
+Still open:
+
 - [ ] Fonts: Fraunces + Hanken Grotesk + JetBrains Mono (as Design draws them); bundling and licences still to confirm in ThreadsKit
-- [ ] Wellbeing score composition
-- [ ] Backlog visibility and manual ordering on Today
-- [ ] "Tonight vs. tomorrow" at odd hours
+- [ ] The owner's open items are collected in the [gap log](walkthroughs/overview#open-owner-items)
 
 ## Gaps found in review
 
@@ -183,17 +187,17 @@ Not covered anywhere in the docs yet (checked by search). Grouped by what they w
 - ~~**Trial and paywall.**~~ **Resolved** — see "Trial and subscription". Decided: the evening Night Planning notification stops when the trial ends unsubscribed (planning is locked), and trial-end reminders are notifications, kept non-intrusive (see "Trial and subscription").
 - ~~**Adaptive layout.**~~ **Resolved** — see "Adaptive layout" and "iPhone Duo". Still to design: the regular-width variants (which double as Duo inner-display layouts) and a check of each screen at the outer display's compact size.
 - ~~**Recurring tasks.**~~ **Resolved** — simple repeat on Task, see [task.md](../schema/task#repeating-tasks).
-- **Calendar and other apps.** The stated goal is to stop bouncing between reminder, task and calendar apps, but nothing says whether Jamaal reads calendar events, imports Reminders, or ignores them.
+- ~~**Calendar and other apps.**~~ **Decided: out of v1** (one-off Anchors cover fixed-time events). The stated goal is to stop bouncing between reminder, task and calendar apps, but nothing says whether Jamaal reads calendar events, imports Reminders, or ignores them.
 - ~~**Habit pause.**~~ **Resolved** — pause with a reason (travel, illness, cycle, other); paused days are unscheduled, not missed. See [habit.md](../schema/habit#pauses).
-- **Quick capture and system surfaces.** No widgets, share extension, App Intents/Siri, or Live Activities — likely important for a "Today" app, and they shape what data must be reachable outside the app.
-- **Privacy, export and account.** v2 called the app "privacy-first"; there is no data export/delete or privacy journey (also needed for App Store submission).
+- ~~**Quick capture and system surfaces.**~~ **Decided: v1.1** (no widgets, share extension or App Intents in v1).  No widgets, share extension, App Intents/Siri, or Live Activities — likely important for a "Today" app, and they shape what data must be reachable outside the app.
+- ~~**Privacy, export and account.**~~ **Resolved** — `ST-08` (privacy statement, JSON export, delete my data).  v2 called the app "privacy-first"; there is no data export/delete or privacy journey (also needed for App Store submission).
 
 **Would change the schema or engine**
 
-- **CloudKit duplicates.** CloudKit forbids unique constraints, so two devices can each create the same thing: the three default categories on first launch, generated Anchor instances, a `DayPlan` per date, the automatic day-rollover deferral (double-incrementing `deferralCount`). The engine must be idempotent, with a dedup strategy, before implementation.
-- **CloudKit schema is effectively append-only once deployed to production.** Every field name in these docs should be considered final before the first production schema deploy.
-- **Editing rules.** Resolved for Anchors (pending instances update in place, attended/missed/skipped are never rewritten — see [rules-engine.md](../architecture/rules-engine), module 3). Still unspecified: how deleting a category or archiving a habit group shows up in history.
-- **Anchor reminders.** Module 6 mentions during-day guidance for upcoming anchors, but there's no per-rule lead time or reminder setting.
+- ~~**CloudKit duplicates.**~~ **Resolved** — dedup keys in the [schema overview](../schema/overview#dedup-keys).  CloudKit forbids unique constraints, so two devices can each create the same thing: the three default categories on first launch, generated Anchor instances, a `DayPlan` per date, the automatic day-rollover deferral (double-incrementing `deferralCount`). The engine must be idempotent, with a dedup strategy, before implementation.
+- ~~**CloudKit schema is effectively append-only once deployed to production.** Every field name in these docs should be considered final before the first production schema deploy.
+- **Editing rules.** Resolved for Anchors (pending instances update in place, attended/missed/skipped are never rewritten — see [rules-engine.md](../architecture/rules-engine), module 3). Categories: an archived category's tasks keep and show their label and nothing in history changes; habit groups never delete their habits.
+- ~~**Anchor reminders.**~~ **Resolved** (Journey 4, G-30).  Module 6 mentions during-day guidance for upcoming anchors, but there's no per-rule lead time or reminder setting.
 - ~~**Day boundary.**~~ **Resolved** — the app's day rolls over at a user-set time (default midnight); lazy, idempotent catch-up; at most one deferral per task per day; Night Planning targets the first date whose working-day start is still in the future. See [The day boundary](../architecture/rules-engine#the-day-boundary).
 
 **Quality and reach**

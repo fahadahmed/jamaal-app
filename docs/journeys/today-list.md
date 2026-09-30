@@ -20,7 +20,7 @@ Top to bottom:
 
 Tasks are grouped by primitive, not by category. Within Tasks, order comes from the rules engine: hidden Eisenhower quadrant, then due date, which puts `low` tasks after `medium`/`high` — see [rules-engine.md](../architecture/rules-engine), module 1. The quadrant is never displayed. When the list has five or more tasks and fewer than two are `medium`/`high`, the companion may suggest picking one or two that matter most.
 
-An optional **category filter** narrows the whole list to one category; it never creates sections.
+An optional **category filter** narrows the **Tasks** section to one category; Anchors and habits (which have no category) are always shown, the meter and load stay whole-day, and *Start here* is chosen from the visible tasks. It is local to the device, clears at the rollover and on relaunch, and never creates sections. An empty result reads *"Nothing in Family today."* with *Show all*.
 
 ## Capacity slider
 
@@ -61,7 +61,7 @@ At most one card per day. The engine highlights a task with a "Start here" or "G
 
 ## Wellbeing
 
-A compact **sparkline** near the capacity slider shows the wellbeing score over recent days ("gathering data" until seven days exist). Tapping it opens the Wellbeing tab. It is fed by the engine's derived signals, not by Today interactions directly.
+A compact **sparkline** near the capacity slider shows the wellbeing score over recent days ("gathering data" until seven active days exist). Tapping it opens the Wellbeing tab. It is fed by the engine's derived signals, not by Today interactions directly.
 
 ## Empty and edge states
 
