@@ -14,7 +14,7 @@ Users see these as **"Anchors"** — the name is the same in the UI and the code
 | ----------------- | ---------- | ---------- | ----- |
 | `id`              | `UUID`     | `UUID()`   | |
 | `title`           | `String`   | `""`       | e.g. "Fajr", "School run — pickup", "Bin night". |
-| `occurrenceDate`  | `Date`     | `.now`     | Day granularity. The day this Anchor **belongs to** — the day its window starts, even if the window ends after midnight (Isha in summer). Today and Night Planning filter on this, not on `windowStart`. |
+| `occurrenceDate`  | `Date`     | `.now`     | A **floating calendar date** (see [The day boundary](../architecture/rules-engine#the-day-boundary)). The day this Anchor **belongs to**: `logicalDate(windowStart)` — the day its window starts, even if the window ends after midnight (Isha in summer) or, with a user-set rollover, an Anchor starting at 01:00 belongs to the previous day. Today and Night Planning filter on this, not on `windowStart`. |
 | `slotKey`         | `String`   | `""`       | Stable identity of the slot within its rule: the prayer name (`"fajr"`) or the slot's id from `configData`. Empty for one-offs. With `rule` and `occurrenceDate` it uniquely identifies a generated instance even if its times later change. |
 | `windowStart`     | `Date`     | `.now`     | Start of the external window this instance is anchored to. |
 | `windowEnd`       | `Date`     | `.now`     | End of the window; after this, a miss is final for this instance. May fall after midnight. |

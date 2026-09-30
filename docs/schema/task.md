@@ -96,7 +96,7 @@ Derived, not stored: `elapsed = (endedAt ?? now) − startedAt − pausedSeconds
 - **Finish** (from the chip, the focus screen, or later the Lock Screen): a finish sheet shows actual against estimate and offers one optional note line; the task is marked done (`isCompleted`, `completedAt = endedAt`). A quiet toast offers **undo for 5 seconds**, which reopens the session and un-completes the task.
 - **One timer at a time.** Tapping Begin on a second task, while one is live, raises a **settle sheet** naming the running task: **Done** (finished), **Defer to tomorrow** (`deferred` — a normal deferral with its count and record), or **Drop** (`dropped` — sets `droppedAt`). The new session only starts after the user chooses, and the elapsed time is logged whichever they pick.
 - **Abandon** ends the session as `abandoned`: the partial time is kept, the task stays live and undone. "Abandoning is not failing."
-- **Midnight, the day rollover**: a session still running at local midnight auto-closes as `autoClosed` with its partial time. The task is carried to tomorrow **without** counting a deferral (it was in progress), and tomorrow's list opens with a single row offering to pick it back up. The user-set end of the working day (default 19:00) is only a soft planning boundary and never stops a session; midnight is the hard rollover.
+- **Day rollover**: a session still running at the rollover (default midnight, user-set) auto-closes as `autoClosed` with its partial time, and `endedAt` is the boundary instant — not "now" — so a device that slept through it invents no phantom hours. The task is carried to tomorrow **without** counting a deferral (it was in progress), and tomorrow's list opens with a single row offering to pick it back up. The user-set end of the working day (default 19:00) is only a soft planning boundary and never stops a session; the rollover is the hard one.
 - **Multi-device**: at most one live session. If two devices each Begin, the later-started one is closed as `abandoned` (its time is logged) and the user sees the settle sheet on next open. (Proposal.)
 
 Only tasks with time worth recording need a session; **Mark done** without one still works, and a task with no session simply has no actual time.
@@ -128,7 +128,7 @@ Where it happens:
 
 - **Night Planning step 2 (Carry forward):** each incomplete task gets Keep (→ tomorrow, counts as a deferral) / Later (date picker) / Drop. See [night-planning.md](../journeys/night-planning).
 - **Today:** a task can be deferred directly from its detail sheet.
-- **Automatic:** if a dated task is still incomplete at day rollover and the user never handled it (skipped Night Planning), the engine defers it to today-again as an overdue item: `deferralCount += 1`, reason `unspecified`. So skipping planning never loses a task, and the 3-deferral rule still applies.
+- **Automatic:** at day rollover (see [The day boundary](../architecture/rules-engine#the-day-boundary)), if a dated task is still incomplete and wasn't already deferred that day, the engine defers it to today-again as an overdue item: `deferralCount += 1`, reason `unspecified`. So skipping planning never loses a task, and the 3-deferral rule still applies. **A task gains at most one deferral per logical day**, whichever path gets there first; if the user then chooses Keep / Later that same day (for example running Night Planning at 00:30 after a midnight rollover), their choice *refines* the existing record — its reason and `deferredTo` — instead of adding a second.
 
 ## Derived, never stored
 

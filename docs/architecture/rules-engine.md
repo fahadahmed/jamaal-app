@@ -21,7 +21,7 @@ protocol RuleModule {
 
 - **Capacity** stays an enum — `low` / `medium` / `high` — as the *user-facing* setting. It is the user's own call about how much they have in them; it is not computed. Each level maps to a **minute budget for focused tasks**: the user sets what a *normal day* is (onboarding and Settings, default 180 minutes — v2's baseline; it is the `medium` level), `low` is ⅔ of that (120) and `high` is 4⁄3 (240).
 - **Two measures, kept apart.** The **energy budget** counts *tasks only* — the design defines a normal day as focused work outside meetings and life admin. **Free time** is the working day (from a start time to a user-set end time) minus fixed Anchors, which cut it into blocks, and the minutes of flexible Anchors and habits, which just subtract. A plan has to fit both: task minutes within the budget, and each task within a free block. Anchors and habits therefore no longer eat the energy budget; they shrink the time.
-- **The day ends at a user-set time, not midnight** (proposal: 19:00). It is a *soft* planning boundary: overflow is named, never blocked, and one tap moves it to tomorrow. Midnight stays the hard rollover (auto-deferral, session auto-close, `DayPlan` close).
+- **The day ends at a user-set time, not midnight** (proposal: 19:00). It is a *soft* planning boundary: overflow is named, never blocked, and one tap moves it to tomorrow. The **day rollover** — by default midnight, user-set — stays the hard boundary (auto-deferral, session auto-close, `DayPlan` close); see [The day boundary](#the-day-boundary).
 - **Deferral replaces rollover.** A task moving to a later day, by the user or automatically, is a deferral with a count and a record (see [task.md](../schema/task)). 3rd deferral = stale + date picker (and a medium/high task is eased to `low`); 5th = suggest removal.
 - **Importance**: three levels (`low` default, `medium`, `high`), set mainly in Night Planning; medium/high require a due date and can't be Someday; `low` tasks always sort after medium/high.
 - **Night Planning is five steps** — Review today → Carry forward → Build tomorrow → Check the load → Close the day — and its session is **persisted** (CloudKit sync means a session can resume on another device). Build tomorrow opens on tomorrow's fixed commitments with named free gaps; tasks are not placed into gaps. **Skip tonight** closes the flow without a plan.
@@ -92,6 +92,7 @@ The few settings that change *computed* results, so they must be identical on ev
 | `mediumDayMinutes` | `Int`  | `180`   | The user's *normal day* of focused work; the `medium` budget. `low` = ⅔, `high` = 4⁄3. Set in onboarding, editable in Settings. |
 | `dayStartMinute`   | `Int`  | `480`   | Minutes since midnight when the working day starts (08:00). Free time for tomorrow's plan starts here; for today it starts at the later of now and this. |
 | `dayEndMinute`     | `Int`  | `1140`  | Minutes since midnight when the working day ends (19:00; users pick, typically 19:00–20:00). The soft planning boundary. |
+| `rolloverMinute`   | `Int`  | `0`     | Minutes since midnight when the app's day rolls over (00:00 by default; the UI offers 00:00–06:00, for people who are up late or work nights). Must be earlier than `dayStartMinute`. See [The day boundary](#the-day-boundary). |
 | `createdAt`        | `Date` | `.now`  | |
 
 CloudKit has no unique constraints, so two devices can each seed a row. The engine keeps the earliest-created row and deletes the rest.
@@ -99,6 +100,31 @@ CloudKit has no unique constraints, so two devices can each seed a row. The engi
 ### Preferences (not SwiftData)
 
 Planning time (default 20:00), morning nudge on/off and time (default 08:00), during-day guidance on/off, wellbeing nudges on/off, appearance, larger text, auto-reorder — kept in `UserDefaults`/`@AppStorage`. These are per-device, which suits notification times; if cross-device sync of preferences is wanted later, `NSUbiquitousKeyValueStore` is the CloudKit-friendly upgrade.
+
+## The day boundary
+
+**The app's day rolls over at `UserSettings.rolloverMinute`** (default 00:00). Before that time the app still treats it as the previous day, everywhere.
+
+**Logical date.** `logicalDate(t) = calendar date of (t − rolloverMinute)`, in the device's current time zone. "Today" always means the logical date: Today's list, which day a habit log or an Anchor counts for, which day a session belongs to. With the default it is the ordinary calendar day.
+
+**Calendar dates are floating.** Every day-granularity field — `Task.dueDate`, `HabitEntry.date`, `Anchor.occurrenceDate`, `DayPlan.date`, `NightPlanningSession.forDate`, and the dates inside rule `startDate` / `endDate` / `exceptions` and habit `pausesData` — is a *calendar date*, not an instant. Store it as a `Date` at **12:00 UTC** of that date, so every device shows the same day whatever its time zone. Times of day (Anchor windows, session start and end) are real instants; Anchor start times are local wall-clock. After travelling across time zones the logical date is simply recomputed from now, so a day can briefly repeat or skip an hour, which is accepted.
+
+**Rollover is lazy and idempotent.** The engine can't rely on running at the boundary — the app may be closed or the device asleep. On launch, foreground, background refresh and when synced data arrives, it processes every logical day that has ended since it last ran (tracked locally per device), oldest first. For each ended day *D*:
+
+1. **Auto-defer** each live, dated task due on or before *D* that wasn't completed, dropped or already deferred that day — a deferral with reason `unspecified` (see [task.md](../schema/task#deferral-behaviour)).
+2. **Finalise `DayPlan(D)`**: completion rate and completed minutes.
+3. **Close live focus sessions** at the boundary instant (`autoClosed`, `endedAt` = the rollover time, *not* "now"), so a device that slept through midnight never invents phantom hours.
+4. **End an unfinished Night Planning session** for *D* as skipped, so the morning card can offer the plan (already-applied carry-forward choices stay).
+
+Habit entries, Anchor attendance and avoid-habit days need no rollover writes: they are attributed by logical date when logged or derived when read.
+
+**Idempotent keys make two devices converge.** Each step is keyed so repeating or racing it changes nothing: auto-deferral by `(task, logicalDate)`, `DayPlan` by date, session closing by the session itself.
+
+**At most one deferral per task per logical day.** Whichever path gets there first — the automatic one at rollover, or the user's Keep / Later / Defer — writes the deferral; a later user choice that same day **refines** the existing record (its reason and `deferredTo`) instead of adding a second. So running Night Planning at 00:30 after a midnight rollover never double-counts.
+
+**Night Planning's target day.** The plan is for the **first date whose working-day start (`dayStartMinute`) is still in the future**; the day it reviews is that date minus one. At 23:00 that is tomorrow. At 00:30 with a midnight rollover it is *today's* new date — the morning the user is about to wake into — and the review is yesterday. With a 03:00 rollover, at 00:30 it is tomorrow, because the logical day hasn't ended yet.
+
+**Attribution by logical date.** An Anchor's `occurrenceDate` is `logicalDate(windowStart)`; a habit entry's `date` is the logical date of the log; a session's day is `logicalDate(startedAt)`. A night owl with a 03:00 rollover logging a habit at 01:00 counts it for the day they are still living.
 
 ## Modules
 
@@ -109,7 +135,7 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
   - Derives urgency, importance and the hidden **Eisenhower quadrant** per task (rules in [task.md](../schema/task)). The quadrant is never shown to the user.
   - Orders tasks for Today by quadrant (`doFirst`, then `schedule`, `fitIn`, `letGo`), then `dueDate`, then `createdAt` — so `low` tasks, which are never important, naturally follow all medium/high tasks. Manual drag ordering is an open question.
   - Enforces the importance rules from [task.md](../schema/task): medium/high need a due date and never Someday; a medium/high task's 3rd deferral eases it to `low`.
-  - Runs the automatic deferral at day rollover for dated tasks the user never handled.
+  - Runs the automatic deferral at day rollover for dated tasks the user never handled (lazily and idempotently — see [The day boundary](#the-day-boundary)); at most one deferral per task per logical day.
   - Creates the next instance of a repeating task when the live one is completed or dropped (rules in [task.md](../schema/task#repeating-tasks)); dedups by `(seriesID, dueDate)`.
   - Escalation: `deferralCount >= 3` → stale and urgency raised; `>= 5` → suggest removal.
 - **Signals**: `.taskOrder`, `.stale(task)`, `.suggestRemoval(task)`, `.priorityEased(task)` (medium/high → low on 3rd deferral), `.nextInstanceDue(series)`, `.pickPriorities` (5+ tasks in a plan and fewer than two `medium`/`high` → "pick one or two that matter most"), `.multipleDoFirst` (two or more `doFirst` tasks → companion asks "which matters most?").
@@ -217,7 +243,7 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 - **Behavior**: a small deterministic state machine over `WorkSession` (for a task or a timed habit's window; one live session across both) (`Idle → Running → Overrun`, `Paused` only by explicit pause; outcomes `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed` — full rules in [task.md](../schema/task#focus-sessions-begin--pause--finish)).
   - Derives elapsed time from `startedAt`, so a killed or backgrounded app never loses or invents time.
   - Enforces **one live session**: a second Begin is refused until the first is settled (Done / Defer / Drop); on a cross-device conflict the later-started is closed as `abandoned`.
-  - **Auto-closes at midnight, the day rollover** (`autoClosed`; the softer working-day end doesn't stop a session), carries the task to tomorrow without counting a deferral, and emits a pick-it-back-up signal for tomorrow's list.
+  - **Auto-closes at the day rollover** (default midnight, user-set; `autoClosed`, `endedAt` = the boundary instant; the softer working-day end doesn't stop a session), carries the task to tomorrow without counting a deferral, and emits a pick-it-back-up signal for tomorrow's list.
   - **Approaching edge**: while a session runs, finds the next Anchor whose window opens soon (threshold proposal: 30 minutes, tunable) and emits a signal the chip phrases as "Maghrib in 12 min". It never blocks or interrupts.
   - **Overrun** is a state, not an event: it emits no notification, colour change or nudge.
 - **Signals**: `.sessionState`, `.sessionAutoClosed(task)`, `.pickUpRow(task)`, `.anchorApproaching(anchor, minutes)`.

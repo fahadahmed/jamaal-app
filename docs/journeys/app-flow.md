@@ -46,7 +46,7 @@ Tab bar (floating pill): **Today · Habits · Wellbeing · Settings**
 | Today | The list; capacity slider; entry to Night Planning; task detail / add task sheets |
 | Habits | Habit groups and habits; habit detail (density grid and plain-language read); add habit / custom recurrence / group creation. **Proposed:** a segmented control "Habits \| Anchors" here, where Anchors lists `AnchorRule`s (add, edit, enable/disable) — see open questions |
 | Wellbeing | Score, sparkline, gathering-data state, recent patterns |
-| Settings | Normal-day length (default 180 min) and working-day start / end (defaults 08:00 / 19:00), planning and nudge times, categories, notifications warning card, iCloud, appearance |
+| Settings | Normal-day length (default 180 min), working-day start / end (defaults 08:00 / 19:00) and, under Advanced, the day-rollover time (default midnight), planning and nudge times, categories, notifications warning card, iCloud, appearance |
 
 Night Planning is a full-screen modal launched from Today (or a notification). Onboarding runs once, before the tabs.
 
@@ -145,6 +145,7 @@ Resolved in this reconciliation:
 - [x] Night Planning shape — the design's five steps (Review today → Carry forward → Build tomorrow → Check the load → Close the day); optional mood line on Review instead of a Reflect step; Build tomorrow opens on tomorrow's fixed commitments with named free gaps (tasks not placed into gaps); *Skip tonight* with one quiet morning card and no guilt
 - [x] Night Planning session — persisted (CloudKit resume)
 - [x] Rollover vs. deferral — unified as deferral with auto-defer safety net
+- [x] Day boundary — user-set rollover (default midnight), logical dates, floating calendar dates (noon UTC), lazy idempotent catch-up, one deferral per task per logical day, session close at the boundary instant
 - [x] Eisenhower — hidden, derived, drives order / capacity visibility / suggestions
 - [x] Categories — editable list, label + filter only
 - [x] Importance rules — three levels (low default, medium, high), set in Night Planning; medium/high require a date and never Someday; 3rd deferral eases to low; prompt when a plan has 5+ tasks and fewer than two medium/high
@@ -190,7 +191,7 @@ Not covered anywhere in the docs yet (checked by search). Grouped by what they w
 - **CloudKit schema is effectively append-only once deployed to production.** Every field name in these docs should be considered final before the first production schema deploy.
 - **Editing rules.** Resolved for Anchors (pending instances update in place, attended/missed/skipped are never rewritten — see [rules-engine.md](../architecture/rules-engine), module 3). Still unspecified: how deleting a category or archiving a habit group shows up in history.
 - **Anchor reminders.** Module 6 mentions during-day guidance for upcoming anchors, but there's no per-rule lead time or reminder setting.
-- **Day boundary.** Partly resolved: the working day ends at a user-set time (soft planning boundary) and midnight is the hard rollover. "Tonight vs. tomorrow" at odd hours still affects when auto-deferral and `DayPlan` closing run, and whether they run at all when the app hasn't been opened.
+- ~~**Day boundary.**~~ **Resolved** — the app's day rolls over at a user-set time (default midnight); lazy, idempotent catch-up; at most one deferral per task per day; Night Planning targets the first date whose working-day start is still in the future. See [The day boundary](../architecture/rules-engine#the-day-boundary).
 
 **Quality and reach**
 

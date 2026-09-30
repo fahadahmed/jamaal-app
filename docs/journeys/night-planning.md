@@ -12,7 +12,7 @@ On phone the five steps are five screens in a full-screen modal with a progress 
 - User-opened any time from Today.
 - If notifications are denied: an in-app banner at planning time ("Start evening planning →").
 
-If opened after midnight, it plans for the next working day from the user's point of view — exact rule for "tonight" vs. "tomorrow" at odd hours is open (see below).
+The plan is always for a *specific date*, shown at the top: the **first date whose working-day start is still in the future**. At 23:00 that is tomorrow; at 00:30 with a midnight rollover it is today's new date (the day the user is about to wake into), with yesterday as the day under review. Rules and edge cases: [The day boundary](../architecture/rules-engine#the-day-boundary).
 
 ## Steps
 
@@ -63,7 +63,7 @@ Locks tomorrow's plan, writes the `DayPlan` (capacity, planned task minutes, fre
 
 **Skip tonight** is available at every step. It closes the flow without a plan:
 
-- Nothing is lost: incomplete dated tasks auto-defer at rollover as usual (see [task.md](../schema/task)), and carry-forward choices already made stay applied.
+- A session left unfinished at the day rollover ends as skipped, so the morning card can offer the plan. Nothing is lost: incomplete dated tasks auto-defer at rollover as usual (see [task.md](../schema/task)), and carry-forward choices already made stay applied.
 - No `DayPlan` is written; tomorrow simply uses the user's default level.
 - **If no plan was confirmed for today**, the morning list shows **one quiet card** — "No plan for today — two minutes to pick?" — that opens a shortened Build tomorrow for today. No guilt, no missed-night count, no streak, and the card doesn't repeat if dismissed.
 
@@ -79,7 +79,7 @@ Locks tomorrow's plan, writes the `DayPlan` (capacity, planned task minutes, fre
 
 ## Open questions
 
-- **"Tonight" vs. "tomorrow" at odd hours**: if the user opens Night Planning at 00:30, is the plan for today or tomorrow? Proposal: before the working day's start (default 08:00) the plan is for *today's date*, otherwise tomorrow. This interacts with midnight being the hard rollover for auto-deferral (a session run at 00:30 sees tasks that may already have auto-deferred, and a Keep would count twice); the fix belongs with the day-boundary decision.
+- **Late nights and rollover time** — resolved by the day boundary: the plan's target date is the first date whose working-day start is in the future, and a user-set rollover keeps a late evening on the same logical day. The one remaining edge is planning *after* a custom rollover has passed (say 03:30 with a 03:00 rollover): that counts as the new day, and the morning card path covers it.
 - **Gap naming at the edges**: how to name the first gap when the day starts with a commitment, and what to show when many small commitments create many small gaps (proposal: hide gaps under about 20 minutes).
 - **Mood note visibility**: whether the free-text note is ever shown back to the user (e.g. in Wellbeing history) is a design question.
 - **Undo scope**: carry-forward choices are undoable until the day is closed; confirm this persists if the wizard is closed but not finished (it should — they're already applied to tasks).

@@ -53,7 +53,7 @@ The per-day completion log the earlier draft was missing. Needed for the heatmap
 | Field           | Type      | Default  | Notes |
 | --------------- | --------- | -------- | ----- |
 | `id`            | `UUID`    | `UUID()` | |
-| `date`          | `Date`    | `.now`   | Day granularity. |
+| `date`          | `Date`    | `.now`   | A floating calendar date: the **logical date** of the log (so a late-night log before the user's rollover counts for the day they're still living) — see [The day boundary](../architecture/rules-engine#the-day-boundary). |
 | `targetCount`   | `Int`     | `1`      | Snapshot of the window's target that day (so editing the target later doesn't rewrite history). |
 | `completedCount`| `Int`     | `0`      | By kind: binary 0 or 1; counted the count so far (stepper); **timed the minutes so far**; **avoid the slips so far**. |
 | `completedAt`   | `Date?`   | `nil`    | When the target was reached. |

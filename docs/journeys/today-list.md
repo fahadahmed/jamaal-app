@@ -50,7 +50,7 @@ Beginning a task starts a **focus session** ([task.md](../schema/task#focus-sess
 - **Timed habits** use the same chip: **Begin** on a timed habit row starts a session against that habit's window; the chip reads the same, and finishing adds the minutes to today's entry.
 - **Beginning a second task** raises the settle sheet: Done, Defer to tomorrow, or Drop the running one first.
 - **Near a fixed Anchor** the chip simply says "Maghrib in 12 min". It never blocks.
-- **After midnight**, a session that was still running was auto-closed; tomorrow's list opens with one row offering to pick that task back up.
+- **After the day rolls over** (default midnight), a session that was still running was auto-closed at the boundary; tomorrow's list opens with one row offering to pick that task back up.
 - On wide layouts (iPad, Mac, Duo unfolded) the chip lives in the right-hand panel; see [app-flow.md](app-flow).
 - The Lock Screen Live Activity and Dynamic Island version is **v1.1**.
 
@@ -73,6 +73,6 @@ A compact **sparkline** near the capacity slider shows the wellbeing score over 
 
 - **Backlog tasks (no `dueDate`)**: always visible in a collapsed "Backlog" section, or surfaced only in Night Planning's plan step?
 - **Manual ordering**: may the user drag to override the engine (v2 had a manual-order flag)? Affects whether a per-task order field is needed.
-- **Anchors that end after midnight** (Isha in summer): resolved — an Anchor belongs to the day its window *starts* (`occurrenceDate`). So a pending Isha can still be open when Night Planning runs late; it isn't shown as tomorrow's.
+- **Anchors that end after midnight** (Isha in summer): resolved — an Anchor belongs to the day its window *starts* (`occurrenceDate`). So a pending Isha can still be open when Night Planning runs late; it isn't shown as tomorrow's. With a user-set rollover, "belongs to the day it starts" uses the logical date.
 - **Anchors under capacity**: Anchors are always shown at every capacity level (external, can't be deferred); confirm they never fold into "also today".
 - **Where the category filter lives** (Today header vs. filter sheet) is a design-pass decision.
