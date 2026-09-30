@@ -31,7 +31,7 @@ Sets today's capacity; the engine uses it to decide visibility (module 7):
 
 Nothing disappears silently: hidden items sit under a collapsed "N more at higher capacity" affordance.
 
-Set two ways: from Night Planning the evening before, or directly here if the day changes. The slider also shows the day's load state (light / balanced / full / overloaded / exhausting) as a quiet indicator (counting tasks, habit windows and anchors), and the companion offers a gentle prompt when the day is overloaded. Capacity is the user's own call, not computed from the day's contents.
+Set two ways: from Night Planning the evening before, or directly here if the day changes. The **capacity meter** (a thin pill under the slider) shows **budget used** — "2h 15m of 3h" — counting tasks only, plus a quiet load state (light / balanced / full / overloaded / exhausting). It turns terracotta when the day is overloaded or runs **past the day's end** (a user-set time, default 19:00) and then reads "40 min past 19:00", with one tap to move the overflow to tomorrow. Nothing is blocked. If a planned task is longer than the longest free block, a quiet flag says so. Capacity is the user's own call, not computed from the day's contents; the engine only *suggests* a level. Adding a task that tips the day over shows "Day is full · offer tomorrow" and never refuses it.
 
 ## Task interactions
 

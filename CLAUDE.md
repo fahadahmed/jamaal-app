@@ -86,7 +86,7 @@ Deterministic — same state + inputs always produce the same output, no ML/heur
 4. Night Planning orchestration (5-step wizard state machine: review & carry forward → reflect → plan → capacity & load check → confirm)
 5. Wellbeing scoring ("gathering data" → active score)
 6. Notification/nudge logic (window-closing reminders, during-day guidance)
-7. Capacity & load (budget from `low`/`medium`/`high`, load states, what Today shows)
+7. Capacity & load (energy budget from `low`/`medium`/`high` for tasks; free time from the working day minus fixed commitments; soft day-end; what Today shows)
 8. Focus sessions (task timer state machine: Begin / pause / finish, one live session, midnight auto-close)
 
 Modules emit typed signals; a separate message-template layer phrases them in Jamaal's companion voice.
