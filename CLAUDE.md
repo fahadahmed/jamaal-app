@@ -50,6 +50,8 @@ No `.xcworkspace` — JamaalCore is a Swift Package (added as a local package de
 
 ## SwiftData / CloudKit constraints (applies to all three primitives)
 
+The authoritative model list, conventions and dedup keys are in `docs/schema/overview.md`.
+
 Because CloudKit sync is in from v1:
 
 - Every property needs a default value (no bare `let` without one)
@@ -72,7 +74,7 @@ Notes feature was dropped in favor of optional lightweight markdown (checklists,
 
 - **One flat list, no projects, no tags — ever.** `Task.category` is an editable label list (defaults personal/family/work), one per task, used as a label and optional filter, never a grouping axis.
 - **Jamaal is also the companion voice** — calm, supportive, non-judgmental; inline cards, never a chat UI; no punitive severity colours. Tagline: "One list. Just today. Beautifully ordered."
-- **Hidden Eisenhower**: quadrant derived from importance (`priority`) and urgency (due date, deferrals), never shown.
+- **Hidden Eisenhower**: quadrant derived from importance (`importance`) and urgency (due date, deferrals), never shown.
 - Effort estimates + capacity level → load state; deferral escalates at the 3rd deferral (date picker) and 5th (suggest removal).
 - Full reconciliation with the earlier planning chat: `docs/architecture/decisions/0002-reconcile-master-summary-v2.md`. End-to-end flow and coherence checklist: `docs/journeys/app-flow.md`.
 

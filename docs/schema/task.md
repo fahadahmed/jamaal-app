@@ -13,9 +13,9 @@ Tasks live in **one flat list** — no projects, no tags, no sub-lists. `categor
 | `id`            | `UUID`    | `UUID()`  | Stable identity across CloudKit sync. |
 | `title`         | `String`  | `""`      | |
 | `notes`         | `String?` | `nil`     | Optional lightweight markdown (checklists, bold/italic, links, inline code) — one note per task. Shown as a tappable checklist in the task detail and beneath the timer during a focus session. The finish and defer sheets can **append** an optional timestamped line ("Left a voicemail, call back Tuesday") rather than overwrite, so the note becomes the record of the attempts. No headings, tables or images. |
-| `dueDate`       | `Date?`   | `nil`     | Day granularity. `nil` = backlog / "Someday". **Required when `priority` is `medium` or `high`.** |
+| `dueDate`       | `Date?`   | `nil`     | Day granularity. `nil` = backlog / "Someday". **Required when `importance` is `medium` or `high`.** |
 | `effortMinutes` | `Int?`    | `nil`     | Optional estimate: 15 / 30 / 60 / 120. `nil` = unestimated (counts as zero toward load). |
-| `priority`      | `String`  | `"low"`   | One of `low` / `medium` / `high` — there is no "none"; `low` is the baseline. **This is the *importance* axis** of the hidden Eisenhower lens (see below). Medium and high carry extra rules — see [Importance rules](#importance-rules). Raw `String` for CloudKit-safe simplicity. |
+| `importance`      | `String`  | `"low"`   | One of `low` / `medium` / `high` — there is no "none"; `low` is the baseline. **This is the *importance* axis** of the hidden Eisenhower lens (see below). Medium and high carry extra rules — see [Importance rules](#importance-rules). Raw `String` for CloudKit-safe simplicity. |
 | `isCompleted`   | `Bool`    | `false`   | |
 | `completedAt`   | `Date?`   | `nil`     | Set when `isCompleted` flips true; cleared if un-completed. |
 | `droppedAt`     | `Date?`   | `nil`     | Set when the user drops a task (Night Planning carry-forward "Drop", or delete-from-detail). Soft-delete so history/wellbeing detection keep working. A dropped task never appears on Today. |
@@ -52,7 +52,8 @@ Rules: one category per task; categories are labels + an optional Today filter o
 | Field        | Type      | Default        | Notes |
 | ------------ | --------- | -------------- | ----- |
 | `id`         | `UUID`    | `UUID()`       | |
-| `deferredOn` | `Date`    | `.now`         | When the user (or the engine) deferred it. |
+| `deferredOn` | `Date`    | `.now`         | When the user (or the engine) deferred it (an instant). |
+| `day`        | `Date`    | `.now`         | The **logical date** this deferral counts for — a floating calendar date. With `task` it is the idempotency key: a task gains at most one deferral per `day`, and a later same-day choice refines this record (see [The day boundary](../architecture/rules-engine#the-day-boundary)). |
 | `deferredTo` | `Date?`   | `nil`          | `nil` = Someday. |
 | `reason`     | `String`  | `"unspecified"`| One of `tooMuch` / `notReady` / `noLonger` / `reschedule` / `unspecified`. Reason chips in the UI: Too much on / Not ready / No longer relevant. `unspecified` is used for automatic deferrals. |
 | `task`       | `Task?`   | `nil`          | Inverse of `Task.deferrals`. |
@@ -63,7 +64,7 @@ Importance has three levels — `low` (the default and the baseline), `medium`, 
 
 1. **Medium and high require a due date.** Choosing either reveals a due-date row, pre-filled with the day being planned (today when adding on Today; tomorrow when prioritising in Night Planning), which cannot be cleared. Invariant: `priority ∈ {medium, high}` ⇒ `dueDate != nil`. Enforced in the engine/view-model (SwiftData can't express it), and normalised on read.
 2. **No "Someday" for medium/high.** The Someday option is hidden in every date picker for these tasks, with a line such as "Important tasks need a day. Lower its importance to park it."
-3. **Important tasks can't keep slipping.** On a medium/high task's **3rd** deferral its `priority` is set to `low`, and the companion says so plainly ("This one keeps slipping, so I've eased it to low. Raise it again when it's real."). Never silent. Once it is `low`, the date requirement and the Someday restriction no longer apply.
+3. **Important tasks can't keep slipping.** On a medium/high task's **3rd** deferral its `importance` is set to `low`, and the companion says so plainly ("This one keeps slipping, so I've eased it to low. Raise it again when it's real."). Never silent. Once it is `low`, the date requirement and the Someday restriction no longer apply.
 4. **Prioritisation prompt.** If a day's plan has **five or more tasks** and fewer than two of them are `medium`/`high`, the companion prompts the user to pick one or two that matter most. It's a prompt, not a block. This appears in Night Planning's plan step (and can appear on Today).
 5. **Ordering.** By quadrant (`doFirst`, `schedule`, `fitIn`, `letGo`), then due date, then `createdAt`. Because `low` tasks are never important, they always fall in `fitIn`/`letGo` and so sort after every `medium`/`high` task. A `low` task with no date is a backlog task.
 
@@ -77,6 +78,7 @@ A task can be worked in a **focus session**: the user taps **Begin**, a running 
 | ----------------- | --------- | ----------- | ----- |
 | `id`              | `UUID`    | `UUID()`    | |
 | `startedAt`       | `Date`    | `.now`      | When Begin was tapped. Elapsed time is **always derived from this**, never accumulated in memory, so a killed app rebuilds the session exactly. |
+| `day`             | `Date`    | `.now`      | The logical date of `startedAt` — a floating calendar date. Stored so that changing the rollover time later can't silently re-bucket past sessions into different days. |
 | `endedAt`         | `Date?`   | `nil`       | `nil` while the session is live. |
 | `pausedSeconds`   | `Int`     | `0`         | Total time spent in completed pauses. |
 | `pausedAt`        | `Date?`   | `nil`       | Non-`nil` while an explicit pause is in progress. Backgrounding the app does **not** pause. |
@@ -109,7 +111,7 @@ A simple repeat for recurring "do" items ("submit timesheet every Friday", "pay 
 - **Requires a due date.** `repeatKind != none` ⇒ `dueDate != nil`. Someday is hidden for repeating tasks.
 - **One live instance per series.** Only one incomplete instance exists at a time, so a neglected weekly task never piles up into a backlog of copies.
 - **Next instance**: when the live instance is completed **or dropped**, the next is created with the next occurrence strictly after `max(dueDate, completion day)`. So finishing a weekly Friday task on a Sunday schedules the *next* Friday, not the one already passed.
-- **Copied to the next instance**: `title`, `notes`, `category`, `effortMinutes`, `priority`, repeat fields and `seriesID`. **Reset**: `isCompleted`, `deferralCount`, deferral records, `droppedAt`.
+- **Copied to the next instance**: `title`, `notes`, `category`, `effortMinutes`, `importance`, repeat fields and `seriesID`. **Reset**: `isCompleted`, `deferralCount`, deferral records, `droppedAt`.
 - **Drop skips only this occurrence** — the series continues. A separate **Stop repeating** action in the detail sheet ends it (sets `repeatKind` to `none` on the live instance).
 - **Deferral rules apply per instance** (the 3rd-deferral easing of `medium`/`high` importance included). Moving an instance with Keep/Later changes only that instance's date; the following instance still follows the pattern.
 - **Idempotency**: two devices may both try to create the next instance. The engine treats `(seriesID, dueDate)` as its dedup key and removes duplicates (CloudKit has no unique constraints).
@@ -135,7 +137,7 @@ Where it happens:
 These are computed by the rules engine at read time (module 1), not persisted:
 
 - **Urgency** — a task is *urgent* if `dueDate` is tomorrow or earlier (overdue included), or `deferralCount >= 3`. The "tomorrow" window is a tunable constant.
-- **Importance** — *important* if `priority` is `medium` or `high`. Because those levels always have a due date, urgency is always defined for important tasks.
+- **Importance** — *important* if `importance` is `medium` or `high`. Because those levels always have a due date, urgency is always defined for important tasks.
 - **Eisenhower quadrant** — from those two booleans. **Never shown to the user** as a matrix or label; it only drives ordering, capacity filtering and prompts.
 
   | | Important | Not important |

@@ -38,7 +38,8 @@ Anchor instances are generated from a persisted `AnchorRule` (not computed on th
 | `configData`    | `String` | `"{}"`     | JSON, versioned; shape depends on the rule's family — see [`configData` shapes](#configdata-shapes). |
 | `effortMinutes` | `Int?`   | `nil`      | How long attending takes (Fajr ≈ 10, school run ≈ 30) — **not** the window length (Fajr's window may be 90 minutes). Applies to every instance the rule generates. `nil` = unknown, counts as zero. |
 | `placement`     | `String` | `"fixed"`  | `fixed` or `flexible`. **Fixed** = a busy block from the window start for `effortMinutes`, which *cuts* the working day into free blocks (school run, an appointment). **Flexible** = it takes minutes but has no fixed position inside its window, so it only reduces total free time (bin night). `afterLast` rules are always flexible; one-off Anchors are always fixed. Used by the capacity check — see [rules-engine.md](../architecture/rules-engine), module 7. |
-| `isEnabled`     | `Bool`   | `true`     | |
+| `isEnabled`     | `Bool`   | `true`     | Paused / resumed by the user. |
+| `isArchived`    | `Bool`   | `false`    | Soft-delete. A rule is **never hard-deleted**: `Anchor.rule == nil` means a one-off, so deleting a rule would make all its past instances look like one-offs. Archiving hides the rule and removes its future pending instances; history stays linked. |
 | `createdAt`     | `Date`   | `.now`     | |
 
 ## `configData` shapes
@@ -176,7 +177,7 @@ The state is what an Anchor row shows on Today (with a window bar); the attendan
 ## Open questions
 
 - **Editing behaviour** (proposal): editing or disabling an `AnchorRule` updates pending instances from today onward in place and never rewrites attended, missed, skipped or delegated ones; details in [rules-engine.md](../architecture/rules-engine). Editing a one-off changes just that Anchor; deleting one removes it.
-- **Deleting a rule**: removes its future *pending* instances and keeps attended/missed history (proposed).
+- **Deleting a rule** archives it (`isArchived`): it disappears from the rules list, its future *pending* instances are removed, and attended / missed / skipped / delegated history stays linked to it.
 - **Correcting a closed window**: "closed is final" means someone who prayed or watered the plants but forgot to tap can't fix it. Options: allow a late correction until the end of that day, or accept it. Non-punitive tone argues for a same-day correction; needs a decision (and must not weaken the early-logging protection above).
 - **`afterLast` details**: whether a rule may combine several slots with `afterLast` (probably one slot), and whether `minDays`/`maxDays` should adapt with season (the design mentions drift) or stay user-set.
 - **Jumu'ah**: on Fridays Dhuhr is replaced by the Friday prayer. Not modelled — needs a label or a separate slot rule, and the user's call.
