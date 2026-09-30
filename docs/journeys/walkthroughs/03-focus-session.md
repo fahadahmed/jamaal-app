@@ -18,7 +18,7 @@ A session starts from three places: the **Begin** button on the *"Start here"* g
   - Begin needs nothing else — ✓ (a task that is live; completed and dropped tasks don't offer Begin);
   - Begin on a task that is not due today is fine — ✓ (it counts toward today once completed today; while running it simply isn't yet in "due today");
   - a second Begin is handled — ✓ (`FS-07`).
-- **Read-only state:** Begin is proposed as always allowed after the trial (Journey 9, G-70).
+- **Read-only state:** Begin is always allowed after the trial (Journey 9, G-70).
 
 ## FS-01 The session chip
 

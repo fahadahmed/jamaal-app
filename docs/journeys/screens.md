@@ -69,7 +69,7 @@ Each flow lists its trigger, the screens it passes through, its branches and its
 
 **F11 Wellbeing.** Wellbeing tab → `WB-01 / WB-02 / WB-03`; a suggested action (for example "Lighten Saturday") applies to the plan. The sparkline on `TD-01` links here.
 
-**F12 Trial, paywall, read-only.** Days 1–14 nothing changes (`ST-05` shows days left). Quiet reminders around days 12–15. Day 15 → `SB-01` paywall (monthly, yearly, restore, Not now). Not subscribed → read-only (`SB-03` banner): viewing and ticking off work; creating, editing, Night Planning and capacity are locked. Subscribe → everything returns.
+**F12 Trial, paywall, read-only.** Days 1–14 nothing changes (`ST-05` shows days left). Quiet reminders around days 12–15. Day 15 → `SB-01` paywall (monthly, yearly, restore, Not now). Not subscribed → read-only (`SB-03` banner): viewing and *living the day* work (ticking off, logging, Anchor outcomes, timers); shaping the plan (creating, editing, Night Planning, capacity) is locked, with a calm sheet when a locked control is tapped. The paywall shows once on the first open of each logical day. Subscribe → everything returns.
 
 **F13 Notifications denied.** `OB-05` or a later denial → `SY-01`: an in-app banner at planning time and a warning card in `ST-03` with a deep link to system settings.
 
@@ -179,7 +179,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 | ST-05 | **Subscription** | ST-01 | Days left or status, manage, restore | **None** | v1 |
 | ST-06 | iCloud status | ST-01 | Signed in / problem | **None** | v1 |
 | ST-07 | Appearance | ST-01 | Theme, larger text | **None** | v1 |
-| ST-08 | About, privacy, data export | ST-01 | *to decide* (export is promised for read-only) | **None** | *to decide* |
+| ST-08 | About, privacy, data export | ST-01 | Privacy statement, Export my data (JSON), Delete my data (two confirmations; local and iCloud) | **None** | v1 |
 
 ### Onboarding (`OB`)
 
@@ -222,7 +222,7 @@ Not extra screens, but frames Design must draw: **Today** (compact, iPad two-pan
 | **Overloaded / past the day's end** | Meter turns terracotta; named overflow with a one-tap move; never blocks |
 | **Session running** | Chip on every tab; "Maghrib in 12 min" near an Anchor; nothing blocks |
 | **Paused habit** | Hidden from Today and Night Planning; shown as paused in Habits |
-| **Read-only (trial ended)** | Viewing and ticking off allowed; creating, editing, planning and capacity locked; data export still works |
+| **Read-only (trial ended)** | Living the day allowed (ticking off, logging, Anchor outcomes, timers); creating, editing, planning and capacity locked, behind a calm sheet; data export still works |
 | **Notifications denied** | In-app banner at planning time; Settings warning card |
 | **No iCloud / sync problem** | Surfaced only when there is a problem |
 | **Large text / right-to-left** | Everything scales (labels cap at the `.xxLarge` accessibility size); layouts mirror; the density grid fills from the trailing edge |
