@@ -121,11 +121,11 @@ All new code or documentation work is tracked through a GitHub issue and lands v
 1. Open (or use an existing) GitHub issue describing the work.
 2. Branch off `main`, named `[type]/[issueNumber]-[description]`, where `type` is one of `feat`, `bug`, `task`, `doc`, and `description` is a short kebab-case summary (e.g. `feat/12-night-planning-wizard`).
 3. Open a PR from that branch into `main`, referencing the issue (e.g. `Closes #12`).
-4. Merge via PR — this is also what exercises `sync-wiki.yml` and (once it's live) `ci.yml`, which only fire on `main`.
+4. Merge via PR — this is also what exercises `sync-wiki.yml` and `ci.yml`, which fire on PRs into `main` and on `main`.
 
 ## Open items to pick up next
 
-- [ ] `ci.yml` doesn't exist yet — only `sync-wiki.yml` is live under `.github/workflows/`. `Jamaal.xcodeproj` now exists, so a build/test workflow can be added whenever CI is prioritized
-- [ ] ThreadsKit isn't wired in yet (no dependency in `Jamaal.xcodeproj`, no `Package.resolved`). Token docs are done; see open decisions in `docs/design/threadskit-usage.md` (no sage → habit ring/heatmap colour plan, font faces, mockups on the old palette)
+- [x] CI: `.github/workflows/ci.yml` builds and tests `JamaalCore` and the app's unit tests on every code PR and push to `main` (docs-only changes skip it). XCUITest joins once it covers real screens
+- [x] ThreadsKit 1.1.0 is wired into `Jamaal.xcodeproj` (remote, Up to Next Major) with `Package.resolved` committed. Remaining design decisions are in `docs/design/threadskit-usage.md` (category colours, font bundling and licences)
 - [ ] `mockups/` is empty (README and `screens/` have no content) — the HTML reference screens referenced above still need to be added, re-skinned to the current palette
 - [x] Reconcile against prior planning-chat data — done, see ADR 0002. Remaining open decisions are listed in `docs/journeys/app-flow.md` ("Still open")
