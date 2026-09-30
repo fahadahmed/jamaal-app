@@ -63,7 +63,7 @@ Each flow lists its trigger, the screens it passes through, its branches and its
 
 **F08 Habit lifecycle.** Habits tab → Add → `HB-03` (type picker first) → kind-specific form → optional `HB-04` (custom recurrence) and `HB-05` (group). Logging: check, stepper, **Begin** (timed), **Log a slip** / **Held today** (avoid). Pause → `HB-06`; edit or archive → `HB-07`. Detail `HB-02` shows the density grid and the plain-language read.
 
-**F09 Night Planning.** Trigger: evening notification, banner, or Today's entry. `NP-01 Review (optional mood) → NP-02 Carry forward → NP-03 Build tomorrow → NP-04 Check the load → NP-05 Close the day`. **Skip tonight** at any step (`NP-06`). If no plan was confirmed, the next morning shows `TD-07`, which opens a shortened `NP-03` for today. On wide layouts the five steps are one canvas (`NP-07`).
+**F09 Night Planning.** Trigger: evening notification, banner, or the **Plan tomorrow** action on Today. `NP-01 Review (optional mood) → NP-02 Carry forward → NP-03 Build tomorrow → NP-04 Check the load → NP-05 Close the day`. **Skip tonight** at any step (`NP-06`). If no plan was confirmed, the next morning shows `TD-07`, which opens the shortened flow for today (Build → Load → Close). A night that already has a session is resumed, not restarted. On wide layouts the five steps are one canvas (`NP-07`).
 
 **F10 Capacity and day settings.** Slider on `TD-01` (level for today) · `ST-02` (normal-day length, weekday defaults, working-day start and end, rollover under Advanced) · the quiet normal-day suggestion line (Settings, and at most once in `NP-04`).
 
@@ -85,13 +85,13 @@ Columns: **ID · screen · entry · content and states · design · phase**. "C/
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| TD-01 | **Today** (C/R; Duo inner = list + panel) | Tab 1, launch | Capacity slider and meter; companion card slot; **Anchors** (plain rows, grouped rows "Salah 3/5", window bars, three actions); **Habits** (binary, counted stepper, timed "12 of 20 min", avoid, paused hidden); **Tasks** (category label, effort; importance not shown); **Also today** (collapsed, count); Add; chip host. States: default · guidance ("Start here" / "Good now") · first launch · all done · overloaded · past the day's end | **Drawn** v3·01, 02, 03, 04; **Spec** X-01 | v1 |
+| TD-01 | **Today** (C/R; Duo inner = list + panel) | Tab 1, launch | Capacity slider and meter; companion card slot; **Anchors** (plain rows, grouped rows "Salah 3/5", window bars, three actions); **Habits** (binary, counted stepper, timed "12 of 20 min", avoid, paused hidden); **Tasks** (category label, effort; importance not shown); **Also today** (collapsed, count); **Plan tomorrow** (toolbar action, and a quiet row after the planning time); Add; chip host. States: default · guidance ("Start here" / "Good now") · first launch · all done · overloaded · past the day's end | **Drawn** v3·01, 02, 03, 04; **Spec** X-01 | v1 |
 | TD-02 | Wellbeing strip | On TD-01 | Sparkline; "gathering data" until seven days | **Drawn** (in v3·01) | v1 |
 | TD-03 | Category filter | TD-01 header | Narrows the list to one category; never creates sections | **None** | v1 |
 | TD-04 | Add sheet entry: **Task \| Anchor** switch | TD-01 Add | The add sheet opens on Task; the switch at the top reaches the one-off Anchor form (`AN-08`). No separate chooser screen | **None** | v1 |
 | TD-05 | Banners | TD-01 top | Notifications off · trial status · read-only | **Drawn** v3·24 (notifications off); others **None** | v1 |
 | TD-06 | Carried-over row | TD-01 | One row to pick a session's task back up after auto-close | **Spec** X-02 | v1 |
-| TD-07 | Morning card "No plan for today" | TD-01 | Shown once; opens a shortened NP-03 | **None** | v1 |
+| TD-07 | Morning card "No plan for today" | TD-01 | Shown once; opens the shortened flow for today (Build → Load → Close) | **None** | v1 |
 
 ### Tasks (`TK`)
 

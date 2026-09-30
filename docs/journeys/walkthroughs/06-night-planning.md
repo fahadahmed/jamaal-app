@@ -1,6 +1,6 @@
 # Journey 6 — Night Planning
 
-> **Status: walked; gaps G-45 … G-53 raised, proposals waiting for a decision** (see the [gap log](overview#gap-log)). Register flow **F09**, screens **NP-01 … NP-07**, plus **TD-07**. Behaviour is in [Night Planning](../night-planning) and [Rules engine → module 4](../../architecture/rules-engine); this page tests it against the schema and engine, and against everything the first five journeys decided.
+> **Status: done — gaps G-45 … G-53 raised, decided and applied** (see the [gap log](overview#gap-log)). The text below is the walkthrough as first written, with the proposals it raised. Register flow **F09**, screens **NP-01 … NP-07**, plus **TD-07**. Behaviour is in [Night Planning](../night-planning) and [Rules engine → module 4](../../architecture/rules-engine); this page tests it against the schema and engine, and against everything the first five journeys decided.
 
 **In one line:** in the evening the user looks back at the day, settles what is unfinished, sees the shape of tomorrow, builds it around what is fixed, checks the load, and closes the day — or skips it without penalty.
 

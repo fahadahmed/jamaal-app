@@ -130,7 +130,7 @@ Used by the schedule row and the defer picker. They follow the user's calendar's
 
 ## Deferral behaviour
 
-A task is *deferred* whenever it moves to a later day without being completed. `deferralCount` increments and a `DeferralRecord` is written each time.
+A task is *deferred* when it is moved to a later day **after its due day has arrived** — that is, its `dueDate` is on or before the current logical date and it is pushed past it without being completed. `deferralCount` increments and a `DeferralRecord` is written each time. Moving a task that is **due later** (pushing tomorrow's task to Thursday while planning, or the overload *Move* in Night Planning) is **rescheduling**, not a deferral: no count, no record, no easing. Only real deferrals feed the 3rd-deferral picker, the easing of `medium`/`high` importance, the *stale* flag and the avoidance pattern.
 
 | Deferral # | What happens |
 | ---------- | ------------ |

@@ -43,21 +43,26 @@ The wide layout uses the same three choices per task — leftovers are *not* sil
 The step **opens on the shape of tomorrow**, before any task is offered:
 
 - **Tomorrow's working day** (start to the day's end, default 19:00) with its **fixed commitments** drawn in — recurring Anchors and one-offs, such as the school run or an appointment. An **Add one-off Anchor** action is available, since planning often surfaces "dentist at 3".
-- The **free gaps** between them, **named by what surrounds them**: "before the school run · 2h 40m free", "between the school run and Maghrib · 3h 05m", "after Maghrib". With no fixed commitments the day is one gap. Phone shows the gaps as a list; wide layouts show a proportional timeline so the size of each gap is visible. Only commitments inside the working day count, so prayers after the day's end don't create gaps.
+- The **free gaps** between them, **named by what surrounds them**: "before the school run · 2h 40m free", "between the school run and Maghrib · 3h 05m", "after Maghrib". With no fixed commitments the day is one gap. **Edge rules:** gaps under **20 minutes** aren't shown (they still count as free time); a day that *begins* with a commitment has no "before" gap, and one that *ends* with a commitment has no "after" gap; names use the composed Anchor titles (*Fajr*, *School run · Drop-off*); the **longest gap** is the one used for fit checks. Phone shows the gaps as a list; wide layouts show a proportional timeline so the size of each gap is visible. Only commitments inside the working day count, so prayers after the day's end don't create gaps.
 
-Below that, **select, reorder and add Tasks and Habits** for tomorrow (paused habits don't appear). Tasks are *not* assigned to gaps: they are a plain ordered list, and the planner **flags any task that won't fit** in any gap ("the 90-minute review is longer than tomorrow's longest gap"). It is a flag, never a block.
+Below that are **tomorrow's tasks** and **tomorrow's habits**. Tasks can be **pulled in** (backlog and later-dated suggestions, which sets their due date to tomorrow) and **pushed out** (to a later date — *rescheduling*, never a deferral), and a new task or one-off Anchor can be added, defaulting to tomorrow; tasks have no manual order. **Habits are shown read-only**: they are scheduled, not chosen (paused ones don't appear), and their minutes count in free time. Tasks are *not* assigned to gaps: they are a plain ordered list, and the planner **flags any task that won't fit** in any gap ("the 90-minute review is longer than tomorrow's longest gap"). It is a flag, never a block.
 
 **This is where importance gets set**: each task starts at `low` and can be raised to `medium` or `high`; choosing `medium` or `high` reveals a due date pre-filled with tomorrow. If the plan has five or more tasks and fewer than two are `medium`/`high`, the companion prompts the user to pick one or two that matter most (a prompt, not a block). Suggested candidates come from the hidden Eisenhower lens — important-but-not-urgent (`schedule`) tasks are surfaced, since this is the moment to schedule them.
 
 ### 4. Check the load
 
-Set tomorrow's capacity — `low` / `medium` / `high`, pre-selected to that weekday's default. The step shows what tomorrow leaves (total free time and the longest gap) and the engine may suggest a level ("about 2 hours free — low might suit"); the user decides. It then shows **budget used** ("2h 15m of 3h", with the load state light / balanced / full / overloaded / exhausting) and, only when relevant, **overflow** past the day's end ("40 min past 19:00").
+Set tomorrow's capacity — `low` / `medium` / `high`, pre-selected to that weekday's default; the choice is **written to tomorrow's `DayPlan` the moment it is made**, so it survives leaving the app mid-flow. The step shows what tomorrow leaves (total free time and the longest gap) and the engine may suggest a level ("about 2 hours free — low might suit"); the user decides. It then shows **budget used** ("2h 15m of 3h", with the load state light / balanced / full / overloaded / exhausting) and, only when relevant, **overflow** past the day's end ("40 min past 19:00").
 
-When the day is overfull the companion offers one specific move — "Groceries could wait until Wednesday. Want me to move it?" — with **Move** and **Keep as planned**. Overflow is soft: named, never blocked, one tap to move. It only ever suggests deferring *tasks* (fixed commitments and habits can't be). If some items have no duration, a quiet note says how many. At most once in a while (never within 28 days of a "Not now") a single quiet line may offer to update the user's normal day from their actual focus time — "You usually do about 2h 40m — set your normal day to that?" Never blocks.
+When the day is overfull the companion offers one specific move — "Groceries could wait until Wednesday. Want me to move it?" — with **Move** and **Keep as planned**. The suggestion is the **lowest-ordered movable task** (never a `doFirst` one) moved to the **nearest of the next seven days whose load would stay under 100%**; if none fits, the user is asked for a date. **Move** is *rescheduling*, not a deferral. Overflow is soft: named, never blocked, one tap to move. It only ever suggests deferring *tasks* (fixed commitments and habits can't be). If some items have no duration, a quiet note says how many. At most once in a while (never within 28 days of a "Not now") a single quiet line may offer to update the user's normal day from their actual focus time — "You usually do about 2h 40m — set your normal day to that?" Never blocks.
 
 ### 5. Close the day
 
 Locks tomorrow's plan, writes the `DayPlan` (capacity, planned task minutes, free minutes, load score) and schedules tomorrow's notifications. The done screen says plainly what was planned ("Tomorrow is ready. Three tasks, 3h exactly. Put the phone down."), with a plain count of nights planned (not a streak) and a "Good night" button.
+
+## Starting and re-opening
+
+- **Starting:** the evening notification, the banner, or the **Plan tomorrow** action in Today's toolbar (after *Add*). After the planning time, if tonight isn't planned or skipped, Today also shows a quiet row for it, and the all-done state carries the action.
+- **Re-opening a night that already has a session** resumes that session: a **closed** one reopens at **Build** so the user can adjust (re-closing rewrites the `DayPlan` snapshot), and a **skipped** one clears `skippedAt` and starts again at Review.
 
 ## Skip tonight
 
@@ -65,7 +70,8 @@ Locks tomorrow's plan, writes the `DayPlan` (capacity, planned task minutes, fre
 
 - A session left unfinished at the day rollover ends as skipped, so the morning card can offer the plan. Nothing is lost: incomplete dated tasks auto-defer at rollover as usual (see [task.md](../schema/task)), and carry-forward choices already made stay applied.
 - No `DayPlan` is written; tomorrow simply uses that weekday's default level (`UserSettings.weekdayLevels`; weekends are `low`, other days `medium` unless changed).
-- **If no plan was confirmed for today**, the morning list shows **one quiet card** — "No plan for today — two minutes to pick?" — that opens a shortened Build tomorrow for today. No guilt, no missed-night count, no streak, and the card doesn't repeat if dismissed.
+- **If no plan was confirmed for today**, the morning list shows **one quiet card** — "No plan for today — two minutes to pick?" — that opens a **shortened flow for today**: a session with `forDate = today` that starts at **Build**, then **Load**, then **Close** (Review and Carry are skipped; the day's leftovers were already settled at rollover). No guilt, no missed-night count, no streak, and the card doesn't repeat if dismissed.
+- **Tonight's prompt stops** once that night is closed or skipped, and is never repeated; the banner on Today stays until it is planned or skipped.
 
 ## State machine
 
@@ -80,6 +86,5 @@ Locks tomorrow's plan, writes the `DayPlan` (capacity, planned task minutes, fre
 ## Open questions
 
 - **Late nights and rollover time** — resolved by the day boundary: the plan's target date is the first date whose working-day start is in the future, and a user-set rollover keeps a late evening on the same logical day. The one remaining edge is planning *after* a custom rollover has passed (say 03:30 with a 03:00 rollover): that counts as the new day, and the morning card path covers it.
-- **Gap naming at the edges**: how to name the first gap when the day starts with a commitment, and what to show when many small commitments create many small gaps (proposal: hide gaps under about 20 minutes).
 - **Mood note visibility**: whether the free-text note is ever shown back to the user (e.g. in Wellbeing history) is a design question.
 - **Undo scope**: carry-forward choices are undoable until the day is closed; confirm this persists if the wizard is closed but not finished (it should — they're already applied to tasks).
