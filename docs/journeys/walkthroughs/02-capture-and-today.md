@@ -135,5 +135,5 @@ If the proposals are accepted:
 5. **Quick dates** use the user's calendar's first weekday: *Later this week* is three days from now if that is still in the same week (otherwise not offered); *Next week* is the first day of next week (G-16).
 6. **The Add sheet** opens on Task with a Task | Anchor switch; the separate chooser screen is dropped (G-17).
 7. **No manual ordering in v1**, recorded as a working hypothesis to check in real use (G-18).
-8. **A dropped task is not recoverable** after the 5-second undo in v1 — accepted because there is no History screen (G-19).
+8. **A dropped task is not recoverable** after the 5-second undo in v1 — accepted because there is no History screen (G-19, **decided**).
 9. **Design fixes:** importance drawn as low / medium / high (not "Matters 4 of 5"); *Drop*, not *Delete* (G-20).

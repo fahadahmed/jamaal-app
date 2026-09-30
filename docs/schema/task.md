@@ -18,7 +18,7 @@ Tasks live in **one flat list** — no projects, no tags, no sub-lists. `categor
 | `importance`      | `String`  | `"low"`   | One of `low` / `medium` / `high` — there is no "none"; `low` is the baseline. **This is the *importance* axis** of the hidden Eisenhower lens (see below). Medium and high carry extra rules — see [Importance rules](#importance-rules). Raw `String` for CloudKit-safe simplicity. |
 | `isCompleted`   | `Bool`    | `false`   | |
 | `completedAt`   | `Date?`   | `nil`     | Set when `isCompleted` flips true; cleared if un-completed. |
-| `droppedAt`     | `Date?`   | `nil`     | Set when the user drops a task (Night Planning carry-forward "Drop", or delete-from-detail). Soft-delete so history/wellbeing detection keep working. A dropped task never appears on Today. |
+| `droppedAt`     | `Date?`   | `nil`     | Set when the user drops a task (Night Planning carry-forward "Drop", or delete-from-detail). Soft-delete so history/wellbeing detection keep working. A dropped task never appears on Today. **In v1 nothing surfaces dropped tasks** (no History screen), so a drop is final once the 5-second undo has passed; the data is kept, so a later History screen can show it. |
 | `deferralCount` | `Int`     | `0`       | Times this task has been pushed to a later day — by the user (Keep/Later at night, defer from Today) or automatically (see below). Replaces the earlier `rolloverCount`. |
 | `repeatKind`    | `String`  | `"none"`  | One of `none` / `daily` / `weekly` / `monthly`. See [Repeating tasks](#repeating-tasks). |
 | `repeatWeekdays`| `String`  | `""`      | For `weekly`: ISO weekdays (Mon=1 … Sun=7), e.g. `"5"` for Fridays. Empty = same weekday as `dueDate`. |
