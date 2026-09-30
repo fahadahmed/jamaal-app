@@ -110,6 +110,7 @@ Monthly patterns are intentionally not offered for Anchors; recurring monthly th
   "madhab": "shafi",
   "highLatitude": "middleOfNight",
   "ishaEnds": "midnight",
+  "fridayLabel": true,
   "prayers": ["fajr", "dhuhr", "asr", "maghrib", "isha"],
   "adjustmentsMinutes": { "fajr": 0, "dhuhr": 0, "asr": 0, "maghrib": 0, "isha": 0 },
   "location": { "mode": "device", "latitude": -36.85, "longitude": 174.76, "name": "Auckland" }
@@ -118,13 +119,32 @@ Monthly patterns are intentionally not offered for Anchors; recurring monthly th
 
 | Field | Values / notes |
 | ----- | -------------- |
-| `method` | Calculation method, e.g. `northAmerica`, `muslimWorldLeague`, `ummAlQura`, `karachi`, `egyptian`. The final list follows whichever prayer-time library is chosen at implementation; onboarding suggests a default from the user's region and lets them change it. |
+| `method` | Calculation method — exactly the set the prayer-time library (`adhan-swift`) provides: `muslimWorldLeague`, `egyptian`, `karachi`, `ummAlQura`, `dubai`, `moonsightingCommittee`, `northAmerica`, `kuwait`, `qatar`, `singapore`, `tehran`, `turkey` (its `other` is for custom angles and is not offered). Suggested from the user's region by the [method suggestion table](#prayer-method-suggestion) and always editable. |
 | `madhab` | `shafi` (standard Asr) or `hanafi`. |
 | `highLatitude` | `middleOfNight` / `seventhOfNight` / `twilightAngle`. Only matters far from the equator. |
+| `fridayLabel` | `true` (default) titles **Friday's Dhuhr Anchor "Jumu'ah"**: same window, same time, same `slotKey` (`dhuhr`); only the name changes. `false` keeps "Dhuhr" on Fridays. |
 | `ishaEnds` | `midnight` (default: Islamic midnight, the midpoint between Maghrib and the next Fajr) or `fajr`. |
 | `prayers` | Subset of the five to generate. Slot keys are the prayer names. |
 | `adjustmentsMinutes` | Per-prayer offset (may be negative) for matching a local mosque timetable. |
 | `location` | See below. |
+
+### Prayer method suggestion
+
+The prayer-time library has no region helper, so a small table is **bundled in JamaalCore** (keyed by ISO country code, from the location's country or the device region). It only pre-selects the method and madhab in the form; the user can change both. Drafted from the library's own notes on where each method is used; **the owner should review it**.
+
+| Country | Method | Asr (madhab) |
+| ------- | ------ | ------------ |
+| US, CA, GB | `moonsightingCommittee` (the library recommends it for North America and the UK; `northAmerica` / ISNA is offered as the alternative) | standard |
+| SA | `ummAlQura` | standard |
+| AE | `dubai` | standard |
+| KW | `kuwait` | standard |
+| QA | `qatar` | standard |
+| SG, MY, ID | `singapore` | standard |
+| TR | `turkey` | Hanafi |
+| IR | `tehran` | standard |
+| EG | `egyptian` | standard |
+| PK, IN, BD, AF | `karachi` | Hanafi |
+| anywhere else | `muslimWorldLeague` | standard |
 
 **Windows**: Fajr → sunrise · Dhuhr → Asr · Asr → Maghrib · Maghrib → Isha · Isha → `ishaEnds`. Adjustments shift each prayer's computed start, and windows derive from the adjusted times. Times are computed on-device from date, location and these settings, so the result is deterministic. Isha's window may end after civil midnight in summer; the Anchor still belongs to the day it starts.
 
@@ -180,7 +200,6 @@ The state is what an Anchor row shows on Today (with a window bar); the attendan
 - **Deleting a rule** archives it (`isArchived`): it disappears from the rules list, its future *pending* instances are removed, and attended / missed / skipped / delegated history stays linked to it.
 - **Correcting a closed window**: "closed is final" means someone who prayed or watered the plants but forgot to tap can't fix it. Options: allow a late correction until the end of that day, or accept it. Non-punitive tone argues for a same-day correction; needs a decision (and must not weaken the early-logging protection above).
 - **`afterLast` details**: whether a rule may combine several slots with `afterLast` (probably one slot), and whether `minDays`/`maxDays` should adapt with season (the design mentions drift) or stay user-set.
-- **Jumu'ah**: on Fridays Dhuhr is replaced by the Friday prayer. Not modelled — needs a label or a separate slot rule, and the user's call.
 - **Anchor reminders**: no per-rule reminder lead time (before window start / before it closes) yet — see [rules-engine.md](../architecture/rules-engine), module 6.
 - **Per-slot duration**: `effortMinutes` is one value per rule, so every prayer or slot gets the same duration. Fine for v1.
 - **One-off boundary**: should one-offs support notes or a location? Not modelled; likely not needed for v1.

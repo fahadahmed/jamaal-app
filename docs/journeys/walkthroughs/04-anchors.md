@@ -63,9 +63,9 @@
 - **Sees:** location (*Use my location* → the system prompt, in context; or a city search), calculation **method** (suggested from the region), madhab, which prayers, **Isha ends at** (Islamic midnight by default), an *Advanced* disclosure (per-prayer minute adjustments, the high-latitude rule), duration (default 10 min), and reminders.
 - **Writes:** an `AnchorRule` with `sourceKey = prayerWindow`, the `configData` shape, `effortMinutes`, `placement = fixed`; the engine generates Anchors for today (only windows that haven't closed) and tomorrow.
 - **Assumes:**
-  - a method can be suggested from the region — **✗ G-31** (no region → method table exists, and the madhab default isn't stated);
+  - a method can be suggested from the region — **✗ G-31** → *resolved*: the prayer-time library exists (`adhan-swift`), but has no region helper, so a small suggestion table is bundled in `JamaalCore`;
   - the stored location is right on several devices — **✗ G-32** (in *device* mode every device with location could overwrite the same rule's coordinate; an iPhone travelling and a Mac sitting at home would fight);
-  - Friday is handled — **✗ G-36** (Jumu'ah replaces Dhuhr on Fridays; still an open question);
+  - Friday is handled — **✗ G-36** → *decided*: a **Friday label** (the Friday Dhuhr Anchor is titled "Jumu'ah");
   - city search works without location — ✓ (needs network; offline the user can still enter the rule later).
 
 ### AN-05 The scheduled form (school run, bin night, plants, custom)
@@ -119,9 +119,9 @@ If the proposals are accepted:
 2. **Late correction (G-28):** a **missed** Anchor offers *"Mark as done after all"* until the end of that logical day (a neutral confirmation showing the time). It never reopens *skipped* or *delegated*, and it does not weaken the rule that *attended* can't be logged before a window opens.
 3. **`Anchor.resolvedAt: Date?` (G-29):** set when the status leaves `pending` (and updated by a late correction). A plants-style rule's next window is scheduled from the logical date of `resolvedAt` of an attended, skipped or delegated instance.
 4. **Reminders (G-30):** rule config gains `reminder: { atStart: Bool, beforeEndMinutes: Int? }`; generated Anchors copy it into `Anchor.remindBeforeStartMinutes` (0 = at the start) and `Anchor.remindBeforeEndMinutes`; one-offs set them directly. **Defaults:** prayer times remind **at the start**, everything else **off**, and a closing reminder is always opt-in (nothing nags). Notifications are scheduled over a **five-day** horizon using the generator's preview (not only the two stored days), inside the 64-notification budget, and re-planned on launch, on foreground and on background refresh.
-5. **Prayer method (G-31):** a bundled region → method suggestion table (for example North America → ISNA, most of the Middle East → Umm al-Qura, South Asia → Karachi) and a madhab default of standard (Shafi'i-style Asr), both always editable. The owner should review the table.
+5. **Prayer method (G-31, resolved):** the prayer-time library is **`adhan-swift`** (MIT, maintained, builds on Xcode 27, and its methods, madhabs and high-latitude rules match our config names). It has no region helper, so a bundled **region → method and madhab table** in `JamaalCore` pre-selects the form (table in [anchor.md](../../schema/anchor#prayer-method-suggestion); the owner reviews it). No separate package is needed unless the owner wants to reuse the table outside Jamaal.
 6. **Location on several devices (G-32):** in *device* mode a device writes the rule's coordinate **only when that device has itself moved** materially (about 25 km) since its own last check, never merely because its position differs from the stored one. A Mac at home never writes; a travelling iPhone does.
 7. **Plants-style start (G-33):** for `afterLast`, `startDate` means **the date it was last handled** (the form asks *"When did you last do this?"*, default *Today*, or *Due now*, which sets it `minDays` ago). The first window opens `minDays` later.
 8. **Preview (G-34):** the engine exposes a dry-run `preview(rule, days)` that returns the Anchors a rule *would* generate, used by the rule detail and by reminder scheduling.
 9. **Capacity level (G-35):** Anchors are **always shown**, at every level.
-10. **Jumu'ah (G-36):** the prayer rule gets an optional **Friday label**: the Friday Dhuhr Anchor is titled *"Jumu'ah"* (same window, same time, only the name changes). The owner should confirm this is enough.
+10. **Jumu'ah (G-36, decided):** the prayer rule has a `fridayLabel` option (on by default): Friday's Dhuhr Anchor is titled *"Jumu'ah"* — same window, same time, only the name changes.
