@@ -16,6 +16,7 @@
 
 - [App flow (end to end)](journeys/app-flow)
 - [Screens and flows register](journeys/screens)
+- [Journey walkthroughs](journeys/walkthroughs/overview)
 - [Today List](journeys/today-list)
 - [Night Planning](journeys/night-planning)
 - [Onboarding](journeys/onboarding)
