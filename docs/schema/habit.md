@@ -14,7 +14,7 @@ Salah is **not** modeled here — it's an [Anchor](anchor) instead, since prayer
 | `title`          | `String`  | `""`                   | |
 | `notes`          | `String?` | `nil`                  | |
 | `presetKey`      | `String?` | `nil`                  | Built-in preset (e.g. `"quran"`, `"dhikr"`) vs. `nil` for custom. |
-| `kind`           | `String`  | `"binary"`             | One of `binary` / `counted` / `timed` / `avoid`. Fixes what `targetCount` and `completedCount` mean — see [Habit kinds](#habit-kinds). |
+| `kind`           | `String`  | `"binary"`             | One of `binary` / `counted` / `timed` / `avoid`. Fixes what `target` and `amount` mean — see [Habit kinds](#habit-kinds). |
 | `frequency`      | `String`  | `"daily"`              | One of `daily` / `weekdays` / `custom`. |
 | `scheduledDays`  | `String`  | `"1,2,3,4,5,6,7"`      | ISO weekdays (Mon=1 … Sun=7) the habit is due. `weekdays` = `"1,2,3,4,5"`. Used when `targetPerWeek == 0`. |
 | `targetPerWeek`  | `Int`     | `0`                    | `0` = fixed days from `scheduledDays`; `1…7` = "N times a week, any days" (custom recurrence's times/week stepper). |
@@ -32,7 +32,7 @@ Salah is **not** modeled here — it's an [Anchor](anchor) instead, since prayer
 A window is one *occurrence slot* in the day that keeps its own completion history. Two ways to get "multiple per day":
 
 - **Distinct slots** — medication morning and evening = two windows, two independent density grids.
-- **Counted** — "drink water 8×" = **one** window with `targetCount = 8`; the user increments a stepper and the window is complete when the count reaches the target. (Eight windows for eight glasses would give eight meaningless grids.)
+- **Counted** — "drink water 8×" = **one** window with `target = 8`; the user increments a stepper and the window is complete when the count reaches the target. (Eight windows for eight glasses would give eight meaningless grids.)
 
 | Field               | Type    | Default  | Notes |
 | ------------------- | ------- | -------- | ----- |
@@ -40,7 +40,7 @@ A window is one *occurrence slot* in the day that keeps its own completion histo
 | `label`             | `String`| `""`     | e.g. `"Morning"`; empty for a single-window habit. |
 | `startMinute`       | `Int`   | `0`      | Minutes since midnight. See open question. |
 | `endMinute`         | `Int`   | `1439`   | `1439` = no real window boundary. |
-| `targetCount`       | `Int`   | `1`      | Meaning depends on `Habit.kind`: `binary` = 1; `counted` = N times; `timed` = N **minutes**; `avoid` = the allowance (most slips still fine), `0` = none. |
+| `target`       | `Int`   | `1`      | Meaning depends on `Habit.kind`: `binary` = 1; `counted` = N times; `timed` = N **minutes**; `avoid` = the allowance (most slips still fine), `0` = none. |
 | `effortMinutes`     | `Int?`  | `nil`    | How long one occurrence takes (e.g. 15 for a Qur'an reading window). Counts as *flexible* time: it reduces the day's total free time but doesn't cut it into blocks (see [rules-engine.md](../architecture/rules-engine), module 7). For a counted window it is the time for the *whole* target, not per increment. Presets ship a sensible default; `nil` = unknown, counts as zero. |
 | `reminderMinute`    | `Int?`  | `nil`    | Minutes since midnight; `nil` = no reminder. UI default when the toggle is switched on: 20:00. Reminders were per-habit in v2; per-window here because windows are the unit of completion history and timing. |
 
@@ -54,13 +54,12 @@ The per-day completion log the earlier draft was missing. Needed for the heatmap
 | --------------- | --------- | -------- | ----- |
 | `id`            | `UUID`    | `UUID()` | |
 | `date`          | `Date`    | `.now`   | A floating calendar date: the **logical date** of the log (so a late-night log before the user's rollover counts for the day they're still living) — see [The day boundary](../architecture/rules-engine#the-day-boundary). |
-| `targetCount`   | `Int`     | `1`      | Snapshot of the window's target that day (so editing the target later doesn't rewrite history). |
-| `completedCount`| `Int`     | `0`      | By kind: binary 0 or 1; counted the count so far (stepper); **timed the minutes so far**; **avoid the slips so far**. |
+| `target`   | `Int`     | `1`      | Snapshot of the window's target that day (so editing the target later doesn't rewrite history). |
+| `amount`| `Int`     | `0`      | By kind: binary 0 or 1; counted the count so far (stepper); **timed the minutes so far**; **avoid the slips so far**. |
 | `completedAt`   | `Date?`   | `nil`    | When the target was reached. |
-| `skippedReason` | `String?` | `nil`    | Optional, user-supplied. |
 | `window`        | `HabitTimeWindow?` | `nil` | Inverse of `entries`. |
 
-Derived, not stored: for binary, counted and timed, `isComplete` (`completedCount >= targetCount`), `completionRatio`, `isPartial`, `remainingCount`; for `avoid` the day's outcome follows the [avoid rules](#avoid-habits) instead.
+Derived, not stored: for binary, counted and timed, `isComplete` (`amount >= target`), `completionRatio`, `isPartial`, `remainingCount`; for `avoid` the day's outcome follows the [avoid rules](#avoid-habits) instead.
 
 ### `HabitGroup`
 
@@ -72,19 +71,18 @@ Groups are **purely visual organisers** — no group-level score or history; eac
 | `title`      | `String` | `""`     | |
 | `emoji`      | `String` | `""`     | Single emoji. |
 | `sortOrder`  | `Int`    | `0`      | |
-| `isExpanded` | `Bool`   | `false`  | Default collapsed. |
 | `isArchived` | `Bool`   | `false`  | Archiving a group never deletes its habits (`deleteRule: .nullify`). |
 | `createdAt`  | `Date`   | `.now`   | |
 
 Relationship: `habits: [Habit]?` (optional).
 
-Collapsed card: completion ring (% complete today), emoji, name, "4/5 today" badge, 14-day aggregate heatmap. Expanded card: habit rows with check button and completion time. The Today strip shows a group pill with proportional ring and count.
+Collapsed card: completion ring (% complete today), emoji, name, "4/5 today" badge, 14-day aggregate heatmap. Expanded card: habit rows with check button and completion time. Whether a group is expanded is **local UI state** (per device, not synced) and defaults to collapsed. The Today strip shows a group pill with proportional ring and count.
 
 ## Habit kinds
 
-Created from a type picker with plain-language descriptions. `Habit.kind` fixes the meaning of `targetCount` and `HabitEntry.completedCount`:
+Created from a type picker with plain-language descriptions. `Habit.kind` fixes the meaning of `target` and `HabitEntry.amount`:
 
-| Kind | The question | `targetCount` | `completedCount` | On Today |
+| Kind | The question | `target` | `amount` | On Today |
 | ---- | ------------ | ------------- | ---------------- | -------- |
 | `binary` | Did I do it? | 1 | 0 or 1 | tap the check |
 | `counted` | Did I do it N times? | N | times so far | stepper |
@@ -104,7 +102,7 @@ Created from a type picker with plain-language descriptions. `Habit.kind` fixes 
 
 > **Proposal — the design has only a title for this (H-06, "inverted logging"), so these semantics need a design pass before they are treated as settled.**
 
-- **Inverted logging.** The default expectation is abstaining; the user logs a **slip** (each tap adds one to `completedCount`, undoable). Wording stays neutral — no praise, no guilt.
+- **Inverted logging.** The default expectation is abstaining; the user logs a **slip** (each tap adds one to `amount`, undoable). Wording stays neutral — no praise, no guilt.
 - **A day's outcome is derived when read, not stored as a default success:**
   - `missed` if slips exceed the allowance;
   - `complete` if slips are within the allowance **and the user engaged with the app that day** — any recorded activity: a task completed, a habit or Anchor logged, a focus session, Night Planning closed, or an explicit **Held today** tap;

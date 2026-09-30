@@ -77,7 +77,7 @@ Lets a deterministic engine enforce "one nudge a day" and "don't repeat a warnin
 | Field         | Type      | Default    | Notes |
 | ------------- | --------- | ---------- | ----- |
 | `id`          | `UUID`    | `UUID()`   | |
-| `kind`        | `String`  | `""`       | `wellbeing` / `guidance` / `fatigue` / `windowClosing` / `overload`. |
+| `kind`        | `String`  | `""`       | `wellbeing` / `guidance` / `fatigue` / `windowClosing` / `overload` / `morningPlanCard` (the once-only "No plan for today" card; `subjectKey` is the date) / `habitPromotion` (v1.1 — `subjectKey` is the declined title). |
 | `subjectKey`  | `String?` | `nil`      | The habit/task the nudge was about (UUID string), if any. |
 | `sentAt`      | `Date`    | `.now`     | |
 | `dismissedAt` | `Date?`   | `nil`      | |
@@ -93,6 +93,7 @@ The few settings that change *computed* results, so they must be identical on ev
 | `dayStartMinute`   | `Int`  | `480`   | Minutes since midnight when the working day starts (08:00). Free time for tomorrow's plan starts here; for today it starts at the later of now and this. |
 | `dayEndMinute`     | `Int`  | `1140`  | Minutes since midnight when the working day ends (19:00; users pick, typically 19:00–20:00). The soft planning boundary. |
 | `rolloverMinute`   | `Int`  | `0`     | Minutes since midnight when the app's day rolls over (00:00 by default; the UI offers 00:00–06:00, for people who are up late or work nights). Must be earlier than `dayStartMinute`. See [The day boundary](#the-day-boundary). |
+| `firstLaunchAt`    | `Date?`| `nil`   | When the app was first launched; the synced fallback for the trial start date if StoreKit's original-download date is unavailable. Set once, by the first device. |
 | `createdAt`        | `Date` | `.now`  | |
 
 CloudKit has no unique constraints, so two devices can each seed a row. The engine keeps the earliest-created row and deletes the rest.
@@ -138,7 +139,7 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
   - Runs the automatic deferral at day rollover for dated tasks the user never handled (lazily and idempotently — see [The day boundary](#the-day-boundary)); at most one deferral per task per logical day.
   - Creates the next instance of a repeating task when the live one is completed or dropped (rules in [task.md](../schema/task#repeating-tasks)); dedups by `(seriesID, dueDate)`.
   - Escalation: `deferralCount >= 3` → stale and urgency raised; `>= 5` → suggest removal.
-- **Signals**: `.taskOrder`, `.stale(task)`, `.suggestRemoval(task)`, `.priorityEased(task)` (medium/high → low on 3rd deferral), `.nextInstanceDue(series)`, `.pickPriorities` (5+ tasks in a plan and fewer than two `medium`/`high` → "pick one or two that matter most"), `.multipleDoFirst` (two or more `doFirst` tasks → companion asks "which matters most?").
+- **Signals**: `.taskOrder`, `.stale(task)`, `.suggestRemoval(task)`, `.importanceEased(task)` (medium/high → low on 3rd deferral), `.nextInstanceDue(series)`, `.pickPriorities` (5+ tasks in a plan and fewer than two `medium`/`high` → "pick one or two that matter most"), `.multipleDoFirst` (two or more `doFirst` tasks → companion asks "which matters most?").
 
 ### 2. Habit density & intelligence
 

@@ -7,6 +7,7 @@
 
 ### Schema
 
+- [Schema overview](schema/overview)
 - [Task](schema/task)
 - [Habit](schema/habit)
 - [Anchor](schema/anchor)
