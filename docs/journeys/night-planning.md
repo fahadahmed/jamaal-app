@@ -20,7 +20,7 @@ If opened after midnight, it plans for the *next* day from the user's point of v
 
 Two parts on one step.
 
-**Review (read-only):** what happened today — Tasks completed vs. incomplete, Habit windows completed / partial / missed (counted habits shown honestly, e.g. "2/3 water"), Anchor `attendanceStatus`.
+**Review (read-only):** what happened today — Tasks completed vs. incomplete, Habit windows completed / partial / missed (counted habits shown honestly, e.g. "2/3 water"), Anchor `attendanceStatus`, and time actually spent against what was estimated (from focus sessions), stated plainly.
 
 **Carry forward:** each incomplete task gets one of:
 

@@ -12,7 +12,7 @@ Tasks live in **one flat list** — no projects, no tags, no sub-lists. `categor
 | --------------- | --------- | --------- | ----- |
 | `id`            | `UUID`    | `UUID()`  | Stable identity across CloudKit sync. |
 | `title`         | `String`  | `""`      | |
-| `notes`         | `String?` | `nil`     | Optional lightweight markdown (checklists, bold/italic, links, inline code) — surfaced as a tappable checklist in the task detail. |
+| `notes`         | `String?` | `nil`     | Optional lightweight markdown (checklists, bold/italic, links, inline code) — one note per task. Shown as a tappable checklist in the task detail and beneath the timer during a focus session. The finish and defer sheets can **append** an optional timestamped line ("Left a voicemail, call back Tuesday") rather than overwrite, so the note becomes the record of the attempts. No headings, tables or images. |
 | `dueDate`       | `Date?`   | `nil`     | Day granularity. `nil` = backlog / "Someday". **Required when `priority` is `medium` or `high`.** |
 | `effortMinutes` | `Int?`    | `nil`     | Optional estimate: 15 / 30 / 60 / 120. `nil` = unestimated (counts as zero toward load). |
 | `priority`      | `String`  | `"low"`   | One of `low` / `medium` / `high` — there is no "none"; `low` is the baseline. **This is the *importance* axis** of the hidden Eisenhower lens (see below). Medium and high carry extra rules — see [Importance rules](#importance-rules). Raw `String` for CloudKit-safe simplicity. |
@@ -29,6 +29,7 @@ Tasks live in **one flat list** — no projects, no tags, no sub-lists. `categor
 
 - `category: TaskCategory?` — optional (CloudKit). `nil` renders as no label.
 - `deferrals: [DeferralRecord]?` — optional (CloudKit). One record per deferral; drives reason history and avoidance detection.
+- `sessions: [WorkSession]?` — optional (CloudKit). The focus sessions run on this task; their time sums into the task's actual time (derived, not stored).
 
 ### `TaskCategory`
 
@@ -65,6 +66,39 @@ Importance has three levels — `low` (the default and the baseline), `medium`, 
 3. **Important tasks can't keep slipping.** On a medium/high task's **3rd** deferral its `priority` is set to `low`, and the companion says so plainly ("This one keeps slipping, so I've eased it to low. Raise it again when it's real."). Never silent. Once it is `low`, the date requirement and the Someday restriction no longer apply.
 4. **Prioritisation prompt.** If a day's plan has **five or more tasks** and fewer than two of them are `medium`/`high`, the companion prompts the user to pick one or two that matter most. It's a prompt, not a block. This appears in Night Planning's plan step (and can appear on Today).
 5. **Ordering.** By quadrant (`doFirst`, `schedule`, `fitIn`, `letGo`), then due date, then `createdAt`. Because `low` tasks are never important, they always fall in `fitIn`/`letGo` and so sort after every `medium`/`high` task. A `low` task with no date is a backlog task.
+
+## Focus sessions (Begin / pause / finish)
+
+A task can be worked in a **focus session**: the user taps **Begin**, a running chip appears on every tab, and the app stays fully usable. The session records real time so the day can be reviewed honestly and estimates can be learned from.
+
+### `WorkSession`
+
+| Field             | Type      | Default     | Notes |
+| ----------------- | --------- | ----------- | ----- |
+| `id`              | `UUID`    | `UUID()`    | |
+| `startedAt`       | `Date`    | `.now`      | When Begin was tapped. Elapsed time is **always derived from this**, never accumulated in memory, so a killed app rebuilds the session exactly. |
+| `endedAt`         | `Date?`   | `nil`       | `nil` while the session is live. |
+| `pausedSeconds`   | `Int`     | `0`         | Total time spent in completed pauses. |
+| `pausedAt`        | `Date?`   | `nil`       | Non-`nil` while an explicit pause is in progress. Backgrounding the app does **not** pause. |
+| `estimateMinutes` | `Int?`    | `nil`       | Snapshot of `Task.effortMinutes` at Begin, so later edits don't rewrite what was estimated. |
+| `outcome`         | `String`  | `"running"` | One of `running` / `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed`. |
+| `actualSeconds`   | `Int`     | `0`         | Written when the session closes: elapsed minus pauses. |
+| `task`            | `Task?`   | `nil`       | Inverse of `Task.sessions`. |
+
+Derived, not stored: `elapsed = (endedAt ?? now) − startedAt − pausedSeconds − (pausedAt.map { now − $0 } ?? 0)`; a session is *paused* when `pausedAt != nil`, and *overrun* when `elapsed` passes `estimateMinutes`. The model is subject-agnostic on purpose: a habit relationship can be added later for timed habits (additively, so it is CloudKit-safe) once the habit-types decision is made.
+
+### States and outcomes
+
+`Idle → Running → Overrun`, with `Paused` reachable only by an explicit pause from Running or Overrun.
+
+- **Overrun counts up and says nothing.** No alarm, no colour change, no nudge, no haptic. The estimate is a guess we learn from, not a contract; "75 of 60" is shown neutrally.
+- **Finish** (from the chip, the focus screen, or later the Lock Screen): a finish sheet shows actual against estimate and offers one optional note line; the task is marked done (`isCompleted`, `completedAt = endedAt`). A quiet toast offers **undo for 5 seconds**, which reopens the session and un-completes the task.
+- **One timer at a time.** Tapping Begin on a second task, while one is live, raises a **settle sheet** naming the running task: **Done** (finished), **Defer to tomorrow** (`deferred` — a normal deferral with its count and record), or **Drop** (`dropped` — sets `droppedAt`). The new session only starts after the user chooses, and the elapsed time is logged whichever they pick.
+- **Abandon** ends the session as `abandoned`: the partial time is kept, the task stays live and undone. "Abandoning is not failing."
+- **The midnight wall**: a session still running at local midnight auto-closes as `autoClosed` with its partial time. The task is carried to tomorrow **without** counting a deferral (it was in progress), and tomorrow's list opens with a single row offering to pick it back up. The wall is a constant (00:00); the capacity decision may make it a user-set bedtime, and either way the auto-close rule is the same.
+- **Multi-device**: at most one live session. If two devices each Begin, the later-started one is closed as `abandoned` (its time is logged) and the user sees the settle sheet on next open. (Proposal.)
+
+Only tasks with time worth recording need a session; **Mark done** without one still works, and a task with no session simply has no actual time.
 
 ## Repeating tasks
 
@@ -119,7 +153,7 @@ These are computed by the rules engine at read time (module 1), not persisted:
 
 ## Open questions
 
-- **Start / finish tracking**: only `completedAt` exists. Proposal: add `startedAt: Date?`, set by a **Start** action in the task detail that opens a focus view showing the markdown checklist; duration is derived from `startedAt`→`completedAt`, with no pause, no live timer and no penalty for overrunning, and it feeds Night Planning's review step. Needs confirmation before the task-detail screen is designed.
+- **Learning from actuals**: sessions record actual time against the estimate, but how that feeds back (suggested estimates on new tasks, calibrating the medium-day length) is part of the still-open capacity-model decision.
 - **Category colours**: ThreadsKit has only `accent` and `terra` as accents. User-created categories need a small palette (a few extra ThreadsKit tokens, or tints of existing ones) — a design/tokens decision, see [threadskit-usage](../design/threadskit-usage).
 - **Re-raising after an auto-downgrade**: if the user raises a downgraded task back to medium/high, its `deferralCount` is still 3+, so its next deferral downgrades it again immediately. Probably right ("keeps slipping"), but confirm — the alternative is to reset the count used for this rule when importance is re-raised.
 - **Prioritisation prompt**: soft (dismissible) as written. Should Night Planning instead require at least one priority task before Confirm when the threshold is hit?

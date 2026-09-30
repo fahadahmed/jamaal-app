@@ -106,7 +106,7 @@ Pricing (CLAUDE.md): free download, 14-day full-access trial, then subscription 
 | ------ | ------ |
 | Today (with guidance highlight, companion card, capacity slider) | Mockup exists (legacy palette); needs Anchors section, category labels |
 | Night Planning — 5 steps | Mockup exists as 5 steps *without* Anchors read-only context and with a different step order; needs re-flow |
-| Task detail (normal / deferred / complete) | Mockup exists; add category, Start/Finish if approved |
+| Task detail (normal / deferred / complete) | Mockup exists; add category and a **Begin** action |
 | Defer date picker (quick select / calendar, reason chips) | Mockup exists |
 | Add task (title, effort, notes, importance, schedule) | Mockup exists; **add category** |
 | Habits overview (collapsed / expanded groups) | Mockup exists |
@@ -126,6 +126,8 @@ Pricing (CLAUDE.md): free download, 14-day full-access trial, then subscription 
 | **Add one-off Anchor (from Today's add choice and Night Planning step 3)** | **New — no mockup** |
 | **Category management (Settings)** | **New — no mockup** |
 | **Repeat picker (in add task / detail)** | **New — no mockup** |
+| **Focus sessions:** running chip on Today (T-01), focus screen with note checklist (T-02), overrun (T-03), paused (T-04), finish sheet with undo (T-05, T-06), switch-task settle sheet (T-08); the Lock Screen activity (T-07) is v1.1 | **New — design project has drawn specs; screens not yet drawn** |
+| **Carried-over row after an auto-closed session** (X-02) | **New — no mockup** |
 | **Paywall** | **New — no mockup** |
 | **Trial status row and read-only banner** | **New — no mockup** |
 | **Regular-width layouts: sidebar, Today + inspector, Night Planning modal** | **New — no mockup** |
@@ -153,10 +155,10 @@ Resolved in this reconciliation:
 - [x] Trial and subscription — app-managed 14-day trial, then read-only with a calm paywall
 - [x] iPad, Mac and iPhone Duo — adaptive layout: system tab bar/sidebar, split-view Today, Duo handled by compact (outer) and regular (inner) layouts
 - [x] Recurring tasks — simple repeat on Task, one live instance per series
+- [x] Timer — focus sessions adopted from the design: ambient chip on every tab (Live Activity v1.1), count-up overrun with no nudge, explicit pause only, one timer at a time with a settle sheet, abandon logs partial time, auto-close at midnight; notes "smaller yes" (checklist in session, timestamped lines on finish/defer)
 
 Still open — settle before or during screen design:
 
-- [ ] Start/Finish tracking on tasks ([task.md](../schema/task))
 - [ ] Onboarding: which steps are skippable (proposal in [onboarding.md](onboarding))
 - [ ] Anchor extras: Jumu'ah on Fridays, reminder lead time, correcting a closed window ([anchor.md](../schema/anchor) open questions)
 - [ ] Category colours and habit heatmap colours — ThreadsKit has no sage and only two accents ([threadskit-usage](../design/threadskit-usage))

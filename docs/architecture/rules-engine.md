@@ -1,6 +1,6 @@
 # Rules Engine
 
-> **Status: reconciled with master summary v2 — draft, needs review.** The six modules confirmed in issue #7 are kept (numbering is stable, other docs refer to it) and a seventh, **Capacity & load**, is added. v2's hidden Eisenhower, deferral escalation, load states, pattern detection and during-day guidance are folded in. See [ADR 0002](decisions/0002-reconcile-master-summary-v2).
+> **Status: reconciled with master summary v2 — draft, needs review.** The six modules confirmed in issue #7 are kept (numbering is stable, other docs refer to it) a seventh, **Capacity & load**, and an eighth, **Focus sessions**, are added. v2's hidden Eisenhower, deferral escalation, load states, pattern detection and during-day guidance are folded in. See [ADR 0002](decisions/0002-reconcile-master-summary-v2).
 
 Deterministic — same state + inputs always produce the same output, no ML/heuristics (per CLAUDE.md). Lives in `JamaalCore/Sources/JamaalCore/RulesEngine/`, no UI imports.
 
@@ -26,6 +26,7 @@ protocol RuleModule {
 - **Night Planning is 5 steps** with a Keep/Later/Drop carry-forward folded into step 1, and its session is **persisted** (CloudKit sync means a session can resume on another device).
 - **Reflect step** captures a numeric mood (1–5) and an optional free-text note.
 - **Night Planning triggers** via a fixed evening notification (user-set time, default 20:00) in addition to being openable any time. Module 6 is therefore a hard dependency of module 4.
+- **Focus sessions** (the task timer) follow the design's locked decisions: an ambient chip on every tab (Live Activity deferred to v1.1), count-up overrun with no alarm or nudge, one timer at a time settled with Done / Defer / Drop, abandon logs partial time, auto-close at the midnight wall. See [task.md](../schema/task#focus-sessions-begin--pause--finish) and module 8.
 - **Nudge limits**: at most one wellbeing nudge and one during-day guidance card per day.
 
 ## Supporting models
@@ -171,6 +172,18 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 - **Suggested capacity**: from tomorrow's committed minutes the engine can suggest a level (e.g. committed minutes above half the medium budget → suggest `low`). The user always decides.
 - **Signals**: `.loadState`, `.committedMinutes`, `.suggestedCapacity`, `.missingDurations(count)`, `.todayVisibility`.
 
+### 8. Focus sessions (state machine)
+
+- **Input**: `WorkSession` rows, the current time, today's and tomorrow's Anchors.
+- **Behavior**: a small deterministic state machine over `WorkSession` (`Idle → Running → Overrun`, `Paused` only by explicit pause; outcomes `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed` — full rules in [task.md](../schema/task#focus-sessions-begin--pause--finish)).
+  - Derives elapsed time from `startedAt`, so a killed or backgrounded app never loses or invents time.
+  - Enforces **one live session**: a second Begin is refused until the first is settled (Done / Defer / Drop); on a cross-device conflict the later-started is closed as `abandoned`.
+  - **Auto-closes at the midnight wall** (`autoClosed`), carries the task to tomorrow without counting a deferral, and emits a pick-it-back-up signal for tomorrow's list.
+  - **Approaching edge**: while a session runs, finds the next Anchor whose window opens soon (threshold proposal: 30 minutes, tunable) and emits a signal the chip phrases as "Maghrib in 12 min". It never blocks or interrupts.
+  - **Overrun** is a state, not an event: it emits no notification, colour change or nudge.
+- **Signals**: `.sessionState`, `.sessionAutoClosed(task)`, `.pickUpRow(task)`, `.anchorApproaching(anchor, minutes)`.
+- **Output**: session transitions written to `WorkSession`, task effects from the settle sheet (done / deferral / drop), and no scheduled notifications — sessions never nag. The Lock Screen Live Activity (v1.1) is driven locally by the same state, not by a push.
+
 ## Open questions
 
 - **Numbers are proposals**: the medium-day default (180) and the ⅔ / 4⁄3 multipliers for low/high, the load thresholds, the rollover-to-stale threshold (3), removal suggestion (5), and the wellbeing window (7 vs. 14) are all constants, easy to tune.
@@ -180,3 +193,4 @@ Planning time (default 20:00), morning nudge on/off and time (default 08:00), du
 - **Prayer-time library**: `configData` fixes the settings, not the implementation. Choose a well-tested prayer-time library (or implementation) at build time and check its method list against the `method` values offered, plus its high-latitude handling.
 - **Notification limits**: iOS caps pending local notifications at 64 — confirm the reminder + nudge volume stays well under that. Habit reminders add up, and five prayers a day for several days ahead adds more if each gets a reminder.
 - **Manual ordering** of Today (see [task.md](../schema/task)).
+- **Timed and avoid habits** would reuse the focus engine (a habit relationship on `WorkSession`, a per-window target in minutes) but depend on the habit-types decision — not part of this pass.

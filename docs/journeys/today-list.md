@@ -36,9 +36,22 @@ Set two ways: from Night Planning the evening before, or directly here if the da
 ## Task interactions
 
 - **Complete**: tap the check.
-- **Detail sheet** (bottom sheet): title, notes as a tappable markdown checklist, category, effort estimate, importance, due date, deferral history; actions — Defer, Drop (for a repeating task, skips only this occurrence), Stop repeating, and (pending decision) Start/Finish (see [task.md](../schema/task) open questions).
+- **Detail sheet** (bottom sheet): title, notes as a tappable markdown checklist, category, effort estimate, importance, due date, deferral history; actions — Defer, Drop (for a repeating task, skips only this occurrence), Stop repeating, and **Begin**, which starts a focus session (see [Focus chip and sessions](#focus-chip-and-sessions)). Begin also appears on the "Start here" guidance card.
 - **Defer**: 1st and 2nd deferral moves the task to tomorrow instantly; from the 3rd a date picker opens with reason chips.
 - **Add task** (bottom sheet): title, effort (15 / 30 / 60 / 120 min), notes, importance (`low` by default), category, schedule (today / tomorrow / Later this week / Next week / Someday / pick a date), repeat (Never / Daily / Weekly + days / Monthly — needs a date, hides Someday). Choosing `medium`/`high` importance makes the date required (pre-filled with today, not clearable) and hides Someday. A `low` task with no date is a backlog task.
+
+## Focus chip and sessions
+
+Beginning a task starts a **focus session** ([task.md](../schema/task#focus-sessions-begin--pause--finish)). It is **ambient, never modal**: nothing blocks, and the whole app stays usable.
+
+- **The chip** sits above the tab bar and is present on **every tab**, as global chrome. It shows the task title and a count-up timer (monospaced digits so the numerals don't jitter). It is filled only while a session is live, and it looks the same when overrun — no red, no alarm.
+- **Tapping the chip** opens the **focus screen**: the timer, the task's note beneath it with tappable checkboxes, and **Pause** and **Finish**.
+- **Finish** opens a sheet showing actual against estimate with one optional note line, then a quiet 5-second **undo** toast.
+- **Beginning a second task** raises the settle sheet: Done, Defer to tomorrow, or Drop the running one first.
+- **Near a fixed Anchor** the chip simply says "Maghrib in 12 min". It never blocks.
+- **After midnight**, a session that was still running was auto-closed; tomorrow's list opens with one row offering to pick that task back up.
+- On wide layouts (iPad, Mac, Duo unfolded) the chip lives in the right-hand panel; see [app-flow.md](app-flow).
+- The Lock Screen Live Activity and Dynamic Island version is **v1.1**.
 
 ## During-day guidance
 
