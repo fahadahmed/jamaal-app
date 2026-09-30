@@ -1,0 +1,59 @@
+name: CI
+
+# Build and test the code. Docs-only and mockup-only changes skip it; they are
+# covered by sync-wiki.yml on merge.
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'mockups/**'
+      - '**/*.md'
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'mockups/**'
+      - '**/*.md'
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core:
+    name: JamaalCore tests
+    # xcode-27 is GitHub's Xcode 27 image (preview): the same toolchain the
+    # project is developed with. The package needs Swift 6.4.
+    runs-on: xcode-27
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+      - name: Test JamaalCore
+        working-directory: JamaalCore
+        run: swift test
+
+  app:
+    name: Jamaal build and unit tests (iOS Simulator)
+    runs-on: xcode-27
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: xcodebuild -version
+      - name: Resolve packages
+        run: xcodebuild -resolvePackageDependencies -project Jamaal/Jamaal.xcodeproj -scheme Jamaal
+      # Unit tests only for now. JamaalUITests (XCUITest) joins this job once it
+      # covers real screens, since UI tests are slow and flaky on hosted runners.
+      - name: Build and test
+        run: |
+          xcodebuild test \
+            -project Jamaal/Jamaal.xcodeproj \
+            -scheme Jamaal \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -only-testing:JamaalTests \
+            CODE_SIGNING_ALLOWED=NO

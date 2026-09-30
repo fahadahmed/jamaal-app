@@ -50,7 +50,7 @@ user action / clock / sync
 
 ## Platforms and layout
 
-- Deployment floor iOS 18 / macOS 15 (set by ThreadsKit). iPhone Duo-specific APIs are newer and are gated behind availability checks.
+- **Minimum OS: iOS 26 / macOS 26.** Liquid Glass is a system feature from 26, so the design needs no fallback; ThreadsKit's lower floor (iOS 18 / macOS 15) is irrelevant to the app. iPhone Duo-specific APIs (iOS 27.1) are newer and are gated behind availability checks.
 - Layout adapts by size class: system tab bar and toolbars on compact width, sidebar plus a detail pane on regular width, and iPhone Duo covered by the compact (outer display) and regular (inner display) layouts. Navigation must use the system components so this adaptation is automatic. See [App flow → Adaptive layout](../journeys/app-flow#adaptive-layout-ipad-and-mac).
 
 ## Testing

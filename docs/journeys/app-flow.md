@@ -86,7 +86,7 @@ What this means for Jamaal:
 7. **Right-to-left**: side controls stay on the same side in RTL languages, which suits an Arabic-name app with Islamic-practice presets.
 8. **Any size**: Split View multitasking means the app can appear at many sizes; use layout margins and safe areas, never fixed widths.
 
-**API and OS availability.** The Duo-specific SwiftUI APIs (`ArrangementView`, `ReservedRegion`) are marked iOS 27.1 and beta at the time of writing, while ThreadsKit's floor is iOS 18. Standard system components adapt on their own; anything Duo-specific is gated behind an availability check, so the deployment target is unaffected. Preview and test with Device Hub in Xcode.
+**API and OS availability.** The Duo-specific SwiftUI APIs (`ArrangementView`, `ReservedRegion`) are marked iOS 27.1 and beta at the time of writing, while the app's minimum is iOS 26. Standard system components adapt on their own; anything Duo-specific is gated behind an availability check, so the deployment target is unaffected. Preview and test with Device Hub in Xcode.
 
 ## Trial and subscription
 
