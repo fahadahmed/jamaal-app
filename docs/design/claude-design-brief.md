@@ -232,7 +232,7 @@ Navigation chrome is the **system** tab bar and toolbars with the iOS 26 Liquid 
 ## 8. Adaptive layouts
 
 - **iPhone** (compact): the system tab bar; sheets; Night Planning as a full-screen modal.
-- **iPad** (regular): the identical two-panel arrangement centred in the glass — the list at its phone measure (≈340 pt) and a detail panel; everything past ≈880 pt is margin, not a third column. **No modals on wide**: sheets become panels and the list stays lit. Night Planning becomes a one-canvas step rail. A keyboard adds shortcuts, never chrome.
+- **iPad** (regular): **superseded by Design v4**: a sidebar, then a list (440 pt), then a detail panel (see `docs/design/README.md` §8). **No modals on wide**: sheets become panels and the list stays lit. Night Planning becomes a one-canvas step rail. A keyboard adds shortcuts, never chrome.
 - **iPhone Duo:** folded is the phone build unchanged. Unfolded is the regular layout, with Today pinned left at its phone measure and the right panel holding what a push or sheet would show. Toolbars and the tab bar move to the side on the outer display and in inner landscape (use system components). Keep every element clear of the fold — sheets, alerts and menus move for it automatically; custom components must avoid it. Prefer an **even number of columns** in grids.
 - The **session chip lives in the right panel** on wide layouts. Wide layouts add no components, only the 340 pt list beside a detail panel.
 - **macOS** later: reuse the regular-width layout with a sidebar and menu-bar commands.

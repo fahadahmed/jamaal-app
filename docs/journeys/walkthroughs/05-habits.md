@@ -10,7 +10,7 @@
 
 ## HB-01 The Habits overview
 
-- **Sees:** the **Habits | Anchors** segmented control (Habits selected). **Groups** as cards — emoji, name, "4/5 today", a completion ring, a 14-day aggregate grid — collapsed by default and expandable into their habits; ungrouped habits; paused habits muted with *"Paused — resumes 19 Oct"*; **Add** at the top; an empty state (*"No habits yet — they'll appear as patterns do."*).
+- **Sees:** the **Habits | Anchors** segmented control (Habits selected). **Groups** as cards — name, "4/5 today", a completion ring, a 14-day aggregate grid — collapsed by default and expandable into their habits; ungrouped habits; paused habits muted with *"Paused — resumes 19 Oct"*; **Add** at the top; an empty state (*"No habits yet — they'll appear as patterns do."*).
 - **Reads:** non-archived `Habit`s and `HabitGroup`s, their windows, today's and the last 14 days' `HabitEntry`s, `pausesData`.
 - **Does:** expands a group (local UI state), opens a habit, adds one.
 - **Assumes:**
@@ -34,8 +34,8 @@
 
 ## HB-05 Groups
 
-- **Sees:** a name, an emoji, the habits in it, and the collapsed preview.
-- **Writes:** `HabitGroup` (`title`, `emoji`, `sortOrder`), `Habit.group`.
+- **Sees:** a name, the habits in it, and the collapsed preview.
+- **Writes:** `HabitGroup` (`title`, `sortOrder`), `Habit.group`.
 - **Assumes:** a group is purely a visual bundle — ✓ (no score or history of its own; archiving never deletes its habits).
 
 ## TD-01 Logging from Today

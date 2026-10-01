@@ -29,6 +29,8 @@
 
 - [ThreadsKit Usage](design/threadskit-usage)
 - [Claude Design brief](design/claude-design-brief)
+- [Design v4 handoff](design/README)
+- [Design v4 reconciliation](design/v4-reconciliation)
 
 ---
 
