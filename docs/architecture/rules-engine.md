@@ -245,6 +245,8 @@ Two independent measures, deliberately kept apart.
 
 Only busy time inside the working day counts, so an Anchor after the day's end (Isha at 20:15) doesn't fragment it. `skipped` and `delegated` Anchors, and anything already done, stop counting. The result is `freeMinutes` (blocks minus flexible minutes, floor 0) and `longestFreeBlock`.
 
+**As built** (`FreeTime` in JamaalCore): the function takes the day's commitments and the habit minutes still to do, so the habit and Anchor-config logic stays out of it. Only `pending` Anchors count (skipped, delegated, attended and missed ones no longer take the day's time); a fixed commitment is clipped to the working day, and overlapping ones merge into one busy block (the commitment that ends it names the gap after). A flexible commitment counts if its window overlaps what is left of the working day, which slightly over-counts a multi-day window (a plants Anchor open Monday to Wednesday takes its minutes from each of those days; tunable). `afterLast` Anchors become flexible when the rule `configData` is parsed. Each free block carries the commitment it ends at (*before the school run*) and the one it begins after, and gaps under 20 minutes are left out of the shown list but still count; `suggestedCapacity` is the highest level whose budget fits, never below low.
+
 **A plan has to fit both:**
 
 - **Energy** — the load state above.
