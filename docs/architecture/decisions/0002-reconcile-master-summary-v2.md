@@ -17,7 +17,7 @@ Where the summary and the repo conflict on **structure, platform or business**, 
 | One flat list — no projects, no tags | [task.md](../../schema/task) intro; categories are labels only |
 | Jamaal as companion voice; typed signals → message-template layer | [rules-engine.md](../rules-engine) architecture; [app-flow.md](../../journeys/app-flow) |
 | Hidden Eisenhower quadrant, never shown | [task.md](../../schema/task) (derived), rules-engine module 1 |
-| Effort estimates, load score and load states | `Task.effortMinutes`, rules-engine module 7 |
+| Effort estimates, load score and load states | `TaskItem.effortMinutes`, rules-engine module 7 |
 | Deferral behaviour (instant ×2, date picker from 3rd, reason chips, suggest removal at 5) | [task.md](../../schema/task), `DeferralRecord` |
 | Carry-forward Keep/Later/Drop in Night Planning | [night-planning.md](../../journeys/night-planning) step 2 |
 | Habit groups (visual only, default collapsed), counted habits, per-day entries, heatmap states | [habit.md](../../schema/habit) |
@@ -41,7 +41,7 @@ Where the summary and the repo conflict on **structure, platform or business**, 
 | `NightPlanningSession` transient | Persisted, so it resumes across devices |
 | Warm palette (off-white/charcoal/terracotta/sage) | ThreadsKit's cool palette ([threadskit-usage](../../design/threadskit-usage)) |
 | Fixed `personal`/`family`/`work` strings vs. "no tags ever" | Editable `TaskCategory` list (see below) |
-| `Task.status` string, `scheduledFor` non-optional, `sortOrder` | `isCompleted`/`completedAt`/`droppedAt`, optional `dueDate`; ordering derived |
+| `TaskItem.status` string, `scheduledFor` non-optional, `sortOrder` | `isCompleted`/`completedAt`/`droppedAt`, optional `dueDate`; ordering derived |
 | Per-habit `currentStreak`, `isActive`, stored skip/fatigue fields | Per-window density from `HabitEntry` (no streaks — decided after reviewing the design project), `isArchived`, fatigue derived |
 
 ## Merged / changed
@@ -55,7 +55,7 @@ Where the summary and the repo conflict on **structure, platform or business**, 
 - **New models** (v2 had some in different form): `TaskCategory`, `DeferralRecord`, `HabitEntry`, `HabitGroup`, `DayPlan`, `NudgeLog`. Total persisted: 14 models — Task, TaskCategory, DeferralRecord, WorkSession, Habit, HabitTimeWindow, HabitEntry, HabitGroup, Anchor, AnchorRule, DayPlan, NightPlanningSession, NudgeLog and UserSettings. The authoritative list is [the schema overview](../../schema/overview).
 - **Habit kinds** (design H-04…H-09): v2's binary and counted, plus timed (reuses the focus timer) and avoid (inverted logging — specified as a proposal because the design only has a title), plus pause with a reason. Grouped sets stay `HabitGroup`; the design's detected-habit offer is v1.1.
 - **Day boundary** (not in v2): a user-set rollover (default midnight) with logical dates and floating calendar dates, so the design's midnight wall becomes a setting, and a lazy idempotent catch-up replaces any assumption that the app runs at midnight.
-- **Recurring tasks** (not in v2 or the earlier repo docs): simple repeat on `Task` — `repeatKind`, `repeatWeekdays`, `seriesID`; one live instance per series.
+- **Recurring tasks** (not in v2 or the earlier repo docs): simple repeat on `TaskItem` — `repeatKind`, `repeatWeekdays`, `seriesID`; one live instance per series.
 - **`UserPreferences`** stay in `UserDefaults`/`@AppStorage`, per v2 (per-device; fits notification times).
 
 ## Not carried over

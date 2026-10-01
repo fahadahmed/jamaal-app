@@ -86,7 +86,7 @@ Tomorrow's Today opens already shaped: the school run and dentist as fixed rows,
 |---|---|
 | `NightPlanningSession` | + 1 for `forDate`: `isComplete` / `skippedAt`, `completedAt` |
 | `DayPlan` | `forDate`: `capacity` (as soon as chosen), then the planning snapshot and `planningCompletedAt` on close |
-| `Task` | re-dated by Keep, Later, Move or pulling in; `droppedAt` by Drop; importance raised |
+| `TaskItem` | re-dated by Keep, Later, Move or pulling in; `droppedAt` by Drop; importance raised |
 | `DeferralRecord` | + 1 per **real** deferral only (a task moved after its due day arrived) |
 | `Anchor` | + one-offs added during planning |
 | `NudgeLog` | + 1 when the morning card is shown |

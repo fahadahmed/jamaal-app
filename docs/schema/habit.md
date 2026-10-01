@@ -122,7 +122,7 @@ Created from a type picker with plain-language descriptions. `Habit.kind` fixes 
 - **Inverted logging.** The default expectation is abstaining; the user logs a **slip** (each tap adds one to `amount`, undoable). Wording stays neutral — no praise, no guilt.
 - **A day's outcome is derived when read, not stored as a default success:**
   - `missed` if slips exceed the allowance;
-  - `complete` if slips are within the allowance **and the user engaged that day**. A logical day is **engaged** if any of these exist for it: a `Task` completed that day; a `HabitEntry` with `amount > 0` for any habit, or an avoid entry whose `completedAt` is set (*Held today*, or a past-day correction); an `Anchor` whose `resolvedAt` falls on that day; a `WorkSession` with that `day`; or a `NightPlanningSession` for that date that was closed or skipped. **Opening the app alone doesn't count.**
+  - `complete` if slips are within the allowance **and the user engaged that day**. A logical day is **engaged** if any of these exist for it: a `TaskItem` completed that day; a `HabitEntry` with `amount > 0` for any habit, or an avoid entry whose `completedAt` is set (*Held today*, or a past-day correction); an `Anchor` whose `resolvedAt` falls on that day; a `WorkSession` with that `day`; or a `NightPlanningSession` for that date that was closed or skipped. **Opening the app alone doesn't count.**
   - otherwise `empty`. **Silence is never success:** a day when the app was never touched fills no cell.
   - The current day stays unresolved until it ends.
 - **No "days since the last slip" counter** — that would be a streak in disguise. The plain-language read speaks in numbers ("3 slips in the last 21 days").

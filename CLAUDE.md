@@ -74,7 +74,7 @@ Notes feature was dropped in favor of optional lightweight markdown (checklists,
 
 ## Product principles (carried from the earlier planning chat)
 
-- **One flat list, no projects, no tags — ever.** `Task.category` is an editable label list (defaults personal/family/work), one per task, used as a label and optional filter, never a grouping axis.
+- **One flat list, no projects, no tags — ever.** `TaskItem.category` is an editable label list (defaults personal/family/work), one per task, used as a label and optional filter, never a grouping axis.
 - **Jamaal is also the companion voice** — calm, supportive, non-judgmental; inline cards, never a chat UI; no punitive severity colours. Tagline: "One list. Just today. Beautifully ordered."
 - **Hidden Eisenhower**: quadrant derived from importance (`importance`) and urgency (due date, deferrals), never shown.
 - Effort estimates + capacity level → load state; deferral escalates at the 3rd deferral (date picker) and 5th (suggest removal).
@@ -106,7 +106,7 @@ Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity s
 ## Business context (informs priority, not architecture)
 
 - Pricing: free download, 14-day full-access trial, then subscription only — $2.99/mo or $24.99/yr (no lifetime SKU). Trial is app-managed (no payment up front); when it ends without a subscription the app goes read-only, not locked — see `docs/journeys/app-flow.md`
-- Sharing/referral: **deferred to v1.1, not in scope for v1.** No referral mechanic is planned; the existing `Task.category` values of `personal`/`family`/`work` are just personal labels for the single user, not multi-account data sharing. Revisit if/when a real need shows up — no schema impact for now.
+- Sharing/referral: **deferred to v1.1, not in scope for v1.** No referral mechanic is planned; the existing `TaskItem.category` values of `personal`/`family`/`work` are just personal labels for the single user, not multi-account data sharing. Revisit if/when a real need shows up — no schema impact for now.
 - Target launch: as early as late Dec 2026 (aligned to January resolution surge) or realistically ~March 2027 given ~10–20 hrs/week alongside full-time work; native Android (Kotlin, not Flutter) is a later, separate effort post-iOS-traction
 - Phase 2 pace checkpoint: end of October 2026
 

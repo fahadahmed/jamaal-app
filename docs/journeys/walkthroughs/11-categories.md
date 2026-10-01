@@ -30,7 +30,7 @@
 ## TK-06 The picker, and the field on TK-01 and TK-02
 
 - **Sees:** active categories as chips plus *None*; the task's current one selected.
-- **Writes:** `Task.category` (one or none).
+- **Writes:** `TaskItem.category` (one or none).
 - **Assumes:**
   - a task whose category was archived later still behaves — **✗ G-86** (the label is kept, but the docs don't say whether it still shows on Today, whether it appears in the picker when that task is edited, or what a repeating task copies);
   - a new task starts with a sensible category — **✗ G-88** (none by default, but a user who has narrowed Today to *Work* and then adds a task presumably means *Work*);
@@ -39,7 +39,7 @@
 ## TD-03 The category filter on Today
 
 - **Sees:** a control in the Today header listing *All* and each active category; choosing one narrows the list, with a visible chip to clear it.
-- **Reads:** `Task.category`; **writes:** nothing (local UI state).
+- **Reads:** `TaskItem.category`; **writes:** nothing (local UI state).
 - **Assumes:**
   - "narrows the whole list" is well defined — **✗ G-87** (Anchors and habits have no category, so they can't be filtered; the meter and the load describe the *day*, not the view; the *Start here* card picks from tasks; and it isn't said whether the filter survives relaunch or the rollover, or what an empty result says);
   - categories never become sections — ✓ (the filter only hides; Tasks stay one flat list in engine order).
@@ -59,7 +59,7 @@ A new user meets three quiet labels and uses none of them for a week. Then *Work
 | Model | Change |
 |---|---|
 | `TaskCategory` | seeded 3; + 1 per user-created; `name`, `colorKey`, `sortOrder`, `isArchived` edited in place |
-| `Task` | `category` set or cleared; unchanged when its category is archived |
+| `TaskItem` | `category` set or cleared; unchanged when its category is archived |
 
 No new fields; `colorKey` finally gets its values, and one dedup key is added for user-created categories.
 

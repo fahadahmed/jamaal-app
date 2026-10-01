@@ -12,7 +12,7 @@
 
 A session starts from three places: the **Begin** button on the *"Start here"* guidance card on Today (`TD-01`), **Begin** in the task detail (`TK-02`), and **Begin** on a timed habit's row (`HB`).
 
-- **Writes (every Begin):** a `WorkSession` — `startedAt = now`, `day = logicalDate(now)`, `estimateMinutes` (a snapshot of `Task.effortMinutes`, or `nil`), `outcome = running`, and `task` **or** `habitWindow`.
+- **Writes (every Begin):** a `WorkSession` — `startedAt = now`, `day = logicalDate(now)`, `estimateMinutes` (a snapshot of `TaskItem.effortMinutes`, or `nil`), `outcome = running`, and `task` **or** `habitWindow`.
 - **Reads:** whether a session is already live (`outcome = running`, `endedAt = nil`).
 - **Assumes:**
   - Begin needs nothing else — ✓ (a task that is live; completed and dropped tasks don't offer Begin);
@@ -34,7 +34,7 @@ A session starts from three places: the **Begin** button on the *"Start here"* g
 
 - **Sees:** the timer numeral (display face, monospaced digits), the task title, *"of 60 min"*, the task's **note as a tappable checklist** beneath it, and **Pause** and **Finish**. A habit session shows the habit and its target, with no note.
 - **Does:** ticks checklist items; taps Pause, Finish, or closes it (the session keeps running).
-- **Writes:** ticking a box edits `Task.notes` (the markdown text); **Pause** sets `pausedAt`; **Resume** adds `now − pausedAt` to `pausedSeconds` and clears `pausedAt`.
+- **Writes:** ticking a box edits `TaskItem.notes` (the markdown text); **Pause** sets `pausedAt`; **Resume** adds `now − pausedAt` to `pausedSeconds` and clears `pausedAt`.
 - **Assumes:**
   - elapsed ignores paused time — ✓;
   - a session left paused or running overnight is closed — ✓ (auto-closed at the day rollover, with the partial time logged);
@@ -49,7 +49,7 @@ A session starts from three places: the **Begin** button on the *"Start here"* g
 ## FS-05 Finish — and stopping without finishing
 
 - **Sees:** a sheet showing **actual against estimate** (*"74 min · estimated 60"*), an optional one-line note, and the choices. The current docs give it a single outcome, **Finish**, plus **abandon** in the state machine — but no screen reaches abandon (**✗ G-22**). The proposal: the sheet has two buttons — **Done** (the task is complete) and **Stop for now** (time logged, task stays live) — because being interrupted is the commonest way a session ends.
-- **Writes — Done:** `outcome = finished`, `endedAt`, `actualSeconds` (elapsed minus pauses); `Task.isCompleted`, `completedAt = endedAt`; an optional timestamped line **appended** to `Task.notes`; for a repeating task the next instance is created. **Stop for now:** `outcome = abandoned`, `endedAt`, `actualSeconds`; the task is untouched.
+- **Writes — Done:** `outcome = finished`, `endedAt`, `actualSeconds` (elapsed minus pauses); `TaskItem.isCompleted`, `completedAt = endedAt`; an optional timestamped line **appended** to `TaskItem.notes`; for a repeating task the next instance is created. **Stop for now:** `outcome = abandoned`, `endedAt`, `actualSeconds`; the task is untouched.
 - **Assumes:**
   - the partial time is kept either way — ✓ ("abandoning is not failing");
   - finishing or stopping from the chip, the screen or (v1.1) the Lock Screen all do the same — ✓.
@@ -99,7 +99,7 @@ At Begin the chip appears *"Draft the architecture review · 0:00"*. Twenty minu
 | Model | Change |
 |---|---|
 | `WorkSession` | + 1 per Begin: `startedAt`, `day`, `estimateMinutes`, `pausedSeconds`, `endedAt`, `actualSeconds`, `outcome` (`finished` / `abandoned` / `deferred` / `dropped` / `autoClosed`) |
-| `Task` | `isCompleted` / `completedAt` on Done; a timestamped line appended to `notes`; `deferralCount` on Defer; `droppedAt` on Drop |
+| `TaskItem` | `isCompleted` / `completedAt` on Done; a timestamped line appended to `notes`; `deferralCount` on Defer; `droppedAt` on Drop |
 | `HabitEntry` | timed habit: `amount` (minutes) for that day and window |
 | `DeferralRecord` | + 1 when a session is settled with Defer |
 
