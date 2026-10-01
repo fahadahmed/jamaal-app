@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,SOFT,WONK,wght@0,9..144,0..100,0..1,300..900;1,9..144,0..100,0..1,300..900&amp;family=Hanken+Grotesk:wght@300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; }
+  a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { color: var(--terra); }
+  [data-th="dark"] {
+    --board:#030D14 !important; --chrome:#EAF3F6 !important; --chrome2:#B8CDD6 !important;
+    --app:#12303F !important; --card:rgba(255,255,255,0.05) !important; --ink:#E7F1F4 !important; --ink2:#BCD3DA !important; --ink3:#8FAAB4 !important;
+    --terra:#DDA080 !important; --terraPress:#C08868 !important; --accent:#8FCBB8 !important; --onAccent:#16242E !important; --deep:#071B27 !important;
+    --glassOn:#1D4052 !important; --glass:rgba(255,255,255,0.09) !important; --glassEdge:rgba(255,255,255,0.16) !important;
+    --line:rgba(231,241,244,0.14) !important; --line2:rgba(231,241,244,0.24) !important; --meter:#BCD3DA !important;
+    --alert:#F09A90 !important; --alertSoft:#5A2A22 !important;
+    --catTeal:#8FCBB8 !important; --catBlue:#9DB9E8 !important; --catOchre:#D8BA6A !important;
+    --shadow:0 22px 50px -28px rgba(0,0,0,0.7) !important; --float:0 22px 50px -28px rgba(0,0,0,0.7) !important; --scrim:rgba(0,0,0,0.45) !important;
+  }
+</style>
+</helmet>
+
+<div data-th="{{ theme }}" style="--board:#ADBCC5; --chrome:#0A3A53; --chrome2:#26424F; --app:#EFF4F0; --card:#FFFFFF; --ink:#0A3A53; --ink2:#14506E; --ink3:#3F6E80; --terra:#9A4F2E; --terraPress:#7E3F24; --accent:#1F6A58; --onAccent:#EAF3F6; --deep:#0C4767; --glassOn:#FFFFFF; --glass:rgba(255,255,255,0.62); --glassEdge:rgba(10,58,83,0.14); --line:rgba(10,58,83,0.14); --line2:rgba(10,58,83,0.24); --meter:#14506E; --alert:#A32E22; --alertSoft:#F2D4CE; --catTeal:#1F6A58; --catBlue:#2F5E9E; --catOchre:#836312; --shadow:0 18px 40px -26px rgba(6,32,46,0.42); --float:0 10px 26px -14px rgba(6,32,46,0.5); --scrim:rgba(4,26,38,0.32); background:var(--board); color:var(--ink); font-family:'Hanken Grotesk',system-ui,sans-serif; padding:56px 48px 120px; display:flex; flex-direction:column; gap:72px; min-height:100vh; -webkit-font-smoothing:antialiased">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;max-width:1720px;width:100%;margin:0 auto">
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:760px">
+      <div style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2);display:flex;align-items:center;gap:10px"><span style="width:24px;height:1px;background:var(--terra);display:inline-block"></span>Jamaal · v4 redraw · batch 2 of 6 · phone</div>
+      <h1 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:54px;line-height:1.04;letter-spacing:-0.02em;margin:0;color:var(--chrome)">The timer</h1>
+      <p style="font-size:17px;line-height:1.6;color:var(--chrome2);margin:0;max-width:62ch">FS-01 … FS-07 and SY-03. One session at a time; the clock only ever counts up and never changes colour. FS-08 (Live Activity) is v1.1 and drawn last.</p>
+    </div>
+    <div onClick="{{ toggleTheme }}" style="display:flex;align-items:center;gap:10px;padding:0 20px;height:44px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid var(--glassEdge);cursor:pointer;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome)"><span style="width:8px;height:8px;border-radius:999px;background:var(--terra)"></span>{{ themeLabel }}</div>
+  </div>
+
+  <div style="max-width:1720px;width:100%;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px 40px;border-top:1px solid var(--line2);padding-top:28px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">The chip</div>
+      <div style="font-size:15px;line-height:1.55;color:var(--chrome)">Lives in the system tab bar's bottom-accessory slot, so it is on every tab and moves with the bar on Duo. The capsule is glass (an action surface); the digits sit in a small chip that is filled terracotta only while the clock is live — paused, it goes back to outline.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">The numeral</div>
+      <div style="font-size:15px;line-height:1.55;color:var(--chrome)">Display role at its largest step (38, Fraunces 300) with tabular digits, per the tokens page — it grows with Dynamic Type rather than being drawn huge. Overrun changes nothing but the words beside it.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Haptics</div>
+      <div style="font-size:15px;line-height:1.55;color:var(--chrome)">Done is one soft impact. Pause, Stop for now, Defer and Drop are silent. Nothing vibrates when the estimate passes.</div>
+    </div>
+  </div>
+
+  <section id="chip" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">FS-01 · Session chip</h2>
+      <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Global chrome · above the tab bar · every tab</span>
+    </div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="FS-01" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">FS-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Chip on Today · live</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec T-01</span></div>
+        <div data-screen-label="FS-01 Chip on Today" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>10:04</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Mon 12 May</span>
+            <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:22px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-0.01em">Four things,<br><em style="font-style:italic;color:var(--accent)">gently paced.</em></div>
+            <div style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;color:var(--ink2)">2h 15m of 3h</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Balanced</span></div><div style="height:8px;border-radius:999px;background:var(--line);overflow:hidden"><div style="width:75%;height:100%;border-radius:999px;background:var(--meter)"></div></div></div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Tasks</div>
+              <div style="display:flex;flex-direction:column;margin-inline:-14px">
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Draft the architecture review</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--ink2)">Timing · 24 min</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catBlue)"></span>Work</span></div></div>
+                </div>
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Call the clinic back</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--ink3)">Slipped twice · 15 min</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catTeal)"></span>Personal</span></div></div>
+                </div>
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Book Yusuf's swimming lessons</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--ink3)">30 min</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catOchre)"></span>Family</span></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:102px;display:flex;align-items:center;gap:12px;height:52px;padding:0 6px 0 20px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <span style="flex:1;min-width:0;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Draft the architecture review</span>
+            <span style="display:flex;align-items:center;height:40px;padding:0 16px;border-radius:999px;background:var(--terra);color:var(--onAccent);font:500 15px/1 'JetBrains Mono',monospace;letter-spacing:0.04em">24:10</span>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Tap the capsule to open FS-02. The row says "Timing · 24 min" instead of its effort — the meter is unchanged, because the load counts the task, not the clock.</p>
+      </div>
+
+      <div id="FS-01-anchor" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">FS-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Chip on Habits · Anchor line</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">State</span></div>
+        <div data-screen-label="FS-01 Chip Anchor line" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>17:48</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <div style="display:flex;padding:3px;border-radius:999px;background:var(--line)"><div style="height:38px;padding:0 18px;border-radius:999px;background:var(--glassOn);display:flex;align-items:center;font-size:15px;font-weight:600">Habits</div><div style="height:38px;padding:0 18px;display:flex;align-items:center;font-size:15px;color:var(--ink2)">Anchors</div></div>
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:16px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-0.01em">Habits</div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0"><div><div style="font-size:18px;font-weight:600;line-height:1.35">Water</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">5 of 8 glasses</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600;line-height:1.35">Qur'an reading</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">15 of 15 min</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600;line-height:1.35">Run</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">0 of 20 min</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+            </div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:102px;display:flex;align-items:center;gap:12px;height:60px;padding:0 6px 0 20px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Prepare the board pack</span><span style="font-size:15px;color:var(--ink2)">Asr closes in 10 min</span></div>
+            <span style="display:flex;align-items:center;height:40px;padding:0 16px;border-radius:999px;background:var(--terra);color:var(--onAccent);font:500 15px/1 'JetBrains Mono',monospace;letter-spacing:0.04em">51:32</span>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">One line at most: an open Anchor closing soon outranks a fixed one opening within 30 min ("Maghrib in 12 min"). Flexible Anchors never appear. Plain ink2 — it informs, it doesn't interrupt.</p>
+      </div>
+
+      <div id="FS-01-paused" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">FS-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Chip specimens</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">Live · paused · overrun</span></div>
+        <div data-screen-label="FS-01 Chip specimens" style="width:393px;border-radius:32px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;gap:22px;padding:28px 20px;box-sizing:border-box;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3);padding-left:6px">Live</span>
+            <div style="display:flex;align-items:center;gap:12px;height:52px;padding:0 6px 0 20px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><span style="flex:1;min-width:0;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Draft the architecture review</span><span style="display:flex;align-items:center;height:40px;padding:0 16px;border-radius:999px;background:var(--terra);color:var(--onAccent);font:500 15px/1 'JetBrains Mono',monospace;letter-spacing:0.04em">24:10</span></div></div>
+          <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3);padding-left:6px">Paused</span>
+            <div style="display:flex;align-items:center;gap:12px;height:52px;padding:0 6px 0 20px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><span style="flex:1;min-width:0;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Draft the architecture review</span><span style="display:flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line2);box-sizing:border-box;font:500 15px/1 'JetBrains Mono',monospace;letter-spacing:0.04em;color:var(--ink2)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 5v14M15 5v14"></path></svg>24:10</span></div></div>
+          <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3);padding-left:6px">Past the estimate</span>
+            <div style="display:flex;align-items:center;gap:12px;height:52px;padding:0 6px 0 20px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><span style="flex:1;min-width:0;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Draft the architecture review</span><span style="display:flex;align-items:center;height:40px;padding:0 16px;border-radius:999px;background:var(--terra);color:var(--onAccent);font:500 15px/1 'JetBrains Mono',monospace;letter-spacing:0.04em">1:15:04</span></div></div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Overrun is visually identical to live — only the digits keep going. Paused returns the digits to an outline chip with a pause glyph, since only a live clock is filled.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="focus" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">FS-02 … FS-04 · Focus screen</h2>
+      <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Running · overrun · paused · timed habit</span>
+    </div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="FS-02" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">FS-02</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Focus · running</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec T-02</span></div>
+        <div data-screen-label="FS-02 Focus running" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>10:04</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></div>
+            <span style="display:inline-flex;align-items:center;gap:7px;font-size:15px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catBlue)"></span>Work</span>
+            <div style="width:44px"></div>
+          </div>
+          <div style="padding:40px 26px 0;display:flex;flex-direction:column;gap:26px;flex:1">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Draft the architecture review</div>
+              <div style="display:flex;align-items:baseline;gap:14px"><span style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:300;font-size:38px;line-height:1.08;font-variant-numeric:tabular-nums lining-nums">24:10</span><span style="font-size:15px;color:var(--ink3)">of 60 min</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;border-top:1px solid var(--line);padding-top:10px">
+              <div style="display:flex;gap:12px;align-items:center;min-height:44px"><div style="width:20px;height:20px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><span style="font-size:17px;color:var(--ink3);text-decoration:line-through">Outline the three options</span></div>
+              <div style="display:flex;gap:12px;align-items:center;min-height:44px"><div style="width:20px;height:20px;border-radius:6px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0"></div><span style="font-size:17px">Cost table for <strong>option B</strong></span></div>
+              <div style="display:flex;gap:12px;align-items:center;min-height:44px"><div style="width:20px;height:20px;border-radius:6px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0"></div><span style="font-size:17px">Send to Priya for a read</span></div>
+            </div>
+            <div style="margin-top:auto;padding-bottom:34px;display:flex;gap:10px">
+              <div style="flex:1;height:52px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;gap:9px;font-size:17px;font-weight:600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 5v14M15 5v14"></path></svg>Pause</div>
+              <div style="flex:1;height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Finish</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Opens from the chip (a glass morph — the chip grows into the screen). The chevron returns to the chip; the session keeps running. The note's checklist is live. Backgrounding never pauses.</p>
+      </div>
+
+      <div id="FS-03" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">FS-03</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Focus · overrun</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec T-03</span></div>
+        <div data-screen-label="FS-03 Overrun" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>10:55</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></div>
+            <span style="display:inline-flex;align-items:center;gap:7px;font-size:15px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catBlue)"></span>Work</span>
+            <div style="width:44px"></div>
+          </div>
+          <div style="padding:40px 26px 0;display:flex;flex-direction:column;gap:26px;flex:1">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Draft the architecture review</div>
+              <div style="display:flex;align-items:baseline;gap:14px"><span style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:300;font-size:38px;line-height:1.08;font-variant-numeric:tabular-nums lining-nums">1:15:04</span><span style="font-size:15px;color:var(--ink3)">75 of 60 min</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;border-top:1px solid var(--line);padding-top:10px">
+              <div style="display:flex;gap:12px;align-items:center;min-height:44px"><div style="width:20px;height:20px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><span style="font-size:17px;color:var(--ink3);text-decoration:line-through">Outline the three options</span></div>
+              <div style="display:flex;gap:12px;align-items:center;min-height:44px"><div style="width:20px;height:20px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><span style="font-size:17px;color:var(--ink3);text-decoration:line-through">Cost table for <strong>option B</strong></span></div>
+              <div style="display:flex;gap:12px;align-items:center;min-height:44px"><div style="width:20px;height:20px;border-radius:6px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0"></div><span style="font-size:17px">Send to Priya for a read</span></div>
+            </div>
+            <div style="margin-top:auto;padding-bottom:34px;display:flex;gap:10px">
+              <div style="flex:1;height:52px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;gap:9px;font-size:17px;font-weight:600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 5v14M15 5v14"></path></svg>Pause</div>
+              <div style="flex:1;height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Finish</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The only change is "75 of 60 min". No colour, alarm, nudge or haptic. A task with no estimate has no overrun — it just counts up with no "of".</p>
+      </div>
+
+      <div id="FS-04" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">FS-04</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Focus · paused</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec T-04</span></div>
+        <div data-screen-label="FS-04 Paused" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>10:12</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></div>
+            <span style="display:inline-flex;align-items:center;gap:7px;font-size:15px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catBlue)"></span>Work</span>
+            <div style="width:44px"></div>
+          </div>
+          <div style="padding:40px 26px 0;display:flex;flex-direction:column;gap:26px;flex:1">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Paused</div>
+              <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Draft the architecture review</div>
+              <div style="display:flex;align-items:baseline;gap:14px"><span style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:300;font-size:38px;line-height:1.08;font-variant-numeric:tabular-nums lining-nums">24:10</span><span style="font-size:15px;color:var(--ink3)">of 60 min</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;border-top:1px solid var(--line);padding-top:10px">
+              <div style="display:flex;gap:12px;align-items:center;min-height:44px"><div style="width:20px;height:20px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><span style="font-size:17px;color:var(--ink3);text-decoration:line-through">Outline the three options</span></div>
+              <div style="display:flex;gap:12px;align-items:center;min-height:44px"><div style="width:20px;height:20px;border-radius:6px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0"></div><span style="font-size:17px">Cost table for <strong>option B</strong></span></div>
+              <div style="display:flex;gap:12px;align-items:center;min-height:44px"><div style="width:20px;height:20px;border-radius:6px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0"></div><span style="font-size:17px">Send to Priya for a read</span></div>
+            </div>
+            <div style="margin-top:auto;padding-bottom:34px;display:flex;gap:10px">
+              <div style="flex:1;height:52px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;gap:9px;font-size:17px;font-weight:600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l12 8-12 8z"></path></svg>Resume</div>
+              <div style="flex:1;height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Finish</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Only an explicit Pause pauses. The numeral holds; Resume takes Pause's place. A session left paused over the rollover is closed there with its time kept (→ TD-06).</p>
+      </div>
+
+      <div id="FS-02-habit" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">FS-02</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Focus · timed habit</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">State</span></div>
+        <div data-screen-label="FS-02 Timed habit" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>5:20</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></div>
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Habit</span>
+            <div style="width:44px"></div>
+          </div>
+          <div style="padding:40px 26px 0;display:flex;flex-direction:column;gap:26px;flex:1">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Qur'an reading</div>
+              <div style="display:flex;align-items:baseline;gap:14px"><span style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:300;font-size:38px;line-height:1.08;font-variant-numeric:tabular-nums lining-nums">9:12</span><span style="font-size:15px;color:var(--ink3)">of 15 min today</span></div>
+              <div style="font-size:15px;line-height:1.5;color:var(--ink3)">Earlier today: 0 min. This session adds to the day's total.</div>
+            </div>
+            <div style="margin-top:auto;padding-bottom:34px;display:flex;gap:10px">
+              <div style="flex:1;height:52px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;gap:9px;font-size:17px;font-weight:600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 5v14M15 5v14"></path></svg>Pause</div>
+              <div style="flex:1;height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Finish</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Same screen from a timed habit's Begin: the habit and its target, no note (habits have none). Finish adds the minutes to that window's entry; several sessions a day add up.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="settle" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">FS-05 … FS-07 · SY-03 · Ending a session</h2>
+      <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Finish · undo · switch task · drop undo — time is always kept</span>
+    </div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="FS-05" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">FS-05</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Finish sheet</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec T-05</span></div>
+        <div data-screen-label="FS-05 Finish sheet" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:130px 26px 0;opacity:0.35;display:flex;flex-direction:column;gap:14px"><div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Draft the architecture review</div><div style="font-family:Fraunces,Georgia,serif;font-weight:300;font-size:38px">1:14:12</div></div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:18px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Draft the architecture review</div>
+              <div style="font-size:19px;line-height:1.6;color:var(--ink2)">74 min · estimated 60</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">A line for the note · optional</div>
+              <div style="min-height:48px;border-radius:8px;border:1px solid var(--line2);display:flex;align-items:center;padding:0 14px;font-size:17px;color:var(--ink3)">Sent to Priya; waiting on costs</div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;gap:9px;font-size:17px;font-weight:600"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Done</div>
+              <div style="flex:1;height:52px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:var(--ink2)">Stop for now</div>
+            </div>
+            <div style="font-size:15px;line-height:1.5;color:var(--ink3);text-align:center">Stop for now keeps the 74 min and leaves the task on today.</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Actual against estimate, stated flat — no "over" or "under". The note line is appended with a timestamp. The meter will use 74 min for this task from now on.</p>
+      </div>
+
+      <div id="FS-06" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">FS-06</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Done + undo toast</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec T-06</span></div>
+        <div data-screen-label="FS-06 Done undo" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>10:55</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Mon 12 May</span>
+            <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:22px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-0.01em">Three left,<br><em style="font-style:italic;color:var(--accent)">gently paced.</em></div>
+            <div style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;color:var(--ink2)">2h 29m of 3h</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Balanced</span></div><div style="height:8px;border-radius:999px;background:var(--line);overflow:hidden"><div style="width:83%;height:100%;border-radius:999px;background:var(--meter)"></div></div></div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Tasks</div>
+              <div style="display:flex;flex-direction:column;margin-inline:-14px">
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Call the clinic back</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--ink3)">Slipped twice · 15 min</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catTeal)"></span>Personal</span></div></div>
+                </div>
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;background:var(--accent);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35;color:var(--ink3);text-decoration:line-through">Draft the architecture review</div><div style="font-size:15px;line-height:1.35;margin-top:3px;color:var(--ink3)">Done 10:55 · 74 min</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:102px;display:flex;align-items:center;gap:12px;height:52px;padding:0 8px 0 20px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <span style="flex:1;min-width:0;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="font-weight:600">Done</span> · Draft the architecture review</span>
+            <span style="height:44px;padding:0 14px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink)">Undo</span>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The toast takes the chip's slot for 5 seconds. Undo reopens the session and the task; the toast's seconds don't count as work. No countdown bar, no praise — just what happened.</p>
+      </div>
+
+      <div id="FS-07" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">FS-07</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Switch task · settle sheet</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec T-08</span></div>
+        <div data-screen-label="FS-07 Settle sheet" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Call the clinic back</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:18px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Timing now · 24 min</div>
+              <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Draft the architecture review</div>
+              <div style="font-size:19px;line-height:1.6;color:var(--ink2)">Settle this one first. Its time is kept whichever you pick.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;gap:9px;font-size:17px;font-weight:600"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Done</div>
+              <div style="height:52px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Stop for now</div>
+              <div style="display:flex;gap:10px">
+                <div style="flex:1.5;height:52px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:var(--ink2)">Defer to tomorrow</div>
+                <div style="flex:1;height:52px;border-radius:999px;background:var(--alertSoft);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:var(--alert)">Drop</div>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:12px"><span style="font-size:15px;color:var(--ink3)">Then Begin "Call the clinic back"</span><span style="height:44px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink2)">Cancel</span></div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Raised by a second Begin. One timer at a time; the new session starts only after a choice. Defer is a normal deferral (count + record); from the 3rd it opens TK-03 instead.</p>
+      </div>
+
+      <div id="FS-07-habit" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">FS-07</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Settle sheet · habit running</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">State</span></div>
+        <div data-screen-label="FS-07 Habit settle" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Draft the architecture review</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:18px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Timing now · 9 min</div>
+              <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Qur'an reading</div>
+              <div style="font-size:19px;line-height:1.6;color:var(--ink2)">Settle this one first.</div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Log 9 min</div>
+              <div style="flex:1;height:52px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:var(--ink2)">Stop for now</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:12px"><span style="font-size:15px;color:var(--ink3)">Then Begin the review</span><span style="height:44px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink2)">Cancel</span></div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">A habit has nothing to defer or drop, so two choices. "Log it" names the minutes it will add; Stop for now also keeps them — the difference is only whether the session is marked finished.</p>
+      </div>
+
+      <div id="SY-03" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">SY-03</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Undo toast · after Drop</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec T-06</span></div>
+        <div data-screen-label="SY-03 Undo toast" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>11:20</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Mon 12 May</span>
+            <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:22px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-0.01em">Two left,<br><em style="font-style:italic;color:var(--accent)">gently paced.</em></div>
+            <div style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;color:var(--ink2)">2h 14m of 3h</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Balanced</span></div><div style="height:8px;border-radius:999px;background:var(--line);overflow:hidden"><div style="width:74%;height:100%;border-radius:999px;background:var(--meter)"></div></div></div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Tasks</div>
+              <div style="display:flex;flex-direction:column;margin-inline:-14px">
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Book Yusuf's swimming lessons</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--ink3)">30 min</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catOchre)"></span>Family</span></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:102px;display:flex;align-items:center;gap:12px;height:52px;padding:0 8px 0 20px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <span style="flex:1;min-width:0;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="font-weight:600">Dropped</span> · Call the clinic back</span>
+            <span style="height:44px;padding:0 14px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink)">Undo</span>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The same quiet toast for every undoable action (drop, done, instant defer: "Moved to tomorrow"). If a session is live, the toast sits above the chip and the chip steps down for 5 s.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <div style="max-width:1720px;width:100%;margin:0 auto;border-top:1px solid var(--line2);padding-top:24px;display:flex;flex-direction:column;gap:10px">
+    <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">§10 check · this batch</div>
+    <div style="font-size:15px;line-height:1.6;color:var(--chrome);max-width:110ch">No red, alarm or colour change on overrun · actual vs estimate stated without judgement · one filled terracotta button per surface (the live chip is chrome, not a button) · Drop as soft alert fill · partial time always kept · 44 pt targets · chip is system bottom-accessory chrome, so it follows the bar on iPad and Duo.</div>
+    <div style="font-size:15px;line-height:1.6;color:var(--chrome2);max-width:110ch">Deferred to the end: FS-08 Live Activity / Dynamic Island (v1.1). Next — batch 3: habits and Anchors, including the two HB-08 avoid-habit options.</div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: 'light' };
+  renderVals() {
+    const dark = this.state.theme === 'dark';
+    return {
+      theme: this.state.theme,
+      themeLabel: dark ? 'Dark · switch to light' : 'Light · switch to dark',
+      toggleTheme: () => this.setState({ theme: dark ? 'light' : 'dark' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="omelette-owns-print" content="true">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,SOFT,WONK,wght@0,9..144,0..100,0..1,300..900;1,9..144,0..100,0..1,300..900&amp;family=Hanken+Grotesk:wght@300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; }
+  a { color: var(--terra); text-decoration: none; border-bottom: 1px solid var(--line); }
+  a:hover { color: var(--ink); }
+  [data-th="dark"] {
+    --app: #12303F !important; --card: rgba(255,255,255,0.05) !important; --ink: #E7F1F4 !important; --ink-2: #BCD3DA !important; --ink-3: #8FAAB4 !important;
+    --line: rgba(231,241,244,0.14) !important; --line-2: rgba(231,241,244,0.24) !important; --terra: #DDA080 !important; --accent: #8FCBB8 !important;
+    --deep: #071B27 !important; --glass-on: #1D4052 !important; --on-accent: #16242E !important; --shadow: 0 22px 50px -28px rgba(0,0,0,0.7) !important;
+  }
+</style>
+</helmet>
+
+<div data-th="{{ theme }}" style="--app: #EFF4F0; --card: #FFFFFF; --ink: #0A3A53; --ink-2: #14506E; --ink-3: #3F6E80; --line: rgba(10,58,83,0.14); --line-2: rgba(10,58,83,0.24); --terra: #9A4F2E; --accent: #1F6A58; --deep: #0C4767; --glass-on: #FFFFFF; --on-accent: #EAF3F6; --shadow: 0 18px 40px -26px rgba(6,32,46,0.42); background: var(--app); color: var(--ink); font-family: 'Hanken Grotesk',system-ui,sans-serif; -webkit-font-smoothing: antialiased; min-height: 100vh; padding: 52px 26px 90px; display: flex; flex-direction: column; align-items: center; gap: 64px">
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:center;gap:14px;font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-3)">
+      <span style="width:24px;height:1px;background:var(--terra);display:inline-block"></span>
+      <span>Derived from Jamaal Screens v3 · nothing else</span>
+    </div>
+    <h1 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:54px;line-height:1.02;margin:0;letter-spacing:-0.01em">ThreadsKit<br><em style="font-style:italic;color:var(--terra)">measured, not declared.</em></h1>
+    <p style="font-size:17px;line-height:1.6;color:var(--ink-2);max-width:64ch;margin:0;text-wrap:pretty">Every value below was counted out of the thirty-four drawn screens in <em>Jamaal Screens v3</em> — what the rows, chips, bezels and density grids actually use, across every inline style in the file. No external palette, no inherited scale. The screens are the reference; this is their transcript.</p>
+    <p style="font-size:17px;line-height:1.6;color:var(--ink-2);max-width:64ch;margin:0;text-wrap:pretty">Jamaal is built on it first. <strong>Riqa and Hashiya then inherit the same contract</strong> — same type roles, same spacing, same radii, same elevation — and override colour only. Section 06 draws that line precisely.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase">
+      <span style="padding:7px 14px;border-radius:999px;background:var(--deep);color:#EAF3F6">34 screens read</span>
+      <span style="padding:7px 14px;border-radius:999px;border:1px solid var(--line-2);color:var(--ink-2)">Light + dark</span>
+      <span style="padding:7px 14px;border-radius:999px;border:1px solid var(--line-2);color:var(--ink-2)">iOS 17 · SwiftUI</span>
+      <span style="padding:7px 14px;border-radius:999px;background:var(--accent);color:var(--on-accent)">3 products</span>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">01</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">Colour</h2>
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Light / dark · 21 names</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Ground · 4</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#EFF4F0"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">app</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">EFF4F0 / 12303F</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#FFFFFF"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">card</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">FFFFFF / white α5</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#0C4767"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">deep</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">0C4767 / 071B27</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#EAF3F6"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">onDeep</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">EAF3F6 · fixed</div></div></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Ink · 3 · the whole text scale</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#0A3A53"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">ink · titles</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">0A3A53 / E7F1F4</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#14506E"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">ink2 · body</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">14506E / BCD3DA</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#3F6E80"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">ink3 · labels</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">3F6E80 / 8FAAB4</div></div></div>
+      </div>
+      <div style="font-size:15px;line-height:1.55;color:var(--ink-2);max-width:64ch">Three steps, not four — the screens never needed a disabled ink, because nothing in Jamaal is ever greyed out. Keep it that way; a fourth step invites disabled states the product doesn't have.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Accent · 3 · one warm, one cool, one on top</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#9A4F2E"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">terra · action</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">9A4F2E / DDA080</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#1F6A58"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">accent · done</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">1F6A58 / 8FCBB8</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:var(--terra);display:flex;align-items:center;justify-content:center"><span style="color:var(--on-accent);font:500 14px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase">Aa</span></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">onAccent</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">EAF3F6 / 16242E</div></div></div>
+      </div>
+      <div style="font-size:15px;line-height:1.55;color:var(--ink-2);max-width:64ch">Terracotta is the only colour on a filled button, and it appears exactly where a decision is being asked for. Sage marks what is already settled. They are never used decoratively, which is why two is enough.</div>
+      <div style="font-size:15px;line-height:1.55;color:var(--ink-2);max-width:64ch"><code style="font-family:'JetBrains Mono',monospace;font-size:14px">onAccent</code> is the pair both accents need and the easiest token to forget: because terracotta and sage <em>lighten</em> in dark, type on a filled accent must <strong>flip from near-white to near-black</strong>, not stay white. Hardcoding white anywhere on a fill is the single most likely way to break the dark theme — and Riqa and Hashiya will hit it the moment they re-hue.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Density · 4 · the argument against streaks</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#D3E3DB"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">d1 · light</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">D3E3DB / 2B4A46</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#71A393"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">d2 · mid</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">71A393 / 4E7D72</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#0C4767"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">d3 · full</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">0C4767 / 8FCBB8</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#E3BEAB"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">missed</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">E3BEAB / 6B4A38</div></div></div>
+      </div>
+      <div style="display:flex;gap:3px;flex-wrap:wrap;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--card)">
+        <div style="width:18px;height:18px;border-radius:3px;background:#D3E3DB"></div><div style="width:18px;height:18px;border-radius:3px;background:#71A393"></div><div style="width:18px;height:18px;border-radius:3px;background:#0C4767"></div><div style="width:18px;height:18px;border-radius:3px;background:#0C4767"></div><div style="width:18px;height:18px;border-radius:3px;background:#E3BEAB"></div><div style="width:18px;height:18px;border-radius:3px;background:#71A393"></div><div style="width:18px;height:18px;border-radius:3px;background:#0C4767"></div><div style="width:18px;height:18px;border-radius:3px;background:#D3E3DB"></div><div style="width:18px;height:18px;border-radius:3px;background:#0C4767"></div><div style="width:18px;height:18px;border-radius:3px;background:#0C4767"></div><div style="width:18px;height:18px;border-radius:3px;background:#71A393"></div><div style="width:18px;height:18px;border-radius:3px;background:#E3BEAB"></div>
+      </div>
+      <div style="font-size:15px;line-height:1.55;color:var(--ink-2);max-width:64ch">Three filled steps plus a miss colour, drawn at a 3&nbsp;px radius and 61 uses across the file. This ramp <em>is</em> the no-streaks decision made visible, so it is a token, not a chart style — and Riqa and Hashiya will want their own three steps in their own hue.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Line, glass &amp; selected · 3</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#0C4767;position:relative"><div style="position:absolute;inset:0;background:rgba(239,244,240,0.86)"></div><div style="position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(10,58,83,0.14)"></div></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">line</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">ink α.14 / light α.14</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#0C4767;display:flex;align-items:center;justify-content:center"><div style="width:70%;height:60%;border-radius:8px;background:rgba(255,255,255,0.62)"></div></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">glass</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">white α.62 / α.09 · measured</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#EFF4F0;display:flex;align-items:center;justify-content:center"><div style="width:70%;height:60%;border-radius:8px;background:#FFFFFF;box-shadow:0 1px 0 rgba(10,58,83,0.14)"></div></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">selected</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">FFFFFF / 1D4052</div></div></div>
+      </div>
+      <div style="font-size:15px;line-height:1.55;color:var(--ink-2);max-width:64ch"><code style="font-family:'JetBrains Mono',monospace;font-size:14px">line</code> and <code style="font-family:'JetBrains Mono',monospace;font-size:14px">glass</code> are alpha — they composite over whatever is behind them, so they must ship as colours <em>with</em> alpha rather than being re-derived at the call site. <code style="font-family:'JetBrains Mono',monospace;font-size:14px">selected</code> is not: it is the opaque task-row fill and sits on the content layer, which is why it is a flat hex in both appearances. Section 14 has the rule.</div>
+      <div style="font-size:15px;line-height:1.55;color:var(--ink-2);max-width:64ch"><strong style="color:var(--ink)">Measured from the v4 frames:</strong> glass is white α.62 in light and α.09 in dark on every action surface. Its edge is <code style="font-family:'JetBrains Mono',monospace;font-size:14px">line</code> in light (ink α.14) and white α.16 in dark, so the edge doesn't need its own name; <code style="font-family:'JetBrains Mono',monospace;font-size:14px">GlassSurface</code> derives it. Blur is 20&nbsp;pt at 140% saturation on bars and chips, and 28&nbsp;pt at 160% on the iPad and Mac sidebar. On iOS 26 these are reference values only: the system glass material supplies the blur, and the tint is the only value the package sets.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Category · 5 · Jamaal only, final</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#1F6A58"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">catTeal = accent</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">1F6A58 / 8FCBB8 · 5.8 / 7.5</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#2F5E9E"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">catBlue</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">2F5E9E / 9DB9E8 · 5.9 / 6.9</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#836312"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">catOchre</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">836312 / D8BA6A · 5.0 / 7.3</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#7B4474"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">catPlum</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">7B4474 / D5A6CC · 6.5 / 6.7</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)"><div style="height:60px;background:#52636E"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">catSlate</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">52636E / AEBCC6 · 5.6 / 7.1</div></div></div>
+      </div>
+      <div style="font-size:15px;line-height:1.55;color:var(--ink-2);max-width:64ch">Contrast is shown as light on <code style="font-family:'JetBrains Mono',monospace;font-size:14px">app</code> / dark on <code style="font-family:'JetBrains Mono',monospace;font-size:14px">app</code>. Every category passes 4.5:1 as text on <code style="font-family:'JetBrains Mono',monospace;font-size:14px">app</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:14px">card</code> and the iPad sidebar. Ochre was moved from 8C6A14 to 836312 because the old value fell to 4.2:1 on the sidebar. These are user-assigned labels, not contract colours, so they live in <code style="font-family:'JetBrains Mono',monospace;font-size:14px">Palettes/Jamaal.swift</code> as a separate <code style="font-family:'JetBrains Mono',monospace;font-size:14px">categories</code> array outside the 21 names, and Riqa and Hashiya don't inherit them.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--line-2);padding-top:26px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">Status · the one genuine gap</div>
+      <h3 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:26px;line-height:1.08;margin:0">Three of the four already exist under other names</h3>
+      <p style="font-size:17px;line-height:1.6;color:var(--ink-2);max-width:64ch;margin:0;text-wrap:pretty">v3 draws no success, warning, error or info — and mostly that is correct rather than missing, because the palette already carries those meanings in its working colours. Importing a generic red/amber/green set would put four foreign hues into a two-accent system and undo the calm the screens are built on.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+        <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:16px;height:16px;border-radius:999px;background:#1F6A58;flex-shrink:0"></span><span style="font:500 14px/1.35 'JetBrains Mono',monospace">success → accent</span></div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Sage already means <em>settled</em> — the completed row, the logged prayer, the filled density cell. A second green would be the same idea twice.</div>
+        </div>
+        <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:16px;height:16px;border-radius:999px;background:#9A4F2E;flex-shrink:0"></span><span style="font:500 14px/1.35 'JetBrains Mono',monospace">warning → terra</span></div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Terracotta is already the colour of a decision being asked for. The overloaded capacity meter and a <em>closing soon</em> ritual window are exactly that, so they inherit it rather than earning an amber.</div>
+        </div>
+        <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:16px;height:16px;border-radius:999px;background:#E3BEAB;flex-shrink:0"></span><span style="font:500 14px/1.35 'JetBrains Mono',monospace">lapsed → missed</span></div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">A closed window or a skipped habit is not an error — nothing went wrong, a day just passed. That distinction is the product's whole temperament, and <code style="font-family:'JetBrains Mono',monospace;font-size:14px">missed</code> protects it.</div>
+        </div>
+        <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:16px;height:16px;border-radius:999px;background:#0A3A53;flex-shrink:0"></span><span style="font:500 14px/1.35 'JetBrains Mono',monospace">info → ink2</span></div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Nothing in Jamaal announces itself informationally. Plain body ink on <code style="font-family:'JetBrains Mono',monospace;font-size:14px">card</code> is the treatment; a blue info tint would also be invisible against a blue app.</div>
+        </div>
+      </div>
+
+      <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">Needs adding · one hue, two names</div>
+        <div style="font-size:19px;font-weight:600;line-height:1.35">There is no colour for <em>refused</em> or <em>destructive</em></div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">This one is real, and it comes from decisions made <strong>after</strong> v3 was drawn: Drop on the interruption sheet, deleting a task, and the medication ritual that must refuse a second dose rather than accept it quietly. None of those can borrow terracotta — terracotta is the <em>primary action</em>, so a Drop button in terracotta reads as the thing to press.</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">So: one new hue, kept in the family by pushing the existing terracotta deeper and redder rather than importing a signal red.</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">
+          <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden"><div style="height:60px;background:#A32E22"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">alert</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">A32E22 / F09A90</div></div></div>
+          <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden"><div style="height:60px;background:#F2D4CE"></div><div style="padding:12px 14px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">alertSoft</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">F2D4CE / 5A2A22</div></div></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);padding-top:14px">
+          <span style="padding:12px 20px;border-radius:999px;background:var(--terra);color:var(--on-accent);font-size:15px;font-weight:600">Mark done</span>
+          <span style="padding:12px 20px;border-radius:999px;border:1px solid var(--line-2);font-size:15px;color:var(--ink-2)">Defer</span>
+          <span style="padding:12px 20px;border-radius:999px;background:#F2D4CE;color:#A32E22;font-size:15px;font-weight:600">Drop</span>
+        </div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Note the treatment as much as the hue: destructive is a <strong>soft fill with alert text</strong>, never a filled alert button. Only terracotta gets to be filled, so the eye still lands on the safe choice first — and the three-way settle sheet stays readable at a glance.</div>
+      </div>
+
+      <div style="font-size:15px;line-height:1.6;color:var(--ink-2);max-width:64ch">For the shared contract this means <code style="font-family:'JetBrains Mono',monospace;font-size:14px">ThreadsPalette</code> declares <strong>nineteen</strong> names, and the four status <em>roles</em> are computed properties with defaults — Jamaal aliases three of them to its working colours, while Riqa, which genuinely has failed uploads and processing states, overrides them with real values. Same contract, no foreign hues forced on the products that don't need them.</div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">02</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">Type</h2>
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Three families · seven roles</span>
+    </div>
+
+    <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden">
+      <div style="display:grid;grid-template-columns:minmax(96px,auto) 1fr">
+        <div style="padding:16px 18px;font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--line)">display</div>
+        <div style="padding:16px 18px;border-bottom:1px solid var(--line);font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:26px;line-height:1.08">Fraunces · <em style="font-style:italic;color:var(--terra)">SOFT 60, WONK 1</em></div>
+        <div style="padding:16px 18px;font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--line)">text</div>
+        <div style="padding:16px 18px;border-bottom:1px solid var(--line);font-size:17px">Hanken Grotesk · 300–700, set once at the root</div>
+        <div style="padding:16px 18px;font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">label</div>
+        <div style="padding:16px 18px;font:500 14px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase">JetBrains Mono · 400 / 500</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Roles, by how often they're drawn</div>
+        <div style="display:flex;flex-direction:column;font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink)">label</span><span>mono 10 · 500 · .16em · 98×</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink)">chrome</span><span>13 · 600 · 31×</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink)">meta</span><span>14 · 400 · 55×</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink)">body</span><span>15 · 400 · 66×</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink)">row</span><span>16 · 600 · 77×</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink)">lede</span><span>17 · 400 · 67×</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0"><span style="color:var(--ink)">display</span><span>26 · 32 · 34 serif · 48×</span></div>
+        </div>
+        <div style="font-size:15px;line-height:1.55;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">Seven roles, not a ten-step ramp. Weight is only ever <strong>400, 500 or 600</strong> — plus Fraunces 300 for the two largest headings. Tracking exists on labels only: <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.16em</code> for section eyebrows, <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.14em</code> inside cards.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Leading · exactly three</div>
+        <div style="display:flex;flex-direction:column;font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink)">1.08</span><span>display · 22×</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink)">1.35</span><span>UI · 27×</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0"><span style="color:var(--ink)">1.6</span><span>long-form · 19×</span></div>
+        </div>
+        <div style="font-size:15px;line-height:1.55;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">Bind each leading to its role rather than exposing it separately — a caller who can choose leading will eventually choose wrong. <code style="font-family:'JetBrains Mono',monospace;font-size:14px">ThreadsType.row</code> should carry 16/600/1.35 as one indivisible thing.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">The one real problem</div>
+        <div style="font-size:19px;font-weight:600;line-height:1.35">These are mockup sizes</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">A 10&nbsp;px label used 98 times and 14–16&nbsp;px body read fine in a 320&nbsp;px-wide drawing on a large screen. Shipped as 10&nbsp;pt and 15&nbsp;pt on a real phone they are too small, and they ignore the user's text-size setting — unacceptable for an app whose whole subject is attention.</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Resolve it by treating the roles as <strong>ratios, not points</strong>: anchor <code style="font-family:'JetBrains Mono',monospace;font-size:14px">body</code> to the system body text style and derive the rest, so the relationships in the drawings survive while the absolute sizes follow Dynamic Type.</div>
+        <div style="border-radius:8px;background:var(--app);padding:14px;font:400 12px/1.7 'JetBrains Mono',monospace;color:var(--ink-2);overflow-x:auto;white-space:pre">.font(.custom("HankenGrotesk-Regular",
+              size: 17, relativeTo: .body))</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">03</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">Space, radius, layout</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Space · a 26 gutter</div>
+        <div style="font:400 14px/1.9 'JetBrains Mono',monospace;color:var(--ink-2)">gutter&nbsp;·&nbsp;26<br>gaps&nbsp;·&nbsp;4&nbsp; 10&nbsp; 14&nbsp; 22<br>row pad&nbsp;·&nbsp;12×14<br>chip pad&nbsp;·&nbsp;9×20&nbsp; 12×20<br>rule pad&nbsp;·&nbsp;15|0&nbsp; 16|0&nbsp; 18|0</div>
+        <div style="font-size:15px;line-height:1.55;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px"><strong>14 is the workhorse gap</strong> at 67 uses, not 16 — and 26 is the screen gutter everywhere. The set is small and irregular (26, 22, 14, 10, 4), so ship it as <em>named</em> steps tied to use, not an arithmetic scale: <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.gutter .section .row .tight .hair</code>. One correction from section 15: <strong>the gutter is a minimum, not a constant</strong> — safe areas and layout margins are often asymmetric on Duo, so each edge resolves independently against its own inset rather than taking a flat 26.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Radius · four that ship</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:14px"><div style="width:36px;height:24px;background:var(--app);border:1px solid var(--line);border-radius:3px;flex-shrink:0"></div><span style="font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">3 · density cell · 61×</span></div>
+          <div style="display:flex;align-items:center;gap:14px"><div style="width:36px;height:24px;background:var(--app);border:1px solid var(--line);border-radius:8px;flex-shrink:0"></div><span style="font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">8 · field, inline block</span></div>
+          <div style="display:flex;align-items:center;gap:14px"><div style="width:36px;height:24px;background:var(--app);border:1px solid var(--line);border-radius:14px;flex-shrink:0"></div><span style="font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">14 · card, selected row</span></div>
+          <div style="display:flex;align-items:center;gap:14px"><div style="width:36px;height:24px;background:var(--app);border:1px solid var(--line);border-radius:999px;flex-shrink:0"></div><span style="font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">pill · 271× · signature</span></div>
+        </div>
+        <div style="font-size:15px;line-height:1.55;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">The pill at 271 uses is the look of the app — every checkbox, chip and button. The 30, 32 and 42&nbsp;px radii in v3 are <strong>device bezel and screen corner: mockup furniture</strong>, and must not enter the package.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Layout · what width buys</div>
+        <div style="font:400 14px/1.9 'JetBrains Mono',monospace;color:var(--ink-2)">phone&nbsp;·&nbsp;320 × 693<br>wide&nbsp;·&nbsp;880 × 660<br>sidebar&nbsp;·&nbsp;340 fixed<br>reading&nbsp;·&nbsp;40ch max</div>
+        <div style="font-size:15px;line-height:1.55;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">Wide layouts are a <strong>340&nbsp;px list beside a detail pane</strong>, never a denser grid — the sidebar width is constant across every wide screen drawn: width buys focus, not density. Note these are <em>frames v3 happened to draw</em>, not breakpoints — section 15 replaces them with two size classes, since the real devices resize continuously.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Hit targets</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Drawn checkboxes are 20–22&nbsp;px and chips are 9–12&nbsp;px tall in padding terms — again, composition sizes. In the build every one of these needs <strong>44&nbsp;pt minimum</strong>, which means the visual mark stays 22&nbsp;pt and gains an invisible <code style="font-family:'JetBrains Mono',monospace;font-size:14px">contentShape</code> around it. Worth a token: <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.hit = 44</code>.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">04</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">Elevation &amp; motion</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Two levels, both blue-black</div>
+        <div style="display:flex;flex-direction:column;font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink)">lift</span><span>y18 r40 s−26 · α.42</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="color:var(--ink)">float</span><span>y10 r26 s−14 · α.50</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:8px 0"><span style="color:var(--ink)">hair</span><span>0 1 0 · line</span></div>
+        </div>
+        <div style="font-size:15px;line-height:1.55;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">Tinted <code style="font-family:'JetBrains Mono',monospace;font-size:14px">rgba(6,32,46,·)</code> — cool, deep, and tightened by a <strong>negative spread</strong> that SwiftUI's <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.shadow</code> cannot express. Reproduce by shadowing an inset shape behind the card, and wrap it once as a modifier so no call site improvises.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">Dark is not a mirror</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)"><strong>Shadows lose the blue.</strong> Dark uses neutral <code style="font-family:'JetBrains Mono',monospace;font-size:14px">rgba(0,0,0,.70)</code> at y22 r50 s−28 — deeper, wider, and a different hue. So elevation is four values, not two.</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)"><strong>Glass inverts its material.</strong> White at 62% over blue in light; white at 9% in dark. One system material will not give you both — carry the alphas as tokens and let the blur be constant. Note this applies to <code style="font-family:'JetBrains Mono',monospace;font-size:14px">glass</code> only; <code style="font-family:'JetBrains Mono',monospace;font-size:14px">selected</code> is opaque in both appearances.</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)"><strong>Distinct names converge.</strong> In dark, terracotta and the rule colour are both #DDA080; sage and density-3 are both #8FCBB8. Keep the names separate even where the hex repeats, or you lose the ability to pull them apart later.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Motion · an honest gap</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">The screens are still frames: there is <strong>no motion in v3 to measure</strong>. Rather than invent a curve, derive it from the two behaviours already decided — the ambient timer chip and the complete/defer sheets — and fix the tokens when those are drawn.</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Until then the package should expose one duration and one curve as placeholders, clearly marked provisional, so views are not littered with literals that later need finding.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">05</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">Package shape</h2>
+    </div>
+    <div style="border-radius:14px;background:var(--deep);padding:22px;overflow-x:auto">
+      <pre style="margin:0;font:400 14px/1.7 'JetBrains Mono',monospace;color:#C6D9E0;white-space:pre">ThreadsKit/
+└── Sources/
+    ├── ThreadsTokens/          // shared contract — no colour values
+    │   ├── ThreadsType.swift        // 7 roles, leading bound in
+    │   ├── ThreadsSpace.swift       // named steps + 4 radii + hit
+    │   ├── ThreadsElevation.swift   // lift / float / hair × appearance
+    │   ├── ThreadsMotion.swift      // provisional
+    │   ├── ThreadsPalette.swift     // 21 NAMES + 4 status roles
+    │   └── Palettes/
+    │       └── Jamaal.swift         // the only one that exists
+    └── Resources/
+        └── Colors-Jamaal.xcassets   // light + dark pairs</pre>
+    </div>
+    <div style="font-size:17px;line-height:1.6;color:var(--ink-2);max-width:64ch">A palette is a <strong>conformance, not a copy</strong>: twenty-one names declared once in <code style="font-family:'JetBrains Mono',monospace;font-size:14px">ThreadsPalette</code>, and each product supplies values for all of them. That is what makes Riqa cost a file rather than a fork — and what makes a missing token a compile error instead of a wrong colour on screen.</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">Revised · one target, not four</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">An earlier draft of this page gave Jamaal, Riqa and Hashiya a target each. That was structure invented ahead of content, and wrong for three reasons. <strong>Only one palette exists</strong> — the other two would be empty files named after intentions. <strong>The module boundary buys nothing</strong>, because each app links exactly one palette, and separate targets are only worth it when a consumer needs to link a subset. And <strong>three targets invite divergence</strong>: the first token added to one and not the others is how a shared contract quietly stops being shared.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Write Riqa's when Riqa has a screen</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">A palette is 21 colours in one file plus an asset catalog — a morning's work whenever it is genuinely needed, and impossible to get right before then. It is the same argument as not specifying glass from prose: every value in this document is measured from something drawn, and Riqa has nothing drawn yet.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">What the protocol still earns</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Keep it even with one conformance, for one reason: it makes <strong>a missing token a compile error</strong>, which is precisely the failure that let v3 drift from the system in the first place. If Riqa and Hashiya never materialise, the protocol was cheap insurance. Add a second <em>product</em> only when a real consumer needs to link without the others.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">06</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">What Riqa and Hashiya inherit</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent)">Inherited · unchanged</div>
+        <div style="font-size:19px;font-weight:600;line-height:1.35">Type, space, radius, elevation</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">The seven roles and three leadings, the 26 gutter and 14 gap, the four radii with the pill dominant, and the two-level tinted shadow. A Riqa screen should be recognisable as the same hand as a Jamaal screen with the colour removed — that is the whole point of deriving from one reference.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">Overridden · colour only</div>
+        <div style="font-size:19px;font-weight:600;line-height:1.35">Twenty-one values, one file</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Ground, ink, two accents with their pressed tints and their <code style="font-family:'JetBrains Mono',monospace;font-size:14px">onAccent</code>, alert, the density ramp, line, glass and <code style="font-family:'JetBrains Mono',monospace;font-size:14px">selected</code> — plus any status role the product actually needs. Keep the <em>roles</em> honest when you re-hue: one warm accent for the action being asked for, one cool for what is settled. A product that gives itself three accents has left the system.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Product-only · never shared</div>
+        <div style="font-size:19px;font-weight:600;line-height:1.35">The density ramp's meaning</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Jamaal's three steps encode "density, not streaks". Riqa's equivalent will encode something else entirely — credits, or file state. Share the <em>shape</em> (three steps plus a negative) and let each product name what the steps mean.</div>
+      </div>
+    </div>
+    <div style="border-radius:14px;background:var(--deep);padding:26px;display:flex;flex-direction:column;gap:14px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:#DDA080">Before any of this is code</div>
+      <div style="font-size:17px;line-height:1.6;color:#C6D9E0;max-width:62ch;text-wrap:pretty">Both of the questions that used to sit here are now answered — the type scale is rebased in section 08 and the contrast is measured in section 09. What follows in 07–13 is <strong style="color:#EAF3F6">specification, not discussion</strong>: values a build can be driven from directly.</div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">07</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">What a system still needs</h2>
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Ten gaps · in the order they bite</span>
+    </div>
+    <p style="font-size:17px;line-height:1.6;color:var(--ink-2);max-width:64ch;margin:0;text-wrap:pretty">Sections 01–04 are the <em>static</em> half: what a thing looks like sitting still. A design system is mostly the other half — what a thing looks like being touched, being empty, being wrong, or being read right-to-left. None of that is in v3, because still frames cannot show it.</p>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">Blocking · needed before the first screen is built</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+        <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">01 · interaction states</div>
+          <div style="font-size:19px;font-weight:600;line-height:1.35">Every component has four, v3 draws one</div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Rest, pressed, focused, disabled. Pressed matters most on iOS — and the answer cannot be the web's <code style="font-family:'JetBrains Mono',monospace;font-size:14px">translateY(-1px)</code> lift, because a finger is already covering the element. Propose: <strong>fill darkens one step, no movement</strong>, and disabled is opacity only so no new colour is needed.</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);padding-top:14px">
+            <span style="padding:9px 20px;border-radius:999px;background:var(--terra);color:var(--on-accent);font-size:15px;font-weight:600">Rest</span>
+            <span style="padding:9px 20px;border-radius:999px;background:#7E3F24;color:var(--on-accent);font-size:15px;font-weight:600">Pressed</span>
+            <span style="padding:9px 20px;border-radius:999px;background:var(--terra);color:var(--on-accent);font-size:15px;font-weight:600;box-shadow:0 0 0 3px var(--app),0 0 0 5px var(--terra)">Focus</span>
+            <span style="padding:9px 20px;border-radius:999px;background:var(--terra);color:var(--on-accent);font-size:15px;font-weight:600;opacity:0.42">Off</span>
+          </div>
+        </div>
+        <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">02 · the empty day</div>
+          <div style="font-size:19px;font-weight:600;line-height:1.35">The most important screen isn't drawn</div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">An app called "one list, today only" spends real time with nothing on the list — first launch, and every morning before capture. v3 has no empty state anywhere, so there is no token for the ground a nearly-blank screen sits on, and no decision about whether emptiness reads as calm or as failure. It must read as calm.</div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Needs: an empty treatment per surface (today, habits, rituals, history), and a rule that an empty list is <strong>never</strong> a call to action.</div>
+        </div>
+        <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">03 · icons</div>
+          <div style="font-size:19px;font-weight:600;line-height:1.35">Not one is specified</div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Stroke weight, corner join, size, and optical alignment to the mono label are all unset — and icons will appear on every row, chip and tab bar. Set three values and it never comes up again: <strong>22&nbsp;pt box, 1.75&nbsp;pt stroke, round joins</strong>, tinted with the ink ramp and never with an accent unless it is the accent's meaning.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent)">Needed early · cheap now, expensive later</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+        <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">04 · rtl &amp; numerals</div>
+          <div style="font-size:19px;font-weight:600;line-height:1.35">An app with Salah in it will be read right-to-left</div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Free if you never write <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.leading</code> as <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.left</code>, and painful to retrofit. Two extra calls: the density grid must fill from the trailing edge, and Arabic-Indic numerals need to be a supported rendering of times and counts, not a find-and-replace later.</div>
+        </div>
+        <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">05 · component inventory</div>
+          <div style="font-size:19px;font-weight:600;line-height:1.35">Tokens aren't a system yet</div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">v3 redraws the same row, chip, sheet and density grid across 34 screens, and nothing names them. Until they are named they will drift. The real inventory is small — <strong>task row, chip, pill button, settle sheet, density grid, window bar, capacity meter, section header</strong> — eight things, and every screen is a composition of them.</div>
+        </div>
+        <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">06 · motion &amp; haptics</div>
+          <div style="font-size:19px;font-weight:600;line-height:1.35">The completion moment is undesigned</div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Section 04 notes there is no motion to measure, but the gap is bigger than a curve: ticking something off is the app's <em>one</em> reward, and in a product with no streaks it is the only feedback there is. That makes it a token-level decision — one duration, one curve, and one haptic weight per event class (complete, defer, drop, window closing).</div>
+        </div>
+        <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">07 · voice &amp; copy</div>
+          <div style="font-size:19px;font-weight:600;line-height:1.35">"Nothing nags" is a copy rule, unwritten</div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">The strings in v3 are good and accidental. Write the rules down or they erode: <strong>no exclamation marks, no praise, no guilt, never second person imperative about the past</strong>. "Three of five" not "You missed two!". This is the cheapest section to write and the one most likely to be violated by whoever writes the next screen.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Later · but write down that they're deferred</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+        <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">08 · off-app surfaces</div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">The ambient chip already lives on the lock screen, so the system has a home-screen widget and a Live Activity whether it plans for them or not. Both ignore your palette's ground and inherit the wallpaper — which means <strong>glass and the ink ramp need a variant that works on an unknown background</strong>. Nothing else in the system has that problem.</div>
+        </div>
+        <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2)"><strong style="color:var(--ink);font-size:17px">09 · elevation on dark grounds.</strong> A card on <code style="font-family:'JetBrains Mono',monospace;font-size:14px">deep</code> cannot use a shadow — it is already dark. v3 solves it with <code style="font-family:'JetBrains Mono',monospace;font-size:14px">glass</code>, but that is undocumented as a rule: on dark, <strong>elevation is material, not shadow</strong>.</div>
+          <div style="font-size:15px;line-height:1.6;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px"><strong style="color:var(--ink);font-size:17px">10 · versioning.</strong> Three products will consume this. Decide now whether a token can ever be removed, or only deprecated — otherwise the first Riqa release makes the answer for you.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="border-radius:14px;background:var(--deep);padding:26px;display:flex;flex-direction:column;gap:14px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:#DDA080">My recommendation</div>
+      <div style="font-size:17px;line-height:1.6;color:#C6D9E0;max-width:62ch;text-wrap:pretty">Gaps 01–06 and 09 are specified in sections 08–13 below, with real values. <strong style="color:#EAF3F6">07, 08 and 10</strong> — voice, off-app surfaces, versioning — stay open deliberately: they are decisions about the product and the org, not the package, and nothing in the build is blocked on them.</div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">08</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">The shipped type scale</h2>
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Decided · rebased, six roles</span>
+    </div>
+    <p style="font-size:17px;line-height:1.6;color:var(--ink-2);max-width:64ch;margin:0;text-wrap:pretty">The drawn sizes are rebased up so the smallest role clears 12&nbsp;pt and body lands on 17, and each role is anchored to a system text style so it grows with Dynamic Type while keeping v3's proportions. <strong>Chrome is gone</strong> — 13&nbsp;px/600 was the fake iOS status bar in the mockups, not app type.</p>
+    <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);overflow-x:auto">
+      <div style="display:grid;grid-template-columns:minmax(90px,auto) minmax(150px,auto) minmax(90px,auto) minmax(110px,auto) 1fr;min-width:620px;font-size:15px">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">role</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">font</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">v3 → pt</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">relativeTo</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">use</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">label</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">Mono 500 · .16em</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">10 → 12</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">.caption2</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">eyebrows, chip labels, times</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">meta</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">Hanken 400</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">14 → 15</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">.subheadline</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">row secondary line, counts</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">body</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">Hanken 400</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--terra)">15 → 17</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">.body</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">the anchor · all prose</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">row</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">Hanken 600</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">16 → 18</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">.headline</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">task title · most-drawn role</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">lede</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">Hanken 400</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">17 → 19</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">.callout</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">sheet intros, empty states</div>
+
+        <div style="padding:12px 14px;font:500 14px/1.35 'JetBrains Mono',monospace">display</div>
+        <div style="padding:12px 14px;color:var(--ink-2)">Fraunces 500 · SOFT 60</div>
+        <div style="padding:12px 14px;font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">26/32/34 → 28/34/38</div>
+        <div style="padding:12px 14px;font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">.title2/.title/.largeTitle</div>
+        <div style="padding:12px 14px;color:var(--ink-2)">screen title, timer numeral</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Leading, bound in</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Never exposed separately. <code style="font-family:'JetBrains Mono',monospace;font-size:14px">display</code> carries 1.08, <code style="font-family:'JetBrains Mono',monospace;font-size:14px">label/meta/row</code> carry 1.35, <code style="font-family:'JetBrains Mono',monospace;font-size:14px">body/lede</code> carry 1.6. A caller who can choose leading will eventually choose wrong.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">The timer is a special case</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">A running clock in a proportional face jitters as digits change width. The timer numeral uses <code style="font-family:'JetBrains Mono',monospace;font-size:14px">display</code> with <strong>monospaced digits</strong> forced on — one call, and the only place in the app that needs it.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Accessibility ceiling</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Let every role scale to the largest accessibility size except <code style="font-family:'JetBrains Mono',monospace;font-size:14px">label</code>, which caps at <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.xxLarge</code> — a tracked mono eyebrow at 40&nbsp;pt breaks every row it sits in, and it is metadata, not content.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">09</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">Contrast, measured</h2>
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent)">All pass · nothing to change</span>
+    </div>
+    <p style="font-size:17px;line-height:1.6;color:var(--ink-2);max-width:64ch;margin:0;text-wrap:pretty">Computed against both grounds, both appearances. The ramp turns out to be better than the eye-estimate that worried me earlier: the floor is <strong>5.0:1</strong>, comfortably over the 4.5 requirement, so no value needs adjusting before it hardens into a package.</p>
+    <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);overflow-x:auto">
+      <div style="display:grid;grid-template-columns:minmax(150px,auto) 1fr 1fr 1fr;min-width:520px;font-size:15px">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">pair</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">on app</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">on card</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">dark, on app</div>
+
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">ink</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">10.8:1</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">12.0:1</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">12.0:1</div>
+
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">ink2</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">7.8:1</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">8.7:1</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">8.9:1</div>
+
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">ink3 · floor</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--terra);font-weight:600">5.0:1</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">5.6:1</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">5.7:1</div>
+
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">terra as text</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">5.3:1</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">5.9:1</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">6.2:1</div>
+
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">onAccent / terra</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">5.2:1</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-3)">—</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">7.1:1</div>
+
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">onAccent / accent</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">5.8:1</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-3)">—</div>
+        <div style="padding:11px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">8.8:1</div>
+
+        <div style="padding:11px 14px;font:500 14px/1.35 'JetBrains Mono',monospace">alert / alertSoft</div>
+        <div style="padding:11px 14px;color:var(--ink-2)">5.0:1</div>
+        <div style="padding:11px 14px;color:var(--ink-3)">—</div>
+        <div style="padding:11px 14px;color:var(--ink-2)">5.4:1</div>
+      </div>
+    </div>
+    <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">Two rules that keep it true</div>
+      <div style="font-size:15px;line-height:1.6;color:var(--ink-2)"><strong>Density cells are not text.</strong> <code style="font-family:'JetBrains Mono',monospace;font-size:14px">d1</code> against <code style="font-family:'JetBrains Mono',monospace;font-size:14px">card</code> is about 1.3:1 — invisible as type and correct as a graphic. Never put a numeral inside a density cell; the month read is a shape, and a label goes beside the grid, not in it.</div>
+      <div style="font-size:15px;line-height:1.6;color:var(--ink-2)"><strong>Never tint text to make it quieter.</strong> Quiet is <code style="font-family:'JetBrains Mono',monospace;font-size:14px">ink3</code>, which is measured. An opacity or <code style="font-family:'JetBrains Mono',monospace;font-size:14px">color-mix</code> on <code style="font-family:'JetBrains Mono',monospace;font-size:14px">ink2</code> lands somewhere unmeasured and is how a passing palette quietly starts failing.</div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">10</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">Interaction states</h2>
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Decided · four per surface</span>
+    </div>
+    <p style="font-size:17px;line-height:1.6;color:var(--ink-2);max-width:64ch;margin:0;text-wrap:pretty">One rule underneath all of it: <strong>a press never moves anything.</strong> The finger is already covering the element, so movement is felt as lag rather than feedback. State is carried by fill, and nothing else.</p>
+    <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);overflow-x:auto">
+      <div style="display:grid;grid-template-columns:minmax(130px,auto) 1fr 1fr 1fr;min-width:560px;font-size:15px">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">surface</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">pressed</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">focused</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">disabled</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">filled pill</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">fill → pressed tint</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">2pt terra ring, 3pt offset</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">opacity 0.42</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">outline pill</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">bg → line α.08</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">same ring</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">opacity 0.42</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">task row</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">bg → selected</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">ring inset to 14 radius</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-3)">n/a</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">checkbox</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">ring thickens 1.5→2.5pt</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">ring at 44pt bounds</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-3)">n/a</div>
+
+        <div style="padding:12px 14px;font:500 14px/1.35 'JetBrains Mono',monospace">destructive</div>
+        <div style="padding:12px 14px;color:var(--ink-2)">alertSoft → alert α.24</div>
+        <div style="padding:12px 14px;color:var(--ink-2)">ring in alert, not terra</div>
+        <div style="padding:12px 14px;color:var(--ink-2)">opacity 0.42</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Pressed tints · two new values</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden"><div style="height:52px;background:#7E3F24"></div><div style="padding:10px 12px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">terraPress</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">7E3F24 / C08868</div></div></div>
+          <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden"><div style="height:52px;background:#175245"></div><div style="padding:10px 12px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">accentPress</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">175245 / 74B3A0</div></div></div>
+        </div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">In light they darken; in dark they <em>darken too</em> rather than lightening further, because the dark accents are already pale. Two names, four values — and the contract goes to 21.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Specimen · the settle sheet</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <span style="padding:12px 20px;border-radius:999px;background:var(--terra);color:var(--on-accent);font-size:15px;font-weight:600">Done</span>
+          <span style="padding:12px 20px;border-radius:999px;background:#7E3F24;color:var(--on-accent);font-size:15px;font-weight:600">Done</span>
+          <span style="padding:12px 20px;border-radius:999px;border:1px solid var(--line-2);color:var(--ink-2);font-size:15px">Defer</span>
+          <span style="padding:12px 20px;border-radius:999px;background:#F2D4CE;color:#A32E22;font-size:15px;font-weight:600">Drop</span>
+          <span style="padding:12px 20px;border-radius:999px;background:var(--terra);color:var(--on-accent);font-size:15px;font-weight:600;opacity:0.42">Done</span>
+        </div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Rest, pressed, secondary, destructive, disabled. Disabled is <strong>opacity only</strong> — never a grey fill, which would introduce a colour the palette does not have and cannot theme.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Hit area</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">The drawn checkbox stays a <strong>22&nbsp;pt mark inside a 44&nbsp;pt target</strong>, the extra area invisible. Same for chips and the timer controls. One token, <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.hit = 44</code>, and the rule that no tappable thing is ever smaller — including in the widest layouts, where a pointer makes it tempting.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">11</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">Empty, and icons</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Empty · one pattern, four places</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">An empty list is the <strong>normal, good state</strong> of a finished day — so it gets no illustration, no button, and no encouragement. A single <code style="font-family:'JetBrains Mono',monospace;font-size:14px">lede</code> line in <code style="font-family:'JetBrains Mono',monospace;font-size:14px">ink3</code>, centred in the list area, on plain <code style="font-family:'JetBrains Mono',monospace;font-size:14px">app</code> ground. Capture is already permanently available, so nothing needs to invite it.</div>
+        <div style="border-radius:14px;background:var(--app);padding:26px 22px;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center">
+          <div style="font-size:19px;line-height:1.6;color:var(--ink-3)">Nothing left for today.</div>
+        </div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">The four lines, fixed: <strong>today</strong> "Nothing left for today." · <strong>first launch</strong> "Write the first thing." · <strong>habits</strong> "No habits yet — they'll appear as patterns do." · <strong>history</strong> "Nothing logged yet."</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Icons · geometry, then restraint</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)"><strong>22&nbsp;pt box, 1.75&nbsp;pt stroke, round cap and join, no fill.</strong> Optically centred to the cap height of <code style="font-family:'JetBrains Mono',monospace;font-size:14px">row</code>, not to its line box. SF Symbols at weight <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.regular</code> matches this closely enough to use throughout — custom drawing is for the density grid and the window bar only, and those are graphics, not icons.</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">Colour rule: icons take <code style="font-family:'JetBrains Mono',monospace;font-size:14px">ink2</code> or <code style="font-family:'JetBrains Mono',monospace;font-size:14px">ink3</code> and <strong>never an accent unless the accent's meaning applies</strong> — a terracotta icon is claiming to be the primary action. This is the rule most likely to be broken, because tinted icons look lively in isolation and noisy in a list of forty.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Elevation on dark grounds</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">A shadow cannot lift a card off <code style="font-family:'JetBrains Mono',monospace;font-size:14px">deep</code> — the ground is already darker than the shadow. v3 solves it with glass without saying so, which makes it the rule: <strong>on light grounds elevation is shadow; on dark grounds elevation is material.</strong> One modifier that branches on the ground it is given, so no call site has to know.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Motion &amp; haptics</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Two durations and one curve, derived from the decisions rather than invented: <strong>140&nbsp;ms</strong> for state change (press, check, chip) and <strong>260&nbsp;ms</strong> for a surface arriving (sheet, screen), both on <code style="font-family:'JetBrains Mono',monospace;font-size:14px">easeOut(0, 0, 0.2, 1)</code>. Under reduced motion both go to zero and the sheet cross-fades.</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">Haptics carry the reward the streak counter doesn't: <strong>completion is a single soft impact</strong>, defer and drop are silent, and a ritual window closing is a light notification. Nothing in the app ever buzzes to ask for attention — only to confirm something you did.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">12</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">The eight components</h2>
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Every screen is a composition of these</span>
+    </div>
+    <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);overflow-x:auto">
+      <div style="display:grid;grid-template-columns:minmax(150px,auto) minmax(180px,auto) 1fr;min-width:560px;font-size:15px">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">component</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">geometry</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">notes</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">TaskRow</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">12×14 pad · 14 gap</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">row + meta + optional note preview; selected fill at 14 radius</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">Chip</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">9×20 pad · pill</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">label type; outline by default, filled only when it is a live timer</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">PillButton</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">12×20 pad · pill · 44 hit</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">filled / outline / destructive; one filled per surface, never two</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">SettleSheet</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">26 gutter · 14 radius</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">the Done/Defer/Drop trio from F-02; also the completion note line</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">DensityGrid</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">18 cell · 3 gap · 3 radius</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">d1–d3 + missed; fills from the trailing edge; never holds a numeral</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">WindowBar</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">6 tall · pill</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">upcoming / open / closing / closed — the ritual row's whole state</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">CapacityMeter</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">8 tall · pill</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">reads longest free block, not remaining hours; terra past the wall</div>
+
+        <div style="padding:12px 14px;font:500 14px/1.35 'JetBrains Mono',monospace">SectionHeader</div>
+        <div style="padding:12px 14px;font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">label + 24 rule</div>
+        <div style="padding:12px 14px;color:var(--ink-2)">the terracotta line prefix; the only decorative mark in the system</div>
+      </div>
+    </div>
+    <div style="font-size:17px;line-height:1.6;color:var(--ink-2);max-width:64ch">Eight, and the list is closed — a ninth needs an argument. Wide layouts add no components, only a <strong>340&nbsp;pt sidebar beside a detail pane</strong>, because width buys focus rather than density.</div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">13</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">Rules for the build</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Layout</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Leading and trailing only — never left or right. The density grid fills from the trailing edge, so setting <code style="font-family:'JetBrains Mono',monospace;font-size:14px;overflow-wrap:anywhere">.layoutDirection</code> to right-to-left reverses it correctly with no special case. Times and counts must render in Arabic-Indic numerals when the locale asks.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">No raw values</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">No hex, no point literal, no <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.opacity()</code> on a text colour, no <code style="font-family:'JetBrains Mono',monospace;font-size:14px">Color.white</code> anywhere. Every one of those is a token that exists — and the first three are how a measured palette silently stops being measured.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Voice</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">No exclamation marks, no praise, no guilt, and never the second person about the past. "Three of five", not "You missed two". The app states what is true and stops.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Still open · not blocking</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Widget and Live Activity need an ink-and-glass variant that works on an unknown wallpaper, and the package needs a rule about whether tokens may be removed or only deprecated. Both can be decided after the first screen ships.</div>
+      </div>
+    </div>
+    <div style="border-radius:14px;background:var(--deep);padding:26px;display:flex;flex-direction:column;gap:14px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:#DDA080">Contract summary</div>
+      <div style="font-size:17px;line-height:1.6;color:#C6D9E0;max-width:62ch;text-wrap:pretty">Plus the Liquid Glass reconciliation in section 14. <strong style="color:#EAF3F6">21 colour names</strong> with light and dark values each, <strong style="color:#EAF3F6">6 type roles</strong> with leading and text-style anchors bound in, <strong style="color:#EAF3F6">5 named spaces</strong> and 4 radii and a hit constant, <strong style="color:#EAF3F6">3 elevations</strong> that branch on ground, <strong style="color:#EAF3F6">2 durations</strong> and one curve, and <strong style="color:#EAF3F6">8 components</strong>. Everything a screen needs, and nothing a screen doesn't. Section 14 holds the layer rule that governs all of it.</div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">14</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">Two layers</h2>
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">Glass on action · opaque on content</span>
+    </div>
+    <p style="font-size:17px;line-height:1.6;color:var(--ink-2);max-width:64ch;margin:0;text-wrap:pretty">This is the rule, and it is the one thing in this document v3 gets wrong. Glass belongs to the layer that floats <em>above</em> content — controls, bars, the timer chip. Content stays opaque, because it is the thing being read. Beyond the guideline there is a practical reason: glass samples a region wider than its own bounds and cannot sample other glass, so a list of glass rows inside a glass scroll edge renders badly and costs more the more of it there is.</p>
+
+    <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">The one correction · a rename, not a redesign</div>
+      <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">v3 uses glass for the selected task row, which is content. So <code style="font-family:'JetBrains Mono',monospace;font-size:14px">glassOn</code> becomes <code style="font-family:'JetBrains Mono',monospace;font-size:14px">selected</code> — an ordinary opaque fill, which its pure white already effectively was — and the name <em>glass</em> is reserved for the action layer. Its light value is unchanged at pure white; its dark value becomes an opaque <code style="font-family:'JetBrains Mono',monospace;font-size:14px">#1D4052</code> instead of white at 18%, because a translucent selected row would still be glass on the content layer. The contract stays at 21 names.</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden"><div style="height:52px;background:var(--glass-on)"></div><div style="padding:10px 12px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">selected</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">content · opaque fill</div></div></div>
+        <div style="border:1px solid var(--line);border-radius:14px;overflow:hidden"><div style="height:52px;background:var(--deep);display:flex;align-items:center;justify-content:center"><div style="width:68%;height:56%;border-radius:999px;background:rgba(255,255,255,0.26);border:1px solid rgba(255,255,255,0.34)"></div></div><div style="padding:10px 12px;display:flex;flex-direction:column;gap:3px"><div style="font:500 14px/1.35 'JetBrains Mono',monospace">glass</div><div style="font:400 12px/1.35 'JetBrains Mono',monospace;color:var(--ink-3)">action · chip, bars, buttons</div></div></div>
+      </div>
+    </div>
+
+    <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);overflow-x:auto">
+      <div style="display:grid;grid-template-columns:minmax(155px,auto) minmax(95px,auto) 1fr;min-width:540px;font-size:15px">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">component</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">layer</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">treatment</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">TimerChip</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--accent);font-weight:600">action</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">glass, capsule — the best candidate in the app</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">Capture bar</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--accent);font-weight:600">action</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">glass; drop the opaque plate behind it</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">PillButton</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--accent);font-weight:600">action</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">prominent + terra tint for primary, plain glass for secondary</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">SettleSheet</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">both</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">opaque panel; its buttons are the action layer inside it</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">TaskRow</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--terra);font-weight:600">content</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">opaque · <code style="font-family:'JetBrains Mono',monospace;font-size:14px">selected</code> fill, never glass</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">DensityGrid</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--terra);font-weight:600">content</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">opaque; it is data — translucency destroys the three-step read</div>
+
+        <div style="padding:12px 14px;font:500 14px/1.35 'JetBrains Mono',monospace">WindowBar · Meter</div>
+        <div style="padding:12px 14px;color:var(--terra);font-weight:600">content</div>
+        <div style="padding:12px 14px;color:var(--ink-2)">opaque; both encode a measured value</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent)">Already aligned · three things</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">The pill is at 271 uses and the capsule is the native glass shape, so nothing needs redrawing. The measured opaque palette in 01 and 09 <em>is</em> the reduce-transparency fallback, which is normally the hard part of adopting glass. And "two accents, never decorative" is the same instruction as tinting only with semantic intent.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Elevation narrows</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Glass carries its own separation, so the blue-black shadows do not apply to the action layer at all. <code style="font-family:'JetBrains Mono',monospace;font-size:14px">lift</code> and <code style="font-family:'JetBrains Mono',monospace;font-size:14px">float</code> keep their measured values but narrow to <strong>content cards on light grounds</strong>, with section 11's rule still holding on dark.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">The morph is a gain</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Chip expanding into the full timer is exactly what a glass container is for: group the nearby glass so it shares one sampling region, and give the two states a shared identity for the transition. It replaces a custom animation we had not designed, and 260&nbsp;ms becomes the system's own timing.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">The one thing to watch</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Section 09's ratios are measured against <code style="font-family:'JetBrains Mono',monospace;font-size:14px">app</code> and <code style="font-family:'JetBrains Mono',monospace;font-size:14px">card</code>. On glass the ground is whatever scrolls beneath, so none of them are guaranteed. Rule: type on glass uses <code style="font-family:'JetBrains Mono',monospace;font-size:14px">ink</code> only — never <code style="font-family:'JetBrains Mono',monospace;font-size:14px">ink3</code> — and the chip's label stays <code style="font-family:'JetBrains Mono',monospace;font-size:14px">label</code> weight 500 so it holds up over a busy list.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:1060px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px">
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--terra)">15</span>
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0">Across the platforms</h2>
+      <span style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Colour travels · type and targets do not</span>
+    </div>
+    <p style="font-size:17px;line-height:1.6;color:var(--ink-2);max-width:64ch;margin:0;text-wrap:pretty">Everything measured in 01–04 is a pure value with no platform semantics, so it crosses unchanged. The two things that break are the two that encode a <em>human</em> assumption: type anchored to iOS text styles, and a 44&nbsp;pt target that assumes a finger.</p>
+    <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);overflow-x:auto">
+      <div style="display:grid;grid-template-columns:minmax(125px,auto) minmax(95px,auto) minmax(95px,auto) 1fr;min-width:560px;font-size:15px">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">platform</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">body</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">hit</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line-2);font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">what changes</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">iOS · Duo</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">17</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">44</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--accent)">nothing — the reference platform</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">iPadOS</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">17</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--ink-2)">44</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">nothing in tokens; the 340 sidebar layout is here, not on Duo</div>
+
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:500 14px/1.35 'JetBrains Mono',monospace">macOS</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--terra)">13</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--terra)">28</div>
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink-2)">whole scale rebases down; 17&nbsp;pt body reads as a toy and a 44&nbsp;pt row as bloat</div>
+
+        <div style="padding:12px 14px;font:500 14px/1.35 'JetBrains Mono',monospace">watchOS</div>
+        <div style="padding:12px 14px;font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--terra)">16</div>
+        <div style="padding:12px 14px;font:400 14px/1.35 'JetBrains Mono',monospace;color:var(--terra)">n/a</div>
+        <div style="padding:12px 14px;color:var(--ink-2)">a different product, not a smaller one — see below</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent)">Travels unchanged</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">All 21 colours, the density ramp, the named spaces, the four radii, both elevations, both durations — and section 14's layer rule, which is consistent across iOS, iPadOS, macOS and watchOS. The palette-as-protocol design is what makes this hold.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">watchOS needs its own palette</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">The ground is pure black for OLED, so <code style="font-family:'JetBrains Mono',monospace;font-size:14px">app</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:14px">card</code> and <code style="font-family:'JetBrains Mono',monospace;font-size:14px">deep</code> collapse and <strong>section 09's ratios do not survive the substitution</strong> — the ink ramp has to be recomputed against black. The density grid is also unreadable at that size and needs a different graphic, not a scaled one. Decide whether watch is in scope before writing it; it is a conformance plus a rethink, not a port.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">How to express it</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Keep one <code style="font-family:'JetBrains Mono',monospace;font-size:14px">ThreadsType</code> and one <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.hit</code> and make their <em>values</em> platform-conditional inside the token, never at the call site. A view that asks for <code style="font-family:'JetBrains Mono',monospace;font-size:14px">.row</code> should get the right size on every platform without knowing which one it is on.</div>
+      </div>
+    </div>
+
+    <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">The Duo correction</div>
+      <div style="font-size:19px;font-weight:600;line-height:1.35">Two layouts, not six poses</div>
+      <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">v3 draws Duo as a fixed 880×660 landscape frame, and a fixed frame is the wrong unit entirely. Apple's guidance is <strong>resizability</strong>: a compact-width layout for the outer display and a regular-width layout for the inner one are the fundamentals for every pose, and everything in between is the same layout resizing. <strong>Adapt by size class, not by orientation</strong> — the inner display does not honour an app's supported interface orientations, so an orientation-locked screen simply breaks.</div>
+      <div style="font-size:15px;line-height:1.6;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">That also corrects something I said earlier. Because the inner display is <strong>regular width</strong>, it is closer in spirit to an iPad than to a large phone — so the 340&nbsp;pt sidebar-and-detail layout <em>does</em> belong here, not only on iPad. And the failure Apple explicitly warns about is the one I had proposed: taking a phone screen, making it twice as wide, and letting everything float in the middle of an empty canvas. The extra space should <strong>reveal more structure</strong>, not more air.</div>
+      <div style="font-size:15px;line-height:1.6;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">Which leaves the product principle intact, in a sharper form. The second pane is <strong>not more tasks — it is the detail of the one task selected</strong>: its note and checklist, its session history, the habit's density grid. Structure, not density. Width still buys focus; it just buys it by showing one thing more fully rather than by adding rows.</div>
+      <div style="font-size:15px;line-height:1.6;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">The guidance offers three ways to spend regular width: <strong>split view</strong> (two levels of hierarchy at once), <strong>reflow</strong> (one vertical column becomes two), and <strong>sidebar</strong> (a tab bar becomes a sidebar, for information-dense apps). Reflow is wrong for a list, and Jamaal is deliberately not information-dense — so <strong>split view</strong>, with one constraint worth noting: the hierarchy shown must stay identical to the outer display. The inner pane may never introduce a navigation level the phone does not have.</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-left:3px solid var(--terra);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">Hits the density grid</div>
+        <div style="font-size:19px;font-weight:600;line-height:1.35">Prefer an even column count</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">The fold is a <em>division</em> region: live only while folded, zero width when flat. But you can query it even when inactive, precisely so a grid can make a stable decision — <strong>prefer an even number of columns on a device that has a fold</strong>, so it does not reshuffle every time someone bends the phone.</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">Jamaal cannot take that advice literally: the density grid is seven wide because a week is seven days, and that is semantic. So the rule instead is that <strong>the grid never reflows its columns and never spans the division</strong> — it lives wholly inside one pane. A month read cut in half by a hinge is worse than a narrow one.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Three reserved regions</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">The fold (division), and two <em>occlusion</em> regions: the outer camera, always present, which expands into the Dynamic Island for Live Activities — so the timer chip's off-app form lives there — and the inner camera, active only while in use.</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">Standard bars avoid all of this automatically. <strong>Custom ones do not</strong>, which is the second time the custom capture bar costs us: it has to claim its space through the reserved-region API rather than assuming an edge is free.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Use a real sheet</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Sheets, popovers, context menus and alerts all adapt for free — and a sheet <strong>slides away from the fold</strong> when the device is partially closed. The settle sheet should therefore be a genuine sheet presentation, not a hand-built overlay, or it forfeits behaviour we would otherwise have to design.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Two things not to do</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Never drive layout from the hinge angle — it is for effects only, and layout comes from size classes and regions. And never lock an orientation: the inner display ignores it.</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">Apple's own summary is the right instruction for us too: move, resize and adapt <em>only when it makes the experience better</em>. For a one-list app that is a very short list of moments.</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent)">The pose that earns a screen</div>
+        <div style="font-size:19px;font-weight:600;line-height:1.35">Standing · the nightstand</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Stood up, the device shows a bedside clock, photos and widgets with StandBy — which is exactly where the Night Planner wants to be. Tomorrow's ritual spine, glanceable, at the moment you are actually going to bed. This is the strongest product fit in the whole device and it needs the unknown-ground ink variant from section 13's open list.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Seated · controls move down</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">Set down, the controls sit at the bottom for easy access — which suits a bottom-edge capture bar. But this is only true <em>open</em>; see the vertical-bar card, which is the bigger consequence and pulls the other way on the outer display.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra)">The bar goes vertical</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">The real consequence for Jamaal. On the outer display, navigation bars, toolbars, tab bars and the status bar <strong>shift from the top and bottom edges to the right side</strong>, reclaiming vertical space and keeping controls under a thumb. On the inner display they stay vertical in landscape and return to horizontal in portrait.</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">Two catches, and both land on us. <strong>Standard containers get this free; custom bars do not</strong> — and Jamaal's capture bar is custom. And <strong>icon-only controls translate to a vertical bar; text fields do not</strong>. A full-width text capture bar has no vertical form, so on the outer display capture must collapse to a single icon control that opens the field, rather than sitting permanently on screen.</div>
+      </div>
+      <div style="border:1px solid var(--line);border-radius:14px;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-3)">Displacement · what moves</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2)">As the device partially folds, interactive elements <strong>displace away from the fold</strong> to stay visible and reachable, while <strong>scrolling content is exempt</strong> — it already adapts by scrolling. So the task list stays put and the capture bar, chip and sheet buttons move. Move related elements together to keep their relationship; move independent ones alone.</div>
+        <div style="font-size:15px;line-height:1.6;color:var(--ink-2);border-top:1px solid var(--line);padding-top:14px">Also: a nano-texture finish reduces glare but diffuses very fine marks, so the 1&nbsp;px hairline and 3&nbsp;px density cell are the floor. And authentication is Touch ID in the side button, which matters only if a ritual or note is ever private.</div>
+      </div>
+    </div>
+
+    <div style="border-radius:14px;background:var(--deep);padding:26px;display:flex;flex-direction:column;gap:14px">
+      <div style="font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:#DDA080">What this costs the build</div>
+      <div style="font-size:17px;line-height:1.6;color:#C6D9E0;max-width:62ch;text-wrap:pretty">One token correction — the gutter becomes a per-edge minimum rather than a flat 26, because safe areas on Duo are asymmetric. Otherwise every value in 01 to 04 survives untouched, which is the real test of whether the system was sized right. What changes is <strong style="color:#EAF3F6">layout expressed as size classes rather than frames</strong>, a capture control that has a vertical form, and a second pane that shows the selected task in full. Build the compact layout first; the regular layout is the same components with the detail pane revealed, not a redesign.</div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light' | 'dark'&quot;}}"></script>
+</body>
+</html>
