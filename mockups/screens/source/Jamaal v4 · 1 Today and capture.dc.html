@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,SOFT,WONK,wght@0,9..144,0..100,0..1,300..900;1,9..144,0..100,0..1,300..900&amp;family=Hanken+Grotesk:wght@300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; }
+  a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { color: var(--terra); }
+  [data-th="dark"] {
+    --board:#030D14 !important; --chrome:#EAF3F6 !important; --chrome2:#B8CDD6 !important;
+    --app:#12303F !important; --card:rgba(255,255,255,0.05) !important; --ink:#E7F1F4 !important; --ink2:#BCD3DA !important; --ink3:#8FAAB4 !important;
+    --terra:#DDA080 !important; --terraPress:#C08868 !important; --accent:#8FCBB8 !important; --onAccent:#16242E !important; --deep:#071B27 !important;
+    --glassOn:#1D4052 !important; --glass:rgba(255,255,255,0.09) !important; --glassEdge:rgba(255,255,255,0.16) !important;
+    --line:rgba(231,241,244,0.14) !important; --line2:rgba(231,241,244,0.24) !important; --meter:#BCD3DA !important;
+    --d1:#2B4A46 !important; --d2:#4E7D72 !important; --d3:#8FCBB8 !important; --missed:#6B4A38 !important; --alert:#F09A90 !important; --alertSoft:#5A2A22 !important;
+    --catTeal:#8FCBB8 !important; --catBlue:#9DB9E8 !important; --catOchre:#D8BA6A !important; --catPlum:#D5A6CC !important; --catSlate:#AEBCC6 !important;
+    --shadow:0 22px 50px -28px rgba(0,0,0,0.7) !important; --float:0 22px 50px -28px rgba(0,0,0,0.7) !important; --scrim:rgba(0,0,0,0.45) !important; --kb:#1B3A4A !important;
+  }
+</style>
+</helmet>
+
+<div data-th="{{ theme }}" style="--board:#ADBCC5; --chrome:#0A3A53; --chrome2:#26424F; --app:#EFF4F0; --card:#FFFFFF; --ink:#0A3A53; --ink2:#14506E; --ink3:#3F6E80; --terra:#9A4F2E; --terraPress:#7E3F24; --accent:#1F6A58; --onAccent:#EAF3F6; --deep:#0C4767; --glassOn:#FFFFFF; --glass:rgba(255,255,255,0.62); --glassEdge:rgba(10,58,83,0.14); --line:rgba(10,58,83,0.14); --line2:rgba(10,58,83,0.24); --meter:#14506E; --d1:#D3E3DB; --d2:#71A393; --d3:#0C4767; --missed:#E3BEAB; --alert:#A32E22; --alertSoft:#F2D4CE; --catTeal:#1F6A58; --catBlue:#2F5E9E; --catOchre:#836312; --catPlum:#7B4474; --catSlate:#52636E; --shadow:0 18px 40px -26px rgba(6,32,46,0.42); --float:0 10px 26px -14px rgba(6,32,46,0.5); --scrim:rgba(4,26,38,0.32); --kb:#D5DEE2; background:var(--board); color:var(--ink); font-family:'Hanken Grotesk',system-ui,sans-serif; padding:56px 48px 120px; display:flex; flex-direction:column; gap:72px; min-height:100vh; -webkit-font-smoothing:antialiased">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;max-width:1720px;width:100%;margin:0 auto">
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:760px">
+      <div style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2);display:flex;align-items:center;gap:10px"><span style="width:24px;height:1px;background:var(--terra);display:inline-block"></span>Jamaal · v4 redraw · batch 1 of 6 · phone</div>
+      <h1 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:54px;line-height:1.04;letter-spacing:-0.02em;margin:0;color:var(--chrome)">Today and capture</h1>
+      <p style="font-size:17px;line-height:1.6;color:var(--chrome2);margin:0;max-width:62ch">TD-01 and its states, the category filter, Add, task detail, defer, and the note, repeat and category pickers. Frames are drawn at iPhone size (393 × 852 pt) so type and hit targets read at true scale. Frame names are register IDs.</p>
+    </div>
+    <div onClick="{{ toggleTheme }}" style="display:flex;align-items:center;gap:10px;padding:0 20px;height:44px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid var(--glassEdge);cursor:pointer;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome)"><span style="width:8px;height:8px;border-radius:999px;background:var(--terra)"></span>{{ themeLabel }}</div>
+  </div>
+
+  <div style="max-width:1720px;width:100%;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px 40px;border-top:1px solid var(--line2);padding-top:28px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Settled inside Design</div>
+      <div style="font-size:15px;line-height:1.55;color:var(--chrome)">Terracotta is the only filled button, one per surface; v3's ink pills are gone. Empty and finished states use the tokens page's single lines. The old ceramic bundle is no longer linked. "Rituals" are Anchors throughout.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Chrome</div>
+      <div style="font-size:15px;line-height:1.55;color:var(--chrome)">The tab bar and toolbar are drawn as the iOS 26 system components (TabView, toolbar item group) — they are what moves to the side on Duo. The session chip will sit in the tab bar's bottom-accessory slot (batch 2).</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Category labels</span><span style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;padding:6px 10px;border-radius:999px;border:1px dashed var(--chrome);color:var(--chrome)">Provisional hues</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px 18px;font-size:15px;color:var(--chrome)">
+        <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:999px;background:var(--catTeal)"></span>teal · Personal</span>
+        <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:999px;background:var(--catOchre)"></span>ochre · Family</span>
+        <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:999px;background:var(--catBlue)"></span>blue · Work</span>
+        <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:999px;background:var(--catPlum)"></span>plum</span>
+        <span style="display:inline-flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:999px;background:var(--catSlate)"></span>slate</span>
+      </div>
+      <div style="font:400 13px/1.5 'JetBrains Mono',monospace;color:var(--chrome2)">light #2F5E9E · #836312 · #7B4474 · #52636E<br>dark #9DB9E8 · #D8BA6A · #D5A6CC · #AEBCC6<br>Each ≥ 4.5:1 on app; ochre kept yellow of terracotta.</div>
+    </div>
+  </div>
+
+  <section id="today" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">TD-01 · Today</h2>
+      <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Default · guidance · first launch · all done · overloaded</span>
+    </div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="TD-01" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Today · default</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">Rework v3·01 · full scroll</span></div>
+        <div data-screen-label="TD-01 Today default" style="width:393px;height:1640px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:41</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Mon 12 May</span>
+            <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:22px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-0.01em">Four things,<br><em style="font-style:italic;color:var(--accent)">gently paced.</em></div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;line-height:1.35;color:var(--ink2)">2h 15m of 3h</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Balanced</span></div>
+              <div style="height:8px;border-radius:999px;background:var(--line);overflow:hidden"><div style="width:75%;height:100%;border-radius:999px;background:var(--meter)"></div></div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+                <div style="position:relative;height:44px;display:flex;align-items:center">
+                  <div style="position:absolute;left:14px;right:14px;height:4px;border-radius:999px;background:var(--line2)"></div>
+                  <div style="position:absolute;left:14px;width:4px;height:12px;border-radius:999px;background:var(--line2)"></div>
+                  <div style="position:absolute;right:14px;width:4px;height:12px;border-radius:999px;background:var(--line2)"></div>
+                  <div style="position:absolute;left:50%;margin-left:-19px;width:38px;height:28px;border-radius:999px;background:var(--glass);backdrop-filter:blur(16px) saturate(170%);-webkit-backdrop-filter:blur(16px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase"><span style="color:var(--ink3)">Low</span><span style="color:var(--ink)">Medium</span><span style="color:var(--ink3)">High</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:34px 26px 0;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Anchors</div>
+            <div style="display:flex;flex-direction:column;margin-inline:-14px">
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--ink2);box-sizing:border-box"></div></div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font-size:18px;font-weight:600;line-height:1.35">Salah</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--ink3)">1/5</span></div>
+                  <div style="font-size:15px;line-height:1.35;color:var(--ink3)">Dhuhr · until 15:32</div>
+                  <div style="height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:4px"><div style="width:18%;height:100%;border-radius:999px;background:var(--accent)"></div></div>
+                </div>
+                <svg style="margin-top:4px;flex-shrink:0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px;border-top:1px solid var(--line)">
+                <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0.42"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--ink2);box-sizing:border-box"></div></div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font-size:18px;font-weight:600;line-height:1.35">School run</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--ink3)">15:00</span></div>
+                  <div style="font-size:15px;line-height:1.35;color:var(--ink3)">Opens at 15:00 · 30 min</div>
+                  <div style="height:6px;border-radius:999px;border:1px solid var(--line2);box-sizing:border-box;margin-top:4px"></div>
+                </div>
+                <div style="width:18px;flex-shrink:0"></div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px;border-top:1px solid var(--line)">
+                <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--ink2);box-sizing:border-box"></div></div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><span style="font-size:18px;font-weight:600;line-height:1.35">Water the plants</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--ink3)">Day 2 of 3</span></div>
+                  <div style="font-size:15px;line-height:1.35;color:var(--ink3)">Open until Wednesday</div>
+                  <div style="height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:4px"><div style="width:48%;height:100%;border-radius:999px;background:var(--accent)"></div></div>
+                </div>
+                <div style="width:18px;flex-shrink:0"></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:30px 26px 0;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Habits</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;padding:4px 0 6px">
+              <div style="display:flex;align-items:center;gap:10px;height:44px;padding:0 20px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)"><span style="font-weight:600;color:var(--ink)">Morning</span>2 of 3</div>
+            </div>
+            <div style="display:flex;flex-direction:column;margin-inline:-14px">
+              <div style="display:flex;gap:14px;align-items:center;padding:12px 14px">
+                <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Water</div><div style="font-size:15px;line-height:1.35;color:var(--ink3);margin-top:2px">3 of 8 glasses</div></div>
+                <div style="display:flex;height:44px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid var(--glassEdge)">
+                  <div style="width:48px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round"><path d="M5 12h14"></path></svg></div>
+                  <div style="width:1px;background:var(--line);margin:10px 0"></div>
+                  <div style="width:48px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)">
+                <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Read</div><div style="font-size:15px;line-height:1.35;color:var(--ink3);margin-top:2px">12 of 20 min</div></div>
+                <div style="display:flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:999px;border:1px solid var(--line2);font-size:15px;font-weight:600;color:var(--ink)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l12 8-12 8z"></path></svg>Begin</div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)">
+                <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Late-night scrolling</div><div style="font-size:15px;line-height:1.35;color:var(--ink3);margin-top:2px">Avoid · up to 1 a day</div></div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 20px;border-radius:999px;border:1px dashed var(--line2);font-size:15px;font-weight:600;color:var(--ink2)">Log a slip</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="padding:30px 26px 0;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Tasks</div>
+            <div style="display:flex;flex-direction:column;margin-inline:-14px">
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--terra);box-sizing:border-box"></div></div>
+                <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Draft the architecture review</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--terra)">Start here · 60 min</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catBlue)"></span>Work</span></div></div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Call the clinic back</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--ink3)">Slipped twice · 15 min</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catTeal)"></span>Personal</span></div></div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Book Yusuf's swimming lessons</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--ink3)">30 min</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catOchre)"></span>Family</span></div></div>
+              </div>
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;background:var(--accent);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div></div>
+                <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35;color:var(--ink3);text-decoration:line-through">Reply to Sam</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px;color:var(--ink3)"><span>Done 09:12</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:999px;background:var(--catBlue)"></span>Work</span></div></div>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px;border-top:1px solid var(--line);margin-top:6px;padding-top:6px"><span style="font-size:17px;color:var(--ink2)">Also today · 3</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></div>
+          </div>
+
+          <div style="padding:26px 26px 0;display:flex;justify-content:space-between;align-items:center;gap:14px">
+            <div style="display:flex;flex-direction:column;gap:4px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Wellbeing</span><span style="font-size:15px;color:var(--ink2)">About the same</span></div>
+            <svg width="120" height="30" viewBox="0 0 120 30" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,18 11,16 20,19 29,14 38,15 47,12 56,15 65,13 74,16 83,12 92,14 101,11 110,13 118,12"></polyline></svg>
+          </div>
+
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Toolbar: Filter · Plan tomorrow · Add. Meter is budget used; the slider sets today's level. Salah is one collapsed row; School run is upcoming, so its ring is disabled and says when it opens. Importance is never shown on a row. <span style="border-bottom:1px dashed var(--chrome2)">"Log a slip" is provisional</span> until HB-08 is chosen (batch 3).</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:40px">
+
+      <div id="TD-01-guidance" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Guidance · Start here</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">Keep v3·02 + Begin</span></div>
+        <div data-screen-label="TD-01 Guidance" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>14:20</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Mon 12 May</span>
+            <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:22px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-0.01em">Two left.<br><em style="font-style:italic;color:var(--accent)">No rush.</em></div>
+            <div style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;color:var(--ink2)">1h 45m of 3h</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Balanced</span></div><div style="height:8px;border-radius:999px;background:var(--line);overflow:hidden"><div style="width:58%;height:100%;border-radius:999px;background:var(--meter)"></div></div></div>
+            <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;gap:14px;align-items:flex-start">
+                <div style="width:30px;height:30px;border-radius:999px;background:var(--deep);overflow:hidden;flex-shrink:0"><svg width="100%" height="100%" viewBox="0 0 100 100"><path d="M55.93 26.98Q55.76 27.68 55.12 30Q54.48 32.33 53.55 35.71Q52.63 39.09 51.56 43.07Q50.48 47.05 49.41 51.04Q48.34 55.03 47.4 58.55Q46.46 62.06 45.81 64.6Q45.17 67.14 44.87 68.13Q44.05 71.86 42.33 74.29Q40.62 76.71 38.27 77.92Q35.93 79.12 33.16 79.12Q30.72 79.12 29.56 78.03Q28.41 76.94 28.41 75.43Q28.44 74.14 29.28 73.28Q30.12 72.42 31.61 72.42Q32.43 72.42 33.19 72.72Q33.95 73.02 34.71 73.43Q35.47 73.84 36.19 74.17Q36.92 74.5 37.61 74.5Q38.8 74.5 39.58 73.64Q40.35 72.79 40.55 70.71Q40.55 70.08 40.25 69.39Q39.96 68.69 39.54 67.99Q39.13 67.28 38.75 66.48Q38.37 65.69 38.22 64.82Q38.08 63.94 38.31 62.95Q38.54 62.13 39.15 59.95Q39.76 57.77 40.58 54.67Q41.41 51.57 42.42 48.05Q43.42 44.54 44.35 41.06Q45.27 37.58 46.11 34.54Q46.95 31.5 47.51 29.41Q48.07 27.31 48.21 26.59Q48.6 25.2 48.37 24.66Q48.14 24.11 47.28 23.91L45.04 23.45Q44.48 23.25 44.23 22.96Q43.98 22.66 44.02 22.23Q44.02 21.64 44.41 21.26Q44.81 20.88 45.7 20.88L60.32 20.88Q61.18 20.88 61.44 21.19Q61.7 21.5 61.7 22.07Q61.7 22.63 61.37 22.96Q61.04 23.29 60.52 23.52L58.01 23.98Q57.48 24.11 57.15 24.39Q56.82 24.67 56.54 25.23Q56.26 25.79 55.93 26.98Z" fill="#EAF3F6"></path><circle cx="66.59" cy="64.08" r="5" fill="#DDA080"></circle></svg></div>
+                <div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Start here</div><div style="font-size:18px;font-weight:600;line-height:1.35">Draft the architecture review</div><div style="font-size:15px;line-height:1.5;color:var(--ink2)">60 minutes, and there is a 2h 40m gap before the school run.</div></div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:48px;border-radius:999px;background:var(--terra);color:var(--onAccent);font-size:16px;font-weight:600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l12 8-12 8z"></path></svg>Begin</div>
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;height:48px;border-radius:999px;border:1px solid var(--line2);font-size:16px;font-weight:600;color:var(--ink2)">Not now</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Tasks</div>
+              <div style="display:flex;flex-direction:column;margin-inline:-14px">
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px;border-radius:14px;background:var(--glassOn)">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--terra);box-sizing:border-box"></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Draft the architecture review</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--terra)">Start here · 60 min</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catBlue)"></span>Work</span></div></div>
+                </div>
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Book Yusuf's swimming lessons</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--ink3)">30 min</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catOchre)"></span>Family</span></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The "Start here" card gains Begin — the one filled button on Today. Its reason is a fact (the gap), not a guess about energy. Scrolled to Tasks; Anchors and Habits sit above.</p>
+      </div>
+
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:40px">
+
+      <div id="TD-01-first" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">First launch · empty</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">SY-02 · align v3·03</span></div>
+        <div data-screen-label="TD-01 First launch" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>7:12</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Sat 17 May</span>
+            <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 40px 110px;text-align:center;font-size:19px;line-height:1.6;color:var(--ink3)">Write the first thing.</div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">One lede line in ink3, centred on plain app. No circle, no button, no encouragement — Add stays in the toolbar. The filter is hidden while there is nothing to filter.</p>
+      </div>
+
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:40px">
+
+      <div id="TD-01-done" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">All done · after planning time</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">SY-02 · align v3·04</span></div>
+        <div data-screen-label="TD-01 All done" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>20:10</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Mon 12 May</span>
+            <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;color:var(--ink2)">2h 15m of 3h</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Balanced</span></div>
+            <div style="height:8px;border-radius:999px;background:var(--line);overflow:hidden"><div style="width:75%;height:100%;border-radius:999px;background:var(--meter)"></div></div>
+          </div>
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 40px;text-align:center;font-size:19px;line-height:1.6;color:var(--ink3)">Nothing left for today.</div>
+          <div style="margin:0 26px 110px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;min-height:56px">
+            <span style="display:flex;align-items:center;gap:12px;font-size:17px;color:var(--ink2)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg>Plan tomorrow</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The fixed line, and the meter keeps its used value. After the planning time (20:00) a quiet Plan tomorrow row appears — a text action, not a filled button, so the finished state is never a call to action.</p>
+      </div>
+
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:40px">
+
+      <div id="TD-01-overloaded" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Overloaded · past the day's end</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec X-01</span></div>
+        <div data-screen-label="TD-01 Overloaded" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>11:05</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Tue 13 May</span>
+            <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:22px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-0.01em">More than<br><em style="font-style:italic;color:var(--accent)">four things.</em></div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;color:var(--ink2)">3h 40m of 3h</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--terra)">Overloaded</span></div>
+              <div style="height:8px;border-radius:999px;background:var(--line);overflow:hidden;display:flex"><div style="width:82%;height:100%;background:var(--meter)"></div><div style="width:18%;height:100%;background:var(--terra)"></div></div>
+              <div style="font-size:15px;line-height:1.35;color:var(--terra)">40 min past 19:00.</div>
+            </div>
+            <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;gap:14px;align-items:flex-start">
+                <div style="width:30px;height:30px;border-radius:999px;background:var(--deep);overflow:hidden;flex-shrink:0"><svg width="100%" height="100%" viewBox="0 0 100 100"><path d="M55.93 26.98Q55.76 27.68 55.12 30Q54.48 32.33 53.55 35.71Q52.63 39.09 51.56 43.07Q50.48 47.05 49.41 51.04Q48.34 55.03 47.4 58.55Q46.46 62.06 45.81 64.6Q45.17 67.14 44.87 68.13Q44.05 71.86 42.33 74.29Q40.62 76.71 38.27 77.92Q35.93 79.12 33.16 79.12Q30.72 79.12 29.56 78.03Q28.41 76.94 28.41 75.43Q28.44 74.14 29.28 73.28Q30.12 72.42 31.61 72.42Q32.43 72.42 33.19 72.72Q33.95 73.02 34.71 73.43Q35.47 73.84 36.19 74.17Q36.92 74.5 37.61 74.5Q38.8 74.5 39.58 73.64Q40.35 72.79 40.55 70.71Q40.55 70.08 40.25 69.39Q39.96 68.69 39.54 67.99Q39.13 67.28 38.75 66.48Q38.37 65.69 38.22 64.82Q38.08 63.94 38.31 62.95Q38.54 62.13 39.15 59.95Q39.76 57.77 40.58 54.67Q41.41 51.57 42.42 48.05Q43.42 44.54 44.35 41.06Q45.27 37.58 46.11 34.54Q46.95 31.5 47.51 29.41Q48.07 27.31 48.21 26.59Q48.6 25.2 48.37 24.66Q48.14 24.11 47.28 23.91L45.04 23.45Q44.48 23.25 44.23 22.96Q43.98 22.66 44.02 22.23Q44.02 21.64 44.41 21.26Q44.81 20.88 45.7 20.88L60.32 20.88Q61.18 20.88 61.44 21.19Q61.7 21.5 61.7 22.07Q61.7 22.63 61.37 22.96Q61.04 23.29 60.52 23.52L58.01 23.98Q57.48 24.11 57.15 24.39Q56.82 24.67 56.54 25.23Q56.26 25.79 55.93 26.98Z" fill="#EAF3F6"></path><circle cx="66.59" cy="64.08" r="5" fill="#DDA080"></circle></svg></div>
+                <div style="font-size:17px;line-height:1.55;color:var(--ink)">Groceries could wait until Wednesday. Want me to move it?</div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;height:48px;border-radius:999px;background:var(--terra);color:var(--onAccent);font-size:16px;font-weight:600">Move to Wed</div>
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;height:48px;border-radius:999px;border:1px solid var(--line2);font-size:16px;font-weight:600;color:var(--ink2)">Not now</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Tasks</div>
+              <div style="display:flex;flex-direction:column;margin-inline:-14px">
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Prepare the board pack</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--ink3)">2h</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catBlue)"></span>Work</span></div></div>
+                </div>
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Groceries</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--ink3)">45 min · longer than any gap</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catOchre)"></span>Family</span></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Terracotta marks only the part past the day's end. One named move (a rescheduling, not a deferral), always with Not now. Nothing is refused; the 45-minute task carries the quiet "longer than any gap" flag.</p>
+      </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <section id="today-states" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Morning rows, banners, filter</h2>
+      <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">TD-06 · TD-07 · TD-05 · TD-03 — one banner at a time, most pressing first</span>
+    </div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="TD-06" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-06</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Carried-over row</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec X-02</span></div>
+        <div data-screen-label="TD-06 Carried over" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>7:40</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Tue 13 May</span>
+            <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:22px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-0.01em">Three things,<br><em style="font-style:italic;color:var(--accent)">a quiet morning.</em></div>
+            <div style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;color:var(--ink2)">0m of 2h</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Low · light</span></div><div style="height:8px;border-radius:999px;background:var(--line)"></div></div>
+            <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+              <svg style="flex-shrink:0;margin-top:2px" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px">
+                <div style="font-size:15px;line-height:1.5;color:var(--ink2)">Last night's session closed at midnight. <span style="color:var(--ink)">42 min</span> logged on <span style="color:var(--ink);font-weight:600">Draft the architecture review</span>.</div>
+                <div style="display:flex;gap:10px;align-items:center">
+                  <div style="display:flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:999px;border:1px solid var(--line2);font-size:15px;font-weight:600;color:var(--ink)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l12 8-12 8z"></path></svg>Pick it back up</div>
+                  <div style="height:44px;padding:0 14px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink2)">Dismiss</div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Anchors</div>
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 0">
+                <div style="width:22px;height:22px;border-radius:999px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+                <div style="flex:1"><div style="display:flex;justify-content:space-between"><span style="font-size:18px;font-weight:600;line-height:1.35">Salah</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--ink3)">1/5</span></div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Fajr attended 05:02 · Dhuhr at 12:58</div></div>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">A row, not a card — hairlines only. The time is kept either way; Pick it back up starts a new session on the same task. Dismiss leaves the task on the list as usual.</p>
+      </div>
+
+      <div id="TD-07" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-07</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Morning card · no plan</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New</span></div>
+        <div data-screen-label="TD-07 Morning card" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>7:15</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Wed 14 May</span>
+            <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:22px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-0.01em">Wednesday,<br><em style="font-style:italic;color:var(--accent)">unplanned.</em></div>
+            <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;gap:14px;align-items:flex-start">
+                <div style="width:30px;height:30px;border-radius:999px;background:var(--deep);overflow:hidden;flex-shrink:0"><svg width="100%" height="100%" viewBox="0 0 100 100"><path d="M55.93 26.98Q55.76 27.68 55.12 30Q54.48 32.33 53.55 35.71Q52.63 39.09 51.56 43.07Q50.48 47.05 49.41 51.04Q48.34 55.03 47.4 58.55Q46.46 62.06 45.81 64.6Q45.17 67.14 44.87 68.13Q44.05 71.86 42.33 74.29Q40.62 76.71 38.27 77.92Q35.93 79.12 33.16 79.12Q30.72 79.12 29.56 78.03Q28.41 76.94 28.41 75.43Q28.44 74.14 29.28 73.28Q30.12 72.42 31.61 72.42Q32.43 72.42 33.19 72.72Q33.95 73.02 34.71 73.43Q35.47 73.84 36.19 74.17Q36.92 74.5 37.61 74.5Q38.8 74.5 39.58 73.64Q40.35 72.79 40.55 70.71Q40.55 70.08 40.25 69.39Q39.96 68.69 39.54 67.99Q39.13 67.28 38.75 66.48Q38.37 65.69 38.22 64.82Q38.08 63.94 38.31 62.95Q38.54 62.13 39.15 59.95Q39.76 57.77 40.58 54.67Q41.41 51.57 42.42 48.05Q43.42 44.54 44.35 41.06Q45.27 37.58 46.11 34.54Q46.95 31.5 47.51 29.41Q48.07 27.31 48.21 26.59Q48.6 25.2 48.37 24.66Q48.14 24.11 47.28 23.91L45.04 23.45Q44.48 23.25 44.23 22.96Q43.98 22.66 44.02 22.23Q44.02 21.64 44.41 21.26Q44.81 20.88 45.7 20.88L60.32 20.88Q61.18 20.88 61.44 21.19Q61.7 21.5 61.7 22.07Q61.7 22.63 61.37 22.96Q61.04 23.29 60.52 23.52L58.01 23.98Q57.48 24.11 57.15 24.39Q56.82 24.67 56.54 25.23Q56.26 25.79 55.93 26.98Z" fill="#EAF3F6"></path><circle cx="66.59" cy="64.08" r="5" fill="#DDA080"></circle></svg></div>
+                <div style="font-size:17px;line-height:1.55;color:var(--ink)">No plan for today — two minutes to pick?</div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;height:48px;border-radius:999px;background:var(--terra);color:var(--onAccent);font-size:16px;font-weight:600">Pick for today</div>
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;height:48px;border-radius:999px;border:1px solid var(--line2);font-size:16px;font-weight:600;color:var(--ink2)">Not now</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Tasks</div>
+              <div style="display:flex;flex-direction:column;margin-inline:-14px">
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Groceries</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--ink3)">45 min</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catOchre)"></span>Family</span></div></div>
+                </div>
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Renew the car insurance</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:15px;line-height:1.35;margin-top:3px"><span style="color:var(--ink3)">Due today · 30 min</span><span style="display:inline-flex;align-items:center;gap:6px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catTeal)"></span>Personal</span></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Shown once, the morning after a skipped or missed night. Pick for today opens the shortened flow (Build → Load → Close). Not now removes it for the day; the list works as normal underneath.</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:40px">
+        <div id="TD-05" style="width:393px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-05</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Banner · notifications off</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">Align v3·24 · SY-01</span></div>
+          <div data-screen-label="TD-05 Notifications off" style="width:393px;height:360px;border-radius:48px 48px 0 0;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif"><span>20:00</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Mon 12 May</span><div style="width:136px;height:44px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"></div></div>
+            <div style="margin:18px 20px 0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 16px 8px;display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;gap:12px;align-items:flex-start">
+                <svg style="flex-shrink:0;margin-top:1px" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path><path d="M3 3l18 18"></path></svg>
+                <div style="flex:1;font-size:15px;line-height:1.5;color:var(--ink)">Notifications are off for Jamaal, so tonight's planning prompt won't arrive on this iPhone.</div>
+                <div style="width:44px;height:44px;margin:-12px -12px 0 0;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></div>
+              </div>
+              <div style="display:flex;gap:4px;padding-left:34px"><div style="height:44px;padding:0 10px;margin-left:-10px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink)">Open Settings</div><div style="height:44px;padding:0 10px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink2)">Don't remind me</div></div>
+            </div>
+            <div style="padding:26px 26px 0;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;opacity:0.35">Nothing left…</div>
+          </div>
+          <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Only when this device's switch is on and permission is off; once a day, at planning time. Separate from the Plan tomorrow row. "Open Settings" becomes "Turn on reminders" when never asked.</p>
+        </div>
+
+        <div id="TD-05-trial" style="width:393px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-05</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Banner · trial ending</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New</span></div>
+          <div data-screen-label="TD-05 Trial ending" style="width:393px;height:300px;border-radius:48px 48px 0 0;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif"><span>9:00</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Thu 22 May</span><div style="width:136px;height:44px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"></div></div>
+            <div style="margin:18px 20px 0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 16px 8px;display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;gap:12px;align-items:flex-start">
+                <svg style="flex-shrink:0;margin-top:1px" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></svg>
+                <div style="flex:1;font-size:15px;line-height:1.5;color:var(--ink)">Two days left in the trial. After Saturday, Jamaal keeps working for the day, but adding and planning need a subscription.</div>
+                <div style="width:44px;height:44px;margin:-12px -12px 0 0;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></div>
+              </div>
+              <div style="display:flex;gap:4px;padding-left:34px"><div style="height:44px;padding:0 10px;margin-left:-10px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink)">See plans</div></div>
+            </div>
+          </div>
+          <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Days 12 and 14, dismissible. States the date and the consequence; no countdown styling.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:40px">
+        <div id="TD-05-readonly" style="width:393px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-05</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Banner · read-only</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · = SB-03</span></div>
+          <div data-screen-label="TD-05 Read-only" style="width:393px;height:520px;border-radius:48px 48px 0 0;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif"><span>8:30</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px">
+              <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Mon 26 May</span>
+              <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+                <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></div>
+                <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+              </div>
+            </div>
+            <div style="margin:18px 20px 0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 16px 8px;display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;gap:12px;align-items:flex-start">
+                <svg style="flex-shrink:0;margin-top:1px" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+                <div style="flex:1;font-size:15px;line-height:1.5;color:var(--ink)">The trial has ended. You can still tick things off, log habits, mark Anchors and run a timer. Adding and planning need a subscription.</div>
+              </div>
+              <div style="display:flex;gap:4px;padding-left:34px"><div style="height:44px;padding:0 10px;margin-left:-10px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink)">Subscribe</div></div>
+            </div>
+            <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;color:var(--ink2)">1h 30m of 3h</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Medium · light</span></div>
+              <div style="height:8px;border-radius:999px;background:var(--line);overflow:hidden"><div style="width:50%;height:100%;border-radius:999px;background:var(--meter)"></div></div>
+              <div style="display:flex;flex-direction:column;margin-inline:-14px;margin-top:10px">
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 14px">
+                  <div style="width:44px;height:44px;margin:-11px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box"></div></div>
+                  <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35">Call the clinic back</div><div style="font-size:15px;color:var(--ink3);margin-top:3px">15 min</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Not dismissible while read-only. Plan tomorrow is hidden from the toolbar (pure planning); Add and the slider stay visible and open the locked-control sheet (batch 5). The check still works.</p>
+        </div>
+      </div>
+
+      <div id="TD-03" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-03</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Category filter · menu</span><span style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;padding:6px 10px;border-radius:999px;border:1px dashed var(--chrome);color:var(--chrome)">Provisional hues</span></div>
+        <div data-screen-label="TD-03 Filter menu" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:41</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Mon 12 May</span>
+            <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:999px;background:var(--glassOn)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:22px;opacity:0.5">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Four things,<br><em style="font-style:italic">gently paced.</em></div>
+            <div style="height:8px;border-radius:999px;background:var(--line)"></div>
+            <div style="font-size:18px;font-weight:600">Salah</div>
+            <div style="font-size:18px;font-weight:600">School run</div>
+          </div>
+          <div style="position:absolute;top:118px;right:20px;width:250px;border-radius:24px;background:var(--glass);backdrop-filter:blur(30px) saturate(170%);-webkit-backdrop-filter:blur(30px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float);padding:8px;display:flex;flex-direction:column">
+            <div style="padding:10px 14px 6px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Show tasks from</div>
+            <div style="display:flex;align-items:center;gap:12px;min-height:44px;padding:0 14px;border-radius:14px;background:var(--glassOn);font-size:17px;font-weight:600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>All</div>
+            <div style="display:flex;align-items:center;gap:12px;min-height:44px;padding:0 14px;font-size:17px"><span style="width:18px;display:flex;justify-content:center"><span style="width:9px;height:9px;border-radius:999px;background:var(--catTeal)"></span></span>Personal</div>
+            <div style="display:flex;align-items:center;gap:12px;min-height:44px;padding:0 14px;font-size:17px"><span style="width:18px;display:flex;justify-content:center"><span style="width:9px;height:9px;border-radius:999px;background:var(--catOchre)"></span></span>Family</div>
+            <div style="display:flex;align-items:center;gap:12px;min-height:44px;padding:0 14px;font-size:17px"><span style="width:18px;display:flex;justify-content:center"><span style="width:9px;height:9px;border-radius:999px;background:var(--catBlue)"></span></span>Work</div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">A system menu from the toolbar's filter item — "Show tasks from" says up front that only Tasks narrow. Order matches Settings; archived categories never appear here.</p>
+      </div>
+
+      <div id="TD-03-empty" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-03</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Filtered · empty result</span><span style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;padding:6px 10px;border-radius:999px;border:1px dashed var(--chrome);color:var(--chrome)">Provisional hues</span></div>
+        <div data-screen-label="TD-03 Filter empty" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:42</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Mon 12 May</span>
+            <div style="display:flex;align-items:center;padding:0 2px;height:44px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="var(--ink)" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M7 12h10M10 17h4"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path></svg></div>
+              <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:18px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-0.01em">Four things,<br><em style="font-style:italic;color:var(--accent)">gently paced.</em></div>
+            <div style="display:flex"><div style="display:flex;align-items:center;gap:10px;height:44px;padding:0 10px 0 18px;border-radius:999px;border:1px solid var(--line2);font-size:15px;font-weight:600"><span style="width:9px;height:9px;border-radius:999px;background:var(--catOchre)"></span>Family<span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></span></div></div>
+            <div style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:15px;color:var(--ink2)">2h 15m of 3h · whole day</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Balanced</span></div><div style="height:8px;border-radius:999px;background:var(--line);overflow:hidden"><div style="width:75%;height:100%;border-radius:999px;background:var(--meter)"></div></div></div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+              <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Anchors</div>
+              <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:18px;font-weight:600">Salah<span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--ink3);align-self:center">1/5</span></div>
+              <div style="display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line);font-size:18px;font-weight:600">School run<span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--ink3);align-self:center">15:00</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Habits</div>
+              <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:18px;font-weight:600">Water<span style="font-size:15px;font-weight:400;color:var(--ink3)">3 of 8</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Tasks</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:6px 0"><span style="font-size:19px;line-height:1.6;color:var(--ink3)">Nothing in Family today.</span><span style="height:44px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink);white-space:nowrap">Show all</span></div>
+            </div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The active filter shows as a clear chip under the title and the toolbar icon fills. Anchors, habits and the meter stay whole-day. Clears at rollover and relaunch; a new task inherits Family while it's on.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="capture" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Add · TD-04 / TK-01</h2>
+      <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Opens on Task · low default · 30m preselected · never blocks</span>
+    </div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="TK-01" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-04 · TK-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Add task · default</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">Rework v3·10</span></div>
+        <div data-screen-label="TK-01 Add task" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Four things,<br>gently paced.</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;top:58px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:14px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></div>
+              <div style="display:flex;padding:3px;border-radius:999px;background:var(--line)"><div style="height:38px;padding:0 20px;border-radius:999px;background:var(--glassOn);display:flex;align-items:center;font-size:15px;font-weight:600">Task</div><div style="height:38px;padding:0 20px;border-radius:999px;display:flex;align-items:center;font-size:15px;color:var(--ink2)">Anchor</div></div>
+              <div style="width:44px"></div>
+            </div>
+            <div style="font-size:19px;line-height:1.4;border-bottom:1px solid var(--line2);padding:4px 0 12px">Call the clinic back<span style="display:inline-block;width:1.5px;height:20px;background:var(--terra);margin-left:3px;vertical-align:-3px"></span></div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Effort</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">15m</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">30m</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">1h</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">2h+</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Other…</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">How much does this matter?</div>
+              <div style="display:flex;padding:3px;border-radius:999px;background:var(--line)"><div style="flex:1;height:38px;border-radius:999px;background:var(--glassOn);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Low</div><div style="flex:1;height:38px;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--ink2)">Medium</div><div style="flex:1;height:38px;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--ink2)">High</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">When</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Today</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Tomorrow</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Later this week</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Next week</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Someday</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Date…</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px;border-top:1px solid var(--line)"><span style="font-size:17px">Category</span><span style="display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink3)">None<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px;border-top:1px solid var(--line)"><span style="font-size:17px">Repeat</span><span style="display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink3)">Never<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><span style="font-size:17px">Note</span><span style="display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink3)">Add<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span></div>
+            </div>
+            <div style="margin-top:auto;flex-shrink:0;height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Add to today</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">No chooser: the sheet opens on Task, and the switch reaches the one-off Anchor form (AN-08, batch 3). Selected chips take the opaque selected fill and an ink ring — only a live timer chip is ever filled. Other… opens a 15-minute stepper to 8 h; No estimate sits in it.</p>
+      </div>
+
+      <div id="TK-01-high" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TK-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Medium / high · date required</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">State</span></div>
+        <div data-screen-label="TK-01 High importance" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Four things,<br>gently paced.</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;top:58px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:14px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></div>
+              <div style="display:flex;padding:3px;border-radius:999px;background:var(--line)"><div style="height:38px;padding:0 20px;border-radius:999px;background:var(--glassOn);display:flex;align-items:center;font-size:15px;font-weight:600">Task</div><div style="height:38px;padding:0 20px;border-radius:999px;display:flex;align-items:center;font-size:15px;color:var(--ink2)">Anchor</div></div>
+              <div style="width:44px"></div>
+            </div>
+            <div style="font-size:19px;line-height:1.4;border-bottom:1px solid var(--line2);padding:4px 0 12px">Submit the grant application</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Effort</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">15m</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">30m</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">1h</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">2h+</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">3h 30m</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">How much does this matter?</div>
+              <div style="display:flex;padding:3px;border-radius:999px;background:var(--line)"><div style="flex:1;height:38px;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--ink2)">Low</div><div style="flex:1;height:38px;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--ink2)">Medium</div><div style="flex:1;height:38px;border-radius:999px;background:var(--glassOn);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">High</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Due</span><span style="font-size:15px;color:var(--ink3)">Needed for medium and high</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Today</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Tomorrow</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Later this week</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Next week</div>
+                <div style="display:flex;align-items:center;gap:8px;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Fri 23 May</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px;border-top:1px solid var(--line)"><span style="font-size:17px">Category</span><span style="display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catBlue)"></span>Work<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><span style="font-size:17px">Repeat</span><span style="display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink3)">Never<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span></div>
+            </div>
+            <div style="margin-top:auto;flex-shrink:0;height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Add for Friday</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Choosing medium or high relabels When as Due, pre-fills a date that can be changed but not cleared, and removes Someday — no disabled chip, it's simply not offered. The button names the day it lands on.</p>
+      </div>
+
+      <div id="TK-01-full" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TK-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Day is full · offer tomorrow</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec A-04</span></div>
+        <div data-screen-label="TK-01 Day is full" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">More than<br>four things.</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:18px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="font-size:19px;line-height:1.4;border-bottom:1px solid var(--line2);padding:4px 0 12px">Sort the loft boxes</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <div style="display:flex;align-items:center;height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">30m</div>
+              <div style="display:flex;align-items:center;height:44px;padding:0 18px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">1h</div>
+              <div style="display:flex;align-items:center;height:44px;padding:0 18px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Today</div>
+              <div style="display:flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catOchre)"></span>Family</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;padding:14px 0;border-top:1px solid var(--line)">
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:17px;line-height:1.5">Day is full — put it on tomorrow?</span></div>
+              <div style="font-size:15px;line-height:1.5;color:var(--ink3)">Today is at 3h 10m of 3h. Tomorrow has room.</div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Tomorrow</div>
+              <div style="flex:1;height:52px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:var(--ink2)">Add anyway</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Appears in place of the Add button once the title and effort would take today past its budget. Both choices save the task; Add anyway puts it on today and the meter turns terracotta. No blame, nothing refused.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="task" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Task · TK-02 … TK-06</h2>
+      <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Detail · defer · note · repeat · category</span>
+    </div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="TK-02" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TK-02</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Task detail · deferred</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">Rework v3·11</span></div>
+        <div data-screen-label="TK-02 Task detail" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Four things,<br>gently paced.</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;top:58px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:12px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:inline-flex;align-items:center;gap:7px;font-size:15px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catTeal)"></span>Personal</div>
+              <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Call the clinic back</div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;gap:12px;align-items:center;min-height:44px"><div style="width:20px;height:20px;border-radius:6px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0"></div><span style="font-size:17px;line-height:1.4">Ask about the <strong>referral letter</strong></span></div>
+              <div style="display:flex;gap:12px;align-items:center;min-height:44px"><div style="width:20px;height:20px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><span style="font-size:17px;line-height:1.4;color:var(--ink3);text-decoration:line-through">Find the appointment number</span></div>
+              <div style="display:flex;gap:12px;align-items:center;min-height:44px"><div style="width:20px;height:20px;border-radius:6px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0"></div><span style="font-size:17px;line-height:1.4">Are <em>Thursday mornings</em> still open?</span></div>
+              <div style="display:flex;justify-content:flex-end"><span style="height:44px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink2)">Edit note</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Effort</span><span>15 min</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Matters</span><span>Low</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Due</span><span>Today</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">History</span><span style="color:var(--ink2)">Deferred twice · added 9 May</span></div>
+            </div>
+            <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px">
+              <div style="height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;gap:10px;font-size:17px;font-weight:600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l12 8-12 8z"></path></svg>Begin</div>
+              <div style="display:flex;gap:8px">
+                <div style="flex:1.3;height:48px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Mark done</div>
+                <div style="flex:1;height:48px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--ink2)">Defer</div>
+                <div style="flex:1;height:48px;border-radius:999px;background:var(--alertSoft);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--alert)">Drop</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Importance reads Low / Medium / High in words. Drop is soft (5-second undo, SY-03 in batch 2) — a soft fill with alert text, never filled. The note is a live checklist; ticking an item edits the note. Fields autosave on tap.</p>
+      </div>
+
+      <div id="TK-02-repeat" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TK-02</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Task detail · repeating</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">State</span></div>
+        <div data-screen-label="TK-02 Repeating" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Four things,<br>gently paced.</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:16px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:inline-flex;align-items:center;gap:7px;font-size:15px;color:var(--ink2)"><span style="width:8px;height:8px;border-radius:999px;background:var(--catBlue)"></span>Work</div>
+              <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Weekly review</div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:46px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Effort</span><span>30 min</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:46px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Matters</span><span>Medium</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:46px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Due</span><span>Today</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:46px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Repeats</span><span>Weekly on Monday</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;gap:10px;font-size:17px;font-weight:600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l12 8-12 8z"></path></svg>Begin</div>
+              <div style="display:flex;gap:8px">
+                <div style="flex:1.3;height:48px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Mark done</div>
+                <div style="flex:1;height:48px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--ink2)">Defer</div>
+                <div style="flex:1;height:48px;border-radius:999px;background:var(--alertSoft);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--alert)">Drop</div>
+              </div>
+              <div style="font-size:15px;line-height:1.5;color:var(--ink3);text-align:center">Drop skips this Monday only.</div>
+              <div style="height:44px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--ink2);border-top:1px solid var(--line);padding-top:6px">Stop repeating</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">One live instance per series. Stop repeating ends the series and keeps this one. A medium task always shows its date; the row on Today still never shows importance.</p>
+      </div>
+
+      <div id="TK-03" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TK-03</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Defer · third time, eased</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">Rework v3·12</span></div>
+        <div data-screen-label="TK-03 Defer" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Four things,<br>gently paced.</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:18px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Third time</div>
+              <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Sort out the insurance renewal</div>
+            </div>
+            <div style="display:flex;gap:14px;align-items:flex-start">
+              <div style="width:30px;height:30px;border-radius:999px;background:var(--deep);overflow:hidden;flex-shrink:0"><svg width="100%" height="100%" viewBox="0 0 100 100"><path d="M55.93 26.98Q55.76 27.68 55.12 30Q54.48 32.33 53.55 35.71Q52.63 39.09 51.56 43.07Q50.48 47.05 49.41 51.04Q48.34 55.03 47.4 58.55Q46.46 62.06 45.81 64.6Q45.17 67.14 44.87 68.13Q44.05 71.86 42.33 74.29Q40.62 76.71 38.27 77.92Q35.93 79.12 33.16 79.12Q30.72 79.12 29.56 78.03Q28.41 76.94 28.41 75.43Q28.44 74.14 29.28 73.28Q30.12 72.42 31.61 72.42Q32.43 72.42 33.19 72.72Q33.95 73.02 34.71 73.43Q35.47 73.84 36.19 74.17Q36.92 74.5 37.61 74.5Q38.8 74.5 39.58 73.64Q40.35 72.79 40.55 70.71Q40.55 70.08 40.25 69.39Q39.96 68.69 39.54 67.99Q39.13 67.28 38.75 66.48Q38.37 65.69 38.22 64.82Q38.08 63.94 38.31 62.95Q38.54 62.13 39.15 59.95Q39.76 57.77 40.58 54.67Q41.41 51.57 42.42 48.05Q43.42 44.54 44.35 41.06Q45.27 37.58 46.11 34.54Q46.95 31.5 47.51 29.41Q48.07 27.31 48.21 26.59Q48.6 25.2 48.37 24.66Q48.14 24.11 47.28 23.91L45.04 23.45Q44.48 23.25 44.23 22.96Q43.98 22.66 44.02 22.23Q44.02 21.64 44.41 21.26Q44.81 20.88 45.7 20.88L60.32 20.88Q61.18 20.88 61.44 21.19Q61.7 21.5 61.7 22.07Q61.7 22.63 61.37 22.96Q61.04 23.29 60.52 23.52L58.01 23.98Q57.48 24.11 57.15 24.39Q56.82 24.67 56.54 25.23Q56.26 25.79 55.93 26.98Z" fill="#EAF3F6"></path><circle cx="66.59" cy="64.08" r="5" fill="#DDA080"></circle></svg></div>
+              <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:17px;line-height:1.55">This one keeps slipping. Pick a day that actually works.</div><div style="font-size:15px;line-height:1.5;color:var(--ink3)">It was high, so it's eased to low. Someday is open now.</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span>Later this week</span><span style="color:var(--ink3);font-size:15px">Thu 15</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;margin:0 -14px;padding:0 14px;border-radius:14px;background:var(--glassOn);font-size:17px;font-weight:600"><span>Next week</span><span style="display:flex;align-items:center;gap:10px;font-weight:400;color:var(--ink3);font-size:15px">Mon 19<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;font-size:17px"><span>Someday</span><span style="color:var(--ink3);font-size:15px">No date</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span>Pick a date</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Why · optional</div>
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <div style="display:flex;align-items:center;height:44px;padding:0 18px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Too much on</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Not ready</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Not relevant</div>
+              </div>
+            </div>
+            <div style="height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Move to Monday</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">1st and 2nd deferrals are instant (to tomorrow, with a toast). From the 3rd this sheet opens; a medium/high task is eased once, and the line says so plainly. From the 5th the companion line suggests Drop instead. One deferral per task per day.</p>
+      </div>
+
+      <div id="TK-04" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TK-04</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Note editor</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec Flows H</span></div>
+        <div data-screen-label="TK-04 Note editor" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink);display:flex;flex-direction:column">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:44</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></div>
+            <span style="font-size:17px;font-weight:600">Note</span>
+            <div style="height:44px;padding:0 18px;border-radius:999px;display:flex;align-items:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float);font-size:16px;font-weight:600">Done</div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:4px;flex:1">
+            <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3);margin-bottom:10px">Call the clinic back</div>
+            <div style="display:flex;gap:12px;align-items:center;min-height:40px"><div style="width:20px;height:20px;border-radius:6px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0"></div><span style="font-size:17px">Ask about the <strong>referral letter</strong></span></div>
+            <div style="display:flex;gap:12px;align-items:center;min-height:40px"><div style="width:20px;height:20px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><span style="font-size:17px;color:var(--ink3);text-decoration:line-through">Find the appointment number</span></div>
+            <div style="display:flex;gap:12px;align-items:center;min-height:40px"><div style="width:20px;height:20px;border-radius:6px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0"></div><span style="font-size:17px">Are <em>Thursday mornings</em> still open?<span style="display:inline-block;width:1.5px;height:19px;background:var(--terra);margin-left:2px;vertical-align:-3px"></span></span></div>
+            <div style="font-size:17px;line-height:1.6;margin-top:12px;color:var(--ink2)">Reception: <span style="text-decoration:underline;text-underline-offset:3px">clinic booking page</span> · ref <span style="font:400 15px/1 'JetBrains Mono',monospace;padding:2px 6px;border-radius:6px;background:var(--line);white-space:nowrap">RX-2291</span></div>
+          </div>
+          <div style="flex-shrink:0;margin:0 10px 8px;height:52px;border-radius:999px;background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border:1px solid var(--glassEdge);box-shadow:var(--float);display:flex;align-items:center;justify-content:space-around;padding:0 6px">
+            <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="6" height="6" rx="1.5"></rect><path d="M4.5 8l1 1 2-2M13 8h8M3 17h6M13 17h8"></path></svg></div>
+            <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font:700 19px/1 'Hanken Grotesk',sans-serif">B</div>
+            <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font:italic 500 20px/1 Fraunces,Georgia,serif">I</div>
+            <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"></path><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"></path></svg></div>
+            <div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"></path></svg></div>
+          </div>
+          <div style="flex-shrink:0;height:290px;background:var(--kb);display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">System keyboard</div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Checklists, bold, italic, links and inline code — nothing else (no headings, tables or images). Renders as you type; the format bar is glass because it's where you act. No note preview on list rows.</p>
+      </div>
+
+      <div id="TK-05" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TK-05</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Repeat picker</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New</span></div>
+        <div data-screen-label="TK-05 Repeat" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Four things,<br>gently paced.</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:16px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></div>
+              <span style="font-size:17px;font-weight:600">Repeat</span>
+              <div style="width:44px"></div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;font-size:17px"><span>Never</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span>Daily</span></div>
+              <div style="margin:0 -14px;padding:4px 14px 14px;border-radius:14px;background:var(--glassOn);display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px;font-size:17px;font-weight:600"><span>Weekly</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+                <div style="display:flex;justify-content:space-between">
+                  <div style="width:40px;height:44px;border-radius:999px;background:var(--app);border:1.5px solid var(--ink);box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.08em">MON</div>
+                  <div style="width:40px;height:44px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.08em;color:var(--ink2)">TUE</div>
+                  <div style="width:40px;height:44px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.08em;color:var(--ink2)">WED</div>
+                  <div style="width:40px;height:44px;border-radius:999px;background:var(--app);border:1.5px solid var(--ink);box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.08em">THU</div>
+                  <div style="width:40px;height:44px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.08em;color:var(--ink2)">FRI</div>
+                  <div style="width:40px;height:44px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.08em;color:var(--ink2)">SAT</div>
+                  <div style="width:40px;height:44px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.08em;color:var(--ink2)">SUN</div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-bottom:1px solid var(--line);font-size:17px"><span>Monthly</span><span style="font-size:15px;color:var(--ink3)">On the 12th</span></div>
+            </div>
+            <div style="font-size:15px;line-height:1.5;color:var(--ink3)">A repeat needs a date, so Someday isn't offered. Days start from the due date's weekday.</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Applies on tap — no confirm button. Monthly clamps to the month's end. Week order follows the calendar's first weekday (RTL mirrors).</p>
+      </div>
+
+      <div id="TK-06" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TK-06</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Category picker</span><span style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;padding:6px 10px;border-radius:999px;border:1px dashed var(--chrome);color:var(--chrome)">Provisional hues</span></div>
+        <div data-screen-label="TK-06 Category" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Four things,<br>gently paced.</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:16px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></div>
+              <span style="font-size:17px;font-weight:600">Category</span>
+              <div style="width:44px"></div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;align-items:center;gap:14px;min-height:48px;font-size:17px;color:var(--ink2)"><span style="width:10px"></span>None</div>
+              <div style="display:flex;align-items:center;gap:14px;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="width:10px;height:10px;border-radius:999px;background:var(--catTeal)"></span>Personal</div>
+              <div style="display:flex;align-items:center;gap:14px;min-height:48px;margin:0 -14px;padding:0 14px;border-radius:14px;background:var(--glassOn);font-size:17px;font-weight:600"><span style="width:10px;height:10px;border-radius:999px;background:var(--catOchre)"></span><span style="flex:1">Family</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+              <div style="display:flex;align-items:center;gap:14px;min-height:48px;font-size:17px"><span style="width:10px;height:10px;border-radius:999px;background:var(--catBlue)"></span>Work</div>
+              <div style="display:flex;align-items:center;gap:14px;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="width:10px;height:10px;border-radius:999px;background:var(--catPlum)"></span>Allotment</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><span style="font-size:15px;line-height:1.5;color:var(--ink3)">Labels only — they never make sections.</span><span style="height:44px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink2);white-space:nowrap">Manage</span></div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Dot plus name, in the Settings order. An archived category appears only when it is this task's current label (shown with "archived" after the name). Manage opens ST-04 (batch 5).</p>
+      </div>
+
+    </div>
+  </section>
+
+  <div style="max-width:1720px;width:100%;margin:0 auto;border-top:1px solid var(--line2);padding-top:24px;display:flex;flex-direction:column;gap:10px">
+    <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">§10 check · this batch</div>
+    <div style="font-size:15px;line-height:1.6;color:var(--chrome);max-width:110ch">No streaks or counters · no mood · no red severity (terracotta only past the day's end; alert only on Drop, as soft fill) · no exclamation marks, praise or second-person past · one filled terracotta button per surface · medium/high always dated, never Someday · capacity has low/medium/high and the meter shows budget used · 44 pt targets throughout · leading/trailing layout only.</div>
+    <div style="font-size:15px;line-height:1.6;color:var(--chrome2);max-width:110ch">Next — batch 2: session chip (FS-01), focus screen, overrun, paused, finish sheet, done + undo, switch-task sheet, undo toast.</div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: 'light' };
+  renderVals() {
+    const dark = this.state.theme === 'dark';
+    return {
+      theme: this.state.theme,
+      themeLabel: dark ? 'Dark · switch to light' : 'Light · switch to dark',
+      toggleTheme: () => this.setState({ theme: dark ? 'light' : 'dark' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

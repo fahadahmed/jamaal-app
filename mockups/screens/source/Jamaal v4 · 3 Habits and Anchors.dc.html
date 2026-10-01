@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,SOFT,WONK,wght@0,9..144,0..100,0..1,300..900;1,9..144,0..100,0..1,300..900&amp;family=Hanken+Grotesk:wght@300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; }
+  a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { color: var(--terra); }
+  [data-th="dark"] {
+    --board:#030D14 !important; --chrome:#EAF3F6 !important; --chrome2:#B8CDD6 !important;
+    --app:#12303F !important; --card:rgba(255,255,255,0.05) !important; --ink:#E7F1F4 !important; --ink2:#BCD3DA !important; --ink3:#8FAAB4 !important;
+    --terra:#DDA080 !important; --accent:#8FCBB8 !important; --onAccent:#16242E !important; --deep:#071B27 !important;
+    --glassOn:#1D4052 !important; --glass:rgba(255,255,255,0.09) !important; --glassEdge:rgba(255,255,255,0.16) !important;
+    --line:rgba(231,241,244,0.14) !important; --line2:rgba(231,241,244,0.24) !important;
+    --d1:#2B4A46 !important; --d2:#4E7D72 !important; --d3:#8FCBB8 !important; --missed:#6B4A38 !important; --alert:#F09A90 !important; --alertSoft:#5A2A22 !important;
+    --shadow:0 22px 50px -28px rgba(0,0,0,0.7) !important; --float:0 22px 50px -28px rgba(0,0,0,0.7) !important; --scrim:rgba(0,0,0,0.45) !important;
+  }
+</style>
+</helmet>
+
+<div data-th="{{ theme }}" style="--board:#ADBCC5; --chrome:#0A3A53; --chrome2:#26424F; --app:#EFF4F0; --card:#FFFFFF; --ink:#0A3A53; --ink2:#14506E; --ink3:#3F6E80; --terra:#9A4F2E; --accent:#1F6A58; --onAccent:#EAF3F6; --deep:#0C4767; --glassOn:#FFFFFF; --glass:rgba(255,255,255,0.62); --glassEdge:rgba(10,58,83,0.14); --line:rgba(10,58,83,0.14); --line2:rgba(10,58,83,0.24); --d1:#D3E3DB; --d2:#71A393; --d3:#0C4767; --missed:#E3BEAB; --alert:#A32E22; --alertSoft:#F2D4CE; --shadow:0 18px 40px -26px rgba(6,32,46,0.42); --float:0 10px 26px -14px rgba(6,32,46,0.5); --scrim:rgba(4,26,38,0.32); background:var(--board); color:var(--ink); font-family:'Hanken Grotesk',system-ui,sans-serif; padding:56px 48px 120px; display:flex; flex-direction:column; gap:72px; min-height:100vh; -webkit-font-smoothing:antialiased">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;max-width:1720px;width:100%;margin:0 auto">
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:780px">
+      <div style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2);display:flex;align-items:center;gap:10px"><span style="width:24px;height:1px;background:var(--terra);display:inline-block"></span>Jamaal · v4 redraw · batch 3 of 6 · phone</div>
+      <h1 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:54px;line-height:1.04;letter-spacing:-0.02em;margin:0;color:var(--chrome)">Habits and Anchors</h1>
+      <p style="font-size:17px;line-height:1.6;color:var(--chrome2);margin:0;max-width:64ch">Habits are read by density, never streaks. Anchors are read by attendance, and only an open window can be attended. Also redrawn here because the brief reworks them: HB-01, HB-02 (streak row removed) and the HB-03 type picker. HB-04 and HB-05 keep their v3 drawings.</p>
+    </div>
+    <div onClick="{{ toggleTheme }}" style="display:flex;align-items:center;gap:10px;padding:0 20px;height:44px;border-radius:999px;background:var(--glass);backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border:1px solid var(--glassEdge);cursor:pointer;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome)"><span style="width:8px;height:8px;border-radius:999px;background:var(--terra)"></span>{{ themeLabel }}</div>
+  </div>
+
+  <div style="max-width:1720px;width:100%;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px 40px;border-top:1px solid var(--line2);padding-top:28px">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Density grid</div>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <div style="display:flex;gap:3px"><span style="width:18px;height:18px;border-radius:3px;background:var(--line)"></span><span style="width:18px;height:18px;border-radius:3px;background:var(--d1)"></span><span style="width:18px;height:18px;border-radius:3px;background:var(--d2)"></span><span style="width:18px;height:18px;border-radius:3px;background:var(--d3)"></span><span style="width:18px;height:18px;border-radius:3px;background:var(--missed)"></span></div>
+        <span style="font-size:15px;color:var(--chrome)">empty · some · most · full · missed</span>
+      </div>
+      <div style="font-size:15px;line-height:1.55;color:var(--chrome)">18 pt cells, 3 gap, 3 radius, 14 days to a row, today at the trailing end. No numeral ever sits in a cell. Paused, unscheduled and pre-creation days are empty — never missed.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Window bar</div>
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 14px;align-items:center;font-size:15px;color:var(--chrome)">
+        <span style="width:120px;height:6px;border-radius:999px;border:1px solid var(--line2);box-sizing:border-box;background:var(--app)"></span><span>Upcoming</span>
+        <span style="width:120px;height:6px;border-radius:999px;background:var(--line);overflow:hidden;display:flex"><span style="width:40%;background:var(--accent);border-radius:999px"></span></span><span>Open · fills as the window passes</span>
+        <span style="width:120px;height:6px;border-radius:999px;background:var(--line);overflow:hidden;display:flex"><span style="width:88%;background:var(--terra);border-radius:999px"></span></span><span>Closing soon</span>
+        <span style="width:120px;height:6px;border-radius:999px;background:var(--missed)"></span><span>Closed, not marked</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Open questions drawn here</span></div>
+      <div style="font-size:15px;line-height:1.55;color:var(--chrome)">HB-08 avoid habits: <a href="#HB-08-A">A</a> chosen — Log a slip and Held today, both explicit. Group emoji: dropped — groups are names only, matching the design system. The schema’s emoji field should be removed or left unused.</div>
+    </div>
+  </div>
+
+  <section id="habits" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Habits · HB-01 … HB-09</h2>
+      <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Overview · detail · type · pause · edit/archive · minutes by hand</span>
+    </div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="HB-01" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">HB-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Habits overview</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">Rework v3·13 · full scroll</span></div>
+        <div data-screen-label="HB-01 Habits overview" style="width:393px;height:1180px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:41</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <div style="display:flex;padding:3px;border-radius:999px;background:var(--line)"><div style="height:38px;padding:0 18px;border-radius:999px;background:var(--glassOn);display:flex;align-items:center;font-size:15px;font-weight:600">Habits</div><div style="height:38px;padding:0 18px;display:flex;align-items:center;font-size:15px;color:var(--ink2)">Anchors</div></div>
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:18px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-0.01em">Habits</div>
+            <div style="display:flex;flex-direction:column;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--line)">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px"><span style="font-size:18px;font-weight:600">Morning</span><span style="display:flex;align-items:center;gap:10px;font-size:15px;color:var(--ink2)">2 of 3 today<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"></path></svg></span></div>
+              <div style="display:grid;grid-template-columns:repeat(14,18px);gap:3px"><sc-for list="{{ gMorning }}" as="c" hint-placeholder-count="14"><span style="width:18px;height:18px;border-radius:3px;background:{{ c }}"></span></sc-for></div>
+              <div style="display:flex;flex-direction:column;padding-inline-start:14px;border-inline-start:1px solid var(--line)">
+                <div style="display:flex;align-items:center;gap:14px;min-height:48px"><div style="width:22px;height:22px;border-radius:999px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><span style="flex:1;font-size:17px">Stretch</span><span style="font-size:15px;color:var(--ink3)">Daily</span></div>
+                <div style="display:flex;align-items:center;gap:14px;min-height:48px"><div style="width:22px;height:22px;border-radius:999px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><span style="flex:1;font-size:17px">Vitamin D</span><span style="font-size:15px;color:var(--ink3)">Daily</span></div>
+                <div style="display:flex;align-items:center;gap:14px;min-height:48px"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--line2);box-sizing:border-box;flex-shrink:0"></div><span style="flex:1;font-size:17px">Make the bed</span><span style="font-size:15px;color:var(--ink3)">Daily</span></div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0"><div><div style="font-size:18px;font-weight:600;line-height:1.35">Water</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Counted · 3 of 8 today</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600;line-height:1.35">Qur'an reading</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Timed · 0 of 15 min today</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600;line-height:1.35">Morning run</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Timed · 2 of 3 this week</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600;line-height:1.35">No sugary drinks</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Avoid · none today</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600;line-height:1.35">Medication</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Morning done · evening at 20:00</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600;line-height:1.35;color:var(--ink2)">Reading before bed</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Paused · travel · resumes 19 May</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+            </div>
+            <div style="border-top:1px solid var(--line);display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Archived · 1</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px"><span style="font-size:17px;color:var(--ink2)">Cold shower</span><span style="height:44px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink)">Restore</span></div>
+            </div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">A group is a purely visual bundle: a name, "2 of 3 today", its 14-day grid, expandable. Each row says its kind and today's state in words. Paused is shown here (hidden from Today). Archived collapses at the end with Restore.</p>
+      </div>
+
+      <div id="HB-02" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">HB-02</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Habit detail · counted</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">Rework v3·14 · no streaks</span></div>
+        <div data-screen-label="HB-02 Habit detail counted" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:41</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></div>
+            <div style="height:44px;padding:0 18px;border-radius:999px;display:flex;align-items:center;gap:8px;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float);font-size:16px;font-weight:600">Edit<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></div>
+          </div>
+          <div style="padding:26px 26px 0;display:flex;flex-direction:column;gap:22px">
+            <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Counted · 8 a day</span><div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Water</div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><div style="font-size:18px;font-weight:600">3 of 8 today</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">All day</div></div>
+              <div style="display:flex;height:44px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge)"><div style="width:48px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round"><path d="M5 12h14"></path></svg></div><div style="width:1px;background:var(--line);margin:10px 0"></div><div style="width:48px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:22px">
+              <div style="display:flex;justify-content:space-between;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span>Last 6 weeks</span><span>Today</span></div>
+              <div style="display:grid;grid-template-columns:repeat(14,18px);gap:3px;justify-content:space-between"><sc-for list="{{ gWater }}" as="c" hint-placeholder-count="42"><span style="width:18px;height:18px;border-radius:3px;background:{{ c }}"></span></sc-for></div>
+            </div>
+            <div style="font-size:19px;line-height:1.6">Most days reach eight. The short days are mostly Saturdays.</div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Reminder</span><span>15:00</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Schedule</span><span>Every day</span></div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The "18 streak · 31 best · 86%" row is gone; its space goes to the plain read. The last 14 cells are tappable to correct. Edit opens a menu: Edit · Pause · Archive.</p>
+      </div>
+
+      <div id="HB-02-slipping" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">HB-02</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Habit detail · slipping</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">Rework v3·15 · no streaks</span></div>
+        <div data-screen-label="HB-02 Habit detail slipping" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:41</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></div>
+            <div style="height:44px;padding:0 18px;border-radius:999px;display:flex;align-items:center;gap:8px;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float);font-size:16px;font-weight:600">Edit<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></div>
+          </div>
+          <div style="padding:26px 26px 0;display:flex;flex-direction:column;gap:22px">
+            <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Did I do it · weekdays</span><div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Evening walk</div></div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span>Last 6 weeks</span><span>Today</span></div>
+              <div style="display:grid;grid-template-columns:repeat(14,18px);gap:3px;justify-content:space-between"><sc-for list="{{ gWalk }}" as="c" hint-placeholder-count="42"><span style="width:18px;height:18px;border-radius:3px;background:{{ c }}"></span></sc-for></div>
+            </div>
+            <div style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;gap:14px;align-items:flex-start">
+                <div style="width:30px;height:30px;border-radius:999px;background:var(--deep);overflow:hidden;flex-shrink:0"><svg width="100%" height="100%" viewBox="0 0 100 100"><path d="M55.93 26.98Q55.76 27.68 55.12 30Q54.48 32.33 53.55 35.71Q52.63 39.09 51.56 43.07Q50.48 47.05 49.41 51.04Q48.34 55.03 47.4 58.55Q46.46 62.06 45.81 64.6Q45.17 67.14 44.87 68.13Q44.05 71.86 42.33 74.29Q40.62 76.71 38.27 77.92Q35.93 79.12 33.16 79.12Q30.72 79.12 29.56 78.03Q28.41 76.94 28.41 75.43Q28.44 74.14 29.28 73.28Q30.12 72.42 31.61 72.42Q32.43 72.42 33.19 72.72Q33.95 73.02 34.71 73.43Q35.47 73.84 36.19 74.17Q36.92 74.5 37.61 74.5Q38.8 74.5 39.58 73.64Q40.35 72.79 40.55 70.71Q40.55 70.08 40.25 69.39Q39.96 68.69 39.54 67.99Q39.13 67.28 38.75 66.48Q38.37 65.69 38.22 64.82Q38.08 63.94 38.31 62.95Q38.54 62.13 39.15 59.95Q39.76 57.77 40.58 54.67Q41.41 51.57 42.42 48.05Q43.42 44.54 44.35 41.06Q45.27 37.58 46.11 34.54Q46.95 31.5 47.51 29.41Q48.07 27.31 48.21 26.59Q48.6 25.2 48.37 24.66Q48.14 24.11 47.28 23.91L45.04 23.45Q44.48 23.25 44.23 22.96Q43.98 22.66 44.02 22.23Q44.02 21.64 44.41 21.26Q44.81 20.88 45.7 20.88L60.32 20.88Q61.18 20.88 61.44 21.19Q61.7 21.5 61.7 22.07Q61.7 22.63 61.37 22.96Q61.04 23.29 60.52 23.52L58.01 23.98Q57.48 24.11 57.15 24.39Q56.82 24.67 56.54 25.23Q56.26 25.79 55.93 26.98Z" fill="#EAF3F6"></path><circle cx="66.59" cy="64.08" r="5" fill="#DDA080"></circle></svg></div>
+                <div style="font-size:17px;line-height:1.55">Missed 9 of the last 21. Five a week may be more than this season allows — try three?</div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;height:48px;border-radius:999px;background:var(--terra);color:var(--onAccent);font-size:16px;font-weight:600">Three a week</div>
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;height:48px;border-radius:999px;border:1px solid var(--line2);font-size:16px;font-weight:600;color:var(--ink2)">Keep five</div>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Reminder</span><span>Off</span></div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">"Missed 9 of the last 21" is the plain read — counts over a window, never a run. The companion's card uses the terracotta button (v3's J avatar no longer takes terracotta). Weekends are unscheduled, so empty.</p>
+      </div>
+
+      <div id="HB-03" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">HB-03</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Add habit · type picker</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec H-04</span></div>
+        <div data-screen-label="HB-03 Type picker" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px">Habits</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:16px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">What kind of habit?</div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600">Did I do it?</div><div style="font-size:15px;line-height:1.35;color:var(--ink3);margin-top:3px">Once is enough. Reading, a walk, medication.</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600">Did I do it N times?</div><div style="font-size:15px;line-height:1.35;color:var(--ink3);margin-top:3px">Counted with a stepper. Glasses of water, dhikr.</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600">Did I do it for N minutes?</div><div style="font-size:15px;line-height:1.35;color:var(--ink3);margin-top:3px">Timed with Begin, like a task. Qur'an, a run.</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600">Did I avoid it?</div><div style="font-size:15px;line-height:1.35;color:var(--ink3);margin-top:3px">Log a slip when it happens. Sugary drinks, late scrolling.</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+            </div>
+            <div style="font-size:15px;line-height:1.5;color:var(--ink3)">The kind can't change later, because the history is read by it.</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The picker comes first; each row opens the kind's form (v3·16 is the counted form, now with Times of day and group). Presets sit on the next screen, pre-filling the form.</p>
+      </div>
+
+      <div id="HB-06" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">HB-06</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Pause with reason</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec H-07</span></div>
+        <div data-screen-label="HB-06 Pause" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px">Reading before bed</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:18px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:8px"><div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Pause Reading before bed</div><div style="font-size:19px;line-height:1.6;color:var(--ink2)">Paused days stay empty. They don't count as missed.</div></div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Why</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <div style="display:flex;align-items:center;height:44px;padding:0 16px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Travel</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Illness</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Cycle</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Other</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">From</span><span>Today</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Until</span><div style="display:flex;padding:3px;border-radius:999px;background:var(--line)"><div style="height:36px;padding:0 14px;border-radius:999px;background:var(--glassOn);display:flex;align-items:center;font-size:15px;font-weight:600">Mon 19 May</div><div style="height:36px;padding:0 14px;display:flex;align-items:center;font-size:15px;color:var(--ink2)">I resume</div></div></div>
+            </div>
+            <div style="height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0">Pause for a week</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">From Edit → Pause. A paused habit is hidden from Today and Night Planning, and its reminders stop. Resume edits the end date. The reason is private, used for nothing but the label.</p>
+      </div>
+
+      <div id="HB-07" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">HB-07</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Edit / archive</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec H-09</span></div>
+        <div data-screen-label="HB-07 Edit archive" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:43</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="height:44px;padding:0 18px;border-radius:999px;display:flex;align-items:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float);font-size:16px;color:var(--ink2)">Cancel</div>
+            <span style="font-size:17px;font-weight:600">Edit habit</span>
+            <div style="height:44px;padding:0 18px;border-radius:999px;display:flex;align-items:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float);font-size:16px;font-weight:600">Save</div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:18px">
+            <div style="font-size:19px;line-height:1.4;border-bottom:1px solid var(--line2);padding:4px 0 12px">Medication</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:44px;font-size:17px"><span style="color:var(--ink3)">Kind</span><span style="color:var(--ink2)">Did I do it · fixed</span></div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Times of day</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span>Morning</span><span style="font-size:15px;color:var(--ink3)">06:00–11:00 · remind 08:00</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span>Evening</span><span style="font-size:15px;color:var(--ink3)">18:00–23:00 · remind 20:00</span></div>
+              <div style="display:flex;align-items:center;gap:10px;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px;color:var(--ink2)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add another time<span style="margin-left:auto;font-size:15px;color:var(--ink3)">up to 4</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;font-size:17px"><span style="color:var(--ink3)">Schedule</span><span>Every day</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Group</span><span>Morning</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+              <div style="height:48px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--ink2)">Pause…</div>
+              <div style="height:48px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--ink2)">Archive</div>
+              <div style="font-size:15px;line-height:1.5;color:var(--ink3);text-align:center">Archiving keeps every day's history. Restore it from Archived.</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Everything except the kind is editable; a new target applies from today, past entries keep theirs. Archive is not destructive, so it's an outline button, not alert — there is no delete.</p>
+      </div>
+
+      <div id="HB-09" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">HB-09</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Add minutes by hand</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New</span></div>
+        <div data-screen-label="HB-09 Minutes by hand" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px">Qur'an reading</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:20px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:8px"><div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Add minutes</div><div style="font-size:19px;line-height:1.6;color:var(--ink2)">Qur'an reading · today, 6 of 15 min so far</div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
+              <div style="width:52px;height:52px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round"><path d="M5 12h14"></path></svg></div>
+              <div style="display:flex;align-items:baseline;gap:8px"><span style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:300;font-size:38px;line-height:1.08;font-variant-numeric:tabular-nums">10</span><span style="font-size:17px;color:var(--ink3)">min</span></div>
+              <div style="width:52px;height:52px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Day</span><span>Today</span></div>
+            <div style="height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0">Add 10 min</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Timed habits only — for time done away from the phone. 5-minute steps. Stored as a finished session, so the day's total is recomputed, never overwritten. Day can be any of the last 14.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="avoid" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">HB-08 · Avoid habits — pick one</h2>
+      <span style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;padding:6px 10px;border-radius:999px;border:1px dashed var(--chrome);color:var(--chrome)">Provisional · two options</span>
+    </div>
+    <p style="margin:0;max-width:92ch;font-size:16px;line-height:1.6;color:var(--chrome2)">Same rules in both: a slip is logged when it happens; a day is full only if slips stay within the allowance <em>and</em> the day was engaged; otherwise it stays empty. No "days since" counter. The options differ in whether holding is something you say (A) or something the app infers from the day (B).</p>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="HB-08-A" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">HB-08 · chosen</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Say it: two actions on the row</span></div>
+        <div data-screen-label="HB-08 Avoid habits" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>21:30</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="padding:26px 26px 0;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>On Today · three moments</div>
+            <div style="display:flex;flex-direction:column;gap:6px;padding:10px 0">
+              <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Morning</span>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><div style="font-size:18px;font-weight:600">No sugary drinks</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">None yet · up to 1</div></div><div style="display:flex;gap:6px"><div style="height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink2)">Slip</div><div style="height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;font-size:15px;font-weight:600">Held today</div></div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--line)">
+              <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">After one slip</span>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><div style="font-size:18px;font-weight:600">No sugary drinks</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">1 of 1 · still within</div></div><div style="display:flex;gap:6px"><div style="height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink2)">Slip</div><div style="height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;font-size:15px;font-weight:600">Held today</div></div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+              <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Held</span>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div style="display:flex;gap:14px;align-items:center"><div style="width:22px;height:22px;border-radius:999px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div><div style="font-size:18px;font-weight:600">No sugary drinks</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Held today · 1 slip</div></div></div><div style="height:44px;padding:0 10px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink2)">Undo</div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+              <div style="display:flex;justify-content:space-between;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span>Detail · last 6 weeks</span><span>Today</span></div>
+              <div style="display:grid;grid-template-columns:repeat(14,18px);gap:3px;justify-content:space-between"><sc-for list="{{ gAvoid }}" as="c" hint-placeholder-count="42"><span style="width:18px;height:18px;border-radius:3px;background:{{ c }}"></span></sc-for></div>
+              <div style="font-size:17px;line-height:1.6;margin-top:6px">Held on 31 of 38 days. Days nothing was logged stay empty — they aren't counted either way.</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)"><strong style="color:var(--chrome)">Chosen.</strong> <strong style="color:var(--chrome)">For:</strong> explicit and honest — the grid only fills when you said so. <strong style="color:var(--chrome)">Against:</strong> two chips on one row is the busiest habit row on Today, and "Held today" asks for a declaration every day.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="anchors-today" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Anchors on Today · AN-09 · AN-10</h2>
+      <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Attended only while open · skipped and delegated are not misses</span>
+    </div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="AN-09" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-09</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Anchor rows · every state</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · Anchors section</span></div>
+        <div data-screen-label="AN-09 Anchor rows" style="width:393px;height:1120px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>17:48</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="padding:30px 26px 0;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Anchors</div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 0">
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:18px;font-weight:600;line-height:1.35">Salah</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--ink3)">2/5</span></div><div style="font-size:15px;color:var(--ink3)">Asr · until 17:58</div></div>
+                <svg style="margin-top:4px;flex-shrink:0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"></path></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;padding-inline-start:14px;border-inline-start:1px solid var(--line);margin-bottom:8px">
+                <div style="display:flex;gap:14px;align-items:center;min-height:48px"><div style="width:22px;height:22px;border-radius:999px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><span style="flex:1;font-size:17px">Fajr</span><span style="font-size:15px;color:var(--ink3)">Attended 05:02</span></div>
+                <div style="display:flex;gap:14px;align-items:center;min-height:48px"><div style="width:22px;height:22px;border-radius:999px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><span style="flex:1;font-size:17px">Dhuhr</span><span style="font-size:15px;color:var(--ink3)">Attended 12:52</span></div>
+                <div style="display:flex;gap:14px;align-items:flex-start;padding:10px 0">
+                  <div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0;margin-top:1px"></div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between"><span style="font-size:17px;font-weight:600">Asr</span><span style="font-size:15px;color:var(--terra)">Closes in 10 min</span></div><div style="height:6px;border-radius:999px;background:var(--line);overflow:hidden"><div style="width:90%;height:100%;border-radius:999px;background:var(--terra)"></div></div></div>
+                </div>
+                <div style="display:flex;gap:14px;align-items:center;min-height:48px"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0;opacity:0.42"></div><span style="flex:1;font-size:17px">Maghrib</span><span style="font-size:15px;color:var(--ink3)">Opens 20:47</span></div>
+                <div style="display:flex;gap:14px;align-items:center;min-height:48px"><div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0;opacity:0.42"></div><span style="flex:1;font-size:17px">Isha</span><span style="font-size:15px;color:var(--ink3)">Opens 22:14</span></div>
+              </div>
+
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)">
+                <div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0;margin-top:2px;opacity:0.42"></div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:18px;font-weight:600;line-height:1.35">Bin night</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--ink3)">19:00</span></div><div style="font-size:15px;color:var(--ink3)">Opens at 19:00 · until 23:00</div><div style="height:6px;border-radius:999px;border:1px solid var(--line2);box-sizing:border-box;margin-top:2px"></div></div>
+              </div>
+
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)">
+                <div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0;margin-top:2px"></div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:18px;font-weight:600;line-height:1.35">Water the plants</span><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;color:var(--ink3)">Day 2 of 3</span></div><div style="font-size:15px;color:var(--ink3)">Open · closes Thu</div><div style="height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:2px"><div style="width:48%;height:100%;border-radius:999px;background:var(--accent)"></div></div></div>
+              </div>
+
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)">
+                <svg style="flex-shrink:0;margin-top:2px" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+                <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35;color:var(--ink2)">School run · Pick-up</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Someone else did it</div></div>
+              </div>
+
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)">
+                <svg style="flex-shrink:0;margin-top:2px" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 12h8"></path></svg>
+                <div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:600;line-height:1.35;color:var(--ink2)">Swimming lesson</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Not today</div></div>
+              </div>
+
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+                <div style="width:22px;height:22px;border-radius:999px;background:var(--missed);flex-shrink:0;margin-top:2px"></div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px"><div style="font-size:18px;font-weight:600;line-height:1.35">School run · Drop-off</div><div style="font-size:15px;color:var(--ink3)">Closed 08:45 · not marked</div><div style="display:flex"><span style="height:44px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink)">Mark as done after all</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">A rule with several Anchors a day is one collapsed row (tap to expand). Upcoming rings are disabled at 0.42 and say when they open. Closing soon is the only terracotta. Skipped and delegated read as outcomes, never misses. A missed one can be marked done until the day ends.</p>
+      </div>
+
+      <div id="AN-10" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-10</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Anchor actions · menu</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New</span></div>
+        <div data-screen-label="AN-10 Anchor actions" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>17:48</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="padding:30px 26px 0;display:flex;flex-direction:column;gap:10px;opacity:0.4">
+            <div style="font-size:18px;font-weight:600">Salah</div><div style="font-size:17px">Fajr</div><div style="font-size:17px">Dhuhr</div>
+          </div>
+          <div style="position:absolute;left:12px;right:12px;top:210px;display:flex;flex-direction:column;gap:10px">
+            <div style="border-radius:14px;background:var(--glassOn);padding:12px 14px;display:flex;gap:14px;align-items:flex-start;box-shadow:var(--float)">
+              <div style="width:22px;height:22px;border-radius:999px;border:1.5px solid var(--ink2);box-sizing:border-box;flex-shrink:0;margin-top:1px"></div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between"><span style="font-size:17px;font-weight:600">Asr</span><span style="font-size:15px;color:var(--terra)">Closes in 10 min</span></div><div style="height:6px;border-radius:999px;background:var(--line);overflow:hidden"><div style="width:90%;height:100%;border-radius:999px;background:var(--terra)"></div></div></div>
+            </div>
+            <div style="width:270px;border-radius:24px;background:var(--glass);backdrop-filter:blur(30px) saturate(170%);-webkit-backdrop-filter:blur(30px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float);padding:8px;display:flex;flex-direction:column">
+              <div style="display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 14px;border-radius:14px;font-size:17px;font-weight:600">Attended<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+              <div style="height:1px;background:var(--line);margin:0 14px"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 14px;font-size:17px">Not today<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 12h8"></path></svg></div>
+              <div style="height:1px;background:var(--line);margin:0 14px"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 14px;font-size:17px">Someone else did it<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></div>
+            </div>
+            <div style="width:270px;margin-top:16px;border-radius:24px;background:var(--glass);backdrop-filter:blur(30px) saturate(170%);-webkit-backdrop-filter:blur(30px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float);padding:8px;display:flex;flex-direction:column">
+              <div style="padding:8px 14px 4px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Maghrib · upcoming</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 14px;font-size:17px;opacity:0.42">Attended<span style="font-size:15px">opens 20:47</span></div>
+              <div style="height:1px;background:var(--line);margin:0 14px"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 14px;font-size:17px">Not today</div>
+              <div style="height:1px;background:var(--line);margin:0 14px"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 14px;font-size:17px">Someone else did it</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Tapping the ring marks Attended directly (open only). Tapping the row opens this system menu. For an upcoming window Attended is shown but disabled with when it opens; the other two work until it closes. Attended is one soft impact.</p>
+      </div>
+
+      <div id="AN-10-late" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-10</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Mark as done after all</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">State · decided</span></div>
+        <div data-screen-label="AN-10 Late correction" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-size:18px;font-weight:600">School run · Drop-off</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:18px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:8px"><div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">School run · Drop-off</div><div style="font-size:19px;line-height:1.6;color:var(--ink2)">Marked as attended now, 17:52. The window was 08:15–08:45.</div></div>
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Mark as done</div>
+              <div style="flex:1;height:52px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:var(--ink2)">Cancel</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Offered on a missed Anchor until the logical day ends. It states the time it records — no question about why. It never reopens Not today or Someone else did it.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="anchor-rules" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Anchor rules · AN-01 · AN-02 · AN-07</h2>
+      <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Habits tab → Anchors segment</span>
+    </div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="AN-01" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Anchor rules list</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · replaces Flows I</span></div>
+        <div data-screen-label="AN-01 Rules list" style="width:393px;height:1000px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:41</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0 26px;flex-shrink:0">
+            <div style="display:flex;padding:3px;border-radius:999px;background:var(--line)"><div style="height:38px;padding:0 18px;display:flex;align-items:center;font-size:15px;color:var(--ink2)">Habits</div><div style="height:38px;padding:0 18px;border-radius:999px;background:var(--glassOn);display:flex;align-items:center;font-size:15px;font-weight:600">Anchors</div></div>
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:14px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08;letter-spacing:-0.01em">Anchors</div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0"><div><div style="font-size:18px;font-weight:600;line-height:1.35">Salah</div><div style="font-size:15px;line-height:1.35;color:var(--ink3);margin-top:2px">Prayer times · Leicester · next Asr 15:32</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600;line-height:1.35">School run</div><div style="font-size:15px;line-height:1.35;color:var(--ink3);margin-top:2px">Mon–Fri · drop-off 08:15, pick-up 15:00</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600;line-height:1.35">Bin night</div><div style="font-size:15px;line-height:1.35;color:var(--ink3);margin-top:2px">Tuesdays · 19:00–23:00 · next tomorrow</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600;line-height:1.35">Water the plants</div><div style="font-size:15px;line-height:1.35;color:var(--ink3);margin-top:2px">3–4 days after last · open until Thu</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600;line-height:1.35;color:var(--ink2)">Madrasa pick-up</div><div style="font-size:15px;line-height:1.35;color:var(--ink3);margin-top:2px">Paused · holiday · until Mon 2 Jun</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div style="display:flex;gap:12px;align-items:flex-start"><svg style="flex-shrink:0;margin-top:3px" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16v.5"></path></svg><div><div style="font-size:18px;font-weight:600;line-height:1.35">Swimming club</div><div style="font-size:15px;line-height:1.35;color:var(--ink2);margin-top:2px">Needs attention · update Jamaal to see it</div></div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Archived · 1</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px"><span style="font-size:17px;color:var(--ink2)">Nursery drop-off</span><span style="height:44px;display:flex;align-items:center;font-size:15px;font-weight:600;color:var(--ink)">Restore</span></div>
+            </div>
+          </div>
+          <div style="position:absolute;left:20px;right:20px;bottom:22px;display:flex;height:62px;padding:4px;border-radius:999px;background:var(--glass);backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);border:1px solid var(--glassEdge);box-shadow:var(--float)">
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>Today</div>
+            <div style="flex:1;border-radius:999px;background:var(--glassOn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink);font:600 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6" height="6" rx="1.5"></rect><rect x="14" y="4" width="6" height="6" rx="1.5"></rect><rect x="4" y="14" width="6" height="6" rx="1.5"></rect><rect x="14" y="14" width="6" height="6" rx="1.5"></rect></svg>Habits</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 7 4-14 3 7h4"></path></svg>Wellbeing</div>
+            <div style="flex:1;border-radius:999px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink3);font:500 11px/1 'Hanken Grotesk',sans-serif"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>Settings</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Each rule: title, a one-line schedule and its next Anchor. Paused and needs-attention are said in words with a neutral icon — no red. Archived collapses at the end with Restore.</p>
+      </div>
+
+      <div id="AN-02" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-02</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Rule detail</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New</span></div>
+        <div data-screen-label="AN-02 Rule detail" style="width:393px;height:1000px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:42</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></div>
+            <div style="height:44px;padding:0 18px;border-radius:999px;display:flex;align-items:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float);font-size:16px;font-weight:600">Edit</div>
+          </div>
+          <div style="padding:26px 26px 0;display:flex;flex-direction:column;gap:22px">
+            <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Anchor rule · fixed</span><div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">School run</div></div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Repeats</span><span>Weekdays</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Drop-off</span><span>08:15 · 30 min window</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Pick-up</span><span>15:00 · 30 min window</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Reminders</span><span>Off</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Exceptions</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;font-size:17px"><span>Half term</span><span style="font-size:15px;color:var(--ink3)">Mon 26 – Fri 30 May</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;gap:10px;font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)"><span style="width:24px;height:1px;background:var(--terra)"></span>Coming up</div>
+              <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 18px;font-size:17px;padding-top:6px">
+                <span style="color:var(--ink3)">Tomorrow</span><span>08:15 · 15:00</span>
+                <span style="color:var(--ink3)">Wed 14</span><span>08:15 · 15:00</span>
+                <span style="color:var(--ink3)">Thu 15</span><span>08:15 · 15:00</span>
+                <span style="color:var(--ink3)">Fri 16</span><span>08:15 · 15:00</span>
+                <span style="color:var(--ink3)">26–30 May</span><span style="color:var(--ink2)">None · half term</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:6px">
+              <div style="flex:1;height:48px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--ink2)">Pause</div>
+              <div style="flex:1;height:48px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--ink2)">Archive</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The upcoming days come from the generator's dry-run preview. Archive keeps every past Anchor. No filled button: nothing here is a decision being asked for.</p>
+      </div>
+
+      <div id="AN-07" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-07</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Needs attention</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New</span></div>
+        <div data-screen-label="AN-07 Needs attention" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:42</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></div>
+          </div>
+          <div style="padding:26px 26px 0;display:flex;flex-direction:column;gap:22px">
+            <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Anchor rule</span><div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Swimming club</div></div>
+            <div style="display:flex;gap:14px;align-items:flex-start;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+              <svg style="flex-shrink:0;margin-top:3px" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16v.5"></path></svg>
+              <div style="display:flex;flex-direction:column;gap:8px"><div style="font-size:19px;line-height:1.6">Update Jamaal to see this rule.</div><div style="font-size:15px;line-height:1.5;color:var(--ink2)">It was set up in a newer version on another device. It's kept exactly as it is, and no Anchors are made from it here until then.</div></div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <div style="flex:1;height:48px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--ink2)">Archive</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">A rule is never deleted for being unreadable. The other case reads "This rule couldn't be read" and adds Edit (to rebuild it) beside Archive. Neither blocks the rest of the app.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="anchor-forms" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+      <h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Creating Anchors · AN-03 … AN-08 · AN-11</h2>
+      <span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Type · prayer form · location · scheduled form · exceptions · one-off</span>
+    </div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="AN-03" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-03</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Add rule · type</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New</span></div>
+        <div data-screen-label="AN-03 Rule type" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px">Anchors</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:16px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:6px"><div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">What do you move around?</div><div style="font-size:15px;color:var(--ink3)">Something that repeats. For a single event, use Add on Today.</div></div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600">Prayer times</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Worked out daily for where you are</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600">School run</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Weekdays, drop-off and pick-up</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600">Bin night</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">One evening a week, or every other</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600">Plant watering</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">A few days after you last did it</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div><div style="font-size:18px;font-weight:600">Something else</div><div style="font-size:15px;color:var(--ink3);margin-top:2px">Set your own schedule</div></div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Each type is a preset. Prayer times opens AN-04; the other four open AN-05 pre-filled. Nothing is saved until the form is.</p>
+      </div>
+
+      <div id="AN-04" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-04</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Prayer times form</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · full scroll</span></div>
+        <div data-screen-label="AN-04 Prayer form" style="width:393px;height:1080px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>14:05</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="height:44px;padding:0 18px;border-radius:999px;display:flex;align-items:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float);font-size:16px;color:var(--ink2)">Cancel</div>
+            <span style="font-size:17px;font-weight:600">Prayer times</span>
+            <div style="width:86px"></div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:20px">
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;font-size:17px"><span style="color:var(--ink3)">Title</span><span>Salah</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Location</span><span style="display:flex;align-items:center;gap:8px">Leicester · this iPhone<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Method</span><span style="display:flex;flex-direction:column;align-items:flex-end"><span>Muslim World League</span><span style="font-size:15px;color:var(--ink3)">Suggested for the UK</span></span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Asr</span><div style="display:flex;padding:3px;border-radius:999px;background:var(--line)"><div style="height:38px;padding:0 14px;border-radius:999px;background:var(--glassOn);display:flex;align-items:center;font-size:15px;font-weight:600">Standard</div><div style="height:38px;padding:0 14px;display:flex;align-items:center;font-size:15px;color:var(--ink2)">Hanafi</div></div></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Prayers</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Fajr</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Dhuhr</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Asr</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Maghrib</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Isha</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Isha ends</span><span>Islamic midnight</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-top:1px solid var(--line);font-size:17px"><span style="display:flex;flex-direction:column"><span>Call Friday's Dhuhr Jumu'ah</span><span style="font-size:15px;color:var(--ink3)">Same time, only the name</span></span><div style="width:51px;height:31px;border-radius:999px;background:var(--accent);position:relative;flex-shrink:0"><div style="position:absolute;top:2px;right:2px;width:27px;height:27px;border-radius:999px;background:#FFFFFF"></div></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Time each takes</span><span>10 min</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Remind me</span><span>At the start</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="color:var(--ink2)">Advanced</span><span style="display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink3)">Adjustments, high latitude<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span></div>
+            </div>
+            <div style="font-size:15px;line-height:1.5;color:var(--ink3)">Starting now, today's Asr, Maghrib and Isha will appear. Fajr and Dhuhr have already closed, so they won't be added.</div>
+            <div style="height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0">Save</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Method and Asr are pre-selected from the region (editable). Friday label is on by default. The line above Save explains the first day — a rule never creates Anchors that closed before it existed. The system switch keeps its own white knob.</p>
+      </div>
+
+      <div id="AN-11" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-11</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Location · in context</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New</span></div>
+        <div data-screen-label="AN-11 Location" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-size:17px">Prayer times</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:18px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;flex-direction:column;gap:8px"><div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Where are you praying?</div><div style="font-size:19px;line-height:1.6;color:var(--ink2)">Prayer times depend on where you are. Jamaal checks your location only while it's open, and updates the times if you travel.</div></div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;gap:10px;font-size:17px;font-weight:600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Use my location</div>
+              <div style="height:52px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:var(--ink2)">Choose a city</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Asked only when the prayer form needs it, before the system's when-in-use prompt. Declining is fine: Choose a city is always there.</p>
+      </div>
+
+      <div id="AN-11-search" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-11</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">City search</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">State</span></div>
+        <div data-screen-label="AN-11 City search" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>14:06</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;align-items:center;gap:10px;padding:14px 20px 0;flex-shrink:0">
+            <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float);flex-shrink:0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg></div>
+            <div style="flex:1;height:44px;border-radius:999px;background:var(--glass);border:1px solid var(--glassEdge);display:flex;align-items:center;gap:10px;padding:0 16px;font-size:17px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>Leic<span style="display:inline-block;width:1.5px;height:19px;background:var(--terra);margin-left:-8px"></span></div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column">
+            <div style="display:flex;flex-direction:column;justify-content:center;min-height:60px"><div style="font-size:17px;font-weight:600">Leicester</div><div style="font-size:15px;color:var(--ink3)">England, United Kingdom</div></div>
+            <div style="display:flex;flex-direction:column;justify-content:center;min-height:60px;border-top:1px solid var(--line)"><div style="font-size:17px;font-weight:600">Leicester</div><div style="font-size:15px;color:var(--ink3)">Massachusetts, United States</div></div>
+            <div style="display:flex;flex-direction:column;justify-content:center;min-height:60px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div style="font-size:17px;font-weight:600">Leichlingen</div><div style="font-size:15px;color:var(--ink3)">North Rhine-Westphalia, Germany</div></div>
+            <div style="font-size:15px;line-height:1.5;color:var(--ink3);margin-top:14px">Searching needs a connection. A city is kept as the rule's place until you change it.</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The fallback when location is declined, or the user prefers a fixed place. Offline, the prayer rule can simply be finished later.</p>
+      </div>
+
+      <div id="AN-05" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-05</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Scheduled form · school run</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · full scroll</span></div>
+        <div data-screen-label="AN-05 Scheduled form" style="width:393px;height:1080px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:50</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="height:44px;padding:0 18px;border-radius:999px;display:flex;align-items:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float);font-size:16px;color:var(--ink2)">Cancel</div>
+            <span style="font-size:17px;font-weight:600">School run</span>
+            <div style="width:86px"></div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:20px">
+            <div style="font-size:19px;line-height:1.4;border-bottom:1px solid var(--line2);padding:4px 0 12px">School run</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Repeats</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">On these days</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Every N days</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Every N weeks</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">After I last did it</div>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:4px">
+                <div style="width:44px;height:44px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace">MON</div>
+                <div style="width:44px;height:44px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace">TUE</div>
+                <div style="width:44px;height:44px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace">WED</div>
+                <div style="width:44px;height:44px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace">THU</div>
+                <div style="width:44px;height:44px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace">FRI</div>
+                <div style="width:44px;height:44px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace;color:var(--ink2)">SAT</div>
+                <div style="width:44px;height:44px;border-radius:999px;border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font:500 12px/1 'JetBrains Mono',monospace;color:var(--ink2)">SUN</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px">Times</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span>Drop-off</span><span style="font-size:15px;color:var(--ink3)">08:15 · 30 min window</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span>Pick-up</span><span style="font-size:15px;color:var(--ink3)">15:00 · 30 min window</span></div>
+              <div style="display:flex;align-items:center;gap:10px;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px;color:var(--ink2)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>Add a time</div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;font-size:17px"><span style="color:var(--ink3)">Takes</span><span>20 min</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Placement</span><div style="display:flex;padding:3px;border-radius:999px;background:var(--line)"><div style="height:38px;padding:0 14px;border-radius:999px;background:var(--glassOn);display:flex;align-items:center;font-size:15px;font-weight:600">Fixed</div><div style="height:38px;padding:0 14px;display:flex;align-items:center;font-size:15px;color:var(--ink2)">Flexible</div></div></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Ends</span><span>Never</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Remind me</span><span>Off</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Exceptions</span><span style="display:flex;align-items:center;gap:8px">Half term<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span></div>
+            </div>
+            <div style="height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0">Save</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The shared form for school run, bin night, plants and custom. Named times each make an Anchor ("School run · Drop-off"). Fixed Anchors cut the day into gaps; flexible ones only use minutes. Reminders default to off.</p>
+      </div>
+
+      <div id="AN-05-plants" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-05</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">After I last did it · plants</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">State</span></div>
+        <div data-screen-label="AN-05 After last" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px 0;font:600 16px/1 'Hanken Grotesk',sans-serif;flex-shrink:0"><span>9:52</span><span style="width:26px;height:12px;border-radius:4px;border:1.5px solid var(--ink);box-sizing:border-box;padding:1.5px;display:flex"><span style="flex:1;border-radius:1.5px;background:var(--ink)"></span></span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;flex-shrink:0">
+            <div style="height:44px;padding:0 18px;border-radius:999px;display:flex;align-items:center;background:var(--glass);border:1px solid var(--glassEdge);box-shadow:var(--float);font-size:16px;color:var(--ink2)">Cancel</div>
+            <span style="font-size:17px;font-weight:600">Plant watering</span>
+            <div style="width:86px"></div>
+          </div>
+          <div style="padding:22px 26px 0;display:flex;flex-direction:column;gap:20px">
+            <div style="font-size:19px;line-height:1.4;border-bottom:1px solid var(--line2);padding:4px 0 12px">Water the plants</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">After I last did it</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span>Between</span><span style="display:flex;align-items:center;gap:10px"><span style="font-weight:600">3</span><span style="color:var(--ink3)">and</span><span style="font-weight:600">4</span><span style="color:var(--ink3)">days</span></span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">When did you last do this?</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Today</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Sat 10 May</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">It's due now</div>
+              </div>
+              <div style="font-size:15px;line-height:1.5;color:var(--ink3)">The first window opens Tue 13 and stays open until Wed 14. Each time you mark it, the next one is counted from that day.</div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Takes</span><span>10 min</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Placement</span><span>Flexible</span></div>
+            </div>
+            <div style="height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0">Save</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">A multi-day window: it shows on Today every day it's open ("Day 2 of 3"). The form asks for the last time it was done, so the first window lands right.</p>
+      </div>
+
+      <div id="AN-06" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">AN-06</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Exceptions</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New · spec Flows I</span></div>
+        <div data-screen-label="AN-06 Exceptions" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:70px 26px 0;display:flex;flex-direction:column;gap:14px">
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Exceptions</div>
+            <div style="font-size:15px;color:var(--ink3)">School run won't appear on these days.</div>
+            <div style="display:flex;flex-direction:column;margin-top:6px">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-top:1px solid var(--line);font-size:17px"><span style="display:flex;flex-direction:column"><span style="font-weight:600">Half term</span><span style="font-size:15px;color:var(--ink3)">Term break</span></span><span style="font-size:15px;color:var(--ink2)">26–30 May</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="display:flex;flex-direction:column"><span style="font-weight:600">Summer</span><span style="font-size:15px;color:var(--ink3)">Holiday</span></span><span style="font-size:15px;color:var(--ink2)">22 Jul – 3 Sep</span></div>
+            </div>
+          </div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:16px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.08">Add an exception</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Term break</div>
+              <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Holiday</div>
+              <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Illness</div>
+              <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Travel</div>
+              <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Other</div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">From</span><span>Today</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:56px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Until</span><div style="display:flex;padding:3px;border-radius:999px;background:var(--line)"><div style="height:38px;padding:0 14px;display:flex;align-items:center;font-size:15px;color:var(--ink2)">A date</div><div style="height:38px;padding:0 14px;border-radius:999px;background:var(--glassOn);display:flex;align-items:center;font-size:15px;font-weight:600">Not sure yet</div></div></div>
+            </div>
+            <div style="font-size:15px;line-height:1.5;color:var(--ink3)">Today's pending pick-up is removed. Anything already marked stays.</div>
+            <div style="height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0">Add</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">From the rule's detail or form. Open-ended is allowed ("Not sure yet"); overlapping ranges merge. Swipe a row to remove it. The consequence is stated before saving.</p>
+      </div>
+
+      <div id="AN-08" style="width:393px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">TD-04 · AN-08</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">One-off Anchor</span><span style="margin-left:auto;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome2)">New</span></div>
+        <div data-screen-label="AN-08 One-off Anchor" style="width:393px;height:852px;border-radius:48px;background:var(--app);overflow:hidden;position:relative;box-shadow:var(--shadow);color:var(--ink)">
+          <div style="position:absolute;inset:0;padding:120px 26px 0;opacity:0.35;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;line-height:1.08">Four things,<br>gently paced.</div>
+          <div style="position:absolute;inset:0;background:var(--scrim)"></div>
+          <div style="position:absolute;left:8px;right:8px;bottom:8px;top:58px;border-radius:40px;background:var(--glass);backdrop-filter:blur(34px) saturate(160%);-webkit-backdrop-filter:blur(34px) saturate(160%);border:1px solid var(--glassEdge);padding:10px 24px 24px;display:flex;flex-direction:column;gap:16px">
+            <div style="width:38px;height:5px;border-radius:99px;background:var(--line2);margin:0 auto;flex-shrink:0"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+              <div style="width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:var(--glass);border:1px solid var(--glassEdge)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" stroke-width="1.75" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"></path></svg></div>
+              <div style="display:flex;padding:3px;border-radius:999px;background:var(--line)"><div style="height:38px;padding:0 20px;display:flex;align-items:center;font-size:15px;color:var(--ink2)">Task</div><div style="height:38px;padding:0 20px;border-radius:999px;background:var(--glassOn);display:flex;align-items:center;font-size:15px;font-weight:600">Anchor</div></div>
+              <div style="width:44px"></div>
+            </div>
+            <div style="font-size:19px;line-height:1.4;border-bottom:1px solid var(--line2);padding:4px 0 12px">Dentist</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink3)">Day</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Today</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;background:var(--glassOn);border:1.5px solid var(--ink);box-sizing:border-box;font-size:15px;font-weight:600">Tomorrow</div>
+                <div style="display:flex;align-items:center;height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line2);font-size:15px;color:var(--ink2)">Date…</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">From</span><span>15:00</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Until</span><span>15:45</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Takes</span><span style="color:var(--ink2)">The whole window</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;min-height:48px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:17px"><span style="color:var(--ink3)">Remind me</span><span>30 min before</span></div>
+            </div>
+            <div style="font-size:15px;line-height:1.5;color:var(--ink3)">It's fixed, so tomorrow's free time is counted around it.</div>
+            <div style="margin-top:auto;height:52px;border-radius:999px;background:var(--terra);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;flex-shrink:0">Add to tomorrow</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The Anchor side of the Add sheet (and NP-03's "Add one-off Anchor"). Title, day, window, optional duration and a reminder — nothing recurs. The end must follow the start and be in the future.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <div style="max-width:1720px;width:100%;margin:0 auto;border-top:1px solid var(--line2);padding-top:24px;display:flex;flex-direction:column;gap:10px">
+    <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">§10 check · this batch</div>
+    <div style="font-size:15px;line-height:1.6;color:var(--chrome);max-width:110ch">No streak, best or counter — grids plus a plain read · density cells hold no numerals and fill toward today at the trailing edge · Attended only while open; skipped and delegated read as outcomes · missed in the missed tone, never red · every list ends with Archived + Restore · Archive is outline (history kept), there is no delete · one filled terracotta per surface · "Anchor" throughout.</div>
+    <div style="font-size:15px;line-height:1.6;color:var(--chrome2);max-width:110ch">HB-08 settled as <a href="#HB-08-A">A</a>. Groups are names only, no emoji (see <a href="#HB-01">HB-01</a>). Next — batch 4: Night Planning NP-01 … NP-07, Skip tonight and the morning flow.</div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: 'light' };
+  grid(p) {
+    const m = { '3': 'var(--d3)', '2': 'var(--d2)', '1': 'var(--d1)', 'm': 'var(--missed)', 'e': 'var(--line)' };
+    const a = p.replace(/\s/g, '').split('').map(ch => m[ch] || 'var(--line)');
+    const n = a.length <= 14 ? 14 : 42;
+    while (a.length < n) a.unshift('var(--line)');
+    return a.slice(a.length - n);
+  }
+  walk() {
+    const pat = '33m3m33m3mm33m3m3m33m3m3m33m';
+    const out = []; let k = 0;
+    for (let i = 0; i < 42; i++) {
+      const dow = (((-(41 - i)) % 7) + 7) % 7;
+      if (i === 41 || dow >= 5) { out.push('var(--line)'); continue; }
+      out.push(pat[k++ % pat.length] === 'm' ? 'var(--missed)' : 'var(--d3)');
+    }
+    return out;
+  }
+  renderVals() {
+    const dark = this.state.theme === 'dark';
+    return {
+      theme: this.state.theme,
+      themeLabel: dark ? 'Dark · switch to light' : 'Light · switch to dark',
+      toggleTheme: () => this.setState({ theme: dark ? 'light' : 'dark' }),
+      gMorning: this.grid('3323 3332 2333 21'),
+      gWater: this.grid('eeeee 3233 1233 33m3 2333 3213 2332 3331 3233 3m23 3322 1'),
+      gWalk: this.walk(),
+      gAvoid: this.grid('3e33 3m3e 3333 e33m 33e3 3333 3m33 e333 3e33 33e'),
+    };
+  }
+}
+</script>
+</body>
+</html>
