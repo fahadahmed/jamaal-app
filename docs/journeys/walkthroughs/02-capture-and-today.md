@@ -20,7 +20,7 @@
 
 - **Sees:** a title field; **effort** chips (15m · 30m · 1h · 2h+) with *30m* preselected (**G-12**) and an *Other…* option (**G-11**); **importance** (low · medium · high, *low* selected); **category** chips (optional); **schedule** — Today (selected) · Tomorrow · Later this week · Next week · Someday · a date; a **repeat** row (Never); an optional **note**; one filled button, **Add to today**.
 - **Does:** types "Call the clinic back", leaves the defaults, taps Add.
-- **Writes:** a `Task` — `title`, `effortMinutes`, `importance`, `dueDate`, optional `category`, `notes`, and for a repeat `repeatKind` / `repeatWeekdays` / `seriesID`; `createdAt`.
+- **Writes:** a `TaskItem` — `title`, `effortMinutes`, `importance`, `dueDate`, optional `category`, `notes`, and for a repeat `repeatKind` / `repeatWeekdays` / `seriesID`; `createdAt`.
 - **Reads:** today's load (module 7), to decide whether to show *"Day is full · offer tomorrow"*.
 - **States and rules:**
   - **Medium or high importance** → the date row becomes required (pre-filled with the day being planned, not clearable) and **Someday is hidden**.
@@ -44,13 +44,13 @@
 ### TK-06 Category picker
 
 - **Sees:** the three default categories (and any the user added) as chips, plus *None*. A category is a small coloured label.
-- **Writes:** `Task.category`.
+- **Writes:** `TaskItem.category`.
 - **Assumes:** categories are always available — ✓ (seeded); chip colours exist — **✗ G-08** (closed in Journey 11, G-84).
 
 ### TK-04 Note editor
 
 - **Sees:** a short markdown field (checklists, bold, italic, links, inline code); no headings, tables or images.
-- **Writes:** `Task.notes`.
+- **Writes:** `TaskItem.notes`.
 - **Assumes:** ticking a checklist item is just an edit of the note text — ✓ (last writer wins per record, which is fine for one person).
 
 ---
@@ -64,7 +64,7 @@
 - **Does:** ticks a check, taps a row, moves the capacity slider, filters by category, opens Add.
 - **Writes:** *moving the slider* upserts today's `DayPlan.capacity`; *ticking* writes the task (below).
 - **Assumes:**
-  - the engine's order is good enough with no manual drag — **working hypothesis, ✗ G-18** (not yet validated; adding `Task.sortOrder` later is additive);
+  - the engine's order is good enough with no manual drag — **working hypothesis, ✗ G-18** (not yet validated; adding `TaskItem.sortOrder` later is additive);
   - the meter's "used" number is defined — **✗ G-13**;
   - hidden items are findable — ✓ (*Also today* with a count, never silently dropped);
   - the category filter needs no storage — ✓ (local UI state).
@@ -72,7 +72,7 @@
 ### Completing a task (the check)
 
 - **Does:** taps the check.
-- **Writes:** `Task.isCompleted = true`, `completedAt`; the meter updates; quiet completion feedback. For a **repeating** task the engine creates the next instance (one live instance per series, dedup key `(seriesID, dueDate)`).
+- **Writes:** `TaskItem.isCompleted = true`, `completedAt`; the meter updates; quiet completion feedback. For a **repeating** task the engine creates the next instance (one live instance per series, dedup key `(seriesID, dueDate)`).
 - **Undo:** tapping the check again un-completes it (`isCompleted = false`, `completedAt = nil`).
 - **Assumes:** un-completing a repeating task is harmless — **✗ G-14** (the next instance already exists, so two live instances would appear).
 
@@ -89,7 +89,7 @@
 ### TK-03 Defer
 
 - **Does:** taps **Defer**. The **1st and 2nd** deferral is instant: the task moves to tomorrow (toast). From the **3rd**, a sheet opens: *"This one keeps slipping. Pick a day that actually works."* with **Later this week · Next week · Someday · Pick a date**, and reason chips **Too much on · Not ready · Not relevant**. A `medium`/`high` task is first eased to `low` (with a plain message), which makes Someday available.
-- **Writes:** `Task.dueDate` (or `nil` for Someday), `deferralCount += 1`, a `DeferralRecord` (`day`, `deferredTo`, `reason`); `Task.importance → low` when eased. A second deferral on the same logical day *refines* the existing record rather than adding one.
+- **Writes:** `TaskItem.dueDate` (or `nil` for Someday), `deferralCount += 1`, a `DeferralRecord` (`day`, `deferredTo`, `reason`); `TaskItem.importance → low` when eased. A second deferral on the same logical day *refines* the existing record rather than adding one.
 - **Assumes:**
   - a reason is always stored — **✗ G-15** (an instant deferral has no chip, yet `reason` has five values; which one?);
   - the quick dates resolve — **✗ G-16**;
@@ -98,7 +98,7 @@
 ### Drop and the undo toast (SY-03)
 
 - **Does:** taps **Drop**. The task leaves Today; a quiet toast offers **Undo** for 5 seconds.
-- **Writes:** `Task.droppedAt`. Undo clears it. For a repeating task, Drop skips only this occurrence and the next instance is created.
+- **Writes:** `TaskItem.droppedAt`. Undo clears it. For a repeating task, Drop skips only this occurrence and the next instance is created.
 - **Assumes:** nothing else needs the dropped task — ✓ (history is kept in the data) but see **G-19**.
 
 ### TD-03 Category filter
@@ -116,7 +116,7 @@ After adding *"Call the clinic back"* (30 min, low, due today) to Journey 1's da
 
 | Model | Change |
 |---|---|
-| `Task` | + 1 (and +1 next instance when a repeating task is completed) |
+| `TaskItem` | + 1 (and +1 next instance when a repeating task is completed) |
 | `DeferralRecord` | + 1 per deferral, with `day` and `reason` |
 | `DayPlan` | today's row: `capacity` updated when the slider moves |
 | `NudgeLog` | + 1 when a guidance card is shown (and `dismissedAt` when dismissed) |

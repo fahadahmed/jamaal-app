@@ -9,16 +9,16 @@ CloudKit's production schema is effectively **append-only**. Once deployed you c
 ## Conventions
 
 - **Every attribute has a default or is optional.** No bare `let` without one.
-- **Swift names.** The domain model is *Task*, but the Swift type is **`TaskItem`** so it never shadows `Swift.Task` inside the app or the engine (the CloudKit record type derives from the class name, so this is fixed before the first deploy). Every other model uses its documented name. Each raw-string field keeps its documented stored name and has a typed accessor (for example `importance` / `importanceLevel`) that reads an unknown value as `.unknown` and never writes it back.
+- **Naming.** The model is **`TaskItem`** throughout the docs and the code — *Task* remains the product word for the primitive ("Tasks, Habits, Anchors"). It is not called `Task` because that would shadow `Swift.Task` inside the app and the engine, and the CloudKit record type derives from the class name, so the name is fixed before the first deploy. Every other model uses its documented name. Each raw-string field keeps its documented stored name and has a typed accessor (for example `importance` / `importanceLevel`) that reads an unknown value as `.unknown` and never writes it back.
 - **No unique constraints** (`@Attribute(.unique)` is forbidden under CloudKit). Uniqueness is enforced by the engine — see [Dedup keys](#dedup-keys).
 - **Every relationship is optional and has an inverse.**
 - **Enums are raw `String`s**, wrapped by typed enums in Swift. New cases can be added later without a schema change; see [Raw values](#raw-values).
 - **Dates come in two kinds.**
-  - *Floating calendar dates* — stored as a `Date` at 12:00 UTC of the calendar date so every device agrees whatever its time zone (see [The day boundary](../architecture/rules-engine#the-day-boundary)): `Task.dueDate`, `DeferralRecord.day`, `DeferralRecord.deferredTo`, `WorkSession.day`, `HabitEntry.date`, `Anchor.occurrenceDate`, `DayPlan.date`, `NightPlanningSession.forDate`.
+  - *Floating calendar dates* — stored as a `Date` at 12:00 UTC of the calendar date so every device agrees whatever its time zone (see [The day boundary](../architecture/rules-engine#the-day-boundary)): `TaskItem.dueDate`, `DeferralRecord.day`, `DeferralRecord.deferredTo`, `WorkSession.day`, `HabitEntry.date`, `Anchor.occurrenceDate`, `DayPlan.date`, `NightPlanningSession.forDate`.
   - *Instants* — real moments: every `…At` field, `Anchor.windowStart` / `windowEnd`, `WorkSession.startedAt` / `endedAt`, `DeferralRecord.deferredOn`.
   - Times of day are **minutes since local midnight** (`startMinute`, `reminderMinute`, `dayStartMinute` …).
 - **JSON-in-a-string fields** (CloudKit-safe, no extra models): `AnchorRule.configData` (versioned; unknown newer versions must be left untouched, never deleted) and `Habit.pausesData`. Dates inside them are ISO `yyyy-MM-dd` strings and times `"HH:mm"`.
-- **Soft delete, not hard delete**, wherever history matters: `Task.droppedAt`, and `isArchived` on `TaskCategory`, `Habit`, `HabitGroup` and `AnchorRule`.
+- **Soft delete, not hard delete**, wherever history matters: `TaskItem.droppedAt`, and `isArchived` on `TaskCategory`, `Habit`, `HabitGroup` and `AnchorRule`.
 - **Derived values are never stored** unless noted (elapsed time, density, urgency, Eisenhower quadrant, window state, load state, streak-like numbers — there are none).
 - **Local-only state** (not in the schema): appearance preferences, the per-device "Send reminders on this device" switch, whether a habit group is expanded, the engine's "last processed day". (The planning and morning times are **synced** in `UserSettings`.)
 
@@ -26,7 +26,7 @@ CloudKit's production schema is effectively **append-only**. Once deployed you c
 
 Format: `name: Type = default`. Relationship attributes are listed here where the docs show them; the full relationship list follows.
 
-**`Task`**
+**`TaskItem`**
 
 ```
 id: UUID = UUID()
@@ -222,9 +222,9 @@ createdAt: Date = .now
 
 | From | To | Inverse | Delete rule |
 | ---- | -- | ------- | ----------- |
-| `Task.category` | `TaskCategory?` | `TaskCategory.tasks` | nullify (categories are archived, not deleted) |
-| `Task.deferrals` | `[DeferralRecord]?` | `DeferralRecord.task` | cascade |
-| `Task.sessions` | `[WorkSession]?` | `WorkSession.task` | cascade |
+| `TaskItem.category` | `TaskCategory?` | `TaskCategory.tasks` | nullify (categories are archived, not deleted) |
+| `TaskItem.deferrals` | `[DeferralRecord]?` | `DeferralRecord.task` | cascade |
+| `TaskItem.sessions` | `[WorkSession]?` | `WorkSession.task` | cascade |
 | `Habit.windows` | `[HabitTimeWindow]?` | `HabitTimeWindow.habit` | cascade |
 | `Habit.group` | `HabitGroup?` | `HabitGroup.habits` | nullify (archiving a group never deletes its habits) |
 | `HabitTimeWindow.entries` | `[HabitEntry]?` | `HabitEntry.window` | cascade |
@@ -241,7 +241,7 @@ CloudKit can't enforce uniqueness, and two devices can each create the same thin
 | ----- | --- | --------------------- |
 | `UserSettings` | single row | keep the earliest `createdAt`; delete the rest |
 | `TaskCategory` | `presetKey` (seeded defaults), else the **normalised name** (trimmed, case-folded) | keep the earliest; move tasks onto it. A category has no settings of its own, so merging identical labels loses nothing |
-| `Task` | `(seriesID, dueDate)` for a repeating task's next instance | keep the earliest `createdAt` |
+| `TaskItem` | `(seriesID, dueDate)` for a repeating task's next instance | keep the earliest `createdAt` |
 | `DeferralRecord` | `(task, day)` | one per task per day; keep the earliest and refine its reason / `deferredTo` to the latest choice |
 | `WorkSession` | at most one live (`endedAt == nil`) | the earliest `startedAt` stays live; the other closes as `abandoned` with its time logged |
 | `HabitEntry` | `(window, date)` | keep one; `amount` = the larger (see [limits](#known-cloudkit-limits)) |
@@ -257,8 +257,8 @@ CloudKit can't enforce uniqueness, and two devices can each create the same thin
 
 | Field | Values |
 | ----- | ------ |
-| `Task.importance` | `low` (default) / `medium` / `high` |
-| `Task.repeatKind` | `none` / `daily` / `weekly` / `monthly` |
+| `TaskItem.importance` | `low` (default) / `medium` / `high` |
+| `TaskItem.repeatKind` | `none` / `daily` / `weekly` / `monthly` |
 | `DeferralRecord.reason` | `tooMuch` / `notReady` / `noLonger` / `reschedule` / `unspecified` |
 | `WorkSession.outcome` | `running` / `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed` / `manual` |
 | `TaskCategory.presetKey` | `personal` / `family` / `work` (seeded); `colorKey`: `accent` / `blue` / `ochre` / `plum` / `slate` |
@@ -284,13 +284,13 @@ CloudKit can't enforce uniqueness, and two devices can each create the same thin
 
 ## Additive later (deliberately not in the schema yet)
 
-Safe to add without breaking anything, so they are *not* blockers: `Task.sortOrder` (manual ordering, open), `AnchorRule.sortOrder`, a per-tap event log for habit counters, `ThreadsKit`-dependent colour keys for categories, and the detected-habit offer's supporting data (v1.1).
+Safe to add without breaking anything, so they are *not* blockers: `TaskItem.sortOrder` (manual ordering, open), `AnchorRule.sortOrder`, a per-tap event log for habit counters, `ThreadsKit`-dependent colour keys for categories, and the detected-habit offer's supporting data (v1.1).
 
 ## Freeze checklist
 
 - [x] 14 models listed, every attribute has a default or is optional
 - [x] No unique constraints; every relationship optional with an inverse and a delete rule
-- [x] Misleading names corrected: `Task.priority` → `importance`, `targetCount` → `target`, `completedCount` → `amount`
+- [x] Misleading names corrected: `TaskItem.priority` → `importance`, `targetCount` → `target`, `completedCount` → `amount`
 - [x] Day fields added where the dedup key needs a stable day (`DeferralRecord.day`, `WorkSession.day`)
 - [x] `AnchorRule.isArchived` so a rule is never hard-deleted; unused `HabitEntry.skippedReason` removed; `HabitGroup.isExpanded` made local
 - [x] Every model that two devices can create twice has a dedup key

@@ -56,7 +56,7 @@ Rules: one category per task; at most **eight active** categories; a label is al
 | `day`        | `Date`    | `.now`         | The **logical date** this deferral counts for — a floating calendar date. With `task` it is the idempotency key: a task gains at most one deferral per `day`, and a later same-day choice refines this record (see [The day boundary](../architecture/rules-engine#the-day-boundary)). |
 | `deferredTo` | `Date?`   | `nil`          | `nil` = Someday. |
 | `reason`     | `String`  | `"unspecified"`| One of `tooMuch` / `notReady` / `noLonger` / `reschedule` / `unspecified`. Reason chips in the UI: Too much on / Not ready / No longer relevant. `unspecified` is used for automatic deferrals. A **user** deferral with no chip (the instant 1st and 2nd) is `reschedule`; one made with a chip stores that chip's value. |
-| `task`       | `Task?`   | `nil`          | Inverse of `Task.deferrals`. |
+| `task`       | `TaskItem?`   | `nil`          | Inverse of `TaskItem.deferrals`. |
 
 ## Importance rules
 
@@ -82,10 +82,10 @@ A task can be worked in a **focus session**: the user taps **Begin**, a running 
 | `endedAt`         | `Date?`   | `nil`       | `nil` while the session is live. |
 | `pausedSeconds`   | `Int`     | `0`         | Total time spent in completed pauses. |
 | `pausedAt`        | `Date?`   | `nil`       | Non-`nil` while an explicit pause is in progress. Backgrounding the app does **not** pause. |
-| `estimateMinutes` | `Int?`    | `nil`       | Snapshot of `Task.effortMinutes` at Begin, so later edits don't rewrite what was estimated. |
+| `estimateMinutes` | `Int?`    | `nil`       | Snapshot of `TaskItem.effortMinutes` at Begin, so later edits don't rewrite what was estimated. |
 | `outcome`         | `String`  | `"running"` | One of `running` / `finished` / `deferred` / `dropped` / `abandoned` / `autoClosed` / `manual`. `manual` is a habit's minutes **added by hand**: a finished session with no timing of its own (see [Habit → Timed habits](habit#timed-habits)). |
 | `actualSeconds`   | `Int`     | `0`         | Written when the session closes: elapsed minus pauses. |
-| `task`            | `Task?`   | `nil`       | Inverse of `Task.sessions`. |
+| `task`            | `TaskItem?`   | `nil`       | Inverse of `TaskItem.sessions`. |
 | `habitWindow`     | `HabitTimeWindow?` | `nil` | Set instead of `task` for a **timed habit's** session (see [habit.md](habit#timed-habits)). Exactly one of `task` / `habitWindow` is set. |
 
 Derived, not stored: `elapsed = (endedAt ?? now) − startedAt − pausedSeconds − (pausedAt.map { now − $0 } ?? 0)`; a session is *paused* when `pausedAt != nil`, and *overrun* when `elapsed` passes `estimateMinutes`. A session belongs to either a task or a timed habit's window. Everything below is written for tasks; for a habit session there is no task to complete, defer or drop — finishing or abandoning simply adds the minutes to that day's habit entry, and the settle sheet offers only **Log it**.

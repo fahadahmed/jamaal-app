@@ -58,7 +58,7 @@
 
 - **Sees:** *"Something you need to do today."* A title field and the three default categories as chips (pre-selecting none), effort chips (optional). Continue.
 - **Does:** types a title; optionally picks a category and an effort.
-- **Writes:** a `Task` with `importance = low`, **`dueDate = today`**, optional `category` and `effortMinutes`.
+- **Writes:** a `TaskItem` with `importance = low`, **`dueDate = today`**, optional `category` and `effortMinutes`.
 - **Assumes:**
   - the categories exist already — ✓ (seeded at first launch; duplicates on a second device merge by `presetKey`);
   - the task will appear on Today — **✗ G-03** (as worded in the current doc, "this week" isn't due today, and a dateless task is backlog);
@@ -119,7 +119,7 @@
 | `UserSettings` | 1 (normal day, day end, `onboardingCompletedAt`, `firstLaunchAt`) |
 | `TaskCategory` | 3 (seeded) |
 | `DayPlan` | 1 — today, capacity only |
-| `Task` | 1 — low importance, due today |
+| `TaskItem` | 1 — low importance, due today |
 | `Habit` / `HabitTimeWindow` | 1 / 1 |
 | `AnchorRule` / `Anchor` | 0–1 / the remaining windows today and tomorrow's |
 | Everything else (`DeferralRecord`, `WorkSession`, `HabitEntry`, `NightPlanningSession`, `NudgeLog`) | 0 |

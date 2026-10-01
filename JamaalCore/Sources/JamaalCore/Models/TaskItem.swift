@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-/// A thing you do. The domain name is *Task*; the Swift type is `TaskItem` so it never shadows `Swift.Task`.
+/// A thing you do (the product calls it a Task). Named `TaskItem` so it never shadows `Swift.Task`.
 /// See docs/schema/task.md.
 @Model
 public final class TaskItem {
