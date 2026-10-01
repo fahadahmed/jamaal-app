@@ -123,6 +123,16 @@ Morning nudge on/off, during-day guidance on/off, wellbeing nudges on/off, appea
 
 Habit entries, Anchor attendance and avoid-habit days need no rollover writes: they are attributed by logical date when logged or derived when read.
 
+**As built** (`Rollover` in JamaalCore; decisions the steps above leave open):
+
+- **First run:** with no processed day on record the catch-up starts from yesterday (nothing to process), so a second device never replays history.
+- **The day as lived** is read before the auto-deferral re-dates anything, and afterwards from deferral records (a task counts for *D* if it was completed on *D*, or live on *D* — due on or before it, or deferred away from it — and not completed or dropped before the day ended), so two devices racing the same day write the same numbers.
+- **`completedEffortMinutes`** is the effort of tasks completed that day (actual focus time where the task has sessions, else its estimate); a session on a task that wasn't finished that day is not in it.
+- **Auto-deferral** sets `deferredOn` to the boundary instant, moves the task to the next day, and applies the same easing as a manual deferral (the third eases medium and high to low).
+- **Activity** earning a day a record: a task completed, a timer session, an Anchor decided that day, a habit logged (`amount > 0`), or the evening review of the day (a planning session *for the next day*, closed or skipped). A new `DayPlan` takes the weekday's default level.
+- **Planning sessions** end as skipped when the day they plan for has ended (`forDate ≤ D`); one for the next day stays open, because planning at 00:30 still targets the new day.
+- **Known limit:** `completionRate` is `0` both when nothing was finished and when nothing had to be, so the wellbeing slice must either read the day another way or add a field to tell them apart (the score leaves out days with nothing to finish).
+
 **Idempotent keys make two devices converge.** Each step is keyed so repeating or racing it changes nothing: auto-deferral by `(task, logicalDate)`, `DayPlan` by date, session closing by the session itself.
 
 **At most one deferral per task per logical day.** Whichever path gets there first — the automatic one at rollover, or the user's Keep / Later / Defer — writes the deferral; a later user choice that same day **refines** the existing record (its reason and `deferredTo`) instead of adding a second. So running Night Planning at 00:30 after a midnight rollover never double-counts.

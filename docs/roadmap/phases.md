@@ -21,6 +21,7 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 - **ThreadsKit 1.2.0** with the five category label tokens (hues confirmed against Design first), then bump the app's dependency.
 - ~~Implement the 14 models in `JamaalCore` with a versioned schema, tests first.~~ **Done:** the 14 `@Model` classes, typed raw values with the unknown-value rule, `VersionedSchema` V1 with a migration plan, and a container factory, with Swift Testing coverage (defaults, relationships, delete rules, CloudKit constraints). Not yet verified against a real CloudKit container (needs the paid programme).
 - ~~First-launch seeding and the CloudKit dedup rules~~ **Done** (`Seeding`, `Dedup` in `JamaalCore/RulesEngine`, idempotent, with mutation-checked tests).
+- ~~Capacity and load calculations (budgets, load state, weekday defaults) and the day rollover step~~ **Done** (`CapacityLoad`, `Rollover`); free time (`freeMinutes`, `committedMinutes`) is the next slice of module 7.
 - Implement the deterministic rules-engine modules in order of dependency, each with Swift Testing coverage: task scheduling, habit density, Anchor generation, capacity and load, focus sessions, then Night Planning orchestration, wellbeing and notification logic.
 - **Checkpoint:** is the pace holding at 10–20 hours a week, and are the models and the first engine modules done or clearly on track? If not, the launch estimate moves toward March 2027 or scope moves to v1.1.
 
