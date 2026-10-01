@@ -9,6 +9,7 @@ CloudKit's production schema is effectively **append-only**. Once deployed you c
 ## Conventions
 
 - **Every attribute has a default or is optional.** No bare `let` without one.
+- **Swift names.** The domain model is *Task*, but the Swift type is **`TaskItem`** so it never shadows `Swift.Task` inside the app or the engine (the CloudKit record type derives from the class name, so this is fixed before the first deploy). Every other model uses its documented name. Each raw-string field keeps its documented stored name and has a typed accessor (for example `importance` / `importanceLevel`) that reads an unknown value as `.unknown` and never writes it back.
 - **No unique constraints** (`@Attribute(.unique)` is forbidden under CloudKit). Uniqueness is enforced by the engine — see [Dedup keys](#dedup-keys).
 - **Every relationship is optional and has an inverse.**
 - **Enums are raw `String`s**, wrapped by typed enums in Swift. New cases can be added later without a schema change; see [Raw values](#raw-values).

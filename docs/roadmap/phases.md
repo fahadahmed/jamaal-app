@@ -19,7 +19,7 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 - ~~Add a build-and-test workflow (`ci.yml`).~~ **Done** (`JamaalCore` tests and the app's unit tests on the `xcode-27` runner).
 - ~~Day boundary first~~ **Done:** `CalendarDate` (floating calendar dates) and `DayBoundary` (logical date, catch-up days, Night Planning's target day) are in `JamaalCore`, tests first.
 - **ThreadsKit 1.2.0** with the five category label tokens (hues confirmed against Design first), then bump the app's dependency.
-- Implement the 14 models in `JamaalCore` with a versioned schema, tests first.
+- ~~Implement the 14 models in `JamaalCore` with a versioned schema, tests first.~~ **Done:** the 14 `@Model` classes, typed raw values with the unknown-value rule, `VersionedSchema` V1 with a migration plan, and a container factory, with Swift Testing coverage (defaults, relationships, delete rules, CloudKit constraints). Not yet verified against a real CloudKit container (needs the paid programme).
 - Implement the deterministic rules-engine modules in order of dependency, each with Swift Testing coverage: task scheduling, habit density, Anchor generation, capacity and load, focus sessions, then Night Planning orchestration, wellbeing and notification logic.
 - **Checkpoint:** is the pace holding at 10–20 hours a week, and are the models and the first engine modules done or clearly on track? If not, the launch estimate moves toward March 2027 or scope moves to v1.1.
 
