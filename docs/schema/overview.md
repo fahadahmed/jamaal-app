@@ -243,10 +243,10 @@ CloudKit can't enforce uniqueness, and two devices can each create the same thin
 | `TaskCategory` | `presetKey` (seeded defaults), else the **normalised name** (trimmed, case-folded) | keep the earliest; move tasks onto it. A category has no settings of its own, so merging identical labels loses nothing |
 | `TaskItem` | `(seriesID, dueDate)` for a repeating task's next instance | keep the earliest `createdAt` |
 | `DeferralRecord` | `(task, day)` | one per task per day; keep the earliest and refine its reason / `deferredTo` to the latest choice |
-| `WorkSession` | at most one live (`endedAt == nil`) | the earliest `startedAt` stays live; the other closes as `abandoned` with its time logged |
+| `WorkSession` | at most one live (`endedAt == nil`) | the earliest `startedAt` stays live; the other closes as `abandoned` at the moment the clash is found, its time logged (elapsed minus pauses). The device that finds the clash shows the one quiet notice |
 | `HabitEntry` | `(window, date)` | keep one; `amount` = the larger (see [limits](#known-cloudkit-limits)) |
-| `Anchor` | `(rule, occurrenceDate, slotKey)` for generated instances | keep the earliest; never resurrect a `skipped` one. One-offs have no key |
-| `DayPlan` | `date` | keep the one with `planningCompletedAt`, else the most recent |
+| `Anchor` | `(rule, occurrenceDate, slotKey)` for generated instances | keep the earliest; never resurrect a `skipped` one — in practice a **decided** instance (anything but `pending`) is kept in preference to a pending one, since deleting it would discard something the user did. One-offs have no key |
+| `DayPlan` | `date` | keep the one with `planningCompletedAt` (the latest if several), else the one with the most `completedEffortMinutes`, then the lowest id — `DayPlan` has no timestamp to say which is "most recent" (an additive `updatedAt` could replace this later) |
 | `NightPlanningSession` | `forDate` | prefer `isComplete`, then the furthest `currentStep`, then the latest `createdAt` |
 | `NudgeLog` | none | "max one per day" checks read every row, so duplicates are harmless |
 | `Habit`, `HabitTimeWindow`, `HabitGroup`, `AnchorRule` | none | user-created; two real duplicates are the user's to merge |
