@@ -56,10 +56,11 @@ One design language, same four destinations, layout adapted to width:
 
 | | Compact width (iPhone) | Regular width (iPad, Mac) |
 | --- | --- | --- |
-| Navigation | Floating pill tab bar | Sidebar (adaptable tab/sidebar navigation) |
-| Task detail | Bottom sheet | Trailing inspector pane beside Today |
-| Add task | Bottom sheet | Popover / sheet |
-| Night Planning | Full-screen modal | Centred modal, fixed comfortable width |
+| Navigation | Floating pill tab bar | Sidebar (`TabView` with `.sidebarAdaptable`); **Anchors** is its own sidebar item under Habits (the segment hides); on Mac **Settings** moves to the app menu (⌘,) |
+| Layout | One column | Sidebar, then a list (440 pt), then a detail panel |
+| Task detail | Bottom sheet | Detail panel beside the list |
+| Add task | Bottom sheet | Panel (no modals on wide) |
+| Night Planning | Full-screen modal | One canvas with a step rail |
 | Habits, Wellbeing, Settings | Full-screen pushes | Content pane with detail alongside where useful |
 
 Mac additionally gets menu-bar commands and keyboard shortcuts (new task, open Night Planning). Design the compact layout first, then the regular-width variants of Today, task detail and Night Planning; the rest stretch.

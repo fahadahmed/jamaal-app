@@ -40,7 +40,7 @@ An editable list, seeded on first launch with three defaults. Refines the earlie
 | `id`         | `UUID`    | `UUID()`   | |
 | `name`       | `String`  | `""`       | User-renamable. Trimmed, 1–24 characters, unique ignoring case among all categories (archived included). |
 | `presetKey`  | `String?` | `nil`      | `"personal"` / `"family"` / `"work"` for the seeded defaults, `nil` for user-created. Mirrors `Habit.presetKey`. |
-| `colorKey`   | `String`  | `"accent"` | One of `accent` (teal) / `blue` / `ochre` / `plum` / `slate` — a fixed set of ThreadsKit label tokens, never a free colour picker; `terra` is excluded because it carries warning and overload. Unknown value → `slate`. Seeds: Personal `accent`, Family `ochre`, Work `blue`. |
+| `colorKey`   | `String`  | `"accent"` | One of `accent` (teal) / `blue` / `ochre` / `plum` / `slate` — a fixed set of ThreadsKit label tokens, never a free colour picker; `terra` is excluded because it carries warning and overload. Unknown value → `slate`. Seeds: Personal `accent`, Family `ochre`, Work `blue`. Final hexes (light / dark) are in the design handoff §2: `accent` #1F6A58 / #8FCBB8, `blue` #2F5E9E / #9DB9E8, `ochre` #836312 / #D8BA6A, `plum` #7B4474 / #D5A6CC, `slate` #52636E / #AEBCC6. |
 | `sortOrder`  | `Int`     | `0`        | |
 | `isArchived` | `Bool`    | `false`    | Soft-delete; tasks keep and still show their label. Defaults can be renamed or archived but not hard-deleted. |
 | `createdAt`  | `Date`    | `.now`     | |

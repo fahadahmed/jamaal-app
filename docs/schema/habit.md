@@ -69,14 +69,13 @@ Groups are **purely visual organisers** — no group-level score or history; eac
 | ------------ | -------- | -------- | ----- |
 | `id`         | `UUID`   | `UUID()` | |
 | `title`      | `String` | `""`     | |
-| `emoji`      | `String` | `""`     | Single emoji. |
 | `sortOrder`  | `Int`    | `0`      | |
 | `isArchived` | `Bool`   | `false`  | Archiving a group never deletes its habits (`deleteRule: .nullify`). |
 | `createdAt`  | `Date`   | `.now`   | |
 
 Relationship: `habits: [Habit]?` (optional).
 
-Collapsed card: completion ring (% complete today), emoji, name, "4/5 today" badge, 14-day aggregate heatmap. Expanded card: habit rows with check button and completion time. Whether a group is expanded is **local UI state** (per device, not synced) and defaults to collapsed. The Today strip shows a group pill with proportional ring and count.
+Collapsed card: completion ring (% complete today), name (no emoji anywhere, per Design), "4/5 today" badge, 14-day aggregate heatmap. Expanded card: habit rows with check button and completion time. Whether a group is expanded is **local UI state** (per device, not synced) and defaults to collapsed. The Today strip shows a group pill with proportional ring and count.
 
 ## Times of day
 

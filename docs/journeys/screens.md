@@ -79,135 +79,135 @@ Each flow lists its trigger, the screens it passes through, its branches and its
 
 ## 4. Screen register
 
-Columns: **ID · screen · entry · content and states · design · phase**. "C/R" = compact and regular layouts both required.
+Columns: **ID · screen · entry · content and states · design · phase**. *Design* reads **Drawn v4** where `mockups/screens/` has frames (named by these IDs; index in [mockups/screens/README](../../mockups/screens/README)); a few screens were not redrawn in v4 and keep their earlier status — see [Design v4 reconciliation](../design/v4-reconciliation). "C/R" = compact and regular layouts both required.
 
 ### Today (`TD`)
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| TD-01 | **Today** (C/R; Duo inner = list + panel) | Tab 1, launch | Capacity slider and meter; companion card slot; **Anchors** (plain rows, grouped rows "Salah 3/5", window bars, three actions); **Habits** (binary, counted stepper, timed "12 of 20 min", avoid, paused hidden); **Tasks** (category label, effort; importance not shown); **Also today** (collapsed, count); **Plan tomorrow** (toolbar action, and a quiet row after the planning time); Add; chip host. States: default · guidance ("Start here" / "Good now") · first launch · all done · overloaded · past the day's end | **Drawn** v3·01, 02, 03, 04; **Spec** X-01 | v1 |
-| TD-02 | Wellbeing strip | On TD-01 | Sparkline; "gathering data" until seven active days | **Drawn** (in v3·01) | v1 |
-| TD-03 | Category filter | TD-01 header | Narrows **Tasks only** to one category (Anchors and habits always shown; meter, load and *Also today* whole-day); *Start here* from visible tasks; local, clears at rollover and relaunch; empty result *"Nothing in Family today."* + *Show all*; never creates sections | **None** | v1 |
-| TD-04 | Add sheet entry: **Task \| Anchor** switch | TD-01 Add | The add sheet opens on Task; the switch at the top reaches the one-off Anchor form (`AN-08`). No separate chooser screen | **None** | v1 |
-| TD-05 | Banners | TD-01 top | Notifications off · trial status · read-only | **Drawn** v3·24 (notifications off); others **None** | v1 |
-| TD-06 | Carried-over row | TD-01 | One row to pick a session's task back up after auto-close | **Spec** X-02 | v1 |
-| TD-07 | Morning card "No plan for today" | TD-01 | Shown once; opens the shortened flow for today (Build → Load → Close) | **None** | v1 |
+| TD-01 | **Today** (C/R; Duo inner = list + panel) | Tab 1, launch | Capacity slider and meter; companion card slot; **Anchors** (plain rows, grouped rows "Salah 3/5", window bars, three actions); **Habits** (binary, counted stepper, timed "12 of 20 min", avoid, paused hidden); **Tasks** (category label, effort; importance not shown); **Also today** (collapsed, count); **Plan tomorrow** (toolbar action, and a quiet row after the planning time); Add; chip host. States: default · guidance ("Start here" / "Good now") · first launch · all done · overloaded · past the day's end | **Drawn v4** · 5 frames | v1 |
+| TD-02 | Wellbeing strip | On TD-01 | Sparkline; "gathering data" until seven active days | **Drawn** (in v3·01) · not redrawn in v4 | v1 |
+| TD-03 | Category filter | TD-01 header | Narrows **Tasks only** to one category (Anchors and habits always shown; meter, load and *Also today* whole-day); *Start here* from visible tasks; local, clears at rollover and relaunch; empty result *"Nothing in Family today."* + *Show all*; never creates sections | **Drawn v4** · 2 frames | v1 |
+| TD-04 | Add sheet entry: **Task \| Anchor** switch | TD-01 Add | The add sheet opens on Task; the switch at the top reaches the one-off Anchor form (`AN-08`). No separate chooser screen | **None** · not redrawn in v4 | v1 |
+| TD-05 | Banners | TD-01 top | Notifications off · trial status · read-only | **Drawn v4** · 3 frames | v1 |
+| TD-06 | Carried-over row | TD-01 | One row to pick a session's task back up after auto-close | **Drawn v4** · 1 frame | v1 |
+| TD-07 | Morning card "No plan for today" | TD-01 | Shown once; opens the shortened flow for today (Build → Load → Close) | **Drawn v4** · 1 frame | v1 |
 
 ### Tasks (`TK`)
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| TK-01 | **Add task** (sheet / panel) | TD-04 | Title; effort (15m/30m/1h/2h+ shortcuts, Other… stepper, 30 preselected); importance (low default); category; schedule; repeat; note. States: medium/high (date required, Someday hidden) · repeat · "Day is full · offer tomorrow" | **Drawn** v3·10; **Spec** A-04 | v1 |
-| TK-02 | **Task detail** (sheet / panel) | Row tap | Title, note checklist, category, effort, importance, due, deferral history; Begin · Mark done · Defer · Drop · Stop repeating. States: normal · deferred · repeating · running · complete | **Drawn** v3·11 | v1 |
-| TK-03 | **Defer / Later** picker | Defer from TK-02 or NP-02 | Later this week · Next week · Someday (low only) · a date; reason chips from the 3rd; the easing message | **Drawn** v3·12 | v1 |
-| TK-04 | Note editor | TK-02 | Markdown subset (checklists, bold, italic, links, code); no headings, tables, images | **Spec** (Flows H) | v1 |
-| TK-05 | Repeat picker | TK-01 / TK-02 | Daily · weekly days · monthly | **None** | v1 |
-| TK-06 | Category picker | TK-01 / TK-02 | Pick or none; archived shown only as the current selection; a new task inherits an active filter's category | **None** | v1 |
+| TK-01 | **Add task** (sheet / panel) | TD-04 | Title; effort (15m/30m/1h/2h+ shortcuts, Other… stepper, 30 preselected); importance (low default); category; schedule; repeat; note. States: medium/high (date required, Someday hidden) · repeat · "Day is full · offer tomorrow" | **Drawn v4** · 3 frames | v1 |
+| TK-02 | **Task detail** (sheet / panel) | Row tap | Title, note checklist, category, effort, importance, due, deferral history; Begin · Mark done · Defer · Drop · Stop repeating. States: normal · deferred · repeating · running · complete | **Drawn v4** · 2 frames | v1 |
+| TK-03 | **Defer / Later** picker | Defer from TK-02 or NP-02 | Later this week · Next week · Someday (low only) · a date; reason chips from the 3rd; the easing message | **Drawn v4** · 1 frame | v1 |
+| TK-04 | Note editor | TK-02 | Markdown subset (checklists, bold, italic, links, code); no headings, tables, images | **Drawn v4** · 1 frame | v1 |
+| TK-05 | Repeat picker | TK-01 / TK-02 | Daily · weekly days · monthly | **Drawn v4** · 1 frame | v1 |
+| TK-06 | Category picker | TK-01 / TK-02 | Pick or none; archived shown only as the current selection; a new task inherits an active filter's category | **Drawn v4** · 1 frame | v1 |
 
 ### Focus sessions (`FS`)
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| FS-01 | **Session chip** (global chrome, C/R) | Begin | Title + count-up; filled only while live; "Maghrib in 12 min" near a fixed Anchor | **Spec** T-01 | v1 |
-| FS-02 | **Focus screen** | Chip | Timer numeral (monospaced digits), note checklist, Pause, Finish | **Spec** T-02 | v1 |
-| FS-03 | Overrun | FS-02 | Same as running; "75 of 60", no red, no alarm | **Spec** T-03 | v1 |
-| FS-04 | Paused | FS-02 | Explicit pause only | **Spec** T-04 | v1 |
-| FS-05 | **Finish sheet** | Finish | Actual vs estimate; optional note line; **Done** or **Stop for now** | **Spec** T-05 | v1 |
-| FS-06 | Done + undo toast | FS-05 | 5-second undo | **Spec** T-06 | v1 |
-| FS-07 | **Switch-task settle sheet** | Begin while running | Done · Stop for now · Defer to tomorrow · Drop the running task (habit: Log it · Stop for now) | **Spec** T-08 | v1 |
-| FS-08 | Lock Screen activity / Dynamic Island | System | Live Activity | **Spec** T-07 | **v1.1** |
+| FS-01 | **Session chip** (global chrome, C/R) | Begin | Title + count-up; filled only while live; "Maghrib in 12 min" near a fixed Anchor | **Drawn v4** · 3 frames | v1 |
+| FS-02 | **Focus screen** | Chip | Timer numeral (monospaced digits), note checklist, Pause, Finish | **Drawn v4** · 2 frames | v1 |
+| FS-03 | Overrun | FS-02 | Same as running; "75 of 60", no red, no alarm | **Drawn v4** · 1 frame | v1 |
+| FS-04 | Paused | FS-02 | Explicit pause only | **Drawn v4** · 1 frame | v1 |
+| FS-05 | **Finish sheet** | Finish | Actual vs estimate; optional note line; **Done** or **Stop for now** | **Drawn v4** · 1 frame | v1 |
+| FS-06 | Done + undo toast | FS-05 | 5-second undo | **Drawn v4** · 1 frame | v1 |
+| FS-07 | **Switch-task settle sheet** | Begin while running | Done · Stop for now · Defer to tomorrow · Drop the running task (habit: Log it · Stop for now) | **Drawn v4** · 2 frames | v1 |
+| FS-08 | Lock Screen activity / Dynamic Island | System | Live Activity | **Drawn v4** · 8 frames | **v1.1** |
 
 ### Habits (`HB`)
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| HB-01 | **Habits overview** (C/R) | Tab 2, Habits segment | Groups (collapsed/expanded), habits, paused, empty; a collapsed **Archived** section with Restore | **Drawn** v3·13, 19 | v1 |
-| HB-02 | **Habit detail** | HB-01 | Density grid (one per time of day) + plain-language read; **no streak numbers**; the last 14 days tappable to correct; per kind: binary · counted · timed · avoid; weekly-target (weeks, never *missed*); paused; healthy / slipping | **Drawn** v3·14, 15 (streaks to remove) | v1 |
-| HB-03 | **Add / edit habit** | HB-01 | **Type picker** first (binary / counted / timed / avoid; the kind is fixed after creation), then a kind form: counted target, timed minutes, avoid allowance; schedule; **Times of day** (up to four, each with optional start, end and reminder); group | **Drawn** v3·16 (counted); **Spec** H-04, H-05 | v1 |
-| HB-04 | Custom recurrence | HB-03 | Day picker, times a week | **Drawn** v3·17 | v1 |
-| HB-05 | Group create / assign | HB-03 / HB-01 | Visual bundle: name, emoji, members, collapsed preview | **Drawn** v3·18 | v1 |
-| HB-06 | **Pause with reason** | HB-02 | Travel · illness · cycle · other; open-ended allowed | **Spec** H-07 | v1 |
-| HB-07 | Edit / archive | HB-02 | History is never deleted | **Spec** H-09 | v1 |
-| HB-08 | Avoid logging | TD-01 / HB-02 | **Log a slip**, **Held today**, allowance — *needs a design pass* | **Spec** H-06 (title only) | v1 |
-| HB-09 | Add minutes by hand | TD-01 / HB-02 | Timed habits only; stored as a `manual` session | **None** | v1 |
+| HB-01 | **Habits overview** (C/R) | Tab 2, Habits segment | Groups (collapsed/expanded), habits, paused, empty; a collapsed **Archived** section with Restore | **Drawn v4** · 1 frame | v1 |
+| HB-02 | **Habit detail** | HB-01 | Density grid (one per time of day) + plain-language read; **no streak numbers**; the last 14 days tappable to correct; per kind: binary · counted · timed · avoid; weekly-target (weeks, never *missed*); paused; healthy / slipping | **Drawn v4** · 2 frames | v1 |
+| HB-03 | **Add / edit habit** | HB-01 | **Type picker** first (binary / counted / timed / avoid; the kind is fixed after creation), then a kind form: counted target, timed minutes, avoid allowance; schedule; **Times of day** (up to four, each with optional start, end and reminder); group | **Drawn v4** · 1 frame | v1 |
+| HB-04 | Custom recurrence | HB-03 | Day picker, times a week | **Drawn** v3·17 · not redrawn in v4 | v1 |
+| HB-05 | Group create / assign | HB-03 / HB-01 | Visual bundle: name, members, collapsed preview (no emoji) | **Drawn** v3·18 · not redrawn in v4 | v1 |
+| HB-06 | **Pause with reason** | HB-02 | Travel · illness · cycle · other; open-ended allowed | **Drawn v4** · 1 frame | v1 |
+| HB-07 | Edit / archive | HB-02 | History is never deleted | **Drawn v4** · 1 frame | v1 |
+| HB-08 | Avoid logging | TD-01 / HB-02 | **Log a slip**, **Held today**, allowance — *needs a design pass* | **Drawn v4** · 1 frame | v1 |
+| HB-09 | Add minutes by hand | TD-01 / HB-02 | Timed habits only; stored as a `manual` session | **Drawn v4** · 1 frame | v1 |
 
 ### Anchors (`AN`)
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| AN-01 | **Anchor rules list** | Habits tab → Anchors segment | Rules with next instance; enabled; "needs attention"; a collapsed **Archived** section with Restore | **None** (Flows I describes rituals) | v1 |
-| AN-02 | Rule detail | AN-01 | Schedule summary, exceptions, upcoming instances; edit · pause · archive | **None** | v1 |
-| AN-03 | **Add rule — type** | AN-01 | Prayer times · School run · Bin night · Plant watering · Custom | **None** | v1 |
-| AN-04 | **Prayer form** | AN-03 | Location, method, madhab, prayers, Isha end; advanced: adjustments, high-latitude rule | **None** | v1 |
-| AN-05 | **Scheduled form** | AN-03 | Recurrence (weekly · every N days · every N weeks · N–M days after last done), named slots, duration, placement | **None** | v1 |
-| AN-06 | Exceptions editor | AN-02 / AN-05 | Term · holiday · travel · illness · other; open-ended | **Spec** (Flows I) | v1 |
-| AN-07 | "Needs attention" state | AN-01 / AN-02 | Undecodable or newer-version rule; never deleted | **None** | v1 |
-| AN-08 | **Add one-off Anchor** | TD-04 / NP-03 | Title, date, window, optional duration | **None** | v1 |
-| AN-09 | Anchor rows on Today | TD-01 | Plain · grouped (collapsed/expanded) · window bar · multi-day (plants) | **Spec** (window bar) | v1 |
-| AN-10 | Anchor actions | TD-01 row | Attended (only while open) · Not today · Someone else did it | **None** | v1 |
-| AN-11 | Location permission and city search | AN-04 | When-in-use prompt, in context; city search fallback | **None** | v1 |
+| AN-01 | **Anchor rules list** | Habits tab → Anchors segment | Rules with next instance; enabled; "needs attention"; a collapsed **Archived** section with Restore | **Drawn v4** · 1 frame | v1 |
+| AN-02 | Rule detail | AN-01 | Schedule summary, exceptions, upcoming instances; edit · pause · archive | **Drawn v4** · 1 frame | v1 |
+| AN-03 | **Add rule — type** | AN-01 | Prayer times · School run · Bin night · Plant watering · Custom | **Drawn v4** · 1 frame | v1 |
+| AN-04 | **Prayer form** | AN-03 | Location, method, madhab, prayers, Isha end; advanced: adjustments, high-latitude rule | **Drawn v4** · 1 frame | v1 |
+| AN-05 | **Scheduled form** | AN-03 | Recurrence (weekly · every N days · every N weeks · N–M days after last done), named slots, duration, placement | **Drawn v4** · 2 frames | v1 |
+| AN-06 | Exceptions editor | AN-02 / AN-05 | Term · holiday · travel · illness · other; open-ended | **Drawn v4** · 1 frame | v1 |
+| AN-07 | "Needs attention" state | AN-01 / AN-02 | Undecodable or newer-version rule; never deleted | **Drawn v4** · 1 frame | v1 |
+| AN-08 | **Add one-off Anchor** | TD-04 / NP-03 | Title, date, window, optional duration | **Drawn v4** · 1 frame | v1 |
+| AN-09 | Anchor rows on Today | TD-01 | Plain · grouped (collapsed/expanded) · window bar · multi-day (plants) | **Drawn v4** · 1 frame | v1 |
+| AN-10 | Anchor actions | TD-01 row | Attended (only while open) · Not today · Someone else did it | **Drawn v4** · 2 frames | v1 |
+| AN-11 | Location permission and city search | AN-04 | When-in-use prompt, in context; city search fallback | **Drawn v4** · 2 frames | v1 |
 
 ### Night Planning (`NP`)
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| NP-01 | **Review today** | Evening entry | Plain counts, time spent vs estimate | **Drawn** v3·05 (remove the mood line) | v1 |
-| NP-02 | **Carry forward** | NP-01 | Keep · Later · Drop per task; 3rd-deferral behaviour; skipped if nothing incomplete | **Drawn** v3·06 | v1 |
-| NP-03 | **Build tomorrow** | NP-02 | Opens on tomorrow's working day: fixed commitments and named free gaps (list on compact, proportional timeline on regular); task and habit list; importance and date; flag for tasks that won't fit a gap; Add one-off Anchor | **Drawn** v3·07 (gaps missing) | v1 |
-| NP-04 | **Check the load** | NP-03 | Level (weekday default pre-selected), suggested level, budget used, overflow past the day's end, one move | **Drawn** v3·08 | v1 |
-| NP-05 | **Close the day** | NP-04 | "Tomorrow is ready…"; nights-planned count; Good night | **Drawn** v3·09 | v1 |
-| NP-06 | Skip tonight | Any step | Closes with no plan | **None** | v1 |
-| NP-07 | Wide canvas (step rail) | Regular width | Five stops on one canvas | **Drawn** v3·D3 | v1 |
+| NP-01 | **Review today** | Evening entry | Plain counts, time spent vs estimate | **Drawn v4** · 1 frame | v1 |
+| NP-02 | **Carry forward** | NP-01 | Keep · Later · Drop per task; 3rd-deferral behaviour; skipped if nothing incomplete | **Drawn v4** · 1 frame | v1 |
+| NP-03 | **Build tomorrow** | NP-02 | Opens on tomorrow's working day: fixed commitments and named free gaps (list on compact, proportional timeline on regular); task and habit list; importance and date; flag for tasks that won't fit a gap; Add one-off Anchor | **Drawn v4** · 1 frame | v1 |
+| NP-04 | **Check the load** | NP-03 | Level (weekday default pre-selected), suggested level, budget used, overflow past the day's end, one move | **Drawn v4** · 1 frame | v1 |
+| NP-05 | **Close the day** | NP-04 | "Tomorrow is ready…"; nights-planned count; Good night | **Drawn v4** · 1 frame | v1 |
+| NP-06 | Skip tonight | Any step | Closes with no plan | **Drawn v4** · 1 frame | v1 |
+| NP-07 | Wide canvas (step rail) | Regular width | Five stops on one canvas | **Drawn v4** · 2 frames | v1 |
 
 ### Wellbeing (`WB`)
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| WB-01 | Wellbeing — steady | Tab 3 | Score, trend, plain read, completion, heavy days | **Drawn** v3·20 | v1 |
-| WB-02 | Wellbeing — strained | Tab 3 | As above, with a suggested action ("Lighten Saturday" / Not now) | **Drawn** v3·21 | v1 |
-| WB-03 | Gathering data | Tab 3 | Seven-day progress | **Drawn** v3·22 | v1 |
-| WB-04 | "What makes this score" view | WB-01 | Derivation of the score | **Spec** X-04 | *to decide* |
+| WB-01 | Wellbeing — steady | Tab 3 | Score, trend, plain read, completion, heavy days | **Drawn v4** · 1 frame | v1 |
+| WB-02 | Wellbeing — strained | Tab 3 | As above, with a suggested action ("Lighten Saturday" / Not now) | **Drawn v4** · 1 frame | v1 |
+| WB-03 | Gathering data | Tab 3 | Seven-day progress | **Drawn v4** · 1 frame | v1 |
+| WB-04 | "What makes this score" view | WB-01 | Derivation of the score | **Spec** X-04 · not redrawn in v4 | *to decide* |
 
 ### Settings (`ST`)
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| ST-01 | Settings home | Tab 4 | Sections below; trial status row | **Drawn** v3·23 (to rework) | v1 |
-| ST-02 | **Capacity & day** | ST-01 | Normal-day length (+ quiet suggestion), default level per weekday, working-day start/end, rollover (Advanced; changeable only after both old and new times have passed today), note when planning time precedes day end | **Drawn** v3·23 (to rework) | v1 |
-| ST-03 | **Notifications & times** | ST-01 | Evening planning time and morning list (synced); **Send reminders on this device** switch (local; on for iPhone, off for iPad and Mac); habit reminders; warning card if denied | **Drawn** v3·23, 24 | v1 |
-| ST-04 | **Categories** | ST-01 | List, rename, add, archive (with a collapsed **Archived** section and Restore), colour from a fixed set | **None** | v1 |
-| ST-05 | **Subscription** | ST-01 | Days left or status, manage, restore | **None** | v1 |
-| ST-06 | iCloud status | ST-01 | Signed in · Not signed in · Restricted · Storage full · Sync trouble (three failures over a day); offline is never a problem | **None** | v1 |
-| ST-07 | Appearance | ST-01 | Theme, larger text | **None** | v1 |
-| ST-08 | About, privacy, data export | ST-01 | Privacy statement, Export my data (JSON), Delete my data (two confirmations; local and iCloud) | **None** | v1 |
+| ST-01 | Settings home | Tab 4 | Sections below; trial status row | **Drawn v4** · 1 frame | v1 |
+| ST-02 | **Capacity & day** | ST-01 | Normal-day length (+ quiet suggestion), default level per weekday, working-day start/end, rollover (Advanced; changeable only after both old and new times have passed today), note when planning time precedes day end | **Drawn v4** · 1 frame | v1 |
+| ST-03 | **Notifications & times** | ST-01 | Evening planning time and morning list (synced); **Send reminders on this device** switch (local; on for iPhone, off for iPad and Mac); habit reminders; warning card if denied | **Drawn v4** · 1 frame | v1 |
+| ST-04 | **Categories** | ST-01 | List, rename, add, archive (with a collapsed **Archived** section and Restore), colour from a fixed set | **Drawn v4** · 1 frame | v1 |
+| ST-05 | **Subscription** | ST-01 | Days left or status, manage, restore | **Drawn v4** · 1 frame | v1 |
+| ST-06 | iCloud status | ST-01 | Signed in · Not signed in · Restricted · Storage full · Sync trouble (three failures over a day); offline is never a problem | **Drawn v4** · 1 frame | v1 |
+| ST-07 | Appearance | ST-01 | Theme, larger text | **Drawn v4** · 1 frame | v1 |
+| ST-08 | About, privacy, data export | ST-01 | Privacy statement, Export my data (JSON), Delete my data (two confirmations; local and iCloud) | **Drawn v4** · 1 frame | v1 |
 
 ### Onboarding (`OB`)
 
 | ID | Screen | Content | Design | Phase |
 |---|---|---|---|---|
-| OB-01 | Meet Jamaal | Companion intro | **Drawn** v3·25 | v1 |
-| OB-02 | The idea | One list, three ways of tracking; not projects or tags | **Drawn** v3·26 (copy to fix) | v1 |
-| OB-03 | iCloud check | Waits briefly for sync; silent when fine; problem state; **Welcome back** for a second device (skips onboarding) | **None** | v1 |
-| OB-04 | **Your normal day** | Normal-day length, working-day end, capacity slider | **Drawn** v3·27 (to extend) | v1 |
-| OB-05 | **Reminders & evening time** | Evening time, morning list, permission request | **Drawn** v3·28 | v1 |
-| OB-06 | First task | Category intro | **None** | v1 |
-| OB-07 | First habit | Presets or custom | **None** | v1 |
-| OB-08 | First Anchor | Type choice, forms, **Not now** | **None** | v1 |
-| OB-09 | Ready | "Tonight, we'll plan tomorrow"; trial line | **Drawn** v3·29 | v1 |
+| OB-01 | Meet Jamaal | Companion intro | **Drawn** v3·25 · not redrawn in v4 | v1 |
+| OB-02 | The idea | One list, three ways of tracking; not projects or tags | **Drawn v4** · 1 frame | v1 |
+| OB-03 | iCloud check | Waits briefly for sync; silent when fine; problem state; **Welcome back** for a second device (skips onboarding) | **Drawn v4** · 1 frame | v1 |
+| OB-04 | **Your normal day** | Normal-day length, working-day end, capacity slider | **Drawn v4** · 1 frame | v1 |
+| OB-05 | **Reminders & evening time** | Evening time, morning list, permission request | **Drawn v4** · 1 frame | v1 |
+| OB-06 | First task | Category intro | **Drawn v4** · 1 frame | v1 |
+| OB-07 | First habit | Presets or custom | **Drawn v4** · 1 frame | v1 |
+| OB-08 | First Anchor | Type choice, forms, **Not now** | **Drawn v4** · 1 frame | v1 |
+| OB-09 | Ready | "Tonight, we'll plan tomorrow"; trial line | **Drawn v4** · 1 frame | v1 |
 
 ### Subscription and system (`SB`, `SY`)
 
 | ID | Screen | Content | Design | Phase |
 |---|---|---|---|---|
-| SB-01 | **Paywall** | Calm full-screen; monthly, yearly, restore, Not now | **None** | v1 |
-| SB-02 | Trial reminders | Notification copy only (days 12, 14, 15) | **None** | v1 |
-| SB-03 | Read-only banner | Explains what is locked; offers to subscribe | **None** | v1 |
-| SY-01 | Notifications-denied fallbacks | Today banner (switch on, permission off; once a day; *Don't remind me*); Settings warning card listing what isn't delivered | **Drawn** v3·24 | v1 |
-| SY-02 | Empty and finished states | Four fixed lines (today, first launch, habits, history) | **Drawn** (inconsistent — see brief) | v1 |
-| SY-03 | Undo toast | Quiet, 5 seconds | **Spec** T-06 | v1 |
-| SY-04 | Sheets vs panels | Sheets on compact; panels beside the list on regular | **Drawn** v3·D2 | v1 |
-| SY-05 | Problem states | iCloud problem line (dismissible; says the data is safe); account-changed notice; store-won't-open recovery screen; the quiet timer-clash line | **None** | v1 |
-| SY-06 | App icon and launch screen | Three icon directions exist in the earlier mockups | **None** (legacy palette) | v1 |
+| SB-01 | **Paywall** | Calm full-screen; monthly, yearly, restore, Not now Frames show placeholder prices; the app shows StoreKit's `Product.displayPrice` (prices stay $2.99/month, $24.99/year). | **Drawn v4** · 1 frame | v1 |
+| SB-02 | Trial reminders | Notification copy only (days 12, 14, 15) | **Drawn v4** · 1 frame | v1 |
+| SB-03 | Read-only banner | Explains what is locked; offers to subscribe | **Drawn v4** · 1 frame | v1 |
+| SY-01 | Notifications-denied fallbacks | Today banner (switch on, permission off; once a day; *Don't remind me*); Settings warning card listing what isn't delivered | **Drawn** v3·24 · not redrawn in v4 | v1 |
+| SY-02 | Empty and finished states | Four fixed lines (today, first launch, habits, history) | **Drawn v4** · 1 frame | v1 |
+| SY-03 | Undo toast | Quiet, 5 seconds | **Drawn v4** · 1 frame | v1 |
+| SY-04 | Sheets vs panels | Sheets on compact; panels beside the list on regular | **Drawn** v3·D2 · not redrawn in v4 | v1 |
+| SY-05 | Problem states | iCloud problem line (dismissible; says the data is safe); account-changed notice; store-won't-open recovery screen; the quiet timer-clash line | **Drawn v4** · 3 frames | v1 |
+| SY-06 | App icon and launch screen | Three icon directions exist in the earlier mockups | **Drawn v4** · 1 frame | v1 |
 
 ### Layout variants that need their own frames
 

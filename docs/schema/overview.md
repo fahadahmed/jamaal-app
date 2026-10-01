@@ -127,7 +127,6 @@ window: HabitTimeWindow? = nil
 ```
 id: UUID = UUID()
 title: String = ""
-emoji: String = ""
 sortOrder: Int = 0
 isArchived: Bool = false
 createdAt: Date = .now
@@ -299,5 +298,6 @@ Safe to add without breaking anything, so they are *not* blockers: `Task.sortOrd
 - [x] Journey 4 (Anchors) added `Anchor.resolvedAt`, `remindBeforeStartMinutes` and `remindBeforeEndMinutes`
 - [x] Journey 1 (first launch) added `UserSettings.planningMinute`, `morningMinute` and `onboardingCompletedAt`
 - [x] `TaskCategory.colorKey` values decided (`accent` / `blue` / `ochre` / `plum` / `slate`); the tokens ship in ThreadsKit 1.2.0
+- [x] `HabitGroup.emoji` removed before the freeze (Design draws no emoji anywhere); nothing was in production
 - [ ] Habit preset definitions (`presetKey` is a string, so can follow)
 - [ ] Review by the owner, then implement the models in `JamaalCore` with tests first
