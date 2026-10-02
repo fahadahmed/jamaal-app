@@ -173,3 +173,13 @@ public enum PauseReason: String, StoredValue {
     case unknown
     public static var unknownCase: PauseReason { .unknown }
 }
+
+public enum ExceptionReason: String, StoredValue {
+    case term
+    case holiday
+    case travel
+    case illness
+    case other
+    case unknown
+    public static var unknownCase: ExceptionReason { .unknown }
+}

@@ -201,7 +201,7 @@ The state is what an Anchor row shows on Today (with a window bar); the attendan
 
 - **`attended` can only be logged while the window is `open` or `closingSoon`.** An `upcoming` Anchor can't be ticked (the control is disabled and shows when the window opens). This also covers cases like a second medication dose logged early, without a medication-specific rule — each dose is its own Anchor with a single status.
 - **`skipped` and `delegated` can be set any time before the window closes**, including while `upcoming`.
-- **`closed` is final, with one exception:** a still-`pending` Anchor becomes `missed`, but a **missed** Anchor offers *"Mark as done after all"* until the end of that logical day, with a neutral confirmation showing the time. It sets `attended` and updates `resolvedAt`. It never reopens `skipped` or `delegated`, and it does not weaken the rule that `attended` can't be logged before a window opens.
+- **`closed` is final, with one exception:** a still-`pending` Anchor becomes `missed`, but a **missed** Anchor offers *"Mark as done after all"* until the end of that logical day (the day containing the instant its window closed), with a neutral confirmation showing the time. It sets `attended` and updates `resolvedAt`. It never reopens `skipped` or `delegated`, and it does not weaken the rule that `attended` can't be logged before a window opens.
 - An accidental tap can be undone within the window (a quiet undo).
 
 ## CloudKit constraints applied

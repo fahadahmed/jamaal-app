@@ -23,6 +23,7 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 - ~~First-launch seeding and the CloudKit dedup rules~~ **Done** (`Seeding`, `Dedup` in `JamaalCore/RulesEngine`, idempotent, with mutation-checked tests).
 - ~~Capacity and load calculations (budgets, load state, weekday defaults) and the day rollover step~~ **Done** (`CapacityLoad`, `Rollover`); free time, named gaps, overflow, suggested capacity and the fit flags are in too (`FreeTime`); wiring them into the rollover's `DayPlan` and the habit minutes come with the habit and Anchor slices.
 - ~~Habit rules: pauses, due-ness, density states, the read signal, weekly progress, today's windows and the shared engagement definition~~ **Done** (`HabitRules`, `HabitPauses`, `Engagement`).
+- ~~Anchor rules, first slice: config decoding, scheduled generation (preview and sync), exceptions, window states, attendance logging~~ **Done** (`AnchorConfig`, `AnchorGenerator`, `AnchorAttendance`). Next: `afterLast` and the prayer windows with `adhan-swift`.
 - Implement the deterministic rules-engine modules in order of dependency, each with Swift Testing coverage: task scheduling, habit density, Anchor generation, capacity and load, focus sessions, then Night Planning orchestration, wellbeing and notification logic.
 - **Checkpoint:** is the pace holding at 10–20 hours a week, and are the models and the first engine modules done or clearly on track? If not, the launch estimate moves toward March 2027 or scope moves to v1.1.
 
