@@ -170,6 +170,15 @@ struct RolloverTests {
         #expect(try plan(context, 2) != nil, "\(kind)")
     }
 
+    @Test func heldTodayOnAnAvoidHabitIsActivityToo() throws {
+        let context = try makeContext()
+        let habit = Habit(title: "No sugar"); habit.habitKind = .avoid; context.insert(habit)
+        let w = HabitTimeWindow(); context.insert(w); w.habit = habit
+        let e = HabitEntry(); e.date = date(2); e.amount = 0; e.completedAt = instant(2, 20); context.insert(e); e.window = w
+        try catchUp(context, last: 1, nowDay: 3)
+        #expect(try plan(context, 2) != nil)
+    }
+
     @Test func aHabitEntryThatWasUnTickedIsNotActivity() throws {
         let context = try makeContext()
         let w = HabitTimeWindow(); context.insert(w)

@@ -168,6 +168,8 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
   - **New-habit realism** — four or more habits created in one week → suggest starting with one or two.
 - **Signals**: `.densityRead(habit)`, `.windowClosing(window)`, `.habitFatigue`, `.newHabitOverload`.
 
+**As built** (`HabitRules`, `HabitPauses`, `Engagement` in JamaalCore): a window's cell for a day is `empty` when the day is in the future, before the habit existed, paused, or not one of its days; otherwise complete at the entry's own (snapshotted) target, `partialLow` under half, `partialHigh` from half, and `missed` only for a due past day with nothing logged — never for a "N times a week" habit, and never for today. An avoid habit's cell follows the avoid rules in habit.md, with *today* always unresolved. **The read** counts resolved days (complete, partial, missed) over the last 21 days across the habit's windows, leaving out paused, unscheduled and still-open days (today counts once finished); it suggests a lighter cadence when more than half of at least seven resolved days were missed (proposals, easy to tune). **One definition of "engaged"** (`Engagement.engagedDays`) now serves avoid habits and the rollover, so an avoid habit's *Held today* also earns its day a `DayPlan`. `HabitToday.dueWindows` returns the windows Today shows (weekly-target habits stay on offer until the week's target is met, then show as done) and `remainingMinutes` is the habit minutes that free time subtracts. Today's *ordering* (groups first, then by window start) belongs to the Today list slice.
+
 ### 3. Anchor generation (window-bound instances, attendance)
 
 - **Input**: all enabled `AnchorRule`s, a generation horizon (today + tomorrow).

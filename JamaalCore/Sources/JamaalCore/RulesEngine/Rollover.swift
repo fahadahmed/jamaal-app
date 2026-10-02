@@ -81,7 +81,7 @@ public enum Rollover {
         let plannedMinutes = planned.reduce(0) { $0 + minutes($1, completedToday: $1.isCompleted && $1.completedAt.map(logical) == day) }
         let completedMinutes = completedToday.reduce(0) { $0 + minutes($1, completedToday: true) }
 
-        let activity = try hasActivity(on: day, boundary: boundary, completedToday: completedToday, context: context)
+        let activity = try Engagement.engagedDays(in: context, boundary: boundary).contains(day)
 
         // 1. Auto-defer.
         for task in tasks where !task.isCompleted && task.droppedAt == nil {
@@ -173,27 +173,6 @@ public enum Rollover {
             if seconds > 0 { return Int((Double(seconds) / 60).rounded()) }
         }
         return task.effortMinutes ?? 0
-    }
-
-    /// Activity that earns a day a record: a task completed, a timer session, an Anchor decided,
-    /// a habit logged (`amount > 0`; un-ticking is not activity), or the evening review of the
-    /// day (a planning session for the next day, closed or skipped).
-    @MainActor
-    private static func hasActivity(
-        on day: CalendarDate, boundary: DayBoundary, completedToday: [TaskItem], context: ModelContext
-    ) throws -> Bool {
-        if !completedToday.isEmpty { return true }
-        if try context.fetch(FetchDescriptor<WorkSession>()).contains(where: { CalendarDate(storedDate: $0.day) == day }) { return true }
-        if try context.fetch(FetchDescriptor<Anchor>()).contains(where: {
-            $0.status != .pending && $0.resolvedAt.map(boundary.logicalDate(at:)) == day
-        }) { return true }
-        if try context.fetch(FetchDescriptor<HabitEntry>()).contains(where: {
-            $0.amount > 0 && CalendarDate(storedDate: $0.date) == day
-        }) { return true }
-        let next = day.addingDays(1)
-        return try context.fetch(FetchDescriptor<NightPlanningSession>()).contains {
-            CalendarDate(storedDate: $0.forDate) == next && ($0.isComplete || $0.skippedAt != nil)
-        }
     }
 
     @MainActor
