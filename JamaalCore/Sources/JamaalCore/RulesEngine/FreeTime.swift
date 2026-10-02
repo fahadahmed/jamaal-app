@@ -113,8 +113,7 @@ public enum FreeTime {
     /// attended and missed ones no longer take the day's time). An Anchor is fixed unless its rule
     /// is `flexible`; one-offs have no rule and are fixed.
     ///
-    /// `afterLast` ("N–M days after I last did it") Anchors are flexible too, but that lives in a
-    /// rule's `configData`, so it joins here with the Anchor-rule config slice.
+    /// `afterLast` ("N–M days after I last did it") Anchors are always flexible, whatever the rule's `placement`.
     public static func commitments(from anchors: [Anchor]) -> [Commitment] {
         anchors
             .filter { $0.status == .pending }
@@ -124,7 +123,7 @@ public enum FreeTime {
                     start: $0.windowStart,
                     windowEnd: $0.windowEnd,
                     minutes: max(0, $0.effortMinutes ?? 0),
-                    isFixed: $0.rule?.placementKind != .flexible
+                    isFixed: $0.rule?.placementKind != .flexible && $0.rule?.isAfterLast != true
                 )
             }
     }

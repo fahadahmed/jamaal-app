@@ -311,6 +311,12 @@ public enum AnchorRuleConfig: Equatable, Sendable {
 }
 
 extension AnchorRule {
+    /// Whether this is an `afterLast` rule (interval from last done): always flexible, one live instance per slot.
+    public var isAfterLast: Bool {
+        if case .scheduled(let config) = config { return config.recurrence.isAfterLast }
+        return false
+    }
+
     /// Typed view of `configData`. Reading never rewrites it.
     public var config: AnchorRuleConfig {
         AnchorRuleConfig.decode(sourceKey: sourceKey, configData: configData)
