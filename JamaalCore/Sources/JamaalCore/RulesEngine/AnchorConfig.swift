@@ -234,13 +234,20 @@ public struct ScheduledConfig: Codable, Equatable, Sendable {
     }
 }
 
-/// The prayer-time family. Windows come from astronomy (see the prayer slice); this is its stored shape.
+/// The prayer-time family. Windows come from astronomy (`PrayerWindows`); this is its stored shape.
 public struct PrayerConfig: Codable, Equatable, Sendable {
     public struct Location: Codable, Equatable, Sendable {
         public var mode: String
         public var latitude: Double
         public var longitude: Double
         public var name: String?
+
+        public init(mode: String, latitude: Double, longitude: Double, name: String?) {
+            self.mode = mode
+            self.latitude = latitude
+            self.longitude = longitude
+            self.name = name
+        }
     }
 
     public var version: Int
@@ -248,12 +255,33 @@ public struct PrayerConfig: Codable, Equatable, Sendable {
     public var madhab: String
     public var highLatitude: String
     public var ishaEnds: String
+    /// Titles Friday's Dhuhr Anchor "Jumu'ah" (same window, time and slot key).
     public var fridayLabel: Bool
+    /// Prayer times remind at the start unless the rule says otherwise.
     public var reminder: AnchorReminder?
     public var prayers: [String]
     public var adjustmentsMinutes: [String: Int]
     public var location: Location?
     public var exceptions: [AnchorException]
+
+    public init(
+        version: Int = ScheduledConfig.supportedVersion, method: String = "muslimWorldLeague", madhab: String = "shafi",
+        highLatitude: String = "middleOfNight", ishaEnds: String = "midnight", fridayLabel: Bool = true,
+        reminder: AnchorReminder? = nil, prayers: [String] = ["fajr", "dhuhr", "asr", "maghrib", "isha"],
+        adjustmentsMinutes: [String: Int] = [:], location: Location? = nil, exceptions: [AnchorException] = []
+    ) {
+        self.version = version
+        self.method = method
+        self.madhab = madhab
+        self.highLatitude = highLatitude
+        self.ishaEnds = ishaEnds
+        self.fridayLabel = fridayLabel
+        self.reminder = reminder
+        self.prayers = prayers
+        self.adjustmentsMinutes = adjustmentsMinutes
+        self.location = location
+        self.exceptions = exceptions
+    }
 
     private enum CodingKeys: String, CodingKey {
         case version, method, madhab, highLatitude, ishaEnds, fridayLabel, reminder, prayers, adjustmentsMinutes, location, exceptions
@@ -273,6 +301,17 @@ public struct PrayerConfig: Codable, Equatable, Sendable {
         location = try c.decodeIfPresent(Location.self, forKey: .location)
         exceptions = try c.decodeIfPresent([AnchorException].self, forKey: .exceptions) ?? []
     }
+
+    /// The JSON to store in `AnchorRule.configData`.
+    public var json: String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        guard let data = try? encoder.encode(self), let text = String(data: data, encoding: .utf8) else { return "{}" }
+        return text
+    }
+
+    /// Whether `day` falls inside an exception.
+    public func isExcepted(_ day: CalendarDate) -> Bool { exceptions.contains { $0.covers(day) } }
 }
 
 /// Why a rule can't be generated.

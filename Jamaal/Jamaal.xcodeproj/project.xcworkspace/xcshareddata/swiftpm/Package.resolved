@@ -2,6 +2,15 @@
   "originHash" : "e73a96e6232e50afed9b98c490dc8c490894a8afa66b8843c330fc037fe19bcc",
   "pins" : [
     {
+      "identity" : "adhan-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/batoulapps/adhan-swift",
+      "state" : {
+        "revision" : "a6fa2deee80c5abb0b9ad04466f8ab12b53144e7",
+        "version" : "1.5.0"
+      }
+    },
+    {
       "identity" : "threads-kit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/fahadahmed/threads-kit.git",

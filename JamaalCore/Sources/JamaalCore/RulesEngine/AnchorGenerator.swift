@@ -37,7 +37,13 @@ public enum AnchorGenerator {
     ///
     /// An instance is never created for a window that ended before the rule existed.
     public static func preview(rule: AnchorRule, days: [CalendarDate], boundary: DayBoundary) -> [GeneratedAnchor] {
-        guard rule.isEnabled, !rule.isArchived, case .scheduled(let config) = rule.config else { return [] }
+        guard rule.isEnabled, !rule.isArchived else { return [] }
+        let config: ScheduledConfig
+        switch rule.config {
+        case .needsAttention: return []
+        case .prayer(let prayer): return prayerPreview(rule: rule, config: prayer, days: days, boundary: boundary)
+        case .scheduled(let scheduled): config = scheduled
+        }
         if config.recurrence.isAfterLast { return afterLastPreview(rule: rule, config: config, days: days, boundary: boundary) }
 
         var result: [GeneratedAnchor] = []
@@ -54,6 +60,28 @@ public enum AnchorGenerator {
                     effortMinutes: rule.effortMinutes,
                     remindBeforeStartMinutes: (config.reminder?.atStart ?? false) ? 0 : nil,
                     remindBeforeEndMinutes: config.reminder?.beforeEndMinutes
+                ))
+            }
+        }
+        return result
+    }
+
+    // MARK: Prayer windows
+
+    private static func prayerPreview(rule: AnchorRule, config: PrayerConfig, days: [CalendarDate], boundary: DayBoundary) -> [GeneratedAnchor] {
+        let reminder = config.reminder ?? AnchorReminder(atStart: true, beforeEndMinutes: nil)
+        var result: [GeneratedAnchor] = []
+        for day in days where !config.isExcepted(day) {
+            for window in PrayerWindows.windows(config: config, on: day) where window.end > rule.createdAt {
+                result.append(GeneratedAnchor(
+                    title: window.title,
+                    occurrenceDate: boundary.logicalDate(at: window.start),
+                    slotKey: window.prayer,
+                    windowStart: window.start,
+                    windowEnd: window.end,
+                    effortMinutes: rule.effortMinutes,
+                    remindBeforeStartMinutes: reminder.atStart ? 0 : nil,
+                    remindBeforeEndMinutes: reminder.beforeEndMinutes
                 ))
             }
         }
@@ -166,10 +194,12 @@ public enum AnchorGenerator {
         let horizon = (0..<max(1, horizonDays)).map { today.addingDays($0) }
 
         for rule in try context.fetch(FetchDescriptor<AnchorRule>()) {
-            guard case .scheduled(let config) = rule.config else { continue }
-            if config.recurrence.isAfterLast {
+            switch rule.config {
+            case .needsAttention: continue
+            case .scheduled(let config) where config.recurrence.isAfterLast:
                 try syncAfterLast(rule: rule, config: config, in: context, boundary: boundary, now: now, report: &report)
                 continue
+            case .scheduled, .prayer: break
             }
             let existing = rule.anchors ?? []
 

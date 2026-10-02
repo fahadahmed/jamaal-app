@@ -8,9 +8,9 @@ struct AnchorWorld {
     let context: ModelContext
     let boundary: DayBoundary
 
-    init(rolloverMinute: Int = 0) throws {
+    init(rolloverMinute: Int = 0, timeZone: String = "UTC") throws {
         context = ModelContext(try JamaalSchema.makeContainer(inMemory: true))
-        boundary = DayBoundary(rolloverMinute: rolloverMinute, timeZone: TimeZone(identifier: "UTC")!)
+        boundary = DayBoundary(rolloverMinute: rolloverMinute, timeZone: TimeZone(identifier: timeZone)!)
     }
 
     /// October 2026: the 1st is a Thursday, so the 5th is a Monday.
