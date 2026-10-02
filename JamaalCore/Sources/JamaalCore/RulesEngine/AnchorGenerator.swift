@@ -37,8 +37,8 @@ public enum AnchorGenerator {
     ///
     /// An instance is never created for a window that ended before the rule existed.
     public static func preview(rule: AnchorRule, days: [CalendarDate], boundary: DayBoundary) -> [GeneratedAnchor] {
-        guard rule.isEnabled, !rule.isArchived,
-              case .scheduled(let config) = rule.config, !config.recurrence.isAfterLast else { return [] }
+        guard rule.isEnabled, !rule.isArchived, case .scheduled(let config) = rule.config else { return [] }
+        if config.recurrence.isAfterLast { return afterLastPreview(rule: rule, config: config, days: days, boundary: boundary) }
 
         var result: [GeneratedAnchor] = []
         for day in days where config.isActive(on: day) && config.recurrence.occurs(on: day) {
@@ -56,6 +56,85 @@ public enum AnchorGenerator {
                     remindBeforeEndMinutes: config.reminder?.beforeEndMinutes
                 ))
             }
+        }
+        return result
+    }
+
+    // MARK: afterLast — an interval from the last time it was handled
+
+    /// The next `afterLast` window for a slot, or `nil` if one is still live or none can open.
+    ///
+    /// There is exactly one live instance per slot, always all-day. With none yet, the first opens
+    /// `minDays` after `startDate` (the date it was last handled); a start older than the rule is
+    /// treated as due now. After an attended, skipped or delegated instance the next opens `minDays`
+    /// after the logical day it was handled; after a missed one it opens the following day and
+    /// stays open for the same length, so a missed watering isn't pushed a further 3 days away.
+    /// No window opens inside an exception (the clock pauses) or after the end date.
+    ///
+    /// `now` lets a pending instance whose window has closed count as missed before it is stored so.
+    static func afterLastWindow(
+        rule: AnchorRule, slot: AnchorSlot, config: ScheduledConfig, boundary: DayBoundary, now: Date?
+    ) -> GeneratedAnchor? {
+        guard case .afterLast(let minDays, let maxDays, let startDate) = config.recurrence else { return nil }
+        let length = maxDays - minDays + 1
+        let latest = (rule.anchors ?? []).filter { $0.slotKey == slot.id }.max { $0.windowStart < $1.windowStart }
+
+        var open: CalendarDate
+        if let latest {
+            let closedPending = latest.status == .pending && now.map { latest.windowEnd <= $0 } == true
+            if latest.status == .pending && !closedPending { return nil }               // a live one exists
+            if latest.status == .missed || closedPending {
+                open = boundary.logicalDate(at: latest.windowEnd)
+            } else {
+                open = boundary.logicalDate(at: latest.resolvedAt ?? latest.windowEnd).addingDays(minDays)
+            }
+        } else {
+            open = startDate.addingDays(minDays)
+            if boundary.startInstant(of: open.addingDays(length)) <= rule.createdAt {
+                open = boundary.logicalDate(at: rule.createdAt)
+            }
+        }
+
+        var steps = 0
+        while let exception = config.exceptions.first(where: { $0.covers(open) }) {
+            guard let end = exception.to, steps < 1000 else { return nil }
+            open = end.addingDays(1)
+            steps += 1
+        }
+        if let endDate = config.endDate, open > endDate { return nil }
+
+        return GeneratedAnchor(
+            title: slot.label.isEmpty ? rule.title : slot.label,
+            occurrenceDate: open,
+            slotKey: slot.id,
+            windowStart: boundary.startInstant(of: open),
+            windowEnd: boundary.startInstant(of: open.addingDays(length)),
+            effortMinutes: rule.effortMinutes,
+            remindBeforeStartMinutes: (config.reminder?.atStart ?? false) ? 0 : nil,
+            remindBeforeEndMinutes: config.reminder?.beforeEndMinutes
+        )
+    }
+
+    /// The live window (or, if none, the projected next one) wherever it overlaps `days`.
+    private static func afterLastPreview(rule: AnchorRule, config: ScheduledConfig, days: [CalendarDate], boundary: DayBoundary) -> [GeneratedAnchor] {
+        var result: [GeneratedAnchor] = []
+        for slot in config.slots {
+            let live = (rule.anchors ?? []).filter { $0.slotKey == slot.id && $0.status == .pending }.max { $0.windowStart < $1.windowStart }
+            let item: GeneratedAnchor?
+            if let live {
+                item = GeneratedAnchor(
+                    title: live.title, occurrenceDate: CalendarDate(storedDate: live.occurrenceDate), slotKey: live.slotKey,
+                    windowStart: live.windowStart, windowEnd: live.windowEnd, effortMinutes: live.effortMinutes,
+                    remindBeforeStartMinutes: live.remindBeforeStartMinutes, remindBeforeEndMinutes: live.remindBeforeEndMinutes
+                )
+            } else {
+                item = afterLastWindow(rule: rule, slot: slot, config: config, boundary: boundary, now: nil)
+            }
+            guard let item else { continue }
+            let overlaps = days.contains { day in
+                item.windowStart < boundary.startInstant(of: day.addingDays(1)) && item.windowEnd > boundary.startInstant(of: day)
+            }
+            if overlaps { result.append(item) }
         }
         return result
     }
@@ -87,7 +166,11 @@ public enum AnchorGenerator {
         let horizon = (0..<max(1, horizonDays)).map { today.addingDays($0) }
 
         for rule in try context.fetch(FetchDescriptor<AnchorRule>()) {
-            guard case .scheduled(let config) = rule.config, !config.recurrence.isAfterLast else { continue }
+            guard case .scheduled(let config) = rule.config else { continue }
+            if config.recurrence.isAfterLast {
+                try syncAfterLast(rule: rule, config: config, in: context, boundary: boundary, now: now, report: &report)
+                continue
+            }
             let existing = rule.anchors ?? []
 
             guard rule.isEnabled, !rule.isArchived else {
@@ -128,6 +211,42 @@ public enum AnchorGenerator {
         }
         if report != AnchorSyncReport() { try context.save() }
         return report
+    }
+
+    /// `afterLast` rules keep exactly one live instance per slot, created as soon as the previous one
+    /// is resolved (or closed). A disabled or archived rule loses its live pending window, as does a
+    /// slot that was removed or a window that opens inside a new exception; decided ones stay.
+    @MainActor
+    private static func syncAfterLast(
+        rule: AnchorRule, config: ScheduledConfig, in context: ModelContext,
+        boundary: DayBoundary, now: Date, report: inout AnchorSyncReport
+    ) throws {
+        let slotIDs = Set(config.slots.map(\.id))
+        var removedAny = false
+        for anchor in rule.anchors ?? [] where anchor.status == .pending {
+            let opensInException = config.isExcepted(CalendarDate(storedDate: anchor.occurrenceDate))
+            let disabled = !rule.isEnabled || rule.isArchived
+            if (disabled && anchor.windowEnd > now) || !slotIDs.contains(anchor.slotKey) || opensInException {
+                context.delete(anchor)
+                report.removed += 1
+                removedAny = true
+            }
+        }
+        if removedAny { try context.save() }
+        guard rule.isEnabled, !rule.isArchived else { return }
+
+        for slot in config.slots {
+            guard let item = afterLastWindow(rule: rule, slot: slot, config: config, boundary: boundary, now: now) else { continue }
+            let anchor = Anchor(title: item.title)
+            anchor.occurrenceDate = item.occurrenceDate.storedDate
+            anchor.slotKey = item.slotKey
+            anchor.generatedAt = now
+            context.insert(anchor)
+            anchor.rule = rule
+            _ = apply(item, to: anchor)
+            report.created += 1
+        }
+        if report.created > 0 || removedAny { try context.save() }
     }
 
     /// Copies a generated instance's fields onto an Anchor; `true` if anything changed.
