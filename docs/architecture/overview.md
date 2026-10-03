@@ -10,7 +10,7 @@ Two Swift targets in one repo, plus one shared design package:
 | ----- | ---------- | ----- |
 | **`Jamaal`** | The app: SwiftUI, multiplatform (iOS, iPadOS, macOS). Features (Today, Habits, Anchors, Night Planning, Settings), custom components, view models. | Owns presentation, navigation, notifications, StoreKit. |
 | **`JamaalCore`** | A local Swift Package: the SwiftData models and the deterministic rules engine. | **No UI imports.** Pure logic, testable without a simulator. |
-| **ThreadsKit** | A separate repo, added as a remote Swift Package (1.1.0 or later): colour tokens for light and dark. | Tokens only today; components live in `Jamaal/Components/`. See [ThreadsKit usage](../design/threadskit-usage). |
+| **ThreadsKit** | A separate repo, added as a remote Swift Package (2.0.0 or later): the palette, category colours, space, elevation, motion and the bundled fonts with the type roles. | Tokens only; components live in `Jamaal/Components/`. See [ThreadsKit usage](../design/threadskit-usage). |
 
 There is no `.xcworkspace`: `JamaalCore` is added as a local package dependency directly in `Jamaal.xcodeproj`.
 

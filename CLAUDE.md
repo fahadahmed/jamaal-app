@@ -32,7 +32,7 @@ jamaal-app/
 └── ci_scripts/            # reserved for Xcode Cloud, empty for now
 ```
 
-No `.xcworkspace` — JamaalCore is a Swift Package (added as a local package dependency directly into `Jamaal.xcodeproj`), not a separate `.xcodeproj`, so no workspace is needed. ThreadsKit lives in its own repo, added as a **remote** Swift Package dependency (pinned "Up to Next Major Version" from 1.1.0).
+No `.xcworkspace` — JamaalCore is a Swift Package (added as a local package dependency directly into `Jamaal.xcodeproj`), not a separate `.xcodeproj`, so no workspace is needed. ThreadsKit lives in its own repo, added as a **remote** Swift Package dependency (pinned "Up to Next Major Version" from 2.0.0).
 
 ## Xcode project settings (as created)
 
@@ -97,9 +97,9 @@ Modules emit typed signals; a separate message-template layer phrases them in Ja
 
 ## Design system
 
-ThreadsKit (shared package, also used by Riqa/Hashiya; depend on **1.1.0 or later** — 1.0.0 has a contrast bug) currently supplies **colour tokens only** — a cool palette with a teal accent (`#1F6A58` light / `#8FCBB8` dark), blue-based ink, terracotta as secondary (`terra`), light + dark baked in. This replaced the earlier warm palette (off-white/charcoal/terracotta/sage); there is no sage token. Full token table and open decisions: `docs/design/threadskit-usage.md`. Typography, spacing/radius and components are not in ThreadsKit yet; Fraunces + Hanken Grotesk + JetBrains Mono remain the intended faces, unconfirmed upstream. Liquid Glass direction (floating pill tab bar, translucent glass nav circles) still applies.
+ThreadsKit (shared package, also used by Riqa/Hashiya; depend on **2.0.0 or later**) supplies the design tokens: a `ThreadsPalette` protocol (21 colour names plus status roles) with `JamaalPalette` as its only conformance — a cool palette with a teal accent (`#1F6A58` light / `#8FCBB8` dark), blue-based ink, terracotta (`terra`) as the one action colour, light + dark baked in — plus the five category colours, space/radius/hit, elevation, motion, and the bundled fonts (Fraunces, Hanken Grotesk, JetBrains Mono) with the six type roles. Views read colours from `@Environment(\.threads)` and never use a raw hex; fonts are registered at launch with `ThreadsFonts.registerAll()`. There is no sage token. Full reference and open items: `docs/design/threadskit-usage.md`. Components are not in ThreadsKit (they live in `Jamaal/Components/`). Liquid Glass direction (floating pill tab bar, translucent glass nav circles) still applies.
 
-**Precedence: styling is taken from the Claude Design project** (the v3 screens, its tokens page and flow spec) **unless it conflicts with functionality locked in this repo.** The self-contained hand-off is `docs/design/claude-design-brief.md`. **Design v4 is now delivered**: the 110 frames and editable sources in `mockups/screens/` are the visual truth, the token and component handoff is `docs/design/README.md`, and `docs/design/v4-reconciliation.md` records where it changed the docs (behaviour and data still come from `docs/journeys/`). Type: Fraunces (display), Hanken Grotesk (text) and JetBrains Mono (labels), as Design draws them — not DM Sans.
+**Precedence: styling is taken from the Claude Design project** (the v3 screens, its tokens page and flow spec) **unless it conflicts with functionality locked in this repo.** The self-contained hand-off is `docs/design/claude-design-brief.md`. **Design v4 is now delivered**: the 110 frames and editable sources in `mockups/screens/` are the visual truth, the token and component handoff is `docs/design/README.md`, and `docs/design/v4-reconciliation.md` records where it changed the docs (behaviour and data still come from `docs/journeys/`). Type: Fraunces (display), Hanken Grotesk (text) and JetBrains Mono (labels), as Design draws them — not DM Sans — now bundled in ThreadsKit 2.0.0.
 
 Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity slider, habit group completion ring, habit heatmap grid, wellbeing sparkline (Swift Charts), Night Planning 5-step wizard.
 
@@ -126,7 +126,7 @@ All new code or documentation work is tracked through a GitHub issue and lands v
 ## Open items to pick up next
 
 - [x] CI: `.github/workflows/ci.yml` builds and tests `JamaalCore` and the app's unit tests on every code PR and push to `main` (docs-only changes skip it). XCUITest joins once it covers real screens
-- [x] ThreadsKit 1.1.0 is wired into `Jamaal.xcodeproj` (remote, Up to Next Major) with `Package.resolved` committed. Remaining design decisions are in `docs/design/threadskit-usage.md` (category colours, font bundling and licences)
+- [x] ThreadsKit 2.0.0 is wired into `Jamaal.xcodeproj` (remote, Up to Next Major) with `Package.resolved` committed; fonts register at launch. Remaining design items are in `docs/design/threadskit-usage.md`
 - [ ] Open owner items (region table review, Anchor reminders while read-only, category hues, fonts, merge order of the stacked PRs, paid programme and iCloud spike) are collected in `docs/journeys/walkthroughs/overview.md#open-owner-items`
 - [x] `mockups/screens/` holds the Design v4 frames (110) and editable sources; `mockups/legacy/` is layout reference only
 - [x] Reconcile against prior planning-chat data — done, see ADR 0002. Remaining open decisions are listed in `docs/journeys/app-flow.md` ("Still open")
