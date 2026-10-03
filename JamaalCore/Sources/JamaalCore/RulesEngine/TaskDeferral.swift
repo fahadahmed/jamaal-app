@@ -22,6 +22,13 @@ public enum TaskDeferral {
     /// The first and second deferrals are instant (to tomorrow); from the third a date picker opens.
     public static func requiresPicker(_ task: TaskItem) -> Bool { task.deferralCount >= 2 }
 
+    /// Whether deferring from `day` would reach the picker: the deferral it makes is (or, if that day
+    /// already has a record that would only be refined, already is) the third or later.
+    public static func requiresPicker(_ task: TaskItem, from day: CalendarDate) -> Bool {
+        let hasRecord = (task.deferrals ?? []).contains { CalendarDate(storedDate: $0.day) == day }
+        return (hasRecord ? task.deferralCount : task.deferralCount + 1) >= TaskPriority.staleThreshold
+    }
+
     /// Moves a task to `target` (`nil` is Someday).
     ///
     /// - Parameter day: the logical day being deferred *from*. It is today, except in Night Planning
