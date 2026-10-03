@@ -22,6 +22,6 @@
 
 ## Still to do from the handoff
 
-- **ThreadsKit** — the handoff specifies a `ThreadsTokens` target (a palette protocol with 21 names, six type roles, space, elevation, motion) with fonts bundled as package resources. That renames and extends the 1.1.0 tokens, so it is a **major version**; the app's dependency needs a bump when it ships.
+- ~~**ThreadsKit**~~ **Done in 2.0.0** (palette protocol, categories, space, elevation, motion, fonts and the type roles; the app depends on it). The handoff specified a `ThreadsTokens` target (a palette protocol with 21 names, six type roles, space, elevation, motion) with fonts bundled as package resources. That renames and extends the 1.1.0 tokens, so it is a **major version**; the app's dependency needs a bump when it ships.
 - **Draw `TD-04`** (the Add button's *Task | Anchor* entry).
 - Assemble the icon in Icon Composer (default, dark, clear, tinted) and place the mark in the other spots the handoff lists.

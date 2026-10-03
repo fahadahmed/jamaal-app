@@ -8,14 +8,17 @@
 import SwiftUI
 import ThreadsTokens
 
-/// Placeholder root view. It exists to prove the app links ThreadsKit; the
-/// real Today screen replaces it.
+/// Placeholder root view. It exists to prove the app links ThreadsKit (palette from the environment,
+/// a type role); the real shell and Today screen replace it.
 struct ContentView: View {
+    @Environment(\.threads) private var threads
+
     var body: some View {
         Text("Jamaal")
-            .foregroundStyle(Color.Threads.ink)
+            .threadsType(.display(.large))
+            .foregroundStyle(threads.ink)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.Threads.app)
+            .background(threads.app)
     }
 }
 

@@ -18,7 +18,7 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 - ~~Wire ThreadsKit 1.1.0 or later into `Jamaal.xcodeproj`.~~ **Done.**
 - ~~Add a build-and-test workflow (`ci.yml`).~~ **Done** (`JamaalCore` tests and the app's unit tests on the `xcode-27` runner).
 - ~~Day boundary first~~ **Done:** `CalendarDate` (floating calendar dates) and `DayBoundary` (logical date, catch-up days, Night Planning's target day) are in `JamaalCore`, tests first.
-- **ThreadsKit 1.2.0** with the five category label tokens (hues confirmed against Design first), then bump the app's dependency.
+- ~~ThreadsKit 2.0.0 with the palette contract, the category colours, space, elevation, motion and the bundled fonts, then bump the app's dependency.~~ **Done.**
 - ~~Implement the 14 models in `JamaalCore` with a versioned schema, tests first.~~ **Done:** the 14 `@Model` classes, typed raw values with the unknown-value rule, `VersionedSchema` V1 with a migration plan, and a container factory, with Swift Testing coverage (defaults, relationships, delete rules, CloudKit constraints). Not yet verified against a real CloudKit container (needs the paid programme).
 - ~~First-launch seeding and the CloudKit dedup rules~~ **Done** (`Seeding`, `Dedup` in `JamaalCore/RulesEngine`, idempotent, with mutation-checked tests).
 - ~~Capacity and load calculations (budgets, load state, weekday defaults) and the day rollover step~~ **Done** (`CapacityLoad`, `Rollover`); free time, named gaps, overflow, suggested capacity and the fit flags are in too (`FreeTime`); wiring them into the rollover's `DayPlan` and the habit minutes come with the habit and Anchor slices.

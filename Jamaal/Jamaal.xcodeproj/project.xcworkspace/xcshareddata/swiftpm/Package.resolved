@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/fahadahmed/threads-kit.git",
       "state" : {
-        "revision" : "dce4313c39d0edbf21c5eec876b1cd8718c300ac",
-        "version" : "1.1.0"
+        "revision" : "c6d50a0ad0be00bc390889206b6d0e6fe9333f09",
+        "version" : "2.0.0"
       }
     }
   ],
