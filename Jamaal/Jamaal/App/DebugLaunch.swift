@@ -9,9 +9,10 @@ import SwiftData
 import JamaalCore
 
 /// Launch arguments for UI tests and previews, in debug builds only: `-JamaalInMemory` keeps the store out of
-/// the app's real data, and `-JamaalSampleData` adds a few tasks due today.
+/// the app's real data, `-JamaalSampleData` adds a few tasks, Anchors and habits for today, and `-JamaalOpenAdd` opens the add sheet.
 enum DebugLaunch {
     static var inMemory: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalInMemory") }
+    static var openAdd: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenAdd") }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor

@@ -25,6 +25,7 @@ struct TodayScreen: View {
     @State private var now: Date = .now
     @State private var alsoTodayOpen = false
     @State private var choosing: AnchorInstance?
+    @State private var isAdding = false
 
     var body: some View {
         // Reading the attributes Today depends on makes SwiftUI re-run this body when any of them changes,
@@ -59,6 +60,14 @@ struct TodayScreen: View {
             .padding(.bottom, 120)                                          // clear of the floating tab bar
         }
         .scrollIndicators(.hidden)
+        .onAppear {
+            #if DEBUG
+            if DebugLaunch.openAdd { isAdding = true }
+            #endif
+        }
+        .sheet(isPresented: $isAdding) {
+            AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now))
+        }
         .background(threads.app)
         .confirmationDialog(
             choosing?.title ?? "", isPresented: Binding(get: { choosing != nil }, set: { if !$0 { choosing = nil } }), titleVisibility: .visible
@@ -83,7 +92,19 @@ struct TodayScreen: View {
         let remaining = overview.shown.count
         let headline = TodayCopy.headline(remaining: remaining)
         return VStack(alignment: .leading, spacing: ThreadsSpace.row) {
-            Text(TodayCopy.headerLabel(overview.today)).threadsType(.label).foregroundStyle(threads.ink2)
+            HStack(alignment: .center) {
+                Text(TodayCopy.headerLabel(overview.today)).threadsType(.label).foregroundStyle(threads.ink2)
+                Spacer()
+                // The toolbar pill (filter, Plan tomorrow, Add) grows as those arrive; Add comes first.
+                Button { isAdding = true } label: {
+                    Image(systemName: "plus").font(.title3).foregroundStyle(threads.ink)
+                        .frame(width: 52, height: 52)
+                        .glassEffect(.regular.interactive(), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Add")
+                .accessibilityIdentifier("addButton")
+            }
             DisplayHeadline(first: headline.first, second: headline.second)
         }
     }

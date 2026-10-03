@@ -318,6 +318,12 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 
 `HabitLogging.apply` writes the day's `HabitEntry`, created on the first log with the window's target as a snapshot: a **binary** toggle, a **counted** step up or down (never below zero), and for **avoid** habits a slip, taking one back, *Held today* (which sets `completedAt`, the explicit engagement the density rules need) and taking that back. `completedAt` is set the first time the target is reached, kept while it stays reached and cleared below it. An action that doesn't fit the kind (including a tick on a **timed** habit, whose minutes come from sessions) is refused and writes nothing. If two devices left two entries for a day, the larger is the one edited.
 
+## Adding a task
+
+`TaskCreation.create` validates a `TaskDraft` (a trimmed title; **medium, high and repeating tasks need a date** and are never Someday) and inserts the task with its category and repeat; nothing is written when it is refused. A weekly repeat keeps its chosen ISO weekdays (empty means the due date's weekday). The draft starts at 30 minutes, low importance and no date. A repeating task's `seriesID` is still assigned when it is first completed.
+
+`TaskCreation.dayFullCheck` is **"Day is full · offer tomorrow"**: it says whether adding the estimate would tip the chosen day over its budget (that day's own level; today counts what is already done, the meter's own figure; another day counts its live tasks), and offers the nearest of the next seven days where the task still fits, or none. A task with no estimate, no date or a past date is never checked, and nothing here refuses anything: the app always offers *Add anyway*.
+
 ## Access and the trial
 
 **`AccessState`** is a pure function in JamaalCore of `(now, trialStart, entitlement)`: **`trial`** (before the trial ends), **`subscribed`** (an active entitlement, including a billing grace period or retry, so a failed card never locks anyone out), or **`readOnly`** (otherwise). StoreKit supplies the entitlement at the app layer; the last-known entitlement is cached locally (per device, not synced) and used while offline, and an expiry only takes effect when StoreKit confirms it. Nothing is stored in the schema beyond `UserSettings.firstLaunchAt`.
