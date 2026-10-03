@@ -62,6 +62,7 @@ public enum TaskActions {
     @discardableResult
     public static func complete(_ task: TaskItem, now: Date, boundary: DayBoundary, context: ModelContext) -> TaskItem? {
         guard !task.isCompleted, task.droppedAt == nil else { return nil }
+        FocusSessions.closeLive(of: task, as: .finished, now: now)
         task.isCompleted = true
         task.completedAt = now
         return createNext(after: task, on: boundary.logicalDate(at: now), context: context, now: now)
@@ -73,6 +74,7 @@ public enum TaskActions {
     @discardableResult
     public static func drop(_ task: TaskItem, now: Date, boundary: DayBoundary, context: ModelContext) -> TaskItem? {
         guard task.droppedAt == nil else { return nil }
+        FocusSessions.closeLive(of: task, as: .dropped, now: now)
         task.droppedAt = now
         return createNext(after: task, on: boundary.logicalDate(at: now), context: context, now: now)
     }

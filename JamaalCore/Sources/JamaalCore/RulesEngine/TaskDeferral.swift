@@ -42,6 +42,7 @@ public enum TaskDeferral {
             existing.reason = reason.storable ?? DeferralReason.unspecified.rawValue
             existing.deferredTo = target?.storedDate
             task.dueDate = target?.storedDate
+            FocusSessions.closeLive(of: task, as: .deferred, now: now)
             return Outcome(kind: .refined, easedImportance: false, isStale: TaskPriority.isStale(task), suggestsRemoval: TaskPriority.suggestsRemoval(task))
         }
 
@@ -51,6 +52,7 @@ public enum TaskDeferral {
             let willEase = newCount >= TaskPriority.staleThreshold && TaskPriority.isImportant(task)
             if target == nil && ((TaskPriority.isImportant(task) && !willEase) || isRepeating) { throw TaskRuleError.dateRequired }
             let eased = record(task, day: day, deferredOn: now, to: target, reason: reason, context: context)
+            FocusSessions.closeLive(of: task, as: .deferred, now: now)
             return Outcome(kind: .deferred, easedImportance: eased, isStale: TaskPriority.isStale(task), suggestsRemoval: TaskPriority.suggestsRemoval(task))
         }
 

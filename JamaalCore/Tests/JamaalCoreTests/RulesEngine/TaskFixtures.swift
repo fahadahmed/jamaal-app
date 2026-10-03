@@ -12,7 +12,7 @@ struct TaskWorld {
     init() throws { context = ModelContext(try JamaalSchema.makeContainer(inMemory: true)) }
 
     func d(_ day: Int) -> CalendarDate { CalendarDate(year: 2026, month: 10, day: day)! }
-    func at(_ day: Int, _ hour: Int = 12) -> Date { boundary.instant(of: d(day), atMinute: hour * 60) }
+    func at(_ day: Int, _ hour: Int = 12, _ minute: Int = 0) -> Date { boundary.instant(of: d(day), atMinute: hour * 60 + minute) }
 
     @discardableResult
     func task(
