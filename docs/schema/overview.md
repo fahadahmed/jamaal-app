@@ -188,6 +188,7 @@ id: UUID = UUID()
 forDate: Date = .now
 currentStep: String = "review"
 isComplete: Bool = false
+isShortened: Bool = false
 skippedAt: Date? = nil
 createdAt: Date = .now
 completedAt: Date? = nil
@@ -301,6 +302,7 @@ Safe to add without breaking anything, so they are *not* blockers: `TaskItem.sor
 - [x] Journey 1 (first launch) added `UserSettings.planningMinute`, `morningMinute` and `onboardingCompletedAt`
 - [x] `TaskCategory.colorKey` values decided (`accent` / `blue` / `ochre` / `plum` / `slate`); the tokens ship in ThreadsKit 1.2.0
 - [x] `TaskItem.repeatDayOfMonth` added while building the repeating-task rules (monthly on the 31st would otherwise drift); defaulted, so safe
+- [x] `NightPlanningSession.isShortened` added while building Night Planning (the morning's shortened flow needs to be told apart from the evening one, whose Build step it shares); defaulted, so safe
 - [x] `HabitGroup.emoji` removed before the freeze (Design draws no emoji anywhere); nothing was in production
 - [ ] Habit preset definitions (`presetKey` is a string, so can follow)
 - [ ] Review by the owner, then implement the models in `JamaalCore` with tests first

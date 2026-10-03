@@ -62,6 +62,7 @@ Persists wizard progress so closing the app mid-flow resumes correctly.
 | `forDate`        | `Date`    | `.now`         | The day being planned *for* (tomorrow at session start). |
 | `currentStep`    | `String`  | `"review"`     | One of `review` / `carry` / `build` / `load` / `close`. |
 | `isComplete`     | `Bool`    | `false`        | `true` once the day is closed (step 5). |
+| `isShortened`    | `Bool`    | `false`        | `true` for the morning's shortened flow (`build → load → close` for today), `false` for the full evening flow. |
 | `skippedAt`      | `Date?`   | `nil`          | Set by **Skip tonight**; the session ends without a plan and no `DayPlan` is written. |
 | `createdAt`      | `Date`    | `.now`         | |
 | `completedAt`    | `Date?`   | `nil`          | |
@@ -204,6 +205,8 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
   - **Re-opening:** a session already exists for `forDate` → resume it; a closed one reopens at Build, a skipped one clears `skippedAt` and starts at Review.
 - **Depends on module 6** (evening trigger, notifications, morning card) and **module 7** (free blocks, load check).
 - **Output**: a completed or skipped `NightPlanningSession`, and a `DayPlan` for tomorrow unless skipped.
+
+**As built, part 1** (`NightPlanning` in JamaalCore): **opening** a date resumes its session; a *closed* one reopens at Build and stays confirmed until it is closed again; a *skipped* one clears the skip and restarts its flow; otherwise a new session starts at Review, or at Build for the shortened morning flow (`isShortened`). **Advancing** passes through Carry when nothing is due on or before the reviewed day, and **back** is available from the second step, skipping an empty Carry; the shortened flow only moves between Build, Load and Close. **Build** reads tomorrow's shape: the working day with its fixed commitments and named gaps (for the morning flow, only what is left of today), the plan's tasks in engine order (live tasks due on or before the date), the day's habits read-only with their minutes counted, `schedule`-quadrant suggestions, undated candidates, tasks longer than the longest gap, the two prompts and a count of missing durations. **Load** shows the level (the day's `DayPlan` capacity, else the weekday default; reading writes nothing), budget, load state, overflow past the free time, the suggested level, and — only when the day is overloaded or overflowing — one **move suggestion**: the lowest-ordered task that isn't `doFirst`, to the nearest of the next seven days whose load with it stays strictly under 100% (exactly full doesn't count), else *ask for a date*; moving is rescheduling. `setCapacity` upserts the `DayPlan` the moment a level is chosen. **Close** upserts the snapshot (the chosen level or the weekday default, planned minutes, free and committed time, load score, overloaded, `planningCompletedAt`), completes the session and returns the summary with *nights planned* — the count of distinct closed dates, so two devices closing the same night count once, and it is never a streak. **Part 2 (next):** the Review read model and Carry forward with undo.
 
 ### 5. Wellbeing (scoring and pattern detection)
 
