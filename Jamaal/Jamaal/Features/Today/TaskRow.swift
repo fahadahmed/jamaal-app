@@ -14,21 +14,29 @@ struct TaskRow: View {
     let task: TaskItem
     let doneTime: String?
     let onToggle: () -> Void
+    var onOpen: () -> Void = {}
 
     var body: some View {
         HStack(alignment: .top, spacing: ThreadsSpace.row) {
             Button(action: onToggle) { CheckCircle(isDone: task.isCompleted) }
                 .buttonStyle(.plain)
                 .accessibilityLabel(task.isCompleted ? "Mark \(task.title) not done" : "Mark \(task.title) done")
-            VStack(alignment: .leading, spacing: ThreadsSpace.hair) {
-                Text(task.title)
-                    .threadsType(.row)
-                    .strikethrough(task.isCompleted, color: threads.ink3)
-                    .foregroundStyle(task.isCompleted ? threads.ink3 : threads.ink)
-                metaLine
+            Button(action: onOpen) {
+                HStack(spacing: 0) {
+                    VStack(alignment: .leading, spacing: ThreadsSpace.hair) {
+                        Text(task.title)
+                            .threadsType(.row)
+                            .strikethrough(task.isCompleted, color: threads.ink3)
+                            .foregroundStyle(task.isCompleted ? threads.ink3 : threads.ink)
+                        metaLine
+                    }
+                    .padding(.top, 9)
+                    Spacer(minLength: 0)
+                }
+                .contentShape(Rectangle())
             }
-            .padding(.top, 9)
-            Spacer(minLength: 0)
+            .buttonStyle(.plain)
+            .accessibilityHint("Shows its details")
         }
         .padding(.vertical, ThreadsSpace.hair)
         .accessibilityElement(children: .contain)

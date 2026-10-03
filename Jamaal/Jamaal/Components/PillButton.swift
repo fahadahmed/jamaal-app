@@ -12,6 +12,8 @@ struct PillButton: View {
     @Environment(\.threads) private var threads
     let title: String
     var dashed = false
+    /// Fills the width it is given (a row of equal buttons) instead of hugging its title.
+    var fills = false
     let action: () -> Void
 
     var body: some View {
@@ -19,8 +21,10 @@ struct PillButton: View {
             Text(title)
                 .threadsType(.row)
                 .foregroundStyle(threads.ink)
-                .padding(ThreadsSpace.pillButtonPadding)
-                .frame(minHeight: ThreadsHit.minimum)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .padding(fills ? EdgeInsets(top: 12, leading: 8, bottom: 12, trailing: 8) : ThreadsSpace.pillButtonPadding)
+                .frame(maxWidth: fills ? .infinity : nil, minHeight: ThreadsHit.minimum)
                 .background(Capsule().fill(threads.card.opacity(0.6)))
                 .overlay(Capsule().strokeBorder(threads.line2, style: StrokeStyle(lineWidth: 1, dash: dashed ? [4, 3] : [])))
                 .contentShape(Capsule())
