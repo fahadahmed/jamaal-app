@@ -22,6 +22,7 @@ Tasks live in **one flat list** — no projects, no tags, no sub-lists. `categor
 | `deferralCount` | `Int`     | `0`       | Times this task has been pushed to a later day — by the user (Keep/Later at night, defer from Today) or automatically (see below). Replaces the earlier `rolloverCount`. |
 | `repeatKind`    | `String`  | `"none"`  | One of `none` / `daily` / `weekly` / `monthly`. See [Repeating tasks](#repeating-tasks). |
 | `repeatWeekdays`| `String`  | `""`      | For `weekly`: ISO weekdays (Mon=1 … Sun=7), e.g. `"5"` for Fridays. Empty = same weekday as `dueDate`. |
+| `repeatDayOfMonth` | `Int`  | `0`       | For `monthly`: the day of the month to keep (1–31). `0` = the due date's day, which the engine fills in the first time the task is completed. Stored so a task on the 31st goes Feb 28, then back to Mar 31, instead of drifting to the 28th. |
 | `seriesID`      | `UUID?`   | `nil`     | Shared by every instance of a repeating task; `nil` for one-off tasks. |
 | `createdAt`     | `Date`    | `.now`    | |
 
