@@ -146,6 +146,7 @@ struct ModelTests {
         #expect(!session.isComplete)
         #expect(session.skippedAt == nil)
         #expect(session.completedAt == nil)
+        #expect(!session.isShortened)
 
         let nudge = NudgeLog()
         #expect(nudge.kind == "")

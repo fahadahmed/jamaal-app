@@ -8,6 +8,7 @@ public final class NightPlanningSession {
     public var forDate: Date = Date.now
     public var currentStep: String = "review"
     public var isComplete: Bool = false
+    public var isShortened: Bool = false
     public var skippedAt: Date? = nil
     public var createdAt: Date = Date.now
     public var completedAt: Date? = nil
