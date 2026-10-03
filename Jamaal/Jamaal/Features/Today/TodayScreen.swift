@@ -20,6 +20,8 @@ struct TodayScreen: View {
     @Query private var plans: [DayPlan]
     @Query private var settings: [UserSettings]
     @Query private var anchors: [AnchorInstance]
+    @Query private var habitEntries: [HabitEntry]
+    @Query private var habits: [Habit]
     @State private var now: Date = .now
     @State private var alsoTodayOpen = false
     @State private var choosing: AnchorInstance?
@@ -29,8 +31,11 @@ struct TodayScreen: View {
         // including from another device's sync; the overview itself is then re-read from the store.
         let _ = (tasks.map { [$0.isCompleted ? 1 : 0, $0.droppedAt == nil ? 0 : 1, $0.effortMinutes ?? -1, Int($0.dueDate?.timeIntervalSince1970 ?? 0)] },
                  plans.map { $0.capacity },
-                 anchors.map { [$0.attendanceStatus, $0.windowStart, $0.windowEnd] as [AnyHashable] }, settings.map { [$0.mediumDayMinutes, $0.rolloverMinute] })
+                 anchors.map { [$0.attendanceStatus, $0.windowStart, $0.windowEnd] as [AnyHashable] },
+                 habitEntries.map { [$0.amount, $0.completedAt == nil ? 0 : 1] }, habits.map { [$0.isArchived ? 1 : 0, $0.pausesData.count] as [AnyHashable] }, settings.map { [$0.mediumDayMinutes, $0.rolloverMinute] })
         let overview = try? TodayDay.overview(in: context, now: now)
+        let todayHabits = try? TodayHabits.read(
+            in: context, now: now, boundary: TodayDay.boundary(in: context), firstWeekday: Calendar.current.firstWeekday)
         let anchorItems = (try? TodayAnchors.items(in: context, now: now, boundary: TodayDay.boundary(in: context))) ?? []
         ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
@@ -44,6 +49,7 @@ struct TodayScreen: View {
                         try? TodayDay.setLevel(level, in: context, now: now)
                     }
                     anchorsSection(anchorItems)
+                    habitsSection(todayHabits)
                     tasksSection(overview)
                     alsoToday(overview)
                 }
@@ -97,6 +103,29 @@ struct TodayScreen: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private func habitsSection(_ habits: TodayHabits?) -> some View {
+        if let habits, habits.total > 0 {
+            VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
+                SectionLabel(title: "Habits")
+                    .accessibilityValue(TodayCopy.habitsSummary(done: habits.done, total: habits.total))
+                ForEach(habits.groups, id: \.group.id) { group in
+                    HabitGroupView(group: group) { row, action in log(action, on: row) }
+                }
+                ForEach(Array(habits.rows.enumerated()), id: \.element.window.id) { index, row in
+                    HabitRowView(row: row) { log($0, on: row) }
+                    if index < habits.rows.count - 1 { Divider().overlay(threads.line) }
+                }
+            }
+        }
+    }
+
+    private func log(_ action: HabitLogAction, on row: TodayHabitRow) {
+        now = .now
+        let today = TodayDay.boundary(in: context).logicalDate(at: now)
+        try? HabitLogging.apply(action, to: row.window, on: today, now: now, context: context)
     }
 
     @ViewBuilder
