@@ -14,6 +14,7 @@ struct TodayScreen: View {
     @Environment(\.threads) private var threads
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(FocusCoordinator.self) private var focus
 
     // Observing these re-reads Today whenever a task or a day's plan changes, here or on another device.
     @Query private var tasks: [TaskItem]
@@ -22,6 +23,7 @@ struct TodayScreen: View {
     @Query private var anchors: [AnchorInstance]
     @Query private var habitEntries: [HabitEntry]
     @Query private var habits: [Habit]
+    @Query private var sessions: [WorkSession]
     @State private var now: Date = .now
     @State private var alsoTodayOpen = false
     @State private var choosing: AnchorInstance?
@@ -34,7 +36,8 @@ struct TodayScreen: View {
         let _ = (tasks.map { [$0.isCompleted ? 1 : 0, $0.droppedAt == nil ? 0 : 1, $0.effortMinutes ?? -1, Int($0.dueDate?.timeIntervalSince1970 ?? 0)] },
                  plans.map { $0.capacity },
                  anchors.map { [$0.attendanceStatus, $0.windowStart, $0.windowEnd] as [AnyHashable] },
-                 habitEntries.map { [$0.amount, $0.completedAt == nil ? 0 : 1] }, habits.map { [$0.isArchived ? 1 : 0, $0.pausesData.count] as [AnyHashable] }, settings.map { [$0.mediumDayMinutes, $0.rolloverMinute] })
+                 habitEntries.map { [$0.amount, $0.completedAt == nil ? 0 : 1] }, habits.map { [$0.isArchived ? 1 : 0, $0.pausesData.count] as [AnyHashable] },
+                 sessions.map { [$0.outcome, $0.actualSeconds] as [AnyHashable] }, settings.map { [$0.mediumDayMinutes, $0.rolloverMinute] })
         let overview = try? TodayDay.overview(in: context, now: now)
         let todayHabits = try? TodayHabits.read(
             in: context, now: now, boundary: TodayDay.boundary(in: context), firstWeekday: Calendar.current.firstWeekday)
@@ -138,14 +141,18 @@ struct TodayScreen: View {
                 SectionLabel(title: "Habits")
                     .accessibilityValue(TodayCopy.habitsSummary(done: habits.done, total: habits.total))
                 ForEach(habits.groups, id: \.group.id) { group in
-                    HabitGroupView(group: group) { row, action in log(action, on: row) }
+                    HabitGroupView(group: group, onAction: { row, action in log(action, on: row) }, onBegin: { focus.begin(.habit($0.window)) })
                 }
                 ForEach(Array(habits.rows.enumerated()), id: \.element.window.id) { index, row in
-                    HabitRowView(row: row) { log($0, on: row) }
+                    HabitRowView(row: row, onAction: { log($0, on: row) }, onBegin: { focus.begin(.habit(row.window)) })
                     if index < habits.rows.count - 1 { Divider().overlay(threads.line) }
                 }
             }
         }
+    }
+
+    private func isTiming(_ task: TaskItem) -> Bool {
+        FocusSessions.liveSession(in: context)?.task === task
     }
 
     private func log(_ action: HabitLogAction, on row: TodayHabitRow) {
@@ -161,7 +168,9 @@ struct TodayScreen: View {
             VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
                 SectionLabel(title: "Tasks")
                 ForEach(rows, id: \.id) { task in
-                    TaskRow(task: task, doneTime: task.completedAt.map(Self.timeFormat.string(from:)), onToggle: { toggle(task) }, onOpen: { openTask = task })
+                    TaskRow(task: task, doneTime: task.completedAt.map(Self.timeFormat.string(from:)),
+                            trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
+                            onToggle: { toggle(task) }, onOpen: { openTask = task })
                 }
             }
         }
@@ -185,7 +194,8 @@ struct TodayScreen: View {
                 .accessibilityHint(alsoTodayOpen ? "Hides them" : "Shows them")
                 if alsoTodayOpen {
                     ForEach(overview.alsoToday, id: \.id) { task in
-                        TaskRow(task: task, doneTime: nil, onToggle: { toggle(task) }, onOpen: { openTask = task })
+                        TaskRow(task: task, doneTime: nil, trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
+                            onToggle: { toggle(task) }, onOpen: { openTask = task })
                     }
                 }
             }

@@ -49,6 +49,12 @@ public struct ApproachingEdge: Equatable, Sendable {
     public var title: String
     public var minutes: Int
     public var kind: Kind
+
+    public init(title: String, minutes: Int, kind: Kind) {
+        self.title = title
+        self.minutes = minutes
+        self.kind = kind
+    }
 }
 
 /// Module 8: focus sessions (docs/schema/task.md, "Focus sessions"; docs/schema/habit.md, "Timed habits").
@@ -76,6 +82,14 @@ public enum FocusSessions {
         if session.pausedAt != nil { return .paused }
         if let estimate = session.estimateMinutes, elapsedSeconds(of: session, at: now) > estimate * 60 { return .overrun }
         return .running
+    }
+
+    /// Time spent on a task: its finished sessions' time plus the live one's elapsed time (pauses excluded).
+    public static func trackedSeconds(of task: TaskItem, at now: Date) -> Int {
+        (task.sessions ?? []).reduce(0) { total, session in
+            total + (session.endedAt == nil && session.outcome == SessionOutcome.running.rawValue
+                ? elapsedSeconds(of: session, at: now) : session.actualSeconds)
+        }
     }
 
     /// The live session, if any (the earliest-started if a clash left two).

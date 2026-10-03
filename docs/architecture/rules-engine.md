@@ -330,6 +330,10 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 
 `TaskDeferral.preview` tells the sheet what Defer will do *before* the user chooses: which deferral this is (a refinement of today's record keeps its number), whether the **picker** opens (from the third), whether it is a **reschedule** (the task is due later: no count, no record), whether it will **ease** importance (and from what), whether **Someday** is open (not for an important task that won't ease, nor a repeating one), and whether it is the fifth, when the companion says letting it go is fine too.
 
+## Focus sessions in the app
+
+`FocusSessions.trackedSeconds(of:at:)` is the time spent on a task: its finished sessions' time plus the live one's elapsed time, pauses excluded; the row's "Timing · 24 min" and "Done 10:55 · 74 min" read it. The rest of module 8 was already built; the app adds only what a screen needs between taps (`FocusCoordinator`): whether the focus screen is open, the **settle sheet** raised by a second Begin (the running session settled first, its time kept whichever is chosen, then the waiting one begins; Cancel changes nothing), and the **five-second Undo** after *Done* (*Stop for now* has none). One timer runs across tasks and timed habits; the chip never changes tone when a session overruns its estimate.
+
 ## Access and the trial
 
 **`AccessState`** is a pure function in JamaalCore of `(now, trialStart, entitlement)`: **`trial`** (before the trial ends), **`subscribed`** (an active entitlement, including a billing grace period or retry, so a failed card never locks anyone out), or **`readOnly`** (otherwise). StoreKit supplies the entitlement at the app layer; the last-known entitlement is cached locally (per device, not synced) and used while offline, and an expiry only takes effect when StoreKit confirms it. Nothing is stored in the schema beyond `UserSettings.firstLaunchAt`.
