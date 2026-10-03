@@ -20,8 +20,26 @@ enum TodayCopy {
         }
     }
 
-    static func meter(plannedMinutes: Int, budgetMinutes: Int) -> String {
-        "\(duration(plannedMinutes)) of \(duration(budgetMinutes))"
+    static func meter(plannedMinutes: Int, budgetMinutes: Int, wholeDay: Bool = false) -> String {
+        let text = "\(duration(plannedMinutes)) of \(duration(budgetMinutes))"
+        return wholeDay ? "\(text) · whole day" : text
+    }
+
+    // MARK: States, the filter and the carried-over row
+
+    static let blankDay = "Your day is blank."
+    static let allDone = "Nothing left for today."
+    static func nothingIn(_ category: String) -> String { "Nothing in \(category) today." }
+
+    /// "midnight" or a clock time like "03:00": when the day rolls over.
+    static func closeTime(rolloverMinute: Int) -> String {
+        rolloverMinute == 0 ? "midnight" : String(format: "%02d:%02d", rolloverMinute / 60, rolloverMinute % 60)
+    }
+
+    /// "Last night's session closed at midnight. 42 min logged on **Draft…**." in three parts, so the title can be bold.
+    static func pickUp(minutes: Int, title: String, closedAt: String) -> (before: String, title: String, after: String) {
+        let logged = minutes <= 0 ? "Under a minute" : "\(minutes) min"
+        return ("Last night's session closed at \(closedAt). \(logged) logged on ", title, ".")
     }
 
     static func stateWord(_ state: LoadState) -> String {

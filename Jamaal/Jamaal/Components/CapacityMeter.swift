@@ -15,11 +15,13 @@ struct CapacityMeter: View {
     let budgetMinutes: Int
     let state: LoadState
     let loadScore: Int
+    /// Filtering Tasks never changes the load: the meter says it is still the whole day.
+    var wholeDay = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
             HStack {
-                Text(TodayCopy.meter(plannedMinutes: plannedMinutes, budgetMinutes: budgetMinutes))
+                Text(TodayCopy.meter(plannedMinutes: plannedMinutes, budgetMinutes: budgetMinutes, wholeDay: wholeDay))
                     .threadsType(.body).foregroundStyle(threads.ink)
                 Spacer()
                 Text(TodayCopy.stateWord(state))
@@ -39,6 +41,6 @@ struct CapacityMeter: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Today's load")
-        .accessibilityValue("\(TodayCopy.meter(plannedMinutes: plannedMinutes, budgetMinutes: budgetMinutes)), \(TodayCopy.stateWord(state).lowercased())")
+        .accessibilityValue("\(TodayCopy.meter(plannedMinutes: plannedMinutes, budgetMinutes: budgetMinutes, wholeDay: wholeDay)), \(TodayCopy.stateWord(state).lowercased())")
     }
 }

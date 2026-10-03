@@ -29,6 +29,10 @@ struct TodayScreen: View {
     @State private var choosing: AnchorInstance?
     @State private var isAdding = false
     @State private var openTask: TaskItem?
+    // The category filter is local to this device and this day: it clears at the rollover and on relaunch.
+    @State private var filterID: UUID?
+    @State private var dismissedPickUps: Set<UUID> = []
+    @Query(sort: \TaskCategory.sortOrder) private var allCategories: [TaskCategory]
 
     var body: some View {
         // Reading the attributes Today depends on makes SwiftUI re-run this body when any of them changes,
@@ -42,20 +46,33 @@ struct TodayScreen: View {
         let todayHabits = try? TodayHabits.read(
             in: context, now: now, boundary: TodayDay.boundary(in: context), firstWeekday: Calendar.current.firstWeekday)
         let anchorItems = (try? TodayAnchors.items(in: context, now: now, boundary: TodayDay.boundary(in: context))) ?? []
+        let categories = TodayTaskFilter.options(allCategories)
+        let filter = categories.first { $0.id == filterID }
+        let boundary = TodayDay.boundary(in: context)
+        let pickUps = FocusSessions.pickUpRows(tasks: tasks, today: boundary.logicalDate(at: now), boundary: boundary)
+            .filter { !dismissedPickUps.contains($0.task.id) }
+        let content: TodayContent? = overview.map { overview in
+            TodayContent(
+                remainingTasks: overview.shown.count, completedTasks: overview.completedToday.count, alsoToday: overview.alsoToday.count,
+                anchors: anchorItems.count, pendingAnchors: anchorItems.filter(Self.isPending).count,
+                habits: todayHabits?.total ?? 0, unfinishedHabits: (todayHabits?.total ?? 0) - (todayHabits?.done ?? 0))
+        }
+        let state = content.map(TodayState.of) ?? .normal
         ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 if let overview {
-                    header(overview)
+                    header(overview, categories: categories, filter: filter, state: state)
                     CapacityMeter(
                         plannedMinutes: overview.plannedMinutes, budgetMinutes: overview.budgetMinutes,
-                        state: overview.state, loadScore: overview.loadScore
+                        state: overview.state, loadScore: overview.loadScore, wholeDay: filter != nil
                     )
                     CapacitySlider(level: overview.level) { level in
                         try? TodayDay.setLevel(level, in: context, now: now)
                     }
+                    ForEach(pickUps, id: \.task.id) { row in pickUpRow(row) }
                     anchorsSection(anchorItems)
                     habitsSection(todayHabits)
-                    tasksSection(overview)
+                    tasksSection(overview, filter: filter)
                     alsoToday(overview)
                 }
             }
@@ -94,27 +111,109 @@ struct TodayScreen: View {
             }
         }
         .onChange(of: scenePhase) { _, phase in if phase == .active { now = .now } }
+        // A new day starts unfiltered.
+        .onChange(of: overview?.today) { _, _ in filterID = nil; dismissedPickUps = [] }
     }
 
-    private func header(_ overview: TodayOverview) -> some View {
-        let remaining = overview.shown.count
-        let headline = TodayCopy.headline(remaining: remaining)
+    private static func isPending(_ item: TodayAnchorItem) -> Bool {
+        switch item {
+        case .plain(let row): row.status == .pending
+        case .group(let group): !group.isAllDecided
+        }
+    }
+
+    private func header(_ overview: TodayOverview, categories: [TaskCategory], filter: TaskCategory?, state: TodayState) -> some View {
+        let headline = TodayCopy.headline(remaining: overview.shown.count)
         return VStack(alignment: .leading, spacing: ThreadsSpace.row) {
             HStack(alignment: .center) {
                 Text(TodayCopy.headerLabel(overview.today)).threadsType(.label).foregroundStyle(threads.ink2)
                 Spacer()
-                // The toolbar pill (filter, Plan tomorrow, Add) grows as those arrive; Add comes first.
-                Button { isAdding = true } label: {
-                    Image(systemName: "plus").font(.title3).foregroundStyle(threads.ink)
-                        .frame(width: 52, height: 52)
-                        .glassEffect(.regular.interactive(), in: Circle())
+                toolbar(categories: categories, isFiltering: filter != nil)
+            }
+            switch state {
+            case .normal: DisplayHeadline(first: headline.first, second: headline.second)
+            case .allDone: statement(TodayCopy.allDone)
+            case .blank: statement(TodayCopy.blankDay)
+            }
+            if let filter {
+                Button { filterID = nil } label: {
+                    HStack(spacing: ThreadsSpace.tight) {
+                        Circle().fill(JamaalPalette.categoryColor(forKey: filter.colorKey)).frame(width: 10, height: 10)
+                        Text(filter.name).threadsType(.row).foregroundStyle(threads.ink)
+                        Image(systemName: "xmark").font(.footnote.weight(.semibold)).foregroundStyle(threads.ink2)
+                    }
+                    .padding(ThreadsSpace.chipPadding)
+                    .frame(minHeight: ThreadsHit.minimum)
+                    .overlay(Capsule().strokeBorder(threads.line2, lineWidth: 1))
+                    .contentShape(Capsule())
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Add")
-                .accessibilityIdentifier("addButton")
+                .accessibilityLabel("Showing \(filter.name) tasks")
+                .accessibilityHint("Shows all tasks")
+                .accessibilityIdentifier("filterChip")
             }
-            DisplayHeadline(first: headline.first, second: headline.second)
         }
+    }
+
+    private func statement(_ text: String) -> some View {
+        Text(text).threadsType(.display(.compact)).foregroundStyle(threads.ink2)
+            .padding(.vertical, ThreadsSpace.section)
+            .accessibilityAddTraits(.isHeader)
+    }
+
+    /// The glass capsule at the top right: the category filter, and Add. (Plan tomorrow's moon joins it with Night Planning.)
+    private func toolbar(categories: [TaskCategory], isFiltering: Bool) -> some View {
+        HStack(spacing: 0) {
+            Menu {
+                Picker("Show tasks from", selection: $filterID) {
+                    Text("All").tag(UUID?.none)
+                    ForEach(categories, id: \.id) { category in Text(category.name).tag(Optional(category.id)) }
+                }
+            } label: {
+                Image(systemName: isFiltering ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease")
+                    .font(.title3).frame(width: 52, height: 52)
+            }
+            .accessibilityLabel("Filter tasks by category")
+            .accessibilityIdentifier("filterButton")
+            Button { isAdding = true } label: {
+                Image(systemName: "plus").font(.title3).frame(width: 52, height: 52)
+            }
+            .accessibilityLabel("Add")
+            .accessibilityIdentifier("addButton")
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(threads.ink)
+        .glassEffect(.regular.interactive(), in: Capsule())
+    }
+
+    /// TD-06: a session was closed at the rollover; offer to pick its task back up, or put the offer away.
+    private func pickUpRow(_ row: PickUpRow) -> some View {
+        let line = TodayCopy.pickUp(
+            minutes: row.session.actualSeconds / 60, title: row.task.title,
+            closedAt: TodayCopy.closeTime(rolloverMinute: settings.first?.rolloverMinute ?? 0))
+        var text = AttributedString(line.before)
+        var title = AttributedString(line.title); title.font = .custom("HankenGrotesk-SemiBold", size: 17)
+        text.append(title); text.append(AttributedString(line.after))
+        return VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
+            Divider().overlay(threads.line)
+            HStack(alignment: .top, spacing: ThreadsSpace.row) {
+                Image(systemName: "clock").font(.title3).foregroundStyle(threads.ink).padding(.top, 2)
+                Text(text).threadsType(.body).foregroundStyle(threads.ink)
+            }
+            HStack(spacing: ThreadsSpace.row) {
+                PillButton(title: "Pick it back up") {
+                    dismissedPickUps.insert(row.task.id)
+                    focus.begin(.task(row.task))
+                }
+                Button("Dismiss") { dismissedPickUps.insert(row.task.id) }
+                    .threadsType(.row).foregroundStyle(threads.ink).buttonStyle(.plain)
+                    .frame(minHeight: ThreadsHit.minimum)
+            }
+            .padding(.leading, 30)
+            Divider().overlay(threads.line)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("pickUpRow")
     }
 
     @ViewBuilder
@@ -162,11 +261,21 @@ struct TodayScreen: View {
     }
 
     @ViewBuilder
-    private func tasksSection(_ overview: TodayOverview) -> some View {
-        let rows = overview.shown + overview.completedToday
-        if !rows.isEmpty {
+    private func tasksSection(_ overview: TodayOverview, filter: TaskCategory?) -> some View {
+        let rows = TodayTaskFilter.apply(overview.shown + overview.completedToday, to: filter)
+        if !rows.isEmpty || filter != nil {
             VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
                 SectionLabel(title: "Tasks")
+                if rows.isEmpty, let filter {
+                    HStack {
+                        Text(TodayCopy.nothingIn(filter.name)).threadsType(.lede).foregroundStyle(threads.ink2)
+                        Spacer()
+                        Button("Show all") { filterID = nil }
+                            .threadsType(.row).foregroundStyle(threads.ink).buttonStyle(.plain)
+                            .frame(minHeight: ThreadsHit.minimum)
+                            .accessibilityIdentifier("showAll")
+                    }
+                }
                 ForEach(rows, id: \.id) { task in
                     TaskRow(task: task, doneTime: task.completedAt.map(Self.timeFormat.string(from:)),
                             trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
