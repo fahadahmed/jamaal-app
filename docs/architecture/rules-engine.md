@@ -50,6 +50,7 @@ The per-day record. Replaces the earlier `DailyCapacity`, widened because wellbe
 | `loadScore`              | `Int`     | `0`        | `plannedTaskMinutes / budget × 100`, snapshotted when the day is closed, then recomputed at rollover from the day as lived. |
 | `wasOverloaded`          | `Bool`    | `false`    | Load state was `overloaded` or worse — set from the day **as lived** at rollover (a skipped night still gets a true value). |
 | `completionRate`         | `Double`  | `0`        | 0–1, finalised at rollover: tasks completed that day ÷ (completed + deferred or dropped that day). |
+| `completionBasis`        | `Int`     | `0`        | The denominator of `completionRate` (completed + deferred + dropped that day). `0` means *nothing to finish*, which is not the same as *nothing finished*; wellbeing leaves such days out of its tasks part. |
 | `planningCompletedAt`    | `Date?`   | `nil`      | When Night Planning confirmed this day's plan. |
 
 ### `NightPlanningSession`
@@ -132,7 +133,7 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
 - **Auto-deferral** sets `deferredOn` to the boundary instant, moves the task to the next day, and applies the same easing as a manual deferral (the third eases medium and high to low).
 - **Activity** earning a day a record: a task completed, a timer session, an Anchor decided that day, a habit logged (`amount > 0`), or the evening review of the day (a planning session *for the next day*, closed or skipped). A new `DayPlan` takes the weekday's default level.
 - **Planning sessions** end as skipped when the day they plan for has ended (`forDate ≤ D`); one for the next day stays open, because planning at 00:30 still targets the new day.
-- **Known limit:** `completionRate` is `0` both when nothing was finished and when nothing had to be, so the wellbeing slice must either read the day another way or add a field to tell them apart (the score leaves out days with nothing to finish).
+- The rollover also writes `completionBasis` (the denominator), which tells a day with nothing to finish from a day where nothing was finished.
 
 **Idempotent keys make two devices converge.** Each step is keyed so repeating or racing it changes nothing: auto-deferral by `(task, logicalDate)`, `DayPlan` by date, session closing by the session itself.
 
@@ -218,6 +219,8 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
   - **Actions**, one per pattern, each always with *Not now*: `heavyRun` → `DayPlan(tomorrow).capacity = low`; `weekendOverplan` → that weekday's `weekdayLevels` entry set to `low`; `completionCollapse` → `mediumDayMinutes` set to the recent average (rounded to 15 min); `habitNeglect` → opens the habit's pause sheet or edit form.
   - **Delivery**: an inline card on the Wellbeing tab and at most once a day on Today — **never a notification in v1**. At most one per day (`NudgeLog`, `subjectKey` = the pattern plus the habit or weekday); after *Not now* the same pattern isn't offered for **7 days**. The *Wellbeing nudges* preference turns the cards off and leaves the score.
 - **Signals**: `.wellbeingScore`, `.gatheringData`, `.pattern(kind)`.
+
+**As built, part 1** (`Wellbeing` in JamaalCore): a snapshot over the 14 logical days **ending yesterday**. An **active day** has a `DayPlan`; with fewer than seven in the window the state is *gathering data* (it reports how many). Otherwise the score is a whole number from four parts, each 0–100, weighted tasks 35, Anchors 25, habits 20, load 20: **tasks** is the mean completion rate over days whose `completionBasis` is above zero; **Anchors** is, per active day, attended ÷ (attended + missed) — skipped and delegated left out, a late correction already counting as attended, a closed still-pending Anchor read as missed — averaged over days with any decided Anchor; **habits** pools every due window on every active day (complete 1, a partial its share of the target, missed 0; paused, unscheduled and unresolved days not due; archived habits out) with each *full* week of a "N times a week" habit as one item; **load** is the share of active days that weren't overloaded. A part with no data drops out and the rest are scaled up. The **sparkline** has 14 points, each over its own trailing 14 days, `nil` where that window has under seven active days; the **trend** compares the score with the one 14 days earlier and says *steadier* / *about the same* / *heavier* (a change of five points or more; none if the earlier window had no score). The snapshot also reports the tasks part as a percentage and the count of heavy days for the screen. **Part 2 (next):** the four patterns, the one action each, and nudge delivery.
 
 ### 6. Notification, nudge & guidance logic
 

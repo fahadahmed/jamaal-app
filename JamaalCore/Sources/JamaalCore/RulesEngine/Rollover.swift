@@ -137,6 +137,7 @@ public enum Rollover {
         }.map(\.id))
         let denominator = completedIDs.count + deferredIDs.count + droppedIDs.count
         dayPlan.completionRate = denominator == 0 ? 0 : Double(completedIDs.count) / Double(denominator)
+        dayPlan.completionBasis = denominator
 
         // 3 and 4.
         try closeSessionsAndEndPlanning(day, boundaryInstant, calendar, context, &report)
