@@ -61,6 +61,12 @@ public enum TodayDay {
         plan.capacityLevel = level
     }
 
+    /// The level a day uses: its `DayPlan.capacity` if one was set, else the weekday default.
+    @MainActor
+    public static func level(on day: CalendarDate, in context: ModelContext) throws -> CapacityLevel {
+        try level(for: day, settings: try settingsRow(in: context), in: context)
+    }
+
     @MainActor
     private static func level(for day: CalendarDate, settings: UserSettings, in context: ModelContext) throws -> CapacityLevel {
         if let plan = try dayPlan(for: day, in: context), !plan.capacityLevel.isUnknown { return plan.capacityLevel }
