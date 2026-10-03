@@ -324,6 +324,12 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 
 `TaskCreation.dayFullCheck` is **"Day is full · offer tomorrow"**: it says whether adding the estimate would tip the chosen day over its budget (that day's own level; today counts what is already done, the meter's own figure; another day counts its live tasks), and offers the nearest of the next seven days where the task still fits, or none. A task with no estimate, no date or a past date is never checked, and nothing here refuses anything: the app always offers *Add anyway*.
 
+## A task's note and what Defer will do
+
+`TaskNotes` reads a task's note (lightweight markdown) as lines: `- [ ] item` / `* [x] item` / `+ [X] item` are checkboxes, everything else is text (blank lines are skipped but keep their line numbers). `toggled(_:line:)` flips one box and changes nothing else, so the detail sheet and the focus screen write the same text back; `progress` counts boxes only.
+
+`TaskDeferral.preview` tells the sheet what Defer will do *before* the user chooses: which deferral this is (a refinement of today's record keeps its number), whether the **picker** opens (from the third), whether it is a **reschedule** (the task is due later: no count, no record), whether it will **ease** importance (and from what), whether **Someday** is open (not for an important task that won't ease, nor a repeating one), and whether it is the fifth, when the companion says letting it go is fine too.
+
 ## Access and the trial
 
 **`AccessState`** is a pure function in JamaalCore of `(now, trialStart, entitlement)`: **`trial`** (before the trial ends), **`subscribed`** (an active entitlement, including a billing grace period or retry, so a failed card never locks anyone out), or **`readOnly`** (otherwise). StoreKit supplies the entitlement at the app layer; the last-known entitlement is cached locally (per device, not synced) and used while offline, and an expiry only takes effect when StoreKit confirms it. Nothing is stored in the schema beyond `UserSettings.firstLaunchAt`.

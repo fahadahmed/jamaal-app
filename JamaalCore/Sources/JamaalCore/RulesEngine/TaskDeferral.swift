@@ -29,6 +29,54 @@ public enum TaskDeferral {
         return (hasRecord ? task.deferralCount : task.deferralCount + 1) >= TaskPriority.staleThreshold
     }
 
+    /// What Defer would do, so the sheet can say it before the user chooses.
+    public struct Preview: Equatable, Sendable {
+        /// Which deferral this is (a refinement of that day's record keeps its number): 1st, 2nd, 3rd…
+        public var ordinal: Int
+        /// From the third deferral a date picker opens; before that it is instant, to tomorrow.
+        public var requiresPicker: Bool
+        /// A task due later is moved by *rescheduling*: no count, no record, no easing.
+        public var isReschedule: Bool
+        /// A medium or high task will be eased to low by this deferral.
+        public var willEase: Bool
+        public var easesFrom: Importance?
+        /// Someday is open unless the task is (still) important after any easing, or repeats.
+        public var somedayAllowed: Bool
+        /// The fifth deferral: the companion suggests removing it.
+        public var suggestsRemoval: Bool
+
+        public init(
+            ordinal: Int, requiresPicker: Bool, isReschedule: Bool, willEase: Bool, easesFrom: Importance?,
+            somedayAllowed: Bool, suggestsRemoval: Bool
+        ) {
+            self.ordinal = ordinal
+            self.requiresPicker = requiresPicker
+            self.isReschedule = isReschedule
+            self.willEase = willEase
+            self.easesFrom = easesFrom
+            self.somedayAllowed = somedayAllowed
+            self.suggestsRemoval = suggestsRemoval
+        }
+    }
+
+    public static func preview(_ task: TaskItem, from day: CalendarDate) -> Preview {
+        let hasRecord = (task.deferrals ?? []).contains { CalendarDate(storedDate: $0.day) == day }
+        let due = task.dueDate.map(CalendarDate.init(storedDate:))
+        let isReschedule = !hasRecord && (due.map { $0 > day } ?? true)
+        let ordinal = hasRecord ? task.deferralCount : task.deferralCount + 1
+        let willEase = !hasRecord && !isReschedule && ordinal >= TaskPriority.staleThreshold && TaskPriority.isImportant(task)
+        let somedayAllowed = task.repeatMode == .off && (!TaskPriority.isImportant(task) || willEase)
+        return Preview(
+            ordinal: ordinal,
+            requiresPicker: !isReschedule && requiresPicker(task, from: day),
+            isReschedule: isReschedule,
+            willEase: willEase,
+            easesFrom: willEase ? task.importanceLevel : nil,
+            somedayAllowed: somedayAllowed,
+            suggestsRemoval: !isReschedule && ordinal >= TaskPriority.removalThreshold
+        )
+    }
+
     /// Moves a task to `target` (`nil` is Someday).
     ///
     /// - Parameter day: the logical day being deferred *from*. It is today, except in Night Planning

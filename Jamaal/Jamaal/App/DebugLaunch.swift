@@ -13,6 +13,9 @@ import JamaalCore
 enum DebugLaunch {
     static var inMemory: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalInMemory") }
     static var openAdd: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenAdd") }
+    /// `-JamaalOpenTask` opens the sample clinic task's detail; with `-JamaalOpenDefer` its defer sheet opens too.
+    static var openTask: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenTask") }
+    static var openDefer: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenDefer") }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor
@@ -34,6 +37,9 @@ enum DebugLaunch {
             task.importanceLevel = importance
             task.category = category(key)
             task.deferralCount = deferrals
+            if title == "Call the clinic back" {
+                task.notes = "- [ ] Ask about the **referral letter**\n- [x] Find the appointment number\n- [ ] Are *Thursday mornings* still open?"
+            }
             context.insert(task)
         }
     }

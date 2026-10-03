@@ -26,6 +26,7 @@ struct TodayScreen: View {
     @State private var alsoTodayOpen = false
     @State private var choosing: AnchorInstance?
     @State private var isAdding = false
+    @State private var openTask: TaskItem?
 
     var body: some View {
         // Reading the attributes Today depends on makes SwiftUI re-run this body when any of them changes,
@@ -63,7 +64,11 @@ struct TodayScreen: View {
         .onAppear {
             #if DEBUG
             if DebugLaunch.openAdd { isAdding = true }
+            if DebugLaunch.openTask { openTask = tasks.first { $0.title == "Call the clinic back" } }
             #endif
+        }
+        .sheet(item: $openTask) { task in
+            TaskDetailSheet(task: task)
         }
         .sheet(isPresented: $isAdding) {
             AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now))
@@ -156,7 +161,7 @@ struct TodayScreen: View {
             VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
                 SectionLabel(title: "Tasks")
                 ForEach(rows, id: \.id) { task in
-                    TaskRow(task: task, doneTime: task.completedAt.map(Self.timeFormat.string(from:))) { toggle(task) }
+                    TaskRow(task: task, doneTime: task.completedAt.map(Self.timeFormat.string(from:)), onToggle: { toggle(task) }, onOpen: { openTask = task })
                 }
             }
         }
@@ -180,7 +185,7 @@ struct TodayScreen: View {
                 .accessibilityHint(alsoTodayOpen ? "Hides them" : "Shows them")
                 if alsoTodayOpen {
                     ForEach(overview.alsoToday, id: \.id) { task in
-                        TaskRow(task: task, doneTime: nil) { toggle(task) }
+                        TaskRow(task: task, doneTime: nil, onToggle: { toggle(task) }, onOpen: { openTask = task })
                     }
                 }
             }
