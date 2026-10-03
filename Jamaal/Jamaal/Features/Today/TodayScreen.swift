@@ -19,15 +19,19 @@ struct TodayScreen: View {
     @Query private var tasks: [TaskItem]
     @Query private var plans: [DayPlan]
     @Query private var settings: [UserSettings]
+    @Query private var anchors: [AnchorInstance]
     @State private var now: Date = .now
     @State private var alsoTodayOpen = false
+    @State private var choosing: AnchorInstance?
 
     var body: some View {
         // Reading the attributes Today depends on makes SwiftUI re-run this body when any of them changes,
         // including from another device's sync; the overview itself is then re-read from the store.
         let _ = (tasks.map { [$0.isCompleted ? 1 : 0, $0.droppedAt == nil ? 0 : 1, $0.effortMinutes ?? -1, Int($0.dueDate?.timeIntervalSince1970 ?? 0)] },
-                 plans.map { $0.capacity }, settings.map { [$0.mediumDayMinutes, $0.rolloverMinute] })
+                 plans.map { $0.capacity },
+                 anchors.map { [$0.attendanceStatus, $0.windowStart, $0.windowEnd] as [AnyHashable] }, settings.map { [$0.mediumDayMinutes, $0.rolloverMinute] })
         let overview = try? TodayDay.overview(in: context, now: now)
+        let anchorItems = (try? TodayAnchors.items(in: context, now: now, boundary: TodayDay.boundary(in: context))) ?? []
         ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 if let overview {
@@ -39,6 +43,7 @@ struct TodayScreen: View {
                     CapacitySlider(level: overview.level) { level in
                         try? TodayDay.setLevel(level, in: context, now: now)
                     }
+                    anchorsSection(anchorItems)
                     tasksSection(overview)
                     alsoToday(overview)
                 }
@@ -49,6 +54,22 @@ struct TodayScreen: View {
         }
         .scrollIndicators(.hidden)
         .background(threads.app)
+        .confirmationDialog(
+            choosing?.title ?? "", isPresented: Binding(get: { choosing != nil }, set: { if !$0 { choosing = nil } }), titleVisibility: .visible
+        ) {
+            if let anchor = choosing {
+                ForEach(TodayAnchors.actions(for: anchor, now: now, boundary: TodayDay.boundary(in: context)), id: \.self) { action in
+                    Button(TodayCopy.title(for: action)) { perform(action, on: anchor) }
+                }
+            }
+        }
+        // The window bars and states move with the clock, so look again each minute.
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(60))
+                now = .now
+            }
+        }
         .onChange(of: scenePhase) { _, phase in if phase == .active { now = .now } }
     }
 
@@ -58,6 +79,23 @@ struct TodayScreen: View {
         return VStack(alignment: .leading, spacing: ThreadsSpace.row) {
             Text(TodayCopy.headerLabel(overview.today)).threadsType(.label).foregroundStyle(threads.ink2)
             DisplayHeadline(first: headline.first, second: headline.second)
+        }
+    }
+
+    @ViewBuilder
+    private func anchorsSection(_ items: [TodayAnchorItem]) -> some View {
+        if !items.isEmpty {
+            VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
+                SectionLabel(title: "Anchors")
+                ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+                    switch item {
+                    case .plain(let row):
+                        AnchorRowView(row: row, onTick: { tick(row) }, onOpen: { choosing = row.anchor })
+                    case .group(let group):
+                        AnchorGroupRowView(group: group, onTick: tick, onOpen: { choosing = $0.anchor })
+                    }
+                }
+            }
         }
     }
 
@@ -97,6 +135,16 @@ struct TodayScreen: View {
                 }
             }
         }
+    }
+
+    /// The tick on an Anchor: Attended while the window is open, or undo once attended.
+    private func tick(_ row: TodayAnchorRow) {
+        perform(row.status == .attended ? .undo : .attended, on: row.anchor)
+    }
+
+    private func perform(_ action: AnchorAction, on anchor: AnchorInstance) {
+        now = .now
+        try? TodayAnchors.perform(action, on: anchor, now: now, boundary: TodayDay.boundary(in: context))
     }
 
     private func toggle(_ task: TaskItem) {

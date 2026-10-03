@@ -55,4 +55,26 @@ final class TodayUITests: XCTestCase {
         slider.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.2)).tap()
         XCTAssertEqual(slider.value as? String, "Medium")
     }
+
+    @MainActor
+    func testAnUpcomingAnchorCannotBeTickedButAGroupOpensAndItsOpenMemberCanBe() throws {
+        let app = launch()
+        // The school run opens in an hour: its tick is disabled.
+        let school = app.buttons["Mark School run attended"]
+        XCTAssertTrue(school.waitForExistence(timeout: 10))
+        XCTAssertFalse(school.isEnabled)
+
+        // Salah is one grouped row; open it and attend the open window (Dhuhr).
+        let group = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Salah'")).firstMatch
+        XCTAssertTrue(group.exists)
+        group.tap()
+        let dhuhr = app.buttons["Mark Dhuhr attended"]
+        if !dhuhr.waitForExistence(timeout: 5) { print("HIERARCHY", app.debugDescription) }
+        XCTAssertTrue(dhuhr.exists)
+        XCTAssertTrue(dhuhr.isEnabled)
+        dhuhr.tap()
+        XCTAssertTrue(app.buttons["Undo Dhuhr"].waitForExistence(timeout: 5))
+        app.buttons["Undo Dhuhr"].tap()
+        XCTAssertTrue(app.buttons["Mark Dhuhr attended"].waitForExistence(timeout: 5))
+    }
 }

@@ -10,11 +10,12 @@ import ThreadsTokens
 struct CheckCircle: View {
     @Environment(\.threads) private var threads
     let isDone: Bool
+    var isMuted = false
 
     var body: some View {
         ZStack {
             Circle()
-                .strokeBorder(isDone ? threads.accent : threads.ink3, lineWidth: 1.5)
+                .strokeBorder(isDone ? threads.accent : (isMuted ? threads.line2 : threads.ink3), lineWidth: 1.5)
                 .background(Circle().fill(isDone ? threads.accent : .clear))
             if isDone {
                 Image(systemName: "checkmark")
