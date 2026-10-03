@@ -58,4 +58,20 @@ extension UserSettings {
         let level = CapacityLevel(stored: raw)
         return level.isUnknown ? .medium : level
     }
+
+    /// Sets one weekday's default level, keeping the others. An unreadable map starts from the
+    /// weekend defaults (Saturday and Sunday `low`) rather than losing them.
+    public func setDefaultLevel(_ level: CapacityLevel, forISOWeekday weekday: Int) {
+        guard let raw = level.storable else { return }
+        var map: [String: String] = ["6": "low", "7": "low"]
+        if let data = weekdayLevels.data(using: .utf8),
+           let existing = try? JSONSerialization.jsonObject(with: data) as? [String: String] {
+            map = existing
+        }
+        map[String(weekday)] = raw
+        if let data = try? JSONSerialization.data(withJSONObject: map, options: [.sortedKeys]),
+           let text = String(data: data, encoding: .utf8) {
+            weekdayLevels = text
+        }
+    }
 }
