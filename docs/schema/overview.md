@@ -178,6 +178,7 @@ completedEffortMinutes: Int = 0
 loadScore: Int = 0
 wasOverloaded: Bool = false
 completionRate: Double = 0
+completionBasis: Int = 0
 planningCompletedAt: Date? = nil
 ```
 
@@ -303,6 +304,7 @@ Safe to add without breaking anything, so they are *not* blockers: `TaskItem.sor
 - [x] `TaskCategory.colorKey` values decided (`accent` / `blue` / `ochre` / `plum` / `slate`); the tokens ship in ThreadsKit 1.2.0
 - [x] `TaskItem.repeatDayOfMonth` added while building the repeating-task rules (monthly on the 31st would otherwise drift); defaulted, so safe
 - [x] `NightPlanningSession.isShortened` added while building Night Planning (the morning's shortened flow needs to be told apart from the evening one, whose Build step it shares); defaulted, so safe
+- [x] `DayPlan.completionBasis` added while building wellbeing (the rollover writes the denominator of `completionRate`, so a day with nothing to finish isn't read as a day where nothing was finished); defaulted, so safe
 - [x] `HabitGroup.emoji` removed before the freeze (Design draws no emoji anywhere); nothing was in production
 - [ ] Habit preset definitions (`presetKey` is a string, so can follow)
 - [ ] Review by the owner, then implement the models in `JamaalCore` with tests first

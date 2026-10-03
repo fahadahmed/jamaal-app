@@ -138,6 +138,7 @@ struct ModelTests {
         #expect(plan.loadScore == 0)
         #expect(!plan.wasOverloaded)
         #expect(plan.completionRate == 0)
+        #expect(plan.completionBasis == 0)
         #expect(plan.planningCompletedAt == nil)
 
         let session = NightPlanningSession()

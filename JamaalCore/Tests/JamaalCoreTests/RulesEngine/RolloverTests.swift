@@ -263,6 +263,7 @@ struct RolloverTests {
         try catchUp(context, last: 1, nowDay: 3)
         let p = try #require(try plan(context, 2))
         #expect(p.completionRate == 0.5)                                 // 2 of 4
+        #expect(p.completionBasis == 4)                                  // the denominator is recorded
     }
 
     @Test func aDayWithNothingToFinishHasARateOfZero() throws {
@@ -270,6 +271,7 @@ struct RolloverTests {
         let s = WorkSession(); s.day = date(2); context.insert(s)         // activity, but no tasks
         try catchUp(context, last: 1, nowDay: 3)
         #expect(try plan(context, 2)?.completionRate == 0)
+        #expect(try plan(context, 2)?.completionBasis == 0)                // nothing to finish, as distinct from nothing finished
     }
 
     // MARK: Running sessions close at the boundary

@@ -14,6 +14,7 @@ public final class DayPlan {
     public var loadScore: Int = 0
     public var wasOverloaded: Bool = false
     public var completionRate: Double = 0
+    public var completionBasis: Int = 0
     public var planningCompletedAt: Date? = nil
 
     public init() {
