@@ -83,4 +83,72 @@ enum TodayCopy {
         if let effortMinutes { parts.append("\(effortMinutes) min") }
         return parts
     }
+
+    // MARK: Anchors
+
+    /// How clock times and weekday names are written: the device's, unless a test says otherwise.
+    struct TimeStyle {
+        var timeZone: TimeZone = .current
+        var locale: Locale = .current
+    }
+
+    static func time(_ date: Date, style: TimeStyle = TimeStyle()) -> String {
+        date.formatted(Date.FormatStyle(date: .omitted, time: .shortened, locale: style.locale, timeZone: style.timeZone))
+    }
+
+    private static func weekday(_ date: Date, style: TimeStyle) -> String {
+        date.formatted(Date.FormatStyle(locale: style.locale, timeZone: style.timeZone).weekday(.wide))
+    }
+
+    /// The second line of a plain Anchor row.
+    static func anchorDetail(
+        status: AttendanceStatus, state: AnchorWindowState, windowStart: Date, windowEnd: Date,
+        resolvedAt: Date?, effortMinutes: Int?, endsToday: Bool, style: TimeStyle = TimeStyle()
+    ) -> String {
+        switch status {
+        case .attended: return resolvedAt.map { "Attended \(time($0, style: style))" } ?? "Attended"
+        case .skipped: return "Not today"
+        case .delegated: return "Someone else did it"
+        case .missed: return "Window closed at \(time(windowEnd, style: style))"
+        case .pending, .unknown:
+            let until = endsToday ? time(windowEnd, style: style) : weekday(windowEnd.addingTimeInterval(-1), style: style)
+            switch state {
+            case .upcoming:
+                let opens = "Opens at \(time(windowStart, style: style))"
+                return effortMinutes.map { "\(opens) · \($0) min" } ?? opens
+            case .open: return "Open until \(until)"
+            case .closingSoon: return "Closing soon · until \(until)"
+            case .closed: return "Window closed at \(time(windowEnd, style: style))"
+            }
+        }
+    }
+
+    /// The figure at the right of a plain Anchor row: the opening time while it is upcoming, "Day 2 of 3" for a
+    /// window of several days, otherwise nothing.
+    static func anchorTrailing(state: AnchorWindowState, windowStart: Date, dayNumber: Int, totalDays: Int, style: TimeStyle = TimeStyle()) -> String? {
+        if totalDays > 1 { return "Day \(dayNumber) of \(totalDays)" }
+        return state == .upcoming ? time(windowStart, style: style) : nil
+    }
+
+    static func groupCount(attended: Int, counting: Int) -> String { "\(attended)/\(counting)" }
+
+    /// The second line of a grouped row: the next pending window, or a quiet done state.
+    static func groupDetail(
+        nextTitle: String?, nextState: AnchorWindowState?, nextStart: Date?, nextEnd: Date?, allDecided: Bool, style: TimeStyle = TimeStyle()
+    ) -> String {
+        guard let nextTitle, let nextState, let nextStart, let nextEnd else { return allDecided ? "All done for today" : "" }
+        return nextState == .upcoming
+            ? "\(nextTitle) · from \(time(nextStart, style: style))"
+            : "\(nextTitle) · until \(time(nextEnd, style: style))"
+    }
+
+    static func title(for action: AnchorAction) -> String {
+        switch action {
+        case .attended: "Attended"
+        case .notToday: "Not today"
+        case .someoneElseDidIt: "Someone else did it"
+        case .markDoneAfterAll: "Mark as done after all"
+        case .undo: "Undo"
+        }
+    }
 }
