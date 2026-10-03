@@ -77,4 +77,57 @@ final class TodayUITests: XCTestCase {
         app.buttons["Undo Dhuhr"].tap()
         XCTAssertTrue(app.buttons["Mark Dhuhr attended"].waitForExistence(timeout: 5))
     }
+
+    /// Scrolls until `element` is on screen (Today is longer than a phone).
+    @MainActor
+    private func reveal(_ element: XCUIElement, in app: XCUIApplication) {
+        for _ in 0..<5 where !(element.exists && element.isHittable) { app.swipeUp() }
+    }
+
+    @MainActor
+    func testACountedHabitStepsUpAndDown() throws {
+        let app = launch()
+        let add = app.buttons["Add one to Water"]
+        XCTAssertTrue(add.waitForExistence(timeout: 10))
+        reveal(add, in: app)
+        XCTAssertTrue(app.staticTexts["3 of 8"].exists)
+        add.tap()
+        XCTAssertTrue(app.staticTexts["4 of 8"].waitForExistence(timeout: 5))
+        app.buttons["Take one from Water"].tap()
+        XCTAssertTrue(app.staticTexts["3 of 8"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testAnAvoidHabitCanBeHeldAndTakenBack() throws {
+        let app = launch()
+        let held = app.buttons["Held today: Late-night scrolling"]
+        XCTAssertTrue(held.waitForExistence(timeout: 10))
+        reveal(held, in: app)
+        XCTAssertTrue(app.staticTexts["None yet · up to 1"].exists)
+        held.tap()
+        let undo = app.buttons["Undo held today for Late-night scrolling"]
+        XCTAssertTrue(undo.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Held today"].exists)
+        undo.tap()
+        XCTAssertTrue(app.buttons["Held today: Late-night scrolling"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testABinaryHabitCanBeTickedAndAGroupOpensIntoItsHabits() throws {
+        let app = launch()
+        let floss = app.buttons["Mark Floss done"]
+        XCTAssertTrue(floss.waitForExistence(timeout: 10))
+        reveal(floss, in: app)
+        floss.tap()
+        XCTAssertTrue(app.buttons["Mark Floss not done"].waitForExistence(timeout: 5))
+
+        let pill = app.buttons["Morning, 2 of 3"]
+        for _ in 0..<5 where !pill.exists { app.swipeDown() }
+        XCTAssertTrue(pill.waitForExistence(timeout: 5))
+        pill.tap()
+        let journal = app.buttons["Mark Journal done"]
+        XCTAssertTrue(journal.waitForExistence(timeout: 5))
+        journal.tap()
+        XCTAssertTrue(app.buttons["Morning, 3 of 3"].waitForExistence(timeout: 5))
+    }
 }

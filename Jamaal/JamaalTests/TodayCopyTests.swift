@@ -140,3 +140,37 @@ struct AnchorCopyTests {
         #expect(TodayCopy.title(for: .undo) == "Undo")
     }
 }
+
+/// The Habits rows' words.
+struct HabitCopyTests {
+    @Test func countedAndTimedReadAmountOfTarget() {
+        #expect(TodayCopy.habitDetail(kind: .counted, amount: 3, target: 8, isDone: false) == "3 of 8")
+        #expect(TodayCopy.habitDetail(kind: .timed, amount: 12, target: 20, isDone: false) == "12 of 20 min")
+        #expect(TodayCopy.habitDetail(kind: .timed, amount: 0, target: 20, isDone: false) == "0 of 20 min")
+    }
+
+    @Test func aBinaryHabitSaysNothingUntilItIsDone() {
+        #expect(TodayCopy.habitDetail(kind: .binary, amount: 0, target: 1, isDone: false) == nil)
+        #expect(TodayCopy.habitDetail(kind: .binary, amount: 1, target: 1, isDone: true) == "Done")
+    }
+
+    @Test func anAvoidHabitStatesTheAllowanceAndNeverScolds() {
+        #expect(TodayCopy.habitDetail(kind: .avoid, amount: 0, target: 1, isDone: false) == "None yet · up to 1")
+        #expect(TodayCopy.habitDetail(kind: .avoid, amount: 1, target: 1, isDone: false) == "1 of 1 · still within")
+        #expect(TodayCopy.habitDetail(kind: .avoid, amount: 3, target: 1, isDone: false) == "3 slips today")
+        #expect(TodayCopy.habitDetail(kind: .avoid, amount: 0, target: 0, isDone: false) == "None yet · none allowed")
+        #expect(TodayCopy.habitDetail(kind: .avoid, amount: 0, target: 1, isDone: true) == "Held today")
+        #expect(TodayCopy.habitDetail(kind: .avoid, amount: 1, target: 1, isDone: true) == "Held today · 1 slip")
+        #expect(TodayCopy.habitDetail(kind: .avoid, amount: 2, target: 3, isDone: true) == "Held today · 2 slips")
+    }
+
+    @Test func aGroupPillReadsNameAndCount() {
+        #expect(TodayCopy.groupPill(done: 2, total: 3) == "2 of 3")
+        #expect(TodayCopy.groupPill(done: 0, total: 5) == "0 of 5")
+    }
+
+    @Test func theSectionCountIsSpokenPlainly() {
+        #expect(TodayCopy.habitsSummary(done: 4, total: 7) == "4 of 7 done")
+        #expect(TodayCopy.habitsSummary(done: 0, total: 0) == "none today")
+    }
+}

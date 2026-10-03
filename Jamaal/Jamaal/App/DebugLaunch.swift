@@ -27,6 +27,7 @@ enum DebugLaunch {
             ("Reply to Sam", 30, .low, "work", 0),
         ]
         insertSampleAnchors(into: context, now: now)
+        insertSampleHabits(into: context, now: now)
         for (title, minutes, importance, key, deferrals) in rows {
             let task = TaskItem(title: title, dueDate: today, effortMinutes: minutes)
             task.importanceLevel = importance
@@ -57,6 +58,36 @@ enum DebugLaunch {
         let salah = AnchorRule(title: "Salah"); salah.configData = Self.unreadable; context.insert(salah)
         anchor("Dhuhr", rule: salah, start: -3600, end: 3000)
         anchor("Asr", rule: salah, start: 7200, end: 12600)
+    }
+
+    /// Water (counted, 3 of 8), Read (timed, 12 of 20 min), Late-night scrolling (avoid), Floss (binary), and a
+    /// Morning group with two of its three habits already done.
+    @MainActor
+    private static func insertSampleHabits(into context: ModelContext, now: Date) {
+        let boundary = TodayDay.boundary(in: context)
+        let today = boundary.logicalDate(at: now)
+        func habit(_ title: String, _ kind: HabitKind, target: Int, amount: Int = 0, group: HabitGroup? = nil) {
+            let h = Habit(title: title)
+            h.habitKind = kind
+            h.createdAt = now.addingTimeInterval(-30 * 86_400)
+            context.insert(h)
+            let w = HabitTimeWindow(); w.target = target
+            context.insert(w); w.habit = h
+            h.group = group
+            if amount > 0 {
+                let e = HabitEntry(); e.date = today.storedDate; e.target = target; e.amount = amount
+                if amount >= target { e.completedAt = now }
+                context.insert(e); e.window = w
+            }
+        }
+        let morning = HabitGroup(); morning.title = "Morning"; context.insert(morning)
+        habit("Stretch", .binary, target: 1, amount: 1, group: morning)
+        habit("Vitamins", .binary, target: 1, amount: 1, group: morning)
+        habit("Journal", .binary, target: 1, group: morning)
+        habit("Water", .counted, target: 8, amount: 3)
+        habit("Read", .timed, target: 20, amount: 12)
+        habit("Late-night scrolling", .avoid, target: 1)
+        habit("Floss", .binary, target: 1)
     }
 }
 #endif

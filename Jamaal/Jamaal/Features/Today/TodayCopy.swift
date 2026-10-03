@@ -151,4 +151,24 @@ enum TodayCopy {
         case .undo: "Undo"
         }
     }
+
+    // MARK: Habits
+
+    /// The second line of a habit row, or `nil` when there is nothing to say yet (a binary habit not done).
+    static func habitDetail(kind: HabitKind, amount: Int, target: Int, isDone: Bool) -> String? {
+        switch kind {
+        case .counted: return "\(amount) of \(target)"
+        case .timed: return "\(amount) of \(target) min"
+        case .binary, .unknown: return isDone ? "Done" : nil
+        case .avoid:
+            let slips = amount == 1 ? "1 slip" : "\(amount) slips"
+            if isDone { return amount > 0 ? "Held today · \(slips)" : "Held today" }
+            if amount == 0 { return target > 0 ? "None yet · up to \(target)" : "None yet · none allowed" }
+            return amount <= target ? "\(amount) of \(target) · still within" : "\(slips) today"
+        }
+    }
+
+    static func groupPill(done: Int, total: Int) -> String { "\(done) of \(total)" }
+
+    static func habitsSummary(done: Int, total: Int) -> String { total == 0 ? "none today" : "\(done) of \(total) done" }
 }
