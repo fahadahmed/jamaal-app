@@ -87,18 +87,7 @@ public enum Rollover {
         for task in tasks where !task.isCompleted && task.droppedAt == nil {
             guard let due = task.dueDate, calendar(due) <= day else { continue }
             if (task.deferrals ?? []).contains(where: { calendar($0.day) == day }) { continue }
-            let record = DeferralRecord()
-            record.day = day.storedDate
-            record.deferredOn = boundaryInstant
-            record.deferredTo = nextDay.storedDate
-            record.reason = DeferralReason.unspecified.rawValue
-            context.insert(record)
-            record.task = task
-            task.deferralCount += 1
-            if task.deferralCount >= 3, task.importanceLevel == .medium || task.importanceLevel == .high {
-                task.importanceLevel = .low
-            }
-            task.dueDate = nextDay.storedDate
+            TaskDeferral.record(task, day: day, deferredOn: boundaryInstant, to: nextDay, reason: .unspecified, context: context)
             report.deferrals += 1
         }
 
