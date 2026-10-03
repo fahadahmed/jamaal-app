@@ -473,3 +473,49 @@ struct FocusSessionTests {
         #expect(idle.deferralCount == 1)                                 // an untouched task is still auto-deferred
     }
 }
+
+/// Time tracked on a task, for its row ("Timing · 24 min", "Done 10:55 · 74 min").
+@MainActor
+struct TrackedTimeTests {
+    private let utc = TimeZone(identifier: "UTC")!
+    private var boundary: DayBoundary { DayBoundary(rolloverMinute: 0, timeZone: utc) }
+    private func at(_ hour: Int, _ minute: Int = 0) -> Date {
+        boundary.instant(of: CalendarDate(year: 2026, month: 10, day: 5)!, atMinute: hour * 60 + minute)
+    }
+    private func fixture() throws -> (ModelContext, TaskItem) {
+        let c = ModelContext(try JamaalSchema.makeContainer(inMemory: true))
+        let t = TaskItem(title: "Draft", effortMinutes: 60)
+        c.insert(t)
+        return (c, t)
+    }
+
+    @Test func aTaskNeverTimedHasNoTrackedTime() throws {
+        let (_, t) = try fixture()
+        #expect(FocusSessions.trackedSeconds(of: t, at: at(9)) == 0)
+    }
+
+    @Test func aLiveSessionCountsItsElapsedTime() throws {
+        let (c, t) = try fixture()
+        _ = try FocusSessions.begin(task: t, now: at(9), boundary: boundary, context: c)
+        #expect(FocusSessions.trackedSeconds(of: t, at: at(9, 24)) == 24 * 60)
+    }
+
+    @Test func endedSessionsAddUpWithTheLiveOne() throws {
+        let (c, t) = try fixture()
+        let first = try FocusSessions.begin(task: t, now: at(9), boundary: boundary, context: c)
+        _ = try FocusSessions.finish(first, as: .stopForNow, note: nil, now: at(9, 30), boundary: boundary, context: c)
+        _ = try FocusSessions.begin(task: t, now: at(11), boundary: boundary, context: c)
+        #expect(FocusSessions.trackedSeconds(of: t, at: at(11, 10)) == 40 * 60)
+    }
+
+    @Test func pausesAreNotWorkAndAPausedSessionStopsCounting() throws {
+        let (c, t) = try fixture()
+        let s = try FocusSessions.begin(task: t, now: at(9), boundary: boundary, context: c)
+        try FocusSessions.pause(s, now: at(9, 20))
+        #expect(FocusSessions.trackedSeconds(of: t, at: at(9, 50)) == 20 * 60)
+    }
+
+    @Test func aTaskWithNoSessionsRelationshipIsZero() {
+        #expect(FocusSessions.trackedSeconds(of: TaskItem(title: "x"), at: at(9)) == 0)
+    }
+}

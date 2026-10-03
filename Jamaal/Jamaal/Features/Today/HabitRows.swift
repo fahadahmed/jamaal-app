@@ -13,6 +13,7 @@ struct HabitRowView: View {
     @Environment(\.threads) private var threads
     let row: TodayHabitRow
     let onAction: (HabitLogAction) -> Void
+    var onBegin: () -> Void = {}
 
     var body: some View {
         HStack(alignment: .center, spacing: ThreadsSpace.row) {
@@ -52,6 +53,9 @@ struct HabitRowView: View {
                 PillButton(title: "Held today") { onAction(.heldToday) }
                     .accessibilityLabel("Held today: \(row.title)")
             }
+        case .timed where !row.isDone:
+            PillButton(title: "Begin", action: onBegin)
+                .accessibilityLabel("Begin \(row.title)")
         case .binary, .timed, .unknown:
             EmptyView()
         }
@@ -64,6 +68,7 @@ struct HabitGroupView: View {
     @Environment(\.threads) private var threads
     let group: TodayHabitGroup
     let onAction: (TodayHabitRow, HabitLogAction) -> Void
+    var onBegin: (TodayHabitRow) -> Void = { _ in }
     @State private var isOpen = false
 
     var body: some View {
@@ -85,7 +90,7 @@ struct HabitGroupView: View {
 
             if isOpen {
                 ForEach(group.rows, id: \.window.id) { row in
-                    HabitRowView(row: row) { onAction(row, $0) }
+                    HabitRowView(row: row, onAction: { onAction(row, $0) }, onBegin: { onBegin(row) })
                     if row.window.id != group.rows.last?.window.id { Divider().overlay(threads.line) }
                 }
                 .padding(.top, ThreadsSpace.hair)

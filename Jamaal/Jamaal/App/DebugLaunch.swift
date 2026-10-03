@@ -16,6 +16,9 @@ enum DebugLaunch {
     /// `-JamaalOpenTask` opens the sample clinic task's detail; with `-JamaalOpenDefer` its defer sheet opens too.
     static var openTask: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenTask") }
     static var openDefer: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenDefer") }
+    /// `-JamaalBegin` starts a session on the sample "Draft" task, 24 minutes in; `-JamaalOpenFocus` opens its screen.
+    static var begin: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalBegin") }
+    static var openFocus: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenFocus") }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor
@@ -41,6 +44,12 @@ enum DebugLaunch {
                 task.notes = "- [ ] Ask about the **referral letter**\n- [x] Find the appointment number\n- [ ] Are *Thursday mornings* still open?"
             }
             context.insert(task)
+        }
+        if begin, let draft = ((try? context.fetch(FetchDescriptor<TaskItem>())) ?? []).first(where: { $0.title == "Draft the architecture review" }) {
+            draft.notes = "- [x] Outline the three options\n- [ ] Cost table for **option B**\n- [ ] Send to Priya for a read"
+            if let session = try? FocusSessions.begin(task: draft, now: now.addingTimeInterval(-(24 * 60 + 10)), boundary: TodayDay.boundary(in: context), context: context) {
+                _ = session
+            }
         }
     }
 

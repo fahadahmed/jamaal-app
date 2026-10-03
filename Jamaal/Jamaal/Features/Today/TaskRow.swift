@@ -13,6 +13,9 @@ struct TaskRow: View {
     @Environment(\.threads) private var threads
     let task: TaskItem
     let doneTime: String?
+    /// Seconds spent on it, and whether a session on it is running now.
+    var trackedSeconds = 0
+    var isTiming = false
     let onToggle: () -> Void
     var onOpen: () -> Void = {}
 
@@ -44,9 +47,10 @@ struct TaskRow: View {
 
     private var metaLine: some View {
         HStack(spacing: ThreadsSpace.tight) {
+            let timing = FocusCopy.timingMeta(trackedSeconds: trackedSeconds, isLive: isTiming)
             let parts = task.isCompleted
-                ? [doneTime.map { "Done \($0)" }].compactMap { $0 }
-                : TodayCopy.taskMeta(deferrals: task.deferralCount, effortMinutes: task.effortMinutes)
+                ? [doneTime.map { "Done \($0)" }, timing].compactMap { $0 }
+                : (isTiming ? [timing].compactMap { $0 } : TodayCopy.taskMeta(deferrals: task.deferralCount, effortMinutes: task.effortMinutes))
             if !parts.isEmpty { Text(parts.joined(separator: " · ")) }
             if let category = task.category, !category.name.isEmpty {
                 HStack(spacing: 6) {

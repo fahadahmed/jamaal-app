@@ -14,6 +14,7 @@ struct TaskDetailSheet: View {
     @Environment(\.threads) private var threads
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Environment(FocusCoordinator.self) private var focus
 
     let task: TaskItem
     @State private var deferring = false
@@ -128,6 +129,14 @@ struct TaskDetailSheet: View {
 
     private var actions: some View {
         VStack(spacing: ThreadsSpace.tight) {
+            if !task.isCompleted {
+                Button(action: begin) {
+                    Label(isTimingThis ? "Open timer" : "Begin", systemImage: "play").threadsType(.row).foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, minHeight: 56).background(Capsule().fill(threads.terra))
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("beginButton")
+            }
             HStack(spacing: ThreadsSpace.tight) {
                 PillButton(title: task.isCompleted ? "Mark not done" : "Mark done", fills: true) { toggleDone() }
                     .accessibilityIdentifier("markDone")
@@ -152,6 +161,28 @@ struct TaskDetailSheet: View {
     }
 
     // MARK: Actions
+
+    private var isTimingThis: Bool { FocusSessions.liveSession(in: context)?.task === task }
+
+    /// Begin starts a session (or, if this task is already being timed, opens the timer). A second Begin while
+    /// another task is running raises the settle sheet instead.
+    private func begin() {
+        if isTimingThis {
+            focus.isShowingFocus = true
+            dismiss()
+        } else if FocusSessions.liveSession(in: context) == nil {
+            focus.begin(.task(task))
+            dismiss()
+        } else {
+            // The settle sheet is presented from the shell, so let this sheet finish dismissing first: two
+            // presentations at once leave the second one unresponsive.
+            dismiss()
+            Task {
+                try? await Task.sleep(for: .milliseconds(600))
+                focus.begin(.task(task))
+            }
+        }
+    }
 
     private func toggle(_ line: Int) {
         if let updated = TaskNotes.toggled(task.notes, line: line) { task.notes = updated }
