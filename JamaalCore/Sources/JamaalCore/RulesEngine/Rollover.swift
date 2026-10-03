@@ -83,9 +83,19 @@ public enum Rollover {
 
         let activity = try Engagement.engagedDays(in: context, boundary: boundary).contains(day)
 
+        // A task being timed at the boundary is in progress: its session closes below, and it is
+        // carried to the next day without counting a deferral.
+        let inProgress = Set(try context.fetch(FetchDescriptor<WorkSession>())
+            .filter { $0.outcome == SessionOutcome.running.rawValue && $0.endedAt == nil && $0.startedAt < boundaryInstant }
+            .compactMap { $0.task?.id })
+
         // 1. Auto-defer.
         for task in tasks where !task.isCompleted && task.droppedAt == nil {
             guard let due = task.dueDate, calendar(due) <= day else { continue }
+            if inProgress.contains(task.id) {
+                task.dueDate = nextDay.storedDate
+                continue
+            }
             if (task.deferrals ?? []).contains(where: { calendar($0.day) == day }) { continue }
             TaskDeferral.record(task, day: day, deferredOn: boundaryInstant, to: nextDay, reason: .unspecified, context: context)
             report.deferrals += 1
