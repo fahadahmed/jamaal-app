@@ -17,6 +17,7 @@ public final class TaskItem {
     public var deferralCount: Int = 0
     public var repeatKind: String = "none"
     public var repeatWeekdays: String = ""
+    public var repeatDayOfMonth: Int = 0
     public var seriesID: UUID? = nil
     public var createdAt: Date = Date.now
 

@@ -41,6 +41,7 @@ droppedAt: Date? = nil
 deferralCount: Int = 0
 repeatKind: String = "none"
 repeatWeekdays: String = ""
+repeatDayOfMonth: Int = 0
 seriesID: UUID? = nil
 createdAt: Date = .now
 ```
@@ -299,6 +300,7 @@ Safe to add without breaking anything, so they are *not* blockers: `TaskItem.sor
 - [x] Journey 4 (Anchors) added `Anchor.resolvedAt`, `remindBeforeStartMinutes` and `remindBeforeEndMinutes`
 - [x] Journey 1 (first launch) added `UserSettings.planningMinute`, `morningMinute` and `onboardingCompletedAt`
 - [x] `TaskCategory.colorKey` values decided (`accent` / `blue` / `ochre` / `plum` / `slate`); the tokens ship in ThreadsKit 1.2.0
+- [x] `TaskItem.repeatDayOfMonth` added while building the repeating-task rules (monthly on the 31st would otherwise drift); defaulted, so safe
 - [x] `HabitGroup.emoji` removed before the freeze (Design draws no emoji anywhere); nothing was in production
 - [ ] Habit preset definitions (`presetKey` is a string, so can follow)
 - [ ] Review by the owner, then implement the models in `JamaalCore` with tests first

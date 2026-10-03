@@ -47,6 +47,7 @@ struct ModelTests {
         #expect(task.repeatKind == "none")
         #expect(task.repeatMode == .off)
         #expect(task.repeatWeekdays == "")
+        #expect(task.repeatDayOfMonth == 0)
         #expect(task.seriesID == nil)
         #expect(task.category == nil)
     }
