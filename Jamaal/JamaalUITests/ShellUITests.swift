@@ -36,9 +36,11 @@ final class ShellUITests: XCTestCase {
     }
 
     @MainActor
-    func testTheDisplayTitleAndTheTabsAreThere() throws {
+    func testAnEmptyDayOpensOnACalmHeadline() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["-JamaalInMemory"]
         app.launch()
-        XCTAssertTrue(app.staticTexts["Four things, gently paced."].waitForExistence(timeout: 10))
+        let headline = app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'A clear day'")).firstMatch
+        XCTAssertTrue(headline.waitForExistence(timeout: 10))
     }
 }

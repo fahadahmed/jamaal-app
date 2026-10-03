@@ -30,7 +30,11 @@ enum AppEngine {
     /// container (docs/roadmap/phases.md); sync is switched on by passing a configuration here.
     @MainActor
     static func makeContainer(inMemory: Bool = false) throws -> ModelContainer {
-        try JamaalSchema.makeContainer(inMemory: inMemory)
+        #if DEBUG
+        return try JamaalSchema.makeContainer(inMemory: inMemory || DebugLaunch.inMemory)
+        #else
+        return try JamaalSchema.makeContainer(inMemory: inMemory)
+        #endif
     }
 
     /// Runs the engine tick (seed, dedup, rollover catch-up, Anchors) and remembers the processed day.
@@ -42,6 +46,9 @@ enum AppEngine {
     ) throws -> EngineTickResult {
         let result = try EngineTick.run(in: context, now: now, timeZone: timeZone, lastProcessed: store.day)
         store.day = result.lastProcessed
+        #if DEBUG
+        DebugLaunch.insertSampleData(into: context, now: now)
+        #endif
         return result
     }
 }

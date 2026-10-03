@@ -304,6 +304,10 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 
 `EngineTick.run` is everything the app keeps current on launch and whenever it becomes active, as **one idempotent call** (a second tick over the same moment changes nothing). In order: **seed** what is missing (settings, the default categories); **merge duplicates** another device created; **catch up** every day that has ended since the last tick on the user's own rollover time (auto-deferral, the day's record, timers closed at the boundary, unfinished planning ended); **generate Anchors** for today and tomorrow; then store **missed** for Anchor windows that have closed. It returns what it did and the most recent processed day, which the app keeps **per device** (`UserDefaults`, not synced: another device's progress says nothing about this one, and every step is idempotent anyway). A first run has no history to replay, so it starts from yesterday.
 
+## What Today reads
+
+`TodayDay.overview` is the read model behind Today's header and task list: the day's level (today's `DayPlan.capacity`, else the weekday default), its budget, the **planned minutes** (the tasks Today shows *plus* those already done today, so ticking one off doesn't make the meter look emptier), the load score and state, the count of counted tasks with no estimate, and the three lists (`shown`, `alsoToday`, `completedToday`). `TodayDay.setLevel` upserts today's `DayPlan.capacity`; there is never a second plan row for a day. Tasks hidden by the level stay counted under *Also today*: nothing silently disappears.
+
 ## Access and the trial
 
 **`AccessState`** is a pure function in JamaalCore of `(now, trialStart, entitlement)`: **`trial`** (before the trial ends), **`subscribed`** (an active entitlement, including a billing grace period or retry, so a failed card never locks anyone out), or **`readOnly`** (otherwise). StoreKit supplies the entitlement at the app layer; the last-known entitlement is cached locally (per device, not synced) and used while offline, and an expiry only takes effect when StoreKit confirms it. Nothing is stored in the schema beyond `UserSettings.firstLaunchAt`.
