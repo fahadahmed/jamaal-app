@@ -334,6 +334,12 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 
 `FocusSessions.trackedSeconds(of:at:)` is the time spent on a task: its finished sessions' time plus the live one's elapsed time, pauses excluded; the row's "Timing · 24 min" and "Done 10:55 · 74 min" read it. The rest of module 8 was already built; the app adds only what a screen needs between taps (`FocusCoordinator`): whether the focus screen is open, the **settle sheet** raised by a second Begin (the running session settled first, its time kept whichever is chosen, then the waiting one begins; Cancel changes nothing), and the **five-second Undo** after *Done* (*Stop for now* has none). One timer runs across tasks and timed habits; the chip never changes tone when a session overruns its estimate.
 
+## Today's filter, states and carried-over row
+
+`TodayTaskFilter` is the category filter: it narrows the **Tasks** only, keeps the engine's order, compares categories by identity and hides an uncategorised task under any filter; the menu offers the active categories in their own order. The meter, the load and *Also today* stay whole-day (the meter says so: "2h 15m of 3h · whole day"). The filter lives on the device and the day: it clears at the rollover and on relaunch. An empty result reads "Nothing in Family today." with *Show all*.
+
+The app also names the day: **blank** (nothing due at all), **all done** (no task, Anchor or habit left to decide, though tasks the level hides don't count against it) or the usual. Finished tasks stay listed under the statement, so finishing work doesn't make the list shrink away. The **carried-over row** (`FocusSessions.pickUpRows`) offers to pick a task back up after the rollover closed its session ("Last night's session closed at midnight. 42 min logged on …"), or to be dismissed for the day.
+
 ## Access and the trial
 
 **`AccessState`** is a pure function in JamaalCore of `(now, trialStart, entitlement)`: **`trial`** (before the trial ends), **`subscribed`** (an active entitlement, including a billing grace period or retry, so a failed card never locks anyone out), or **`readOnly`** (otherwise). StoreKit supplies the entitlement at the app layer; the last-known entitlement is cached locally (per device, not synced) and used while offline, and an expiry only takes effect when StoreKit confirms it. Nothing is stored in the schema beyond `UserSettings.firstLaunchAt`.

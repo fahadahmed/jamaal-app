@@ -19,6 +19,8 @@ enum DebugLaunch {
     /// `-JamaalBegin` starts a session on the sample "Draft" task, 24 minutes in; `-JamaalOpenFocus` opens its screen.
     static var begin: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalBegin") }
     static var openFocus: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenFocus") }
+    /// `-JamaalPickUp` adds a session on the clinic task that the rollover closed this morning (42 minutes).
+    static var pickUp: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalPickUp") }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor
@@ -44,6 +46,18 @@ enum DebugLaunch {
                 task.notes = "- [ ] Ask about the **referral letter**\n- [x] Find the appointment number\n- [ ] Are *Thursday mornings* still open?"
             }
             context.insert(task)
+        }
+        if pickUp, let clinic = ((try? context.fetch(FetchDescriptor<TaskItem>())) ?? []).first(where: { $0.title == "Call the clinic back" }) {
+            let boundary = TodayDay.boundary(in: context)
+            let startOfToday = boundary.instant(of: boundary.logicalDate(at: now), atMinute: 0)
+            let session = WorkSession()
+            session.startedAt = startOfToday.addingTimeInterval(-42 * 60)
+            session.endedAt = startOfToday
+            session.day = boundary.logicalDate(at: startOfToday.addingTimeInterval(-60)).storedDate
+            session.actualSeconds = 42 * 60
+            session.outcome = SessionOutcome.autoClosed.rawValue
+            context.insert(session)
+            session.task = clinic
         }
         if begin, let draft = ((try? context.fetch(FetchDescriptor<TaskItem>())) ?? []).first(where: { $0.title == "Draft the architecture review" }) {
             draft.notes = "- [x] Outline the three options\n- [ ] Cost table for **option B**\n- [ ] Send to Priya for a read"
