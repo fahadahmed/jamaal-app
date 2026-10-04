@@ -12,6 +12,8 @@ import JamaalCore
 struct CapacitySlider: View {
     @Environment(\.threads) private var threads
     let level: CapacityLevel
+    /// Optional detail after each label ("LOW · 2H"), as on the Load step.
+    var details: [CapacityLevel: String] = [:]
     let onChange: (CapacityLevel) -> Void
 
     private let thumb = CGSize(width: 46, height: 34)
@@ -46,7 +48,7 @@ struct CapacitySlider: View {
             HStack {
                 ForEach(TodayCopy.levels, id: \.self) { item in
                     Button { select(item) } label: {
-                        Text(TodayCopy.label(for: item))
+                        Text(details[item].map { "\(TodayCopy.label(for: item)) · \($0)" } ?? TodayCopy.label(for: item))
                             .threadsType(.label)
                             .foregroundStyle(item == level ? threads.ink : threads.ink3)
                             .frame(maxWidth: .infinity, minHeight: ThreadsHit.minimum)

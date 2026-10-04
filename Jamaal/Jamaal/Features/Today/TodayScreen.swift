@@ -29,6 +29,7 @@ struct TodayScreen: View {
     @State private var choosing: AnchorInstance?
     @State private var isAdding = false
     @State private var openTask: TaskItem?
+    @State private var planning: PlanningFlow?
     // The category filter is local to this device and this day: it clears at the rollover and on relaunch.
     @State private var filterID: UUID?
     @State private var dismissedPickUps: Set<UUID> = []
@@ -84,12 +85,17 @@ struct TodayScreen: View {
         .onAppear {
             #if DEBUG
             if DebugLaunch.openAdd { isAdding = true }
+            if let step = DebugLaunch.planStep, let flow = try? PlanningFlow(context: context, mode: .evening) {
+                for _ in 1..<max(step, 1) { flow.next() }
+                planning = flow
+            }
             if DebugLaunch.openTask { openTask = tasks.first { $0.title == "Call the clinic back" } }
             #endif
         }
         .sheet(item: $openTask) { task in
             TaskDetailSheet(task: task)
         }
+        .fullScreenCover(item: $planning) { flow in NightPlanningScreen(flow: flow) }
         .sheet(isPresented: $isAdding) {
             AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now))
         }
@@ -132,7 +138,21 @@ struct TodayScreen: View {
             }
             switch state {
             case .normal: DisplayHeadline(first: headline.first, second: headline.second)
-            case .allDone: statement(TodayCopy.allDone)
+            case .allDone:
+                statement(TodayCopy.allDone)
+                Button(action: startPlanning) {
+                    HStack {
+                        Image(systemName: "moon")
+                        Text("Plan tomorrow").threadsType(.lede)
+                        Spacer()
+                        Image(systemName: "chevron.right").foregroundStyle(threads.ink3)
+                    }
+                    .foregroundStyle(threads.ink)
+                    .frame(minHeight: ThreadsHit.minimum)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("planTomorrowRow")
             case .blank: statement(TodayCopy.blankDay)
             }
             if let filter {
@@ -155,6 +175,11 @@ struct TodayScreen: View {
         }
     }
 
+    /// Opens (or resumes) tonight's planning: tomorrow's plan, looking back at today.
+    private func startPlanning() {
+        planning = try? PlanningFlow(context: context, mode: .evening)
+    }
+
     private func statement(_ text: String) -> some View {
         Text(text).threadsType(.display(.compact)).foregroundStyle(threads.ink2)
             .padding(.vertical, ThreadsSpace.section)
@@ -175,6 +200,11 @@ struct TodayScreen: View {
             }
             .accessibilityLabel("Filter tasks by category")
             .accessibilityIdentifier("filterButton")
+            Button(action: startPlanning) {
+                Image(systemName: "moon").font(.title3).frame(width: 52, height: 52)
+            }
+            .accessibilityLabel("Plan tomorrow")
+            .accessibilityIdentifier("planTomorrow")
             Button { isAdding = true } label: {
                 Image(systemName: "plus").font(.title3).frame(width: 52, height: 52)
             }

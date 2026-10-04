@@ -67,9 +67,9 @@ struct DeferSheet: View {
                     Divider().overlay(threads.line)
                     if pickingDate {
                         DatePicker("Date", selection: Binding(
-                            get: { (form.target ?? form.today.addingDays(1)).storedDate },
-                            set: { form.choose(CalendarDate(storedDate: $0)) }
-                        ), in: form.today.addingDays(1).storedDate..., displayedComponents: .date)
+                            get: { (form.target ?? form.today.addingDays(1)).pickerDate() },
+                            set: { form.choose(CalendarDate(pickerDate: $0)) }
+                        ), in: form.today.addingDays(1).pickerDate()..., displayedComponents: .date)
                         .datePickerStyle(.graphical).labelsHidden()
                     }
                 }

@@ -21,6 +21,12 @@ enum DebugLaunch {
     static var openFocus: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenFocus") }
     /// `-JamaalPickUp` adds a session on the clinic task that the rollover closed this morning (42 minutes).
     static var pickUp: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalPickUp") }
+    /// `-JamaalPlan N` opens Night Planning and moves on to step N (1 Review … 4 Load), to look at each screen.
+    static var planStep: Int? {
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-JamaalPlan"), i + 1 < args.count else { return nil }
+        return Int(args[i + 1])
+    }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor

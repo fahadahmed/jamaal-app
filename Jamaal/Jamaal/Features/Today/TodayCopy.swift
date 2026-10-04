@@ -54,6 +54,9 @@ enum TodayCopy {
     /// Overloaded and worse turn the meter terracotta; a full day is just full.
     static func isOver(_ state: LoadState) -> Bool { state.isOverloaded }
 
+    /// "One" … "Ten", then digits ("13").
+    static func countWord(_ n: Int) -> String { n >= 0 && n < numberWords.count ? numberWords[n] : "\(n)" }
+
     private static let numberWords = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten"]
 
     /// "Four things," / "gently paced." — the second line is set in italic accent.
