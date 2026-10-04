@@ -18,7 +18,7 @@ enum PlanningCopy {
 
     static func clock(_ minute: Int) -> String { String(format: "%02d:%02d", minute / 60, minute % 60) }
 
-    static func eyebrow(position: Int, count: Int, step: PlanningStep) -> String {
+    static func eyebrow(position: Int, count: Int, step: PlanningStep, mode: PlanningMode = .evening) -> String {
         let name: String
         switch step {
         case .review: name = "REVIEW"
@@ -27,7 +27,7 @@ enum PlanningCopy {
         case .load: name = "LOAD"
         case .close, .unknown: name = "CLOSE"
         }
-        return "\(position) OF \(count) · \(name)"
+        return mode == .morning ? "THIS MORNING · \(position) OF \(count)" : "\(position) OF \(count) · \(name)"
     }
 
     // MARK: Headlines
@@ -36,11 +36,21 @@ enum PlanningCopy {
 
     static func carryHeadline(count: Int) -> Headline { ("\(TodayCopy.countWord(count)) didn't", "happen.") }
 
-    static func buildHeadline(date: CalendarDate) -> Headline { ("\(weekday(date))'s", "shape.") }
-
-    static func buildLede(dayStartMinute: Int, dayEndMinute: Int, freeMinutes: Int) -> String {
-        "\(clock(dayStartMinute)) to \(clock(dayEndMinute)). About \(TodayCopy.duration(freeMinutes)) of it is free."
+    static func buildHeadline(date: CalendarDate, mode: PlanningMode = .evening) -> Headline {
+        mode == .morning ? ("Today's", "shape.") : ("\(weekday(date))'s", "shape.")
     }
+
+    static func buildLede(dayStartMinute: Int, dayEndMinute: Int, freeMinutes: Int, mode: PlanningMode = .evening) -> String {
+        mode == .morning
+            ? "Until \(clock(dayEndMinute)). About \(TodayCopy.duration(freeMinutes)) free."
+            : "\(clock(dayStartMinute)) to \(clock(dayEndMinute)). About \(TodayCopy.duration(freeMinutes)) of it is free."
+    }
+
+    static func tasksLabel(date: CalendarDate, mode: PlanningMode) -> String {
+        mode == .morning ? "Tasks for today" : "Tasks for \(weekday(date))"
+    }
+
+    static func skipTitle(_ mode: PlanningMode) -> String { mode == .morning ? "Not now" : "Skip tonight" }
 
     static func loadHeadline(_ state: LoadState) -> Headline {
         switch state {
@@ -116,6 +126,17 @@ enum PlanningCopy {
         var line = "\(TodayCopy.countWord(tasks)) \(tasks == 1 ? "task" : "tasks"), \(TodayCopy.duration(minutes))."
         if let firstAnchor { line += " \(firstAnchor) is first." }
         return line + " Put the phone down."
+    }
+
+    static func closeHeadline(_ mode: PlanningMode) -> String { mode == .morning ? "Today is set." : "Tomorrow is ready." }
+    static func closeAction(_ mode: PlanningMode) -> String { mode == .morning ? "Open Today" : "Good night" }
+
+    /// "Two tasks, 1h 45m, at medium. The school run is first." (the morning has no phone to put down).
+    static func morningCloseLine(tasks: Int, minutes: Int, level: CapacityLevel, firstAnchor: String?) -> String {
+        guard tasks > 0 else { return "Nothing planned, and that's fine." }
+        var line = "\(TodayCopy.countWord(tasks)) \(tasks == 1 ? "task" : "tasks"), \(TodayCopy.duration(minutes)), at \(TodayCopy.label(for: level).lowercased())."
+        if let firstAnchor { line += " \(firstAnchor) is first." }
+        return line
     }
 
     static func nightsPlanned(_ n: Int) -> String { "\(n) \(n == 1 ? "night" : "nights") planned" }

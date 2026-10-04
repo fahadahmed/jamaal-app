@@ -289,11 +289,11 @@ struct BuildStep: View {
         let build = try? flow.build()
         VStack(alignment: .leading, spacing: ThreadsSpace.section) {
             VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
-                PlanningHeadline(headline: PlanningCopy.buildHeadline(date: flow.forDate))
+                PlanningHeadline(headline: PlanningCopy.buildHeadline(date: flow.forDate, mode: flow.mode))
                 if let build {
                     Text(PlanningCopy.buildLede(
                         dayStartMinute: flow.settings.dayStartMinute, dayEndMinute: flow.settings.dayEndMinute,
-                        freeMinutes: build.freeTime.freeMinutes))
+                        freeMinutes: build.freeTime.freeMinutes, mode: flow.mode))
                         .threadsType(.lede).foregroundStyle(threads.ink2)
                 }
             }
@@ -377,7 +377,7 @@ struct BuildStep: View {
     @ViewBuilder private func tasks(_ build: PlanBuild) -> some View {
         let tasksMinutes = build.tasks.reduce(0) { $0 + ($1.effortMinutes ?? 0) }
         VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
-            SectionLabel(title: "Tasks for \(PlanningCopy.weekday(flow.forDate)) · \(TodayCopy.duration(tasksMinutes))")
+            SectionLabel(title: "\(PlanningCopy.tasksLabel(date: flow.forDate, mode: flow.mode)) · \(TodayCopy.duration(tasksMinutes))")
             if build.tasks.isEmpty {
                 Text("Nothing yet. Pick something below, or leave it open.").threadsType(.lede).foregroundStyle(threads.ink2)
             }
@@ -518,7 +518,8 @@ struct LoadStep: View {
 
 // MARK: - 5 Close the day
 
-/// "Tomorrow is ready." on `deep`, with a plain count of nights planned. No streak, no score.
+/// "Tomorrow is ready." on `deep` (or, in the morning, "Today is set." on the usual ground), with a plain count of
+/// nights planned. No streak, no score.
 struct CloseStep: View {
     @Environment(\.threads) private var threads
     let flow: PlanningFlow
@@ -526,20 +527,25 @@ struct CloseStep: View {
     let firstAnchor: String?
     let onDone: () -> Void
 
+    private var isMorning: Bool { flow.mode == .morning }
+    private var primary: Color { isMorning ? threads.ink : threads.onDeep }
+    private var secondary: Color { isMorning ? threads.ink2 : threads.onDeep.opacity(0.8) }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Spacer()
-            Text("5 OF 5 · \(PlanningCopy.weekday(flow.forDate).uppercased())").threadsType(.label).foregroundStyle(threads.onDeep.opacity(0.7))
-            Text("Tomorrow is ready.").threadsType(.display(.large)).foregroundStyle(threads.onDeep)
+            Text("\(flow.stepCount) OF \(flow.stepCount) · \(PlanningCopy.weekday(flow.forDate).uppercased())")
+                .threadsType(.label).foregroundStyle(isMorning ? threads.ink2 : threads.onDeep.opacity(0.7))
+            Text(PlanningCopy.closeHeadline(flow.mode)).threadsType(.display(.large)).foregroundStyle(primary)
                 .padding(.top, ThreadsSpace.tight).accessibilityAddTraits(.isHeader)
-            Text(PlanningCopy.closeLine(tasks: summary.taskCount, minutes: summary.plannedMinutes, firstAnchor: firstAnchor))
-                .threadsType(.lede).foregroundStyle(threads.onDeep.opacity(0.8))
-                .padding(.top, ThreadsSpace.row)
-            Divider().overlay(threads.onDeep.opacity(0.25)).padding(.vertical, ThreadsSpace.row)
-            Text(PlanningCopy.nightsPlanned(summary.nightsPlanned)).threadsType(.body).foregroundStyle(threads.onDeep.opacity(0.7))
+            Text(line).threadsType(.lede).foregroundStyle(secondary).padding(.top, ThreadsSpace.row)
+            if !isMorning {
+                Divider().overlay(threads.onDeep.opacity(0.25)).padding(.vertical, ThreadsSpace.row)
+                Text(PlanningCopy.nightsPlanned(summary.nightsPlanned)).threadsType(.body).foregroundStyle(threads.onDeep.opacity(0.7))
+            }
             Spacer()
             Button(action: onDone) {
-                Text("Good night").threadsType(.row).foregroundStyle(.white)
+                Text(PlanningCopy.closeAction(flow.mode)).threadsType(.row).foregroundStyle(.white)
                     .frame(maxWidth: .infinity, minHeight: 56).background(Capsule().fill(threads.terra))
             }
             .buttonStyle(.plain)
@@ -547,5 +553,13 @@ struct CloseStep: View {
         }
         .padding(.horizontal, ThreadsSpace.gutter)
         .padding(.bottom, ThreadsSpace.tight)
+    }
+
+    private var line: String {
+        isMorning
+            ? PlanningCopy.morningCloseLine(
+                tasks: summary.taskCount, minutes: summary.plannedMinutes,
+                level: (try? flow.loadCheck().level) ?? .medium, firstAnchor: firstAnchor)
+            : PlanningCopy.closeLine(tasks: summary.taskCount, minutes: summary.plannedMinutes, firstAnchor: firstAnchor)
     }
 }

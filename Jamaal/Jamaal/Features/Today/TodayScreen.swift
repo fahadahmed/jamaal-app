@@ -59,10 +59,13 @@ struct TodayScreen: View {
                 habits: todayHabits?.total ?? 0, unfinishedHabits: (todayHabits?.total ?? 0) - (todayHabits?.done ?? 0))
         }
         let state = content.map(TodayState.of) ?? .normal
+        let (morningNow, eveningNow) = promptClocks(boundary)
+        let morningDue = morningNow.flatMap { try? MorningCard.isDue(now: $0, boundary: boundary, context: context) } ?? false
+        let eveningDue = eveningNow.flatMap { try? NightPlanning.eveningPromptDue(now: $0, boundary: boundary, context: context) } ?? false
         ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 if let overview {
-                    header(overview, categories: categories, filter: filter, state: state)
+                    header(overview, categories: categories, filter: filter, state: state, unplanned: morningDue)
                     CapacityMeter(
                         plannedMinutes: overview.plannedMinutes, budgetMinutes: overview.budgetMinutes,
                         state: overview.state, loadScore: overview.loadScore, wholeDay: filter != nil
@@ -70,11 +73,13 @@ struct TodayScreen: View {
                     CapacitySlider(level: overview.level) { level in
                         try? TodayDay.setLevel(level, in: context, now: now)
                     }
+                    if morningDue { morningCard }
                     ForEach(pickUps, id: \.task.id) { row in pickUpRow(row) }
                     anchorsSection(anchorItems)
                     habitsSection(todayHabits)
                     tasksSection(overview, filter: filter)
                     alsoToday(overview)
+                    if eveningDue && state != .allDone { planTomorrowRow }
                 }
             }
             .padding(.horizontal, ThreadsSpace.gutter)
@@ -117,6 +122,10 @@ struct TodayScreen: View {
             }
         }
         .onChange(of: scenePhase) { _, phase in if phase == .active { now = .now } }
+        // The morning card is logged the first time it is shown (once a day).
+        .task(id: morningDue) {
+            if morningDue { try? MorningCard.markShown(now: promptClocks(boundary).morning ?? now, boundary: boundary, context: context) }
+        }
         // A new day starts unfiltered.
         .onChange(of: overview?.today) { _, _ in filterID = nil; dismissedPickUps = [] }
     }
@@ -128,8 +137,8 @@ struct TodayScreen: View {
         }
     }
 
-    private func header(_ overview: TodayOverview, categories: [TaskCategory], filter: TaskCategory?, state: TodayState) -> some View {
-        let headline = TodayCopy.headline(remaining: overview.shown.count)
+    private func header(_ overview: TodayOverview, categories: [TaskCategory], filter: TaskCategory?, state: TodayState, unplanned: Bool) -> some View {
+        let headline = unplanned ? TodayCopy.unplanned(date: overview.today) : TodayCopy.headline(remaining: overview.shown.count)
         return VStack(alignment: .leading, spacing: ThreadsSpace.row) {
             HStack(alignment: .center) {
                 Text(TodayCopy.headerLabel(overview.today)).threadsType(.label).foregroundStyle(threads.ink2)
@@ -140,19 +149,7 @@ struct TodayScreen: View {
             case .normal: DisplayHeadline(first: headline.first, second: headline.second)
             case .allDone:
                 statement(TodayCopy.allDone)
-                Button(action: startPlanning) {
-                    HStack {
-                        Image(systemName: "moon")
-                        Text("Plan tomorrow").threadsType(.lede)
-                        Spacer()
-                        Image(systemName: "chevron.right").foregroundStyle(threads.ink3)
-                    }
-                    .foregroundStyle(threads.ink)
-                    .frame(minHeight: ThreadsHit.minimum)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("planTomorrowRow")
+                planTomorrowRow
             case .blank: statement(TodayCopy.blankDay)
             }
             if let filter {
@@ -173,6 +170,70 @@ struct TodayScreen: View {
                 .accessibilityIdentifier("filterChip")
             }
         }
+    }
+
+    /// The instants the morning card and the evening row are judged at: now, except that debug runs can pretend (and
+    /// in-memory test runs switch them off unless asked, so UI tests don't depend on the time of day).
+    private func promptClocks(_ boundary: DayBoundary) -> (morning: Date?, evening: Date?) {
+        #if DEBUG
+        let today = boundary.logicalDate(at: now)
+        return (
+            DebugLaunch.morning ? boundary.instant(of: today, atMinute: 9 * 60) : (DebugLaunch.inMemory ? nil : now),
+            DebugLaunch.evening ? boundary.instant(of: today, atMinute: 21 * 60) : (DebugLaunch.inMemory ? nil : now)
+        )
+        #else
+        return (now, now)
+        #endif
+    }
+
+    /// "Plan tomorrow ›": once everything is done, and quietly after the planning time if tonight isn't planned.
+    private var planTomorrowRow: some View {
+        Button(action: startPlanning) {
+            HStack {
+                Image(systemName: "moon")
+                Text("Plan tomorrow").threadsType(.lede)
+                Spacer()
+                Image(systemName: "chevron.right").foregroundStyle(threads.ink3)
+            }
+            .foregroundStyle(threads.ink)
+            .frame(minHeight: ThreadsHit.minimum)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("planTomorrowRow")
+    }
+
+    /// TD-07: no plan was confirmed for today. Pick for today opens the shortened flow; Not now puts it away.
+    private var morningCard: some View {
+        VStack(alignment: .leading, spacing: ThreadsSpace.row) {
+            HStack(alignment: .top, spacing: ThreadsSpace.row) {
+                CompanionMark()
+                Text(TodayCopy.morningCard).threadsType(.lede).foregroundStyle(threads.ink)
+            }
+            HStack(spacing: ThreadsSpace.tight) {
+                Button(action: pickForToday) {
+                    Text("Pick for today").threadsType(.row).foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, minHeight: 52).background(Capsule().fill(threads.terra))
+                }
+                .accessibilityIdentifier("pickForToday")
+                PillButton(title: "Not now", fills: true) {
+                    try? MorningCard.dismiss(now: now, boundary: TodayDay.boundary(in: context), context: context)
+                    now = .now
+                }
+                .accessibilityIdentifier("morningNotNow")
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(ThreadsSpace.row)
+        .background(RoundedRectangle(cornerRadius: ThreadsRadius.card).fill(threads.card))
+        .overlay(RoundedRectangle(cornerRadius: ThreadsRadius.card).strokeBorder(threads.line2, lineWidth: 1))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("morningCard")
+    }
+
+    private func pickForToday() {
+        try? MorningCard.dismiss(now: now, boundary: TodayDay.boundary(in: context), context: context)
+        planning = try? PlanningFlow(context: context, mode: .morning)
     }
 
     /// Opens (or resumes) tonight's planning: tomorrow's plan, looking back at today.
