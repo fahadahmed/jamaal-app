@@ -22,6 +22,7 @@ struct HabitsOverviewView: View {
     @State private var now = Date.now
     @State private var openGroups: Set<UUID> = []
     @State private var archivedOpen = false
+    @State private var addingHabit = false
 
     var body: some View {
         let _ = (habits.map { [$0.isArchived ? 1 : 0, $0.pausesData.count, $0.title.count] as [AnyHashable] },
@@ -30,8 +31,19 @@ struct HabitsOverviewView: View {
         let overview = try? HabitsOverview.read(in: context, now: now, boundary: boundary, firstWeekday: Calendar.current.firstWeekday)
         ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
-                Text("Habits").threadsType(.display(.large)).foregroundStyle(threads.ink)
-                    .accessibilityAddTraits(.isHeader)
+                HStack(alignment: .center) {
+                    Text("Habits").threadsType(.display(.large)).foregroundStyle(threads.ink)
+                        .accessibilityAddTraits(.isHeader)
+                    Spacer()
+                    Button { addingHabit = true } label: {
+                        Image(systemName: "plus").font(.title3).foregroundStyle(threads.ink)
+                            .frame(width: 52, height: 52).glassEffect(.regular.interactive(), in: Circle())
+                            .contentShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Add a habit")
+                    .accessibilityIdentifier("addHabit")
+                }
                 if let overview {
                     if overview.groups.isEmpty && overview.ungrouped.isEmpty && overview.archived.isEmpty {
                         Text("No habits yet — they'll appear as patterns do.").threadsType(.lede).foregroundStyle(threads.ink2)
@@ -54,6 +66,7 @@ struct HabitsOverviewView: View {
         .scrollIndicators(.hidden)
         .background(threads.app)
         .onChange(of: scenePhase) { _, phase in if phase == .active { now = .now } }
+        .sheet(isPresented: $addingHabit) { AddHabitFlow() }
     }
 
     // MARK: Pieces

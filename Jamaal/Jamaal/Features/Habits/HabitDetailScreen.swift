@@ -20,6 +20,7 @@ struct HabitDetailScreen: View {
     @Query private var entries: [HabitEntry]
     @State private var now = Date.now
     @State private var pausing = false
+    @State private var editing = false
     @State private var correcting: Correction?
 
     private struct Correction: Identifiable {
@@ -69,6 +70,7 @@ struct HabitDetailScreen: View {
         .background(threads.app)
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $pausing) { PauseSheet(habit: habit, today: today) }
+        .sheet(isPresented: $editing) { NavigationStack { HabitFormScreen(editing: habit) } }
         .sheet(item: $correcting) { item in DayCorrectionSheet(habit: habit, window: item.window, day: item.day) }
     }
 
@@ -85,6 +87,7 @@ struct HabitDetailScreen: View {
             .accessibilityLabel("Back")
             Spacer()
             Menu {
+                Button("Edit habit…") { editing = true }
                 if HabitPauses.active(habit, on: today) != nil {
                     Button("Resume") { HabitPauses.resume(habit, on: today) }
                 } else {
