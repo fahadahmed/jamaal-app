@@ -48,7 +48,16 @@ enum AppEngine {
         store.day = result.lastProcessed
         #if DEBUG
         DebugLaunch.insertSampleData(into: context, now: now)
+        DebugLaunch.insertSampleAnchorRules(into: context, now: now)
         #endif
         return result
+    }
+
+    /// Brings Today's Anchors in line with the rules after one was made, edited, paused, archived or restored: a
+    /// pending Anchor a rule no longer makes goes, and new ones appear. Attended, missed, skipped and delegated stay.
+    @MainActor
+    static func syncAnchors(in context: ModelContext, now: Date = .now, timeZone: TimeZone = .current) {
+        let boundary = TodayDay.boundary(in: context, timeZone: timeZone)
+        _ = try? AnchorGenerator.sync(in: context, boundary: boundary, now: now)
     }
 }

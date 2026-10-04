@@ -15,7 +15,13 @@ struct HabitsScreen: View {
 
     @Environment(\.threads) private var threads
     @Environment(\.horizontalSizeClass) private var sizeClass
-    @State private var segment: Segment = .habits
+    @State private var segment: Segment = {
+        #if DEBUG
+        return DebugLaunch.anchorRules ? .anchors : .habits
+        #else
+        return .habits
+        #endif
+    }()
 
     var body: some View {
         NavigationStack {
@@ -29,13 +35,14 @@ struct HabitsScreen: View {
                 .padding(.top, ThreadsSpace.tight)
             }
             if AppNavigation.showsAnchorsSegment(sizeClass: sizeClass), segment == .anchors {
-                AnchorsScreen()
+                AnchorsRulesView()
             } else {
                 HabitsOverviewView()
             }
           }
           .background(threads.app.ignoresSafeArea())          // the segment sits on the app ground, not the system's white
           .navigationDestination(for: Habit.self) { habit in HabitDetailScreen(habit: habit) }
+          .navigationDestination(for: AnchorRule.self) { rule in AnchorRuleDetailScreen(rule: rule) }
           .toolbar(.hidden, for: .navigationBar)
         }
     }

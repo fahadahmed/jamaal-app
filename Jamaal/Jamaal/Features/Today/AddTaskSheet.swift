@@ -18,6 +18,10 @@ struct AddTaskSheet: View {
     @Query(sort: \TaskCategory.sortOrder) private var allCategories: [TaskCategory]
 
     @State private var form: AddTaskForm
+    private enum Mode { case task, anchor }
+    @State private var mode: Mode = .task
+    @State private var oneOff: OneOffAnchorDraft
+    @State private var oneOffMessage: String?
     @State private var dayFull: DayFullCheck?
     @State private var pickingDate = false
     @State private var showsEffortStepper = false
@@ -27,6 +31,10 @@ struct AddTaskSheet: View {
     init(today: CalendarDate, dueDate: CalendarDate? = nil) {
         let calendarFirst = Calendar.current.firstWeekday                       // 1 = Sunday
         _form = State(initialValue: AddTaskForm(today: today, firstWeekdayISO: calendarFirst == 1 ? 7 : calendarFirst - 1, dueDate: dueDate))
+        let parts = Calendar.current.dateComponents([.hour, .minute], from: .now)
+        var draft = OneOffAnchorDraft(today: today, nowMinute: (parts.hour ?? 9) * 60 + (parts.minute ?? 0))
+        if let dueDate { draft.day = dueDate }
+        _oneOff = State(initialValue: draft)
     }
 
     private var categories: [TaskCategory] { allCategories.filter { !$0.isArchived } }
@@ -35,6 +43,9 @@ struct AddTaskSheet: View {
         ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 header
+                if mode == .anchor {
+                    oneOffSection
+                } else {
                 TextField("What needs doing?", text: $form.draft.title)
                     .threadsType(.lede)
                     .focused($titleFocused)
@@ -47,6 +58,7 @@ struct AddTaskSheet: View {
                 dueSection
                 optionRows
                 if let dayFull { dayFullPanel(dayFull) }
+                }
             }
             .padding(.horizontal, ThreadsSpace.gutter)
             .padding(.top, ThreadsSpace.row)
@@ -55,14 +67,15 @@ struct AddTaskSheet: View {
         .scrollDismissesKeyboard(.interactively)
         .background(threads.app)
         .safeAreaInset(edge: .bottom) {
-            Button(action: submit) {
-                Text(form.buttonTitle).threadsType(.row).foregroundStyle(.white)
+            Button(action: mode == .task ? submit : saveOneOff) {
+                Text(mode == .task ? form.buttonTitle : oneOff.buttonTitle.replacingOccurrences(of: "Add for", with: "Add Anchor for"))
+                    .threadsType(.row).foregroundStyle(.white)
                     .frame(maxWidth: .infinity, minHeight: 56)
                     .background(Capsule().fill(threads.terra))
             }
             .buttonStyle(.plain)
-            .disabled(!form.canSubmit)
-            .opacity(form.canSubmit ? 1 : 0.45)
+            .disabled(mode == .task ? !form.canSubmit : !oneOff.canSave)
+            .opacity((mode == .task ? form.canSubmit : oneOff.canSave) ? 1 : 0.45)
             .padding(.horizontal, ThreadsSpace.gutter)
             .padding(.vertical, ThreadsSpace.tight)
             .background(threads.app)                                  // solid, so chips never show through it
@@ -86,8 +99,12 @@ struct AddTaskSheet: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Close")
             Spacer()
-            // The Anchor side of the switch arrives with the one-off Anchor form.
-            Text("New task").threadsType(.label).foregroundStyle(threads.ink2)
+            Picker("Add", selection: $mode) {
+                Text("Task").tag(Mode.task)
+                Text("Anchor").tag(Mode.anchor)
+            }
+            .pickerStyle(.segmented).frame(width: 190)
+            .accessibilityIdentifier("addMode")
             Spacer()
             Color.clear.frame(width: ThreadsHit.minimum, height: ThreadsHit.minimum)
         }
@@ -263,6 +280,58 @@ struct AddTaskSheet: View {
         case .daily: "Daily"
         case .weekly: "Weekly"
         case .monthly: "Monthly"
+        }
+    }
+}
+
+// MARK: - The one-off Anchor side (AN-08)
+
+extension AddTaskSheet {
+    @ViewBuilder fileprivate var oneOffSection: some View {
+        TextField("What is it? (Dentist, parents' evening…)", text: $oneOff.title)
+            .threadsType(.lede)
+            .padding(.bottom, ThreadsSpace.tight)
+            .overlay(alignment: .bottom) { Divider().overlay(threads.line2) }
+            .accessibilityLabel("Title")
+            .accessibilityIdentifier("oneOffTitle")
+        VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
+            Text("Day").threadsType(.label).foregroundStyle(threads.ink2)
+            FlowChips {
+                Chip(title: "Today", isSelected: oneOff.day == oneOff.today) { oneOff.day = oneOff.today }
+                Chip(title: "Tomorrow", isSelected: oneOff.day == oneOff.today.addingDays(1)) { oneOff.day = oneOff.today.addingDays(1) }
+            }
+            DatePicker("Day", selection: Binding(get: { oneOff.day.pickerDate() }, set: { oneOff.day = CalendarDate(pickerDate: $0) }),
+                       in: oneOff.today.pickerDate()..., displayedComponents: .date)
+        }
+        VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
+            Text("Window").threadsType(.label).foregroundStyle(threads.ink2)
+            DatePicker("From", selection: Binding(get: { HabitForm.date(forMinute: oneOff.startMinute) }, set: { oneOff.setStart(HabitForm.minute(of: $0)) }), displayedComponents: .hourAndMinute)
+            DatePicker("Until", selection: Binding(get: { HabitForm.date(forMinute: oneOff.endMinute) }, set: { oneOff.setEnd(HabitForm.minute(of: $0)) }), displayedComponents: .hourAndMinute)
+            HStack {
+                Text("Takes").threadsType(.lede).foregroundStyle(threads.ink2)
+                Spacer()
+                Text(oneOff.takes.map { "\($0) min" } ?? "Not set").threadsType(.lede).foregroundStyle(threads.ink)
+                Stepper("", value: Binding(get: { oneOff.takes ?? 0 }, set: { oneOff.takes = $0 > 0 ? $0 : nil }), in: 0...480, step: 5).labelsHidden()
+            }
+            Toggle("Remind me at the start", isOn: $oneOff.remindAtStart).threadsType(.lede).foregroundStyle(threads.ink)
+        }
+        if let oneOffMessage {
+            Text(oneOffMessage).threadsType(.body).foregroundStyle(threads.terra).accessibilityIdentifier("oneOffMessage")
+        }
+    }
+
+    fileprivate func saveOneOff() {
+        do {
+            let boundary = TodayDay.boundary(in: context)
+            try AnchorEditing.createOneOff(
+                title: oneOff.title, on: oneOff.day, startMinute: oneOff.startMinute, endMinute: oneOff.endMinute,
+                effortMinutes: oneOff.takes, remindAtStart: oneOff.remindAtStart, remindBeforeEndMinutes: oneOff.remindBeforeEnd,
+                in: context, boundary: boundary, now: .now)
+            dismiss()
+        } catch let error as AnchorEditError {
+            oneOffMessage = AnchorsCopy.message(for: error)
+        } catch {
+            oneOffMessage = "That couldn't be saved. Try again."
         }
     }
 }
