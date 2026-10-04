@@ -27,6 +27,10 @@ enum TodayCopy {
 
     // MARK: States, the filter and the carried-over row
 
+    /// "Wednesday, / unplanned." while the morning card is up.
+    static func unplanned(date: CalendarDate) -> (first: String, second: String) { ("\(PlanningCopy.weekday(date)),", "unplanned.") }
+    static let morningCard = "No plan for today — two minutes to pick?"
+
     static let blankDay = "Your day is blank."
     static let allDone = "Nothing left for today."
     static func nothingIn(_ category: String) -> String { "Nothing in \(category) today." }

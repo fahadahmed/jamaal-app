@@ -21,7 +21,7 @@ struct NightPlanningScreen: View {
 
     var body: some View {
         ZStack {
-            (flow.step == .close ? threads.deep : threads.app).ignoresSafeArea()
+            (flow.step == .close && flow.mode == .evening ? threads.deep : threads.app).ignoresSafeArea()
             if flow.step == .close, let summary {
                 CloseStep(flow: flow, summary: summary, firstAnchor: firstAnchor) { dismiss() }
             } else {
@@ -45,7 +45,7 @@ struct NightPlanningScreen: View {
     private var header: some View {
         VStack(spacing: ThreadsSpace.row) {
             ZStack {
-                Text(PlanningCopy.eyebrow(position: flow.position, count: flow.stepCount, step: flow.step))
+                Text(PlanningCopy.eyebrow(position: flow.position, count: flow.stepCount, step: flow.step, mode: flow.mode))
                     .threadsType(.label).foregroundStyle(threads.ink2)
                 HStack {
                     if !flow.isFirstStep {
@@ -89,7 +89,7 @@ struct NightPlanningScreen: View {
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("planContinue")
-            Button("Skip tonight") { flow.skip(); dismiss() }
+            Button(PlanningCopy.skipTitle(flow.mode)) { flow.skip(); dismiss() }
                 .threadsType(.row).foregroundStyle(threads.ink).buttonStyle(.plain)
                 .frame(minHeight: ThreadsHit.minimum)
                 .accessibilityIdentifier("planSkip")
@@ -128,8 +128,9 @@ struct NightPlanningScreen: View {
     private static func firstAnchorLine(_ flow: PlanningFlow) -> String? {
         guard let build = try? flow.build(),
               let first = build.anchors.filter({ $0.rule?.placementKind != .flexible }).min(by: { $0.windowStart < $1.windowStart }) else { return nil }
-        let time = first.windowStart.formatted(Date.FormatStyle(date: .omitted, time: .shortened, locale: .current, timeZone: flow.boundary.timeZone))
         let name = first.rule?.title ?? first.title
+        if flow.mode == .morning { return "The \(name.lowercased())" }
+        let time = first.windowStart.formatted(Date.FormatStyle(date: .omitted, time: .shortened, locale: .current, timeZone: flow.boundary.timeZone))
         return "\(name) at \(time)"
     }
 }

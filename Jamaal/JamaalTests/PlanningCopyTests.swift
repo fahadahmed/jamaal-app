@@ -90,4 +90,43 @@ struct PlanningCopyTests {
         #expect(PlanningCopy.carryMeta(effortMinutes: nil, deferrals: 0) == "")
         #expect(PlanningCopy.carryMeta(effortMinutes: 30, deferrals: 4) == "30 min · slipped 4 times")
     }
+
+    // MARK: The morning flow
+
+    @Test func theMorningEyebrowSaysThisMorning() {
+        #expect(PlanningCopy.eyebrow(position: 1, count: 3, step: .build, mode: .morning) == "THIS MORNING · 1 OF 3")
+        #expect(PlanningCopy.eyebrow(position: 2, count: 3, step: .load, mode: .morning) == "THIS MORNING · 2 OF 3")
+        #expect(PlanningCopy.eyebrow(position: 1, count: 5, step: .review, mode: .evening) == "1 OF 5 · REVIEW")
+    }
+
+    @Test func theMorningBuildTalksAboutToday() {
+        let h = PlanningCopy.buildHeadline(date: d(6), mode: .morning)
+        #expect(h.plain == "Today's" && h.accent == "shape.")
+        #expect(PlanningCopy.buildHeadline(date: d(6), mode: .evening).plain == "Tuesday's")
+        #expect(PlanningCopy.buildLede(dayStartMinute: 480, dayEndMinute: 1140, freeMinutes: 430, mode: .morning) == "Until 19:00. About 7h 10m free.")
+        #expect(PlanningCopy.tasksLabel(date: d(6), mode: .morning) == "Tasks for today")
+        #expect(PlanningCopy.tasksLabel(date: d(6), mode: .evening) == "Tasks for Tuesday")
+    }
+
+    @Test func theMorningCanBeLeftWithNotNow() {
+        #expect(PlanningCopy.skipTitle(.morning) == "Not now")
+        #expect(PlanningCopy.skipTitle(.evening) == "Skip tonight")
+    }
+
+    @Test func theMorningCloseSaysTodayIsSet() {
+        #expect(PlanningCopy.closeHeadline(.morning) == "Today is set.")
+        #expect(PlanningCopy.closeHeadline(.evening) == "Tomorrow is ready.")
+        #expect(PlanningCopy.morningCloseLine(tasks: 2, minutes: 105, level: .medium, firstAnchor: "The school run") == "Two tasks, 1h 45m, at medium. The school run is first.")
+        #expect(PlanningCopy.morningCloseLine(tasks: 1, minutes: 30, level: .low, firstAnchor: nil) == "One task, 30m, at low.")
+        #expect(PlanningCopy.morningCloseLine(tasks: 0, minutes: 0, level: .medium, firstAnchor: nil) == "Nothing planned, and that's fine.")
+        #expect(PlanningCopy.closeAction(.morning) == "Open Today")
+        #expect(PlanningCopy.closeAction(.evening) == "Good night")
+    }
+
+    @Test func todayNamesItselfUnplannedWhileTheCardIsUp() {
+        let h = TodayCopy.unplanned(date: d(6))
+        #expect(h.first == "Tuesday,")
+        #expect(h.second == "unplanned.")
+        #expect(TodayCopy.morningCard == "No plan for today — two minutes to pick?")
+    }
 }

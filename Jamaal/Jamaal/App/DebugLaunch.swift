@@ -27,6 +27,10 @@ enum DebugLaunch {
         guard let i = args.firstIndex(of: "-JamaalPlan"), i + 1 < args.count else { return nil }
         return Int(args[i + 1])
     }
+    /// `-JamaalMorning` / `-JamaalEvening` pretend it is 09:00 / 21:00 for the morning card and the evening row. In
+    /// the in-memory test mode they are otherwise off, so UI tests don't change with the time of day.
+    static var morning: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalMorning") }
+    static var evening: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalEvening") }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor
