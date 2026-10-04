@@ -71,6 +71,7 @@ struct NightPlanningScreen: View {
             Image(systemName: symbol).font(.body.weight(.semibold)).foregroundStyle(threads.ink)
                 .frame(width: 48, height: 48)
                 .glassEffect(.regular.interactive(), in: Circle())
+                .contentShape(Circle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label)

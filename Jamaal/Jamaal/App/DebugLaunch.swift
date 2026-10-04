@@ -31,6 +31,12 @@ enum DebugLaunch {
     /// the in-memory test mode they are otherwise off, so UI tests don't change with the time of day.
     static var morning: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalMorning") }
     static var evening: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalEvening") }
+    /// `-JamaalTab habits` (or today, wellbeing, settings) opens that tab first.
+    static var tab: AppTab? {
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-JamaalTab"), i + 1 < args.count else { return nil }
+        return AppTab(rawValue: args[i + 1])
+    }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor
@@ -128,6 +134,25 @@ enum DebugLaunch {
         habit("Read", .timed, target: 20, amount: 12)
         habit("Late-night scrolling", .avoid, target: 1)
         habit("Floss", .binary, target: 1)
+
+        // A month of Water, so the density grid has something to show: most days reach eight, some stop at four.
+        if let water = ((try? context.fetch(FetchDescriptor<Habit>())) ?? []).first(where: { $0.title == "Water" }), let window = water.windows?.first {
+            for offset in 1...30 {
+                let day = today.addingDays(-offset)
+                let e = HabitEntry(); e.date = day.storedDate; e.target = 8
+                e.amount = offset % 5 == 0 ? 4 : 8
+                if e.amount >= 8 { e.completedAt = now.addingTimeInterval(-Double(offset) * 86_400) }
+                context.insert(e); e.window = window
+            }
+        }
+
+        // Paused and archived, for the Habits tab.
+        habit("Reading before bed", .binary, target: 1)
+        if let reading = ((try? context.fetch(FetchDescriptor<Habit>())) ?? []).first(where: { $0.title == "Reading before bed" }) {
+            try? HabitPauses.pause(reading, from: today.addingDays(-1), until: today.addingDays(3), reason: .travel)
+        }
+        habit("Cold shower", .binary, target: 1)
+        if let cold = ((try? context.fetch(FetchDescriptor<Habit>())) ?? []).first(where: { $0.title == "Cold shower" }) { cold.isArchived = true }
     }
 }
 #endif

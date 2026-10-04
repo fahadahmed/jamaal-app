@@ -348,6 +348,12 @@ The engine (module 4) already owns the rules and persists the session, so `Plann
 
 `MorningCard` is due when no plan was confirmed for today (a skipped or unfinished one still gets the card; a plan for another day doesn't count), until the working day ends. It is logged **once a day** (`NudgeLog`, kind `morningPlanCard`, `subjectKey` the date), stays until it is dismissed or acted on (*Pick for today* and *Not now* both put it away for the day), and a new day starts fresh. `NightPlanning.eveningPromptDue` is the quiet **Plan tomorrow** row: from the planning time until the next day starts (so it survives past midnight), if that night's plan is neither confirmed nor skipped; an unfinished plan still gets it. The shortened morning flow (Build, Load, Close) has its own words: "This morning", "Today's shape", *Not now*, "Today is set.", *Open Today*.
 
+## The Habits tab
+
+`HabitsOverview` is the tab's read model: **groups** (by `sortOrder`, then title) with their habits, today's done/due count (a paused habit isn't due) and a **14-day aggregate** (complete when every window was, partial by the share that were, missed when none were, empty while a day is open); **ungrouped** habits in the order they were made; and **archived** habits, kept with their history and restorable. Each habit carries today's amount, target and done state per window (an avoid habit is done only when *Held today* was tapped: silence isn't success), its week so far if it has a weekly target, and the pause covering today.
+
+`HabitPauses.pause` records a pause from a day until a day or until it is resumed (an end before the start is refused; overlapping pauses merge, keeping the longer end and an open end open); `resume(on:)` ends the pause the day before, or removes one that hadn't started. `HabitLogging.canCorrect` is the **14-day** rule for putting a past day right: not before the habit existed, not in the future, not on a paused day.
+
 ## Access and the trial
 
 **`AccessState`** is a pure function in JamaalCore of `(now, trialStart, entitlement)`: **`trial`** (before the trial ends), **`subscribed`** (an active entitlement, including a billing grace period or retry, so a failed card never locks anyone out), or **`readOnly`** (otherwise). StoreKit supplies the entitlement at the app layer; the last-known entitlement is cached locally (per device, not synced) and used while offline, and an expiry only takes effect when StoreKit confirms it. Nothing is stored in the schema beyond `UserSettings.firstLaunchAt`.

@@ -49,6 +49,7 @@ struct FocusScreen: View {
                     Image(systemName: "chevron.down").frame(width: 48, height: 48)
                         .foregroundStyle(threads.ink)
                         .glassEffect(.regular.interactive(), in: Circle())
+                        .contentShape(Circle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Back to Today")

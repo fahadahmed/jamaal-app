@@ -257,17 +257,17 @@ struct TodayScreen: View {
                 }
             } label: {
                 Image(systemName: isFiltering ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease")
-                    .font(.title3).frame(width: 52, height: 52)
+                    .font(.title3).frame(width: 52, height: 52).contentShape(Rectangle())
             }
             .accessibilityLabel("Filter tasks by category")
             .accessibilityIdentifier("filterButton")
             Button(action: startPlanning) {
-                Image(systemName: "moon").font(.title3).frame(width: 52, height: 52)
+                Image(systemName: "moon").font(.title3).frame(width: 52, height: 52).contentShape(Rectangle())
             }
             .accessibilityLabel("Plan tomorrow")
             .accessibilityIdentifier("planTomorrow")
             Button { isAdding = true } label: {
-                Image(systemName: "plus").font(.title3).frame(width: 52, height: 52)
+                Image(systemName: "plus").font(.title3).frame(width: 52, height: 52).contentShape(Rectangle())
             }
             .accessibilityLabel("Add")
             .accessibilityIdentifier("addButton")
@@ -275,6 +275,7 @@ struct TodayScreen: View {
         .buttonStyle(.plain)
         .foregroundStyle(threads.ink)
         .glassEffect(.regular.interactive(), in: Capsule())
+        .contentShape(Capsule())
     }
 
     /// TD-06: a session was closed at the rollover; offer to pick its task back up, or put the offer away.
