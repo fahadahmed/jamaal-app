@@ -14,9 +14,10 @@ struct AddTaskForm {
     /// The calendar's first weekday as an ISO weekday (Monday = 1 … Sunday = 7).
     let firstWeekdayISO: Int
 
-    init(today: CalendarDate, firstWeekdayISO: Int) {
+    init(today: CalendarDate, firstWeekdayISO: Int, dueDate: CalendarDate? = nil) {
         self.today = today
         self.firstWeekdayISO = firstWeekdayISO
+        draft.dueDate = dueDate
     }
 
     var canSubmit: Bool { !draft.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }

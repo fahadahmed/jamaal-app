@@ -23,9 +23,10 @@ struct AddTaskSheet: View {
     @State private var showsEffortStepper = false
     @SwiftUI.FocusState private var titleFocused: Bool
 
-    init(today: CalendarDate) {
+    /// `dueDate` pre-fills the date: tomorrow, when adding from Night Planning's Build step.
+    init(today: CalendarDate, dueDate: CalendarDate? = nil) {
         let calendarFirst = Calendar.current.firstWeekday                       // 1 = Sunday
-        _form = State(initialValue: AddTaskForm(today: today, firstWeekdayISO: calendarFirst == 1 ? 7 : calendarFirst - 1))
+        _form = State(initialValue: AddTaskForm(today: today, firstWeekdayISO: calendarFirst == 1 ? 7 : calendarFirst - 1, dueDate: dueDate))
     }
 
     private var categories: [TaskCategory] { allCategories.filter { !$0.isArchived } }
@@ -148,8 +149,8 @@ struct AddTaskSheet: View {
             }
             if pickingDate {
                 DatePicker("Due date", selection: Binding(
-                    get: { (form.draft.dueDate ?? form.today).storedDate },
-                    set: { form.choose(CalendarDate(storedDate: $0)) }
+                    get: { (form.draft.dueDate ?? form.today).pickerDate() },
+                    set: { form.choose(CalendarDate(pickerDate: $0)) }
                 ), displayedComponents: .date)
                 .datePickerStyle(.graphical)
                 .labelsHidden()

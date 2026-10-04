@@ -340,6 +340,10 @@ Only busy time inside the working day counts, so an Anchor after the day's end (
 
 The app also names the day: **blank** (nothing due at all), **all done** (no task, Anchor or habit left to decide, though tasks the level hides don't count against it) or the usual. Finished tasks stay listed under the statement, so finishing work doesn't make the list shrink away. The **carried-over row** (`FocusSessions.pickUpRows`) offers to pick a task back up after the rollover closed its session ("Last night's session closed at midnight. 42 min logged on …"), or to be dismissed for the day.
 
+## Night Planning in the app
+
+The engine (module 4) already owns the rules and persists the session, so `PlanningFlow` only knows which day it plans (an evening plans tomorrow and reviews today, using `planningTarget`; the morning's shortened flow plans today), steps through the flow, applies carry choices (keeping what is needed to undo each until the day is closed), reschedules a task out of or into the planned day (never a deferral), writes the level the moment it is chosen, skips, and closes. Carry counts as having work whenever tasks were left **or already moved or dropped** from the reviewed day, so going back to it after making choices still shows them. **Continue** on Carry applies *Keep* to whatever was left untouched (a task on its third deferral goes to next week instead, since that one needs a day that works).
+
 ## Access and the trial
 
 **`AccessState`** is a pure function in JamaalCore of `(now, trialStart, entitlement)`: **`trial`** (before the trial ends), **`subscribed`** (an active entitlement, including a billing grace period or retry, so a failed card never locks anyone out), or **`readOnly`** (otherwise). StoreKit supplies the entitlement at the app layer; the last-known entitlement is cached locally (per device, not synced) and used while offline, and an expiry only takes effect when StoreKit confirms it. Nothing is stored in the schema beyond `UserSettings.firstLaunchAt`.
