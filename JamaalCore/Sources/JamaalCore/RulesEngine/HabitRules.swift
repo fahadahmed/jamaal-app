@@ -41,6 +41,9 @@ public struct DensityRead: Equatable, Sendable {
     public var completed = 0
     public var partial = 0
     public var missed = 0
+
+    public init(windowDays: Int) { self.windowDays = windowDays }
+
     /// Resolved days: completed + partial + missed. Paused, unscheduled and still-open days are left out.
     public var due: Int { completed + partial + missed }
     /// More than half the resolved days missed, over at least a week of them: "try a lighter cadence?".
@@ -52,6 +55,11 @@ public struct WeeklyProgress: Equatable, Sendable {
     public var done: Int
     public var target: Int
     public var isMet: Bool { done >= target }
+
+    public init(done: Int, target: Int) {
+        self.done = done
+        self.target = target
+    }
 }
 
 
