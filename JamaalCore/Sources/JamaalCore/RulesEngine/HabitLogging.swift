@@ -55,6 +55,13 @@ public enum HabitLogging {
         }
     }
 
+    /// Past days can be put right for **14 days** (docs: a forgotten tick shouldn't be lost); older ones are read-only.
+    /// Not before the habit existed, not in the future, and not on a paused day.
+    public static func canCorrect(_ habit: Habit, day: CalendarDate, today: CalendarDate, boundary: DayBoundary) -> Bool {
+        guard day <= today, today.days(until: day) > -14 else { return false }
+        return day >= boundary.logicalDate(at: habit.createdAt) && !habit.isPaused(on: day)
+    }
+
     /// The day's entry, created with a snapshot of the target if there isn't one. If two devices left two,
     /// the larger amount is the one that counts (and the one edited).
     @MainActor

@@ -53,6 +53,7 @@ struct AppShell: View {
         .onAppear {
             coordinator.context = context
             #if DEBUG
+            if let tab = DebugLaunch.tab { selection = tab }
             if DebugLaunch.openFocus { coordinator.isShowingFocus = true }
             #endif
         }
