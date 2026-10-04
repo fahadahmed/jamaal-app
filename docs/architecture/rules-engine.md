@@ -354,6 +354,12 @@ The engine (module 4) already owns the rules and persists the session, so `Plann
 
 `HabitPauses.pause` records a pause from a day until a day or until it is resumed (an end before the start is refused; overlapping pauses merge, keeping the longer end and an open end open); `resume(on:)` ends the pause the day before, or removes one that hadn't started. `HabitLogging.canCorrect` is the **14-day** rule for putting a past day right: not before the habit existed, not in the future, not on a paused day.
 
+## Adding and editing a habit
+
+`HabitEditing.create` and `update` turn a `HabitDraft` (what the form collects) into a habit and its times of day, after checking it: a name; a target that makes sense for the kind (a count or minutes of at least one; an avoid habit's allowance may be zero, which means *none allowed*); some days or "N times a week" (one to seven); one to **four** times of day, each ending after it starts and, when there are several, each named. Nothing is written when it is refused. The frequency follows the days (daily, weekdays, custom); a weekly habit is scheduled on any day of the week. Presets (Qur'an reading, Dhikr, Exercise, Running) pre-fill a draft with the catalogue's values.
+
+Editing **never changes the kind** (history is read by it) and the kind check uses the habit's own kind, not the form's claim. A time of day can be added; one with **no entries** can be removed; one **with history can't** (its entries would go with it). A changed target edits the window and leaves every past entry's snapshot alone, so it affects the future only. Groups are made from the form (`createGroup`, next sort order) and, in the app, only when the habit is saved, so cancelling leaves nothing behind.
+
 ## Access and the trial
 
 **`AccessState`** is a pure function in JamaalCore of `(now, trialStart, entitlement)`: **`trial`** (before the trial ends), **`subscribed`** (an active entitlement, including a billing grace period or retry, so a failed card never locks anyone out), or **`readOnly`** (otherwise). StoreKit supplies the entitlement at the app layer; the last-known entitlement is cached locally (per device, not synced) and used while offline, and an expiry only takes effect when StoreKit confirms it. Nothing is stored in the schema beyond `UserSettings.firstLaunchAt`.
