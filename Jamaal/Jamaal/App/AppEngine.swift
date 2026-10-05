@@ -50,6 +50,7 @@ enum AppEngine {
         DebugLaunch.insertSampleData(into: context, now: now)
         DebugLaunch.insertSampleAnchorRules(into: context, now: now)
         DebugLaunch.insertNormalDayHistory(into: context, now: now)
+        DebugLaunch.insertWellbeingHistory(into: context, now: now)
         #endif
         return result
     }
