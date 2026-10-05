@@ -8,6 +8,12 @@ public struct WellbeingPart: Equatable, Sendable {
     public var kind: WellbeingPartKind
     public var value: Double
     public var weight: Double
+
+    public init(kind: WellbeingPartKind, value: Double, weight: Double) {
+        self.kind = kind
+        self.value = value
+        self.weight = weight
+    }
 }
 
 /// How the score has moved against 14 days earlier, in words, never as a coloured number.
@@ -23,6 +29,11 @@ public struct SparkPoint: Equatable, Sendable {
     public var day: CalendarDate
     /// `nil` where the point's own window has fewer than seven active days.
     public var score: Int?
+
+    public init(day: CalendarDate, score: Int?) {
+        self.day = day
+        self.score = score
+    }
 }
 
 public struct WellbeingSnapshot {
@@ -36,6 +47,29 @@ public struct WellbeingSnapshot {
     public var completionPercent: Int?
     /// Active days in the window that were overloaded.
     public var heavyDays: Int
+    /// Over the window's active days: tasks finished, and tasks that had to be finished (finished plus moved, deferred
+    /// or dropped). Zero while gathering data.
+    public var tasksDone: Int
+    public var tasksToFinish: Int
+    /// Anchors attended, and attended plus missed (skipped and delegated aren't counted). Zero while gathering data.
+    public var anchorsAttended: Int
+    public var anchorsDecided: Int
+
+    public init(
+        state: WellbeingState, activeDays: Int, parts: [WellbeingPart], sparkline: [SparkPoint], completionPercent: Int?, heavyDays: Int,
+        tasksDone: Int, tasksToFinish: Int, anchorsAttended: Int, anchorsDecided: Int
+    ) {
+        self.state = state
+        self.activeDays = activeDays
+        self.parts = parts
+        self.sparkline = sparkline
+        self.completionPercent = completionPercent
+        self.heavyDays = heavyDays
+        self.tasksDone = tasksDone
+        self.tasksToFinish = tasksToFinish
+        self.anchorsAttended = anchorsAttended
+        self.anchorsDecided = anchorsDecided
+    }
 }
 
 /// Module 5: wellbeing, derived only from behaviour — no self-reporting, nothing stored
@@ -88,7 +122,9 @@ public enum Wellbeing {
             parts: current.parts,
             sparkline: sparkline,
             completionPercent: current.parts.first { $0.kind == .tasks }.map { Int($0.value.rounded()) },
-            heavyDays: current.activeDays.filter { history.plans[$0]?.wasOverloaded == true }.count
+            heavyDays: current.activeDays.filter { history.plans[$0]?.wasOverloaded == true }.count,
+            tasksDone: current.tasksDone, tasksToFinish: current.tasksToFinish,
+            anchorsAttended: current.anchorsAttended, anchorsDecided: current.anchorsDecided
         )
     }
 
@@ -97,6 +133,10 @@ public enum Wellbeing {
     struct Evaluation {
         var activeDays: [CalendarDate]
         var parts: [WellbeingPart]
+        var tasksDone = 0
+        var tasksToFinish = 0
+        var anchorsAttended = 0
+        var anchorsDecided = 0
 
         /// The weighted score, only once the window has enough active days.
         var scoreIfActive: Int? {
@@ -149,7 +189,18 @@ public enum Wellbeing {
             add(.anchors, anchorsPart(over: active))
             add(.habits, habitsPart(activeDays: active, window: days))
             add(.load, Double(active.filter { plans[$0]?.wasOverloaded != true }.count) / Double(active.count) * 100)
-            return Evaluation(activeDays: active, parts: parts)
+            var result = Evaluation(activeDays: active, parts: parts)
+            for day in active {
+                if let plan = plans[day], plan.completionBasis > 0 {
+                    result.tasksToFinish += plan.completionBasis
+                    result.tasksDone += Int((plan.completionRate * Double(plan.completionBasis)).rounded())
+                }
+                let statuses = (anchorsByDay[day] ?? []).map { AnchorAttendance.displayStatus(of: $0, at: now) }
+                let attended = statuses.filter { $0 == .attended }.count
+                result.anchorsAttended += attended
+                result.anchorsDecided += attended + statuses.filter { $0 == .missed }.count
+            }
+            return result
         }
 
         private func mean(_ values: [Double]) -> Double? {

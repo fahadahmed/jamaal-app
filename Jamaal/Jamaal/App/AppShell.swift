@@ -51,6 +51,7 @@ struct AppShell: View {
             }
         }
         .environment(coordinator)
+        .environment(\.openTab) { selection = $0 }
         .onAppear {
             coordinator.context = context
             #if DEBUG

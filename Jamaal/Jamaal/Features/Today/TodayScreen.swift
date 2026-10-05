@@ -35,6 +35,11 @@ struct TodayScreen: View {
     @State private var dismissedPickUps: Set<UUID> = []
     @Query(sort: \TaskCategory.sortOrder) private var allCategories: [TaskCategory]
     @Environment(ReminderCenter.self) private var reminders
+    @Environment(\.openTab) private var openTab
+    @Query private var wellbeingLogs: [NudgeLog]
+    @State private var wellbeing: WellbeingRead?
+    /// The pattern whose card Today is showing this time; Today shows a card once a day, so it keeps its own.
+    @State private var todayCardKey: String?
 
     var body: some View {
         // Reading the attributes Today depends on makes SwiftUI re-run this body when any of them changes,
@@ -74,6 +79,8 @@ struct TodayScreen: View {
                     CapacitySlider(level: overview.level) { level in
                         try? TodayDay.setLevel(level, in: context, now: now)
                     }
+                    wellbeingStrip
+                    if let nudge = todayNudge(boundary: boundary) { todayWellbeingCard(nudge, boundary: boundary) }
                     if morningDue { morningCard }
                     if showsRemindersBanner(eveningDue: eveningDue, clock: eveningNow ?? now, boundary: boundary) { remindersBanner(boundary) }
                     ForEach(pickUps, id: \.task.id) { row in pickUpRow(row) }
@@ -128,6 +135,7 @@ struct TodayScreen: View {
         .task(id: morningDue) {
             if morningDue { try? MorningCard.markShown(now: promptClocks(boundary).morning ?? now, boundary: boundary, context: context) }
         }
+        .task(id: wellbeingFingerprint) { refreshWellbeing() }
         // A tapped planning notification opens Night Planning (always tomorrow's plan, looking back at today).
         .task(id: reminders.route) {
             if case .planning = reminders.route { startPlanning() }
@@ -210,6 +218,67 @@ struct TodayScreen: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("planTomorrowRow")
+    }
+
+    // MARK: Wellbeing (TD-02)
+
+    private var wellbeingFingerprint: Int { Int(now.timeIntervalSince1970 / 60) &+ plans.count &* 7 &+ wellbeingLogs.count &* 13 &+ habitEntries.count &* 17 }
+
+    private func refreshWellbeing() {
+        let boundary = TodayDay.boundary(in: context)
+        let first = Calendar.current.firstWeekday
+        guard let snapshot = try? Wellbeing.snapshot(now: now, boundary: boundary, firstWeekday: first, context: context) else { return }
+        let patterns = (try? Wellbeing.patterns(now: now, boundary: boundary, firstWeekday: first, context: context)) ?? []
+        let nudge = try? Wellbeing.currentNudge(patterns: patterns, now: now, boundary: boundary, nudgesEnabled: true, context: context)
+        wellbeing = WellbeingRead(snapshot: snapshot, nudge: nudge ?? nil)
+    }
+
+    /// A slim strip near the slider: the score's line, or how far gathering data has got. Tapping opens Wellbeing.
+    @ViewBuilder private var wellbeingStrip: some View {
+        if let snapshot = wellbeing?.snapshot {
+            Button { openTab(.wellbeing) } label: {
+                HStack(spacing: ThreadsSpace.row) {
+                    switch snapshot.state {
+                    case .gathering(let days, let needed):
+                        Text(WellbeingCopy.strip(gathering: days, needed: needed)).threadsType(.meta).foregroundStyle(threads.ink2)
+                        Spacer()
+                    case .active(let score, _):
+                        Text("Wellbeing").threadsType(.meta).foregroundStyle(threads.ink2)
+                        Spacer()
+                        Sparkline(points: snapshot.sparkline).frame(width: 96, height: 24)
+                        Text("\(score)").threadsType(.row).foregroundStyle(threads.ink)
+                    }
+                    Image(systemName: "chevron.right").font(.footnote).foregroundStyle(threads.ink3)
+                }
+                .frame(minHeight: ThreadsHit.minimum).contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("wellbeingStrip")
+        }
+    }
+
+    /// The pattern card, at most once a day on Today (it stays on the Wellbeing tab).
+    private func todayNudge(boundary: DayBoundary) -> WellbeingNudge? {
+        guard let nudge = wellbeing?.nudge else { return nil }
+        let today = boundary.logicalDate(at: now)
+        let key = nudge.pattern.subjectKey
+        let loggedToday = wellbeingLogs.contains { $0.nudgeKind == .wellbeing && $0.subjectKey == key && boundary.logicalDate(at: $0.sentAt) == today }
+        return !loggedToday || todayCardKey == key ? nudge : nil
+    }
+
+    private func todayWellbeingCard(_ nudge: WellbeingNudge, boundary: DayBoundary) -> some View {
+        WellbeingCard(nudge: nudge, onAction: {
+            if case .openHabit = try? Wellbeing.apply(nudge, now: now, boundary: boundary, context: context) { openTab(.habits) }
+            refreshWellbeing()
+        }, onNotNow: {
+            try? Wellbeing.dismiss(nudge, now: now, boundary: boundary, context: context)
+            refreshWellbeing()
+        })
+        .task(id: nudge.pattern.subjectKey) {
+            todayCardKey = nudge.pattern.subjectKey
+            try? Wellbeing.markShown(nudge, now: now, boundary: boundary, context: context)
+        }
     }
 
     /// Reminders are wanted on this device but off in the system: said once an evening, after the planning time.
@@ -470,4 +539,10 @@ struct TodayScreen: View {
         f.dateStyle = .none
         return f
     }()
+}
+
+/// What Today reads from Wellbeing: the snapshot and the card to show, if any.
+struct WellbeingRead {
+    var snapshot: WellbeingSnapshot
+    var nudge: WellbeingNudge?
 }

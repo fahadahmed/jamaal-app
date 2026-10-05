@@ -258,3 +258,45 @@ struct WellbeingTests {
         #expect(trend == nil)
     }
 }
+
+// MARK: The counts behind the read
+
+extension WellbeingTests {
+
+    @Test func theCountsAreTasksFinishedOverTasksThatHadToBeFinishedOnActiveDays() throws {
+        let w = try world()
+        for day in 8...14 { plan(w, d(day), completion: 2.0 / 3.0, basis: 3) }       // 2 of 3, seven days
+        plan(w, d(7), completion: 0, basis: 0)                                          // nothing to finish: no count
+        plan(w, d(15), completion: 1, basis: 9)                                          // today: not counted
+        let s = try snapshot(w)
+        #expect(s.tasksDone == 14 && s.tasksToFinish == 21)
+    }
+
+    @Test func aHalfFinishedDayRoundsUpToTheNearestTask() throws {
+        let w = try world()
+        for day in 8...14 { plan(w, d(day), completion: 0.5, basis: 3) }               // 1.5 of 3 a day → 2
+        let s = try snapshot(w)
+        #expect(s.tasksDone == 14 && s.tasksToFinish == 21)
+    }
+
+    @Test func anchorCountsLeaveOutSkippedDelegatedAndDaysOutsideTheWindow() throws {
+        let w = try world()
+        active(w, days: 8...14)
+        _ = anchor(w, day: 8, status: .attended)
+        _ = anchor(w, day: 9, status: .attended)
+        _ = anchor(w, day: 9, status: .missed)
+        _ = anchor(w, day: 10, status: .skipped)
+        _ = anchor(w, day: 11, status: .delegated)
+        _ = anchor(w, day: 3, status: .attended)                                        // not an active day in the window
+        let s = try snapshot(w)
+        #expect(s.anchorsAttended == 2 && s.anchorsDecided == 3)
+    }
+
+    @Test func whileGatheringDataTheCountsAreZero() throws {
+        let w = try world()
+        active(w, days: 10...13)
+        _ = anchor(w, day: 10, status: .attended)
+        let s = try snapshot(w)
+        #expect(s.tasksDone == 0 && s.tasksToFinish == 0 && s.anchorsAttended == 0 && s.anchorsDecided == 0)
+    }
+}

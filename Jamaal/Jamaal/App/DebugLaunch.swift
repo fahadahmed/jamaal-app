@@ -43,6 +43,13 @@ enum DebugLaunch {
     /// `-JamaalNormalDayHistory` gives the last 14 days a record of 2h 45m of work each and a 4h normal day, so
     /// Settings offers its quiet "You usually do about 2h 45m" line.
     static var normalDayHistory: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalNormalDayHistory") }
+    /// `-JamaalWellbeing gathering | steady | strained` gives Wellbeing a history: four active days; four weeks of
+    /// mostly finished days with two heavy ones; or the same with the last three days over budget.
+    static var wellbeingMode: String? {
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-JamaalWellbeing"), i + 1 < args.count else { return nil }
+        return args[i + 1]
+    }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor
@@ -86,6 +93,30 @@ enum DebugLaunch {
             if let session = try? FocusSessions.begin(task: draft, now: now.addingTimeInterval(-(24 * 60 + 10)), boundary: TodayDay.boundary(in: context), context: context) {
                 _ = session
             }
+        }
+    }
+
+    @MainActor
+    static func insertWellbeingHistory(into context: ModelContext, now: Date = .now) {
+        guard let mode = wellbeingMode, ((try? context.fetchCount(FetchDescriptor<DayPlan>())) ?? 0) == 0 else { return }
+        let today = TodayDay.boundary(in: context).logicalDate(at: now)
+        let span = mode == "gathering" ? 4 : 28
+        for offset in 1...span {
+            let day = today.addingDays(-offset)
+            let plan = DayPlan()
+            plan.date = day.storedDate
+            plan.completionBasis = 4
+            plan.completionRate = mode == "strained" && offset <= 3 ? 0.5 : 0.85
+            plan.wasOverloaded = (mode == "strained" && offset <= 3) || (mode == "steady" && (offset == 4 || offset == 9))
+            plan.completedEffortMinutes = 150
+            context.insert(plan)
+            let anchor = Anchor(title: "Asr")
+            anchor.occurrenceDate = day.storedDate
+            anchor.windowStart = TodayDay.boundary(in: context).instant(of: day, atMinute: 15 * 60)
+            anchor.windowEnd = TodayDay.boundary(in: context).instant(of: day, atMinute: 17 * 60)
+            anchor.slotKey = "asr"
+            anchor.status = offset % 9 == 0 ? .missed : .attended
+            context.insert(anchor)
         }
     }
 
