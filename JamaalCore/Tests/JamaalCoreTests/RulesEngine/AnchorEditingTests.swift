@@ -248,13 +248,13 @@ struct AnchorEditingTests {
         try AnchorEditing.removeException(from: rule, at: 5)                                   // nothing there: harmless
     }
 
-    @Test func exceptionsOnAPrayerRuleAreRefusedHere() throws {
+    @Test func anUnreadableRuleTakesNoExceptions() throws {
         let c = try context()
-        let prayer = AnchorRule(title: "Salah"); prayer.source = .prayerWindow; prayer.configData = #"{"version":1}"#
-        c.insert(prayer)
+        let broken = AnchorRule(title: "X"); broken.configData = "nonsense"; c.insert(broken)
         #expect(throws: AnchorEditError.notAScheduledRule) {
-            try AnchorEditing.addException(to: prayer, from: d(20), to: d(21), reason: .other)
+            try AnchorEditing.addException(to: broken, from: d(20), to: d(21), reason: .other)
         }
+        #expect(throws: AnchorEditError.notAScheduledRule) { try AnchorEditing.removeException(from: broken, at: 0) }
     }
 
     // MARK: One-offs

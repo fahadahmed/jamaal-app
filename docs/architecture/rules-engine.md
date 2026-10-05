@@ -366,6 +366,12 @@ Editing **never changes the kind** (history is read by it) and the kind check us
 
 **Exceptions** are date ranges (term break, holiday, travel, illness, other; the end can be open) that merge when they overlap, the longer or open end winning. Adding one removes pending Anchors inside it at the next sync; ones already decided stay. A rule inside an exception today reads as **paused** in the list, with why and until when. **One-offs** are Anchors with no rule, stored on their day with a window; the window must end after it starts and after now. `AnchorsOverview` is the list's read model: each rule with its state (running, paused, needs attention) and next Anchor (its dry run), the archived rules, and `upcoming` for a rule's detail.
 
+## Prayer times rule in the app
+
+`PrayerEditing` makes and edits the prayer rule from a `PrayerRuleDraft`: a title (Salah), a place, method and Asr (pre-selected from the country by the bundled table, always editable), the prayers (kept in day order), Isha ends (Islamic midnight or Fajr), the Jumu'ah label, high-latitude rule, per-prayer adjustments (up to an hour either way, zero is not stored), time each takes (10 min), fixed placement and reminders (at the start by default). It refuses a blank name, no prayers, an unknown prayer, method or option, no place (or one off the map), and an adjustment over an hour; nothing is written then. Editing keeps the rule's breaks, and breaks work on prayer rules exactly as on scheduled ones.
+
+**Places** are kept coarse: two decimal places, about a kilometre. A `device` place follows the device only when this device has itself moved about 25 km since the stored place (`PrayerLocationRules.updatedPlace`, applied by `followDevice`); a chosen city (`manual`) never moves. The app reads the location only when permission was already given, and only while it is open. `upcomingToday` gives the form its footnote: which of today's prayers are still to come and which have already closed.
+
 ## Access and the trial
 
 **`AccessState`** is a pure function in JamaalCore of `(now, trialStart, entitlement)`: **`trial`** (before the trial ends), **`subscribed`** (an active entitlement, including a billing grace period or retry, so a failed card never locks anyone out), or **`readOnly`** (otherwise). StoreKit supplies the entitlement at the app layer; the last-known entitlement is cached locally (per device, not synced) and used while offline, and an expiry only takes effect when StoreKit confirms it. Nothing is stored in the schema beyond `UserSettings.firstLaunchAt`.

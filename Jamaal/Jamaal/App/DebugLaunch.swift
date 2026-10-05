@@ -112,6 +112,10 @@ enum DebugLaunch {
             try? AnchorEditing.addException(to: rule, from: today.addingDays(-1), to: today.addingDays(4), reason: .holiday)
         }
 
+        var salah = PrayerRuleDraft(countryCode: "GB")
+        salah.location = PrayerConfig.Location(mode: "manual", latitude: 52.64, longitude: -1.14, name: "Leicester")
+        _ = try? PrayerEditing.create(salah, in: context, now: earlier)
+
         let newer = AnchorRule(title: "Swimming club"); newer.configData = #"{"version":99}"#; newer.createdAt = earlier
         context.insert(newer)
 
