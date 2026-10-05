@@ -37,6 +37,9 @@ enum DebugLaunch {
         guard let i = args.firstIndex(of: "-JamaalTab"), i + 1 < args.count else { return nil }
         return AppTab(rawValue: args[i + 1])
     }
+    /// `-JamaalAnchorRules` adds real rules for the Anchors tab: a school run, bin night, plants (due now), a rule on
+    /// a holiday break, one that needs attention (a newer version), and an archived one.
+    static var anchorRules: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalAnchorRules") }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor
@@ -81,6 +84,40 @@ enum DebugLaunch {
                 _ = session
             }
         }
+    }
+
+    @MainActor
+    static func insertSampleAnchorRules(into context: ModelContext, now: Date = .now) {
+        guard anchorRules, ((try? context.fetchCount(FetchDescriptor<AnchorRule>())) ?? 0) == 0 else { return }
+        let boundary = TodayDay.boundary(in: context)
+        let today = boundary.logicalDate(at: now)
+        let earlier = now.addingTimeInterval(-30 * 86_400)
+
+        var school = AnchorRuleDraft.preset(.schoolRun, today: today)
+        school.slots.append(AnchorSlotDraft(label: "Pick-up", startMinute: 15 * 60, windowMinutes: 30))
+        _ = try? AnchorEditing.create(school, in: context, now: earlier)
+
+        var bins = AnchorRuleDraft.preset(.binNight, today: today)
+        bins.repeats = .days([2])
+        _ = try? AnchorEditing.create(bins, in: context, now: earlier)
+
+        var plants = AnchorRuleDraft.preset(.plantWatering, today: today)
+        plants.markDueNow(today: today)
+        _ = try? AnchorEditing.create(plants, in: context, now: earlier)
+
+        var madrasa = AnchorRuleDraft.preset(.custom, today: today)
+        madrasa.title = "Madrasa pick-up"; madrasa.repeats = .days([1, 2, 3, 4, 5])
+        madrasa.slots = [AnchorSlotDraft(label: "Pick-up", startMinute: 15 * 60 + 30, windowMinutes: 30)]
+        if let rule = try? AnchorEditing.create(madrasa, in: context, now: earlier) {
+            try? AnchorEditing.addException(to: rule, from: today.addingDays(-1), to: today.addingDays(4), reason: .holiday)
+        }
+
+        let newer = AnchorRule(title: "Swimming club"); newer.configData = #"{"version":99}"#; newer.createdAt = earlier
+        context.insert(newer)
+
+        let archived = AnchorRule(title: "Nursery drop-off"); archived.isArchived = true; archived.createdAt = earlier
+        archived.configData = AnchorRuleDraft.preset(.schoolRun, today: today).slots.isEmpty ? "{}" : #"{"version":1,"recurrence":{"kind":"weekly","weekdays":[1]},"slots":[{"id":"a","label":"","start":"08:00","windowMinutes":30}],"exceptions":[]}"#
+        context.insert(archived)
     }
 
     /// A config the generator can't read, so it leaves these hand-made instances alone instead of pruning them.

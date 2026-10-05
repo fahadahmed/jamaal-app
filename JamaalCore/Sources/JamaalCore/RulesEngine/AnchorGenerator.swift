@@ -11,6 +11,20 @@ public struct GeneratedAnchor: Equatable, Sendable {
     public var effortMinutes: Int?
     public var remindBeforeStartMinutes: Int?
     public var remindBeforeEndMinutes: Int?
+
+    public init(
+        title: String, occurrenceDate: CalendarDate, slotKey: String, windowStart: Date, windowEnd: Date,
+        effortMinutes: Int?, remindBeforeStartMinutes: Int?, remindBeforeEndMinutes: Int?
+    ) {
+        self.title = title
+        self.occurrenceDate = occurrenceDate
+        self.slotKey = slotKey
+        self.windowStart = windowStart
+        self.windowEnd = windowEnd
+        self.effortMinutes = effortMinutes
+        self.remindBeforeStartMinutes = remindBeforeStartMinutes
+        self.remindBeforeEndMinutes = remindBeforeEndMinutes
+    }
 }
 
 /// What a sync changed.
