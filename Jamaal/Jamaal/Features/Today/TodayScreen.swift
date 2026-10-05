@@ -80,6 +80,7 @@ struct TodayScreen: View {
                         try? TodayDay.setLevel(level, in: context, now: now)
                     }
                     wellbeingStrip
+                    if tonightCard(boundary: boundary) { tonightCardView }
                     if let nudge = todayNudge(boundary: boundary) { todayWellbeingCard(nudge, boundary: boundary) }
                     if morningDue { morningCard }
                     if showsRemindersBanner(eveningDue: eveningDue, clock: eveningNow ?? now, boundary: boundary) { remindersBanner(boundary) }
@@ -218,6 +219,28 @@ struct TodayScreen: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("planTomorrowRow")
+    }
+
+    // MARK: Day zero
+
+    /// "Tonight, we'll plan tomorrow.": on the day onboarding finished, until tomorrow is being planned.
+    private func tonightCard(boundary: DayBoundary) -> Bool {
+        (try? Onboarding.tonightCardVisible(settings: settings.first, now: now, boundary: boundary, context: context)) ?? false
+    }
+
+    private var tonightCardView: some View {
+        HStack(alignment: .top, spacing: ThreadsSpace.row) {
+            CompanionMark()
+            VStack(alignment: .leading, spacing: 2) {
+                Text(OnboardingCopy.tonightTitle).threadsType(.lede).foregroundStyle(threads.ink)
+                Text(OnboardingCopy.tonightLine(planningMinute: settings.first?.planningMinute ?? 1200)).threadsType(.body).foregroundStyle(threads.ink2)
+            }
+        }
+        .padding(ThreadsSpace.row)
+        .background(RoundedRectangle(cornerRadius: ThreadsRadius.card).fill(threads.card))
+        .overlay(RoundedRectangle(cornerRadius: ThreadsRadius.card).strokeBorder(threads.line2, lineWidth: 1))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("tonightCard")
     }
 
     // MARK: Wellbeing (TD-02)

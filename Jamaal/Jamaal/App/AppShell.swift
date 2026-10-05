@@ -17,10 +17,28 @@ struct AppShell: View {
     @Environment(\.modelContext) private var context
     @State private var selection: AppTab = .today
     @Environment(ReminderCenter.self) private var reminders
+    @Query(sort: \UserSettings.createdAt) private var settingsRows: [UserSettings]
     @State private var coordinator = FocusCoordinator()
     // The one live session, and the Anchors the chip's single line is drawn from.
     @Query(filter: #Predicate<WorkSession> { $0.outcome == "running" && $0.endedAt == nil }) private var liveSessions: [WorkSession]
     @Query private var anchors: [AnchorInstance]
+
+    /// First launch: until onboarding is completed (a second device on the account has it already). Debug in-memory runs
+    /// skip it unless asked, so tests don't change.
+    private var showsOnboarding: Bool {
+        #if DEBUG
+        if DebugLaunch.inMemory && !DebugLaunch.onboarding { return false }
+        #endif
+        return Onboarding.isNeeded(settingsRows.first)
+    }
+
+    private var debugStartStep: Int {
+        #if DEBUG
+        return DebugLaunch.onboardingStep ?? 0
+        #else
+        return 0
+        #endif
+    }
 
     private var liveSession: WorkSession? { liveSessions.min { $0.startedAt < $1.startedAt } }
 
@@ -49,6 +67,9 @@ struct AppShell: View {
                     }
                 }
             }
+        }
+        .fullScreenCover(isPresented: .constant(showsOnboarding)) {
+            OnboardingFlow(startAt: OnboardingStep(rawValue: debugStartStep) ?? .meet)
         }
         .environment(coordinator)
         .environment(\.openTab) { selection = $0 }

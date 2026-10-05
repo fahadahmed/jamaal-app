@@ -16,6 +16,7 @@ final class ShellUITests: XCTestCase {
     func testThePhoneTabBarHasFourTabsAndAnchorsIsASegmentOfHabits() throws {
         try XCTSkipIf(UIDevice.current.userInterfaceIdiom != .phone, "the phone layout")
         let app = XCUIApplication()
+        app.launchArguments = ["-JamaalInMemory"]
         app.launch()
 
         let tabBar = app.tabBars.firstMatch

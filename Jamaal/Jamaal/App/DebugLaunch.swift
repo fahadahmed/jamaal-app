@@ -50,6 +50,14 @@ enum DebugLaunch {
         guard let i = args.firstIndex(of: "-JamaalWellbeing"), i + 1 < args.count else { return nil }
         return args[i + 1]
     }
+    /// `-JamaalOnboarding` shows first-launch onboarding (in-memory runs skip it otherwise, so tests don't change);
+    /// `-JamaalOnboardingStep N` starts at the Nth screen (0 Meet … 8 Ready), to look at each one.
+    static var onboarding: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOnboarding") || onboardingStep != nil }
+    static var onboardingStep: Int? {
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-JamaalOnboardingStep"), i + 1 < args.count else { return nil }
+        return Int(args[i + 1])
+    }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor
