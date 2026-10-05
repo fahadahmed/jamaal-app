@@ -40,6 +40,9 @@ enum DebugLaunch {
     /// `-JamaalAnchorRules` adds real rules for the Anchors tab: a school run, bin night, plants (due now), a rule on
     /// a holiday break, one that needs attention (a newer version), and an archived one.
     static var anchorRules: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalAnchorRules") }
+    /// `-JamaalNormalDayHistory` gives the last 14 days a record of 2h 45m of work each and a 4h normal day, so
+    /// Settings offers its quiet "You usually do about 2h 45m" line.
+    static var normalDayHistory: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalNormalDayHistory") }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor
@@ -84,6 +87,19 @@ enum DebugLaunch {
                 _ = session
             }
         }
+    }
+
+    @MainActor
+    static func insertNormalDayHistory(into context: ModelContext, now: Date = .now) {
+        guard normalDayHistory, ((try? context.fetchCount(FetchDescriptor<DayPlan>())) ?? 0) == 0 else { return }
+        let today = TodayDay.boundary(in: context).logicalDate(at: now)
+        for offset in 1...14 {
+            let plan = DayPlan()
+            plan.date = today.addingDays(-offset).storedDate
+            plan.completedEffortMinutes = 165
+            context.insert(plan)
+        }
+        (try? context.fetch(FetchDescriptor<UserSettings>()))?.first?.mediumDayMinutes = 240
     }
 
     @MainActor

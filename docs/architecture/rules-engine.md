@@ -372,6 +372,12 @@ Editing **never changes the kind** (history is read by it) and the kind check us
 
 **Places** are kept coarse: two decimal places, about a kilometre. A `device` place follows the device only when this device has itself moved about 25 km since the stored place (`PrayerLocationRules.updatedPlace`, applied by `followDevice`); a chosen city (`manual`) never moves. The app reads the location only when permission was already given, and only while it is open. `upcomingToday` gives the form its footnote: which of today's prayers are still to come and which have already closed.
 
+## Settings in the app
+
+`DaySettings` holds the numbers on *Capacity and day*. The normal day moves in 15-minute steps from 30 minutes to 6 hours. The working day needs `rollover < start < end` and at least two hours. The **rollover** can change only when the clock is past both the old and the new value (`rolloverAvailability` / `setRollover`), so the logical date never flips under the user; otherwise the control says when it can change. `planningBeforeDayEnd` gives the quiet note when the planning prompt precedes the end of the working day. `normalDaySuggestion` is the suggest-only learning above: the median of the last 28 days that had work, once 14 exist, rounded to 15 minutes and kept in range, offered when it differs by 30 minutes or more. Showing it is logged once per value; *Not now* is logged as dismissed, and a dismissal silences the line for 28 days and the same value for good.
+
+`CategoryEditing` keeps the label list: a name is trimmed, 1–24 characters and unique ignoring case and accents, archived labels included (renaming a default keeps its `presetKey`); at most eight are active; a new label takes the next colour not in use and goes last; restoring needs room; moving renumbers the list. Archiving never touches a task's label.
+
 ## Access and the trial
 
 **`AccessState`** is a pure function in JamaalCore of `(now, trialStart, entitlement)`: **`trial`** (before the trial ends), **`subscribed`** (an active entitlement, including a billing grace period or retry, so a failed card never locks anyone out), or **`readOnly`** (otherwise). StoreKit supplies the entitlement at the app layer; the last-known entitlement is cached locally (per device, not synced) and used while offline, and an expiry only takes effect when StoreKit confirms it. Nothing is stored in the schema beyond `UserSettings.firstLaunchAt`.
