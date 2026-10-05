@@ -16,6 +16,7 @@ struct AppShell: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(\.modelContext) private var context
     @State private var selection: AppTab = .today
+    @Environment(ReminderCenter.self) private var reminders
     @State private var coordinator = FocusCoordinator()
     // The one live session, and the Anchors the chip's single line is drawn from.
     @Query(filter: #Predicate<WorkSession> { $0.outcome == "running" && $0.endedAt == nil }) private var liveSessions: [WorkSession]
@@ -56,6 +57,17 @@ struct AppShell: View {
             if let tab = DebugLaunch.tab { selection = tab }
             if DebugLaunch.openFocus { coordinator.isShowingFocus = true }
             #endif
+        }
+        // Any save (a habit logged, a night planned, a rule edited) may change what should be scheduled.
+        .task {
+            for await _ in NotificationCenter.default.notifications(named: ModelContext.didSave) { reminders.scheduleReplan(in: context) }
+        }
+        .onChange(of: reminders.route) { _, route in
+            switch route {
+            case .planning, .today: selection = .today
+            case .subscription: selection = .settings
+            case nil: break
+            }
         }
         .task {
             while !Task.isCancelled {

@@ -34,6 +34,7 @@ struct TodayScreen: View {
     @State private var filterID: UUID?
     @State private var dismissedPickUps: Set<UUID> = []
     @Query(sort: \TaskCategory.sortOrder) private var allCategories: [TaskCategory]
+    @Environment(ReminderCenter.self) private var reminders
 
     var body: some View {
         // Reading the attributes Today depends on makes SwiftUI re-run this body when any of them changes,
@@ -74,6 +75,7 @@ struct TodayScreen: View {
                         try? TodayDay.setLevel(level, in: context, now: now)
                     }
                     if morningDue { morningCard }
+                    if showsRemindersBanner(eveningDue: eveningDue, clock: eveningNow ?? now, boundary: boundary) { remindersBanner(boundary) }
                     ForEach(pickUps, id: \.task.id) { row in pickUpRow(row) }
                     anchorsSection(anchorItems)
                     habitsSection(todayHabits)
@@ -126,6 +128,13 @@ struct TodayScreen: View {
         .task(id: morningDue) {
             if morningDue { try? MorningCard.markShown(now: promptClocks(boundary).morning ?? now, boundary: boundary, context: context) }
         }
+        // A tapped planning notification opens Night Planning (always tomorrow's plan, looking back at today).
+        .task(id: reminders.route) {
+            if case .planning = reminders.route { startPlanning() }
+            if reminders.route != nil { reminders.route = nil }
+        }
+        .task { await reminders.refresh() }
+        .onChange(of: scenePhase) { _, phase in if phase == .active { Task { await reminders.refresh() } } }
         // A new day starts unfiltered.
         .onChange(of: overview?.today) { _, _ in filterID = nil; dismissedPickUps = [] }
     }
@@ -201,6 +210,38 @@ struct TodayScreen: View {
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("planTomorrowRow")
+    }
+
+    /// Reminders are wanted on this device but off in the system: said once an evening, after the planning time.
+    private func showsRemindersBanner(eveningDue: Bool, clock: Date, boundary: DayBoundary) -> Bool {
+        let planning = settings.first?.planningMinute ?? 1200
+        return ReminderStatus.showsBanner(
+            permission: reminders.permission, remindersOnThisDevice: reminders.remindersOnThisDevice, now: clock, boundary: boundary,
+            planningMinute: planning, tonightSettled: !eveningDue, dismissedOn: reminders.bannerDismissedOn, dontRemind: reminders.dontRemind)
+    }
+
+    private func remindersBanner(_ boundary: DayBoundary) -> some View {
+        VStack(alignment: .leading, spacing: ThreadsSpace.row) {
+            Text(ReminderCopy.banner).threadsType(.lede).foregroundStyle(threads.ink)
+            HStack(spacing: ThreadsSpace.tight) {
+                Button(action: startPlanning) {
+                    Text("Plan tomorrow").threadsType(.row).foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, minHeight: 52).background(Capsule().fill(threads.terra)).contentShape(Capsule())
+                }
+                .accessibilityIdentifier("bannerPlan")
+                PillButton(title: "Not today", fills: true) { reminders.dismissBanner(today: boundary.logicalDate(at: now)) }
+                    .accessibilityIdentifier("bannerNotToday")
+            }
+            .buttonStyle(.plain)
+            Button("Don't remind me") { reminders.dontRemind = true }
+                .threadsType(.meta).foregroundStyle(threads.ink2).buttonStyle(.plain).frame(minHeight: ThreadsHit.minimum)
+                .accessibilityIdentifier("bannerDontRemind")
+        }
+        .padding(ThreadsSpace.row)
+        .background(RoundedRectangle(cornerRadius: ThreadsRadius.card).fill(threads.card))
+        .overlay(RoundedRectangle(cornerRadius: ThreadsRadius.card).strokeBorder(threads.line2, lineWidth: 1))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("remindersBanner")
     }
 
     /// TD-07: no plan was confirmed for today. Pick for today opens the shortened flow; Not now puts it away.

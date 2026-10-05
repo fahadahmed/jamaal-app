@@ -7,6 +7,7 @@
 
 import SwiftData
 import SwiftUI
+import UserNotifications
 import ThreadsTokens
 
 @main
@@ -14,11 +15,15 @@ struct JamaalApp: App {
     @Environment(\.scenePhase) private var scenePhase
     private let container: ModelContainer?
     private let openError: Error?
+    @State private var reminders = ReminderCenter()
+    private let notificationDelegate = NotificationDelegate()
 
     init() {
         // Fraunces, Hanken Grotesk and JetBrains Mono ship inside ThreadsKit; register them before the first view.
         let failures = ThreadsFonts.registerAll()
         assert(failures.isEmpty, "Fonts failed to register: \(failures)")
+
+        UNUserNotificationCenter.current().delegate = notificationDelegate
 
         do {
             container = try AppEngine.makeContainer()
@@ -35,7 +40,11 @@ struct JamaalApp: App {
                 if let container {
                     AppShell()
                         .modelContainer(container)
-                        .onAppear { tick(container) }
+                        .environment(reminders)
+                        .onAppear {
+                            notificationDelegate.onRoute = { [reminders] route in reminders.route = route }
+                            tick(container)
+                        }
                         .onChange(of: scenePhase) { _, phase in
                             if phase == .active { tick(container) }
                         }
@@ -56,6 +65,7 @@ struct JamaalApp: App {
         do {
             try AppEngine.tick(context: container.mainContext)
             Task { await PrayerPlaceTracker.refresh(in: container.mainContext) }
+            reminders.scheduleReplan(in: container.mainContext)
         } catch {
             assertionFailure("Engine tick failed: \(error)")
         }
