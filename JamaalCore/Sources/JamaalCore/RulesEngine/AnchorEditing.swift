@@ -180,11 +180,23 @@ public enum AnchorEditing {
     /// with any it overlaps. Attended, missed, skipped and delegated Anchors stay; pending ones inside it go at the next sync.
     @MainActor
     public static func addException(to rule: AnchorRule, from: CalendarDate, to: CalendarDate?, reason: ExceptionReason) throws {
-        guard case .scheduled(var config) = rule.config else { throw AnchorEditError.notAScheduledRule }
         if let to, to < from { throw AnchorEditError.endsBeforeItStarts }
+        switch rule.config {
+        case .scheduled(var config):
+            config.exceptions = merging(config.exceptions, from: from, to: to, reason: reason)
+            rule.configData = config.json
+        case .prayer(var config):
+            config.exceptions = merging(config.exceptions, from: from, to: to, reason: reason)
+            rule.configData = config.json
+        case .needsAttention:
+            throw AnchorEditError.notAScheduledRule
+        }
+    }
+
+    private static func merging(_ exceptions: [AnchorException], from: CalendarDate, to: CalendarDate?, reason: ExceptionReason) -> [AnchorException] {
         var merged = AnchorException(from: from, to: to, reason: reason.storable ?? ExceptionReason.other.rawValue)
         var kept: [AnchorException] = []
-        for existing in config.exceptions {
+        for existing in exceptions {
             let overlaps = (existing.to.map { merged.from <= $0 } ?? true) && (merged.to.map { existing.from <= $0 } ?? true)
             if overlaps {
                 let end: CalendarDate? = (existing.to == nil || merged.to == nil) ? nil : max(existing.to!, merged.to!)
@@ -193,16 +205,23 @@ public enum AnchorEditing {
                 kept.append(existing)
             }
         }
-        config.exceptions = (kept + [merged]).sorted { $0.from < $1.from }
-        rule.configData = config.json
+        return (kept + [merged]).sorted { $0.from < $1.from }
     }
 
     @MainActor
     public static func removeException(from rule: AnchorRule, at index: Int) throws {
-        guard case .scheduled(var config) = rule.config else { throw AnchorEditError.notAScheduledRule }
-        guard config.exceptions.indices.contains(index) else { return }
-        config.exceptions.remove(at: index)
-        rule.configData = config.json
+        switch rule.config {
+        case .scheduled(var config):
+            guard config.exceptions.indices.contains(index) else { return }
+            config.exceptions.remove(at: index)
+            rule.configData = config.json
+        case .prayer(var config):
+            guard config.exceptions.indices.contains(index) else { return }
+            config.exceptions.remove(at: index)
+            rule.configData = config.json
+        case .needsAttention:
+            throw AnchorEditError.notAScheduledRule
+        }
     }
 
     // MARK: Helpers

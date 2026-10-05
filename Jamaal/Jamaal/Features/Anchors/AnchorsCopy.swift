@@ -112,6 +112,14 @@ enum AnchorsCopy {
         return "\(day) · \(TodayCopy.time(anchor.windowStart, style: style))"
     }
 
+    /// A prayer rule's line: "Fajr, Dhuhr, Asr, Maghrib, Isha · Leicester · Muslim World League", or "Five daily prayers · …".
+    static func prayerLine(_ config: PrayerConfig) -> String {
+        var parts = [config.prayers.count == 5 ? "Five daily prayers" : config.prayers.map(PrayerForm.name).joined(separator: ", ")]
+        if let name = config.location?.name { parts.append(name) }
+        parts.append(PrayerMethods.title(for: config.method))
+        return parts.joined(separator: " · ")
+    }
+
     // MARK: Types and refusals
 
     static func typeTitle(_ source: AnchorSource) -> String {
@@ -119,7 +127,8 @@ enum AnchorsCopy {
         case .schoolRun: "School run"
         case .binNight: "Bin night"
         case .plantWatering: "Plant watering"
-        case .custom, .prayerWindow, .unknown: "Something else"
+        case .prayerWindow: "Prayer times"
+        case .custom, .unknown: "Something else"
         }
     }
 
@@ -128,7 +137,8 @@ enum AnchorsCopy {
         case .schoolRun: "Drop-off and pick-up on school days."
         case .binNight: "One evening a week."
         case .plantWatering: "Every few days, from when you last did it."
-        case .custom, .prayerWindow, .unknown: "Anything with a time and a rhythm."
+        case .prayerWindow: "The five daily prayers, worked out for where you are."
+        case .custom, .unknown: "Anything with a time and a rhythm."
         }
     }
 

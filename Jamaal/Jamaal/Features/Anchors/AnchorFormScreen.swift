@@ -21,9 +21,13 @@ struct AddAnchorRuleFlow: View {
                         .accessibilityAddTraits(.isHeader)
                     VStack(spacing: 0) {
                         Divider().overlay(threads.line)
-                        ForEach([AnchorSource.schoolRun, .binNight, .plantWatering, .custom], id: \.self) { source in
+                        ForEach([AnchorSource.prayerWindow, .schoolRun, .binNight, .plantWatering, .custom], id: \.self) { source in
                             NavigationLink {
-                                AnchorFormScreen(draft: AnchorRuleDraft.preset(source, today: today), editing: nil, onFinished: { dismiss() })
+                                if source == .prayerWindow {
+                                    PrayerFormScreen(draft: PrayerRuleDraft(countryCode: nil), editing: nil, onFinished: { dismiss() })
+                                } else {
+                                    AnchorFormScreen(draft: AnchorRuleDraft.preset(source, today: today), editing: nil, onFinished: { dismiss() })
+                                }
                             } label: {
                                 HStack {
                                     VStack(alignment: .leading, spacing: ThreadsSpace.hair) {

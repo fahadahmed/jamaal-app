@@ -55,6 +55,7 @@ struct JamaalApp: App {
     private func tick(_ container: ModelContainer) {
         do {
             try AppEngine.tick(context: container.mainContext)
+            Task { await PrayerPlaceTracker.refresh(in: container.mainContext) }
         } catch {
             assertionFailure("Engine tick failed: \(error)")
         }

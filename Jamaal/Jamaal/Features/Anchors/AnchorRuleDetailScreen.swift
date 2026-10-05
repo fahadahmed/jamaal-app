@@ -27,6 +27,11 @@ struct AnchorRuleDetailScreen: View {
     private var scheduled: ScheduledConfig? {
         if case .scheduled(let config) = rule.config { config } else { nil }
     }
+    private var prayer: PrayerConfig? {
+        if case .prayer(let config) = rule.config { config } else { nil }
+    }
+    /// The breaks of either kind of readable rule.
+    private var breaks: [AnchorException]? { scheduled?.exceptions ?? prayer?.exceptions }
 
     var body: some View {
         let _ = rules.map { [$0.title, $0.configData, $0.isArchived ? "1" : "0"] }
@@ -39,7 +44,7 @@ struct AnchorRuleDetailScreen: View {
                     Text(rule.title).threadsType(.display(.large)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
                     Text(summary(row)).threadsType(.lede).foregroundStyle(threads.ink2).accessibilityIdentifier("ruleSummary")
                 }
-                if let scheduled { exceptions(scheduled) }
+                if let breaks { exceptions(breaks) }
                 upcoming
             }
             .padding(.horizontal, ThreadsSpace.gutter)
@@ -53,6 +58,8 @@ struct AnchorRuleDetailScreen: View {
         .sheet(isPresented: $editing) {
             if let draft = AnchorRuleDraft(editing: rule) {
                 NavigationStack { AnchorFormScreen(draft: draft, editing: rule) }
+            } else if let draft = PrayerRuleDraft(editing: rule) {
+                NavigationStack { PrayerFormScreen(draft: draft, editing: rule) }
             }
         }
         .sheet(isPresented: $excepting) { ExceptionSheet(rule: rule, today: today) }
@@ -62,7 +69,7 @@ struct AnchorRuleDetailScreen: View {
 
     private func summary(_ row: AnchorsOverview.Row?) -> String {
         if let row, let state = AnchorsCopy.state(row.state) { return state }
-        guard let scheduled else { return rule.source == .prayerWindow ? "Prayer times" : "" }
+        guard let scheduled else { return prayer.map(AnchorsCopy.prayerLine) ?? "" }
         return AnchorsCopy.scheduleLine(scheduled, next: row?.next, today: today, style: style)
     }
 
@@ -76,8 +83,8 @@ struct AnchorRuleDetailScreen: View {
             .accessibilityLabel("Back")
             Spacer()
             Menu {
-                if scheduled != nil { Button("Edit rule…") { editing = true } }
-                if scheduled != nil { Button("Pause…") { excepting = true } }
+                if breaks != nil { Button("Edit rule…") { editing = true } }
+                if breaks != nil { Button("Pause…") { excepting = true } }
                 Button("Archive", role: .destructive) {
                     rule.isArchived = true
                     AppEngine.syncAnchors(in: context)
@@ -94,11 +101,11 @@ struct AnchorRuleDetailScreen: View {
         .padding(.top, ThreadsSpace.hair)
     }
 
-    private func exceptions(_ config: ScheduledConfig) -> some View {
+    private func exceptions(_ list: [AnchorException]) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("Exceptions").threadsType(.label).foregroundStyle(threads.ink2).padding(.bottom, ThreadsSpace.tight)
             Divider().overlay(threads.line)
-            ForEach(Array(config.exceptions.enumerated()), id: \.offset) { index, exception in
+            ForEach(Array(list.enumerated()), id: \.offset) { index, exception in
                 HStack {
                     Text(AnchorsCopy.exception(exception)).threadsType(.lede).foregroundStyle(threads.ink)
                     Spacer()
