@@ -288,6 +288,7 @@ struct AnchorFormScreen: View {
                 get: { form.draft.remindBeforeEndMinutes != nil },
                 set: { form.draft.remindBeforeEndMinutes = $0 ? 10 : nil })).threadsType(.lede).foregroundStyle(threads.ink)
                 .padding(.bottom, ThreadsSpace.tight)
+            if form.draft.remindAtStart || form.draft.remindBeforeEndMinutes != nil { RemindersOffLine().padding(.bottom, ThreadsSpace.tight) }
             Divider().overlay(threads.line)
         }
     }

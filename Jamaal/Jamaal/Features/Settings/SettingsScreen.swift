@@ -14,8 +14,9 @@ struct SettingsScreen: View {
     @Environment(\.threads) private var threads
     @Query(sort: \UserSettings.createdAt) private var settings: [UserSettings]
     @Query private var categories: [TaskCategory]
+    @Environment(ReminderCenter.self) private var reminders
 
-    enum Destination: Hashable { case capacity, categories }
+    enum Destination: Hashable { case capacity, notifications, categories }
 
     var body: some View {
         let _ = categories.map { [$0.name, $0.isArchived ? "1" : "0"] }
@@ -26,6 +27,9 @@ struct SettingsScreen: View {
                     VStack(spacing: 0) {
                         Divider().overlay(threads.line)
                         row("Capacity and day", settings.first.map(SettingsCopy.capacitySummary) ?? "", .capacity)
+                        row("Notifications and times",
+                            ReminderCopy.homeValue(switchOn: reminders.remindersOnThisDevice, permission: reminders.permission, device: ReminderCenter.deviceName),
+                            .notifications)
                         row("Categories", "\(categories.filter { !$0.isArchived }.count)", .categories)
                     }
                 }
@@ -34,9 +38,11 @@ struct SettingsScreen: View {
             .scrollIndicators(.hidden)
             .background(threads.app)
             .toolbar(.hidden, for: .navigationBar)
+            .task { await reminders.refresh() }
             .navigationDestination(for: Destination.self) { destination in
                 switch destination {
                 case .capacity: CapacityAndDayScreen()
+                case .notifications: NotificationsScreen()
                 case .categories: CategoriesScreen()
                 }
             }

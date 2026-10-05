@@ -32,7 +32,7 @@ final class ShellUITests: XCTestCase {
         XCTAssertTrue(segment.buttons["Anchors"].exists)
 
         segment.buttons["Anchors"].tap()
-        XCTAssertTrue(app.staticTexts["Prayer times, the school run, bin night."].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Prayer times, the school run, bin night: the things your day moves around."].waitForExistence(timeout: 5))
     }
 
     @MainActor

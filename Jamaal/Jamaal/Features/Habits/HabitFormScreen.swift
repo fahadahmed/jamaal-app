@@ -347,6 +347,7 @@ struct WindowEditorSheet: View {
                 DatePicker("At", selection: Binding(
                     get: { HabitForm.date(forMinute: reminder) },
                     set: { form.draft.windows[index].reminderMinute = HabitForm.minute(of: $0) }), displayedComponents: .hourAndMinute)
+                RemindersOffLine()
             }
             Spacer()
             if canRemove {
