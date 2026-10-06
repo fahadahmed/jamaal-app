@@ -42,7 +42,7 @@ No `.xcworkspace` — JamaalCore is a Swift Package (added as a local package de
 - CI: `.github/workflows/ci.yml` runs `JamaalCore` tests and the app's unit tests on the `xcode-27` runner
 - **Host in CloudKit: enabled** — cross-device sync (iPhone/iPad/Mac) is in scope for v1, not deferred
 - Testing System: **Swift Testing with XCTest UI Tests** (see Testing section below)
-- Team: Personal (free) is fine for simulator builds and CI, but **iCloud/CloudKit and push can't be provisioned on it**, so the paid Apple Developer Program ($99/year) must be enrolled before any real-device sync testing (by the start of Phase 3 at the latest), and the CloudKit container identifier created then. It is also needed for TestFlight-with-others, production CloudKit and App Store submission.
+- Team: Personal (free) is fine for simulator builds and CI, but **iCloud/CloudKit and push can't be provisioned on it**, so the paid Apple Developer Program ($99/year) must be enrolled before any real-device sync testing (by the start of Phase 3 at the latest), and the CloudKit container identifier created then. It is also needed for TestFlight-with-others, production CloudKit and App Store submission. **Running on your own device with the free team works** because the Debug configuration signs with `Jamaal/Jamaal-Personal.entitlements` (empty); Release uses `Jamaal.entitlements` (push and iCloud) and needs the paid programme. When CloudKit is wired, point Debug back at the full file.
 
 ## Testing strategy
 
