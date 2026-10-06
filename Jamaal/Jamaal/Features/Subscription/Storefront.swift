@@ -23,20 +23,31 @@ final class Storefront {
     private let client: any StoreClient
     private let defaults: UserDefaults
     private var started = false
+    #if DEBUG
+    /// `-JamaalAccess`: forces the state for looking at each screen. Injectable so unit tests never inherit a host argument.
+    private let accessOverride: DebugLaunch.AccessOverride?
+    #endif
 
     private enum Keys { static let lastKnown = "entitlementLastKnown", renews = "entitlementRenewsOn", paywallShownOn = "paywallShownOn", trialBannerDismissedOn = "trialBannerDismissedOn" }
 
-    init(client: (any StoreClient)? = nil, defaults: UserDefaults? = nil) {
-        #if DEBUG
+    #if DEBUG
+    init(client: (any StoreClient)? = nil, defaults: UserDefaults? = nil, accessOverride: DebugLaunch.AccessOverride? = DebugLaunch.access) {
+        self.accessOverride = accessOverride
         self.client = client ?? Storefront.debugClient() ?? SystemStoreClient()
-        #else
-        self.client = client ?? SystemStoreClient()
-        #endif
         let store = defaults ?? Storefront.standardDefaults
         self.defaults = store
         entitlementActive = EntitlementCache.isActive(confirmed: nil, lastKnown: store.object(forKey: Keys.lastKnown) as? Bool)
         renewsOn = store.object(forKey: Keys.renews) as? Date
     }
+    #else
+    init(client: (any StoreClient)? = nil, defaults: UserDefaults? = nil) {
+        self.client = client ?? SystemStoreClient()
+        let store = defaults ?? Storefront.standardDefaults
+        self.defaults = store
+        entitlementActive = EntitlementCache.isActive(confirmed: nil, lastKnown: store.object(forKey: Keys.lastKnown) as? Bool)
+        renewsOn = store.object(forKey: Keys.renews) as? Date
+    }
+    #endif
 
     private static var standardDefaults: UserDefaults {
         #if DEBUG
@@ -108,7 +119,7 @@ final class Storefront {
     /// Trial, subscribed or read-only, for `now`.
     func access(settings: UserSettings?, boundary: DayBoundary, now: Date = .now) -> AccessState {
         #if DEBUG
-        if let override = DebugLaunch.access {
+        if let override = accessOverride {
             switch override {
             case .subscribed: return .subscribed
             case .readOnly: return entitlementActive ? .subscribed : .readOnly          // a purchase still lifts it

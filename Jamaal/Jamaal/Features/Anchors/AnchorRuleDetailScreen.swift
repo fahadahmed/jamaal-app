@@ -12,6 +12,7 @@ import JamaalCore
 /// dry run. Edit, Pause (an exception from today) and Archive.
 struct AnchorRuleDetailScreen: View {
     @Environment(\.threads) private var threads
+    @Environment(\.requireAccess) private var requireAccess
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
@@ -83,9 +84,10 @@ struct AnchorRuleDetailScreen: View {
             .accessibilityLabel("Back")
             Spacer()
             Menu {
-                if breaks != nil { Button("Edit rule…") { editing = true } }
-                if breaks != nil { Button("Pause…") { excepting = true } }
+                if breaks != nil { Button("Edit rule…") { if requireAccess(.editAnchorRule) { editing = true } } }
+                if breaks != nil { Button("Pause…") { if requireAccess(.editAnchorRule) { excepting = true } } }
                 Button("Archive", role: .destructive) {
+                    guard requireAccess(.archiveOrRestore) else { return }
                     rule.isArchived = true
                     AppEngine.syncAnchors(in: context)
                     dismiss()
@@ -110,6 +112,7 @@ struct AnchorRuleDetailScreen: View {
                     Text(AnchorsCopy.exception(exception)).threadsType(.lede).foregroundStyle(threads.ink)
                     Spacer()
                     Button("Remove") {
+                        guard requireAccess(.editAnchorRule) else { return }
                         try? AnchorEditing.removeException(from: rule, at: index)
                         AppEngine.syncAnchors(in: context)
                     }
@@ -120,7 +123,7 @@ struct AnchorRuleDetailScreen: View {
                 .frame(minHeight: 52)
                 Divider().overlay(threads.line)
             }
-            Button { excepting = true } label: {
+            Button { if requireAccess(.editAnchorRule) { excepting = true } } label: {
                 Label("Add a break", systemImage: "plus").threadsType(.lede).foregroundStyle(threads.ink)
                     .frame(minHeight: 52, alignment: .leading).frame(maxWidth: .infinity, alignment: .leading).contentShape(Rectangle())
             }

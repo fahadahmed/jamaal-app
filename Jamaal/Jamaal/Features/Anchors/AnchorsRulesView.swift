@@ -12,6 +12,7 @@ import JamaalCore
 /// with Restore. Used inside the Habits tab's Anchors segment and, on iPad and Mac, as its own sidebar item.
 struct AnchorsRulesView: View {
     @Environment(\.threads) private var threads
+    @Environment(\.requireAccess) private var requireAccess
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
 
@@ -30,7 +31,7 @@ struct AnchorsRulesView: View {
                 HStack(alignment: .center) {
                     Text("Anchors").threadsType(.display(.large)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
                     Spacer()
-                    Button { adding = true } label: {
+                    Button { if requireAccess(.createAnchorRule) { adding = true } } label: {
                         Image(systemName: "plus").font(.title3).foregroundStyle(threads.ink)
                             .frame(width: 52, height: 52).glassEffect(.regular.interactive(), in: Circle()).contentShape(Circle())
                     }
@@ -111,7 +112,7 @@ struct AnchorsRulesView: View {
                     HStack {
                         Text(rule.title).threadsType(.lede).foregroundStyle(threads.ink2)
                         Spacer()
-                        Button("Restore") { rule.isArchived = false; AppEngine.syncAnchors(in: context) }
+                        Button("Restore") { if requireAccess(.archiveOrRestore) { rule.isArchived = false; AppEngine.syncAnchors(in: context) } }
                             .threadsType(.row).foregroundStyle(threads.ink).buttonStyle(.plain)
                             .frame(minHeight: ThreadsHit.minimum)
                             .accessibilityLabel("Restore \(rule.title)")

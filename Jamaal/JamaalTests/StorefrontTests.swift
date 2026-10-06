@@ -38,7 +38,7 @@ struct StorefrontTests {
     // MARK: Access
 
     @Test func theTrialCountsLogicalDaysFromTheFirstLaunch() async {
-        let store = Storefront(client: FakeStoreClient(), defaults: defaults())
+        let store = Storefront(client: FakeStoreClient(), defaults: defaults(), accessOverride: nil)
         await store.refresh()
         let s = settings(firstLaunch: at(1))
         #expect(store.access(settings: s, boundary: boundary, now: at(1)) == .trial(daysLeft: 14))
@@ -48,7 +48,7 @@ struct StorefrontTests {
     }
 
     @Test func theStoresOriginalDownloadNeverRestartsTheTrial() async {
-        let store = Storefront(client: FakeStoreClient(originalDownload: at(1)), defaults: defaults())
+        let store = Storefront(client: FakeStoreClient(originalDownload: at(1)), defaults: defaults(), accessOverride: nil)
         await store.refresh()
         let reinstalled = settings(firstLaunch: at(10))                       // a fresh install on day 10
         #expect(store.trialStart(settings: reinstalled, boundary: boundary) == CalendarDate(year: 2026, month: 10, day: 1))
@@ -57,7 +57,7 @@ struct StorefrontTests {
 
     @Test func aSubscriptionLiftsEverythingAtOnce() async {
         let fake = FakeStoreClient()
-        let store = Storefront(client: fake, defaults: defaults())
+        let store = Storefront(client: fake, defaults: defaults(), accessOverride: nil)
         await store.refresh()
         let s = settings(firstLaunch: at(1))
         #expect(store.access(settings: s, boundary: boundary, now: at(20)) == .readOnly)
@@ -68,14 +68,14 @@ struct StorefrontTests {
 
     @Test func aFailedLookupNeverLocksSomeoneWhoWasSubscribed() async {
         let d = defaults()
-        let online = Storefront(client: FakeStoreClient(active: true), defaults: d)
+        let online = Storefront(client: FakeStoreClient(active: true), defaults: d, accessOverride: nil)
         await online.refresh()
         #expect(online.entitlementActive)
-        let offline = Storefront(client: OfflineStore(), defaults: d)           // same device, no connection
+        let offline = Storefront(client: OfflineStore(), defaults: d, accessOverride: nil)           // same device, no connection
         #expect(offline.entitlementActive)                                       // the last answer stands from the first moment
         await offline.refresh()
         #expect(offline.entitlementActive)
-        let neverSubscribed = Storefront(client: OfflineStore(), defaults: defaults())
+        let neverSubscribed = Storefront(client: OfflineStore(), defaults: defaults(), accessOverride: nil)
         await neverSubscribed.refresh()
         #expect(!neverSubscribed.entitlementActive)
     }
@@ -83,28 +83,28 @@ struct StorefrontTests {
     @Test func anExpiryTakesEffectOnceTheStoreConfirmsIt() async {
         let d = defaults()
         let fake = FakeStoreClient(active: true)
-        let store = Storefront(client: fake, defaults: d)
+        let store = Storefront(client: fake, defaults: d, accessOverride: nil)
         await store.refresh()
         fake.active = false
         await store.refresh()
         #expect(!store.entitlementActive && store.renewsOn == nil)
-        #expect(!Storefront(client: OfflineStore(), defaults: d).entitlementActive)    // and that is what is remembered
+        #expect(!Storefront(client: OfflineStore(), defaults: d, accessOverride: nil).entitlementActive)    // and that is what is remembered
     }
 
     @Test func restoringWithNothingToRestoreSaysSoCalmly() async {
-        let store = Storefront(client: FakeStoreClient(), defaults: defaults())
+        let store = Storefront(client: FakeStoreClient(), defaults: defaults(), accessOverride: nil)
         await store.restore()
         #expect(store.message == "No earlier purchase was found for this Apple ID.")
-        let offline = Storefront(client: OfflineStore(), defaults: defaults())
+        let offline = Storefront(client: OfflineStore(), defaults: defaults(), accessOverride: nil)
         await offline.restore()
         #expect(offline.message == "Couldn't reach the App Store. Try again in a moment.")
-        let subscribed = Storefront(client: FakeStoreClient(active: true), defaults: defaults())
+        let subscribed = Storefront(client: FakeStoreClient(active: true), defaults: defaults(), accessOverride: nil)
         await subscribed.restore()
         #expect(subscribed.message == nil)
     }
 
     @Test func theFailedPurchaseSaysNothingWasCharged() async {
-        let store = Storefront(client: OfflineStore(), defaults: defaults())
+        let store = Storefront(client: OfflineStore(), defaults: defaults(), accessOverride: nil)
         await store.purchase(.yearly)
         #expect(store.message == "That didn't go through. Nothing was charged. Try again in a moment.")
         #expect(!store.entitlementActive)
@@ -114,12 +114,12 @@ struct StorefrontTests {
 
     @Test func thePaywallAndTheTrialBannerRememberTheirDayOnThisDevice() {
         let d = defaults()
-        let store = Storefront(client: FakeStoreClient(), defaults: d)
+        let store = Storefront(client: FakeStoreClient(), defaults: d, accessOverride: nil)
         let day = CalendarDate(year: 2026, month: 10, day: 15)!
         #expect(store.paywallShownOn() == nil && store.trialBannerDismissedOn() == nil)
         store.markPaywallShown(on: day)
         store.dismissTrialBanner(on: day)
-        let again = Storefront(client: FakeStoreClient(), defaults: d)
+        let again = Storefront(client: FakeStoreClient(), defaults: d, accessOverride: nil)
         #expect(again.paywallShownOn() == day && again.trialBannerDismissedOn() == day)
     }
 }

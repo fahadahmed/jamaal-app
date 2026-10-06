@@ -12,6 +12,7 @@ import JamaalCore
 /// (a paused one says why and when it resumes), and an Archived section with Restore.
 struct HabitsOverviewView: View {
     @Environment(\.threads) private var threads
+    @Environment(\.requireAccess) private var requireAccess
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
 
@@ -35,7 +36,7 @@ struct HabitsOverviewView: View {
                     Text("Habits").threadsType(.display(.large)).foregroundStyle(threads.ink)
                         .accessibilityAddTraits(.isHeader)
                     Spacer()
-                    Button { addingHabit = true } label: {
+                    Button { if requireAccess(.createHabit) { addingHabit = true } } label: {
                         Image(systemName: "plus").font(.title3).foregroundStyle(threads.ink)
                             .frame(width: 52, height: 52).glassEffect(.regular.interactive(), in: Circle())
                             .contentShape(Circle())
@@ -159,7 +160,7 @@ struct HabitsOverviewView: View {
                     HStack {
                         Text(habit.title).threadsType(.lede).foregroundStyle(threads.ink2)
                         Spacer()
-                        Button("Restore") { habit.isArchived = false }
+                        Button("Restore") { if requireAccess(.archiveOrRestore) { habit.isArchived = false } }
                             .threadsType(.row).foregroundStyle(threads.ink).buttonStyle(.plain)
                             .frame(minHeight: ThreadsHit.minimum)
                             .accessibilityLabel("Restore \(habit.title)")

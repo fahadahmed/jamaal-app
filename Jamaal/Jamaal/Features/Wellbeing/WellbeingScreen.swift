@@ -12,6 +12,7 @@ import JamaalCore
 /// exist, what it will read. One calm card at most, with one change and *Not now*.
 struct WellbeingScreen: View {
     @Environment(\.threads) private var threads
+    @Environment(\.requireAccess) private var requireAccess
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
     // Observed so the read refreshes when a day is finalised or a plan changes, here or on another device.
@@ -132,6 +133,7 @@ struct WellbeingScreen: View {
     }
 
     private func take(_ nudge: WellbeingNudge, boundary: DayBoundary) {
+        if nudge.pattern.kind != .habitNeglect && !requireAccess(.setCapacityLevel) { return }
         guard let result = try? Wellbeing.apply(nudge, now: now, boundary: boundary, context: context) else { return }
         if case .openHabit(let habit) = result { opening = habit } else { outcome = WellbeingCopy.outcome(result) }
     }
