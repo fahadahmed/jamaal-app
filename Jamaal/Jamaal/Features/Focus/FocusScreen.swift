@@ -199,6 +199,7 @@ struct FinishSheet: View {
 /// kept whichever is chosen.
 struct SettleSheet: View {
     @Environment(\.threads) private var threads
+    @Environment(\.requireAccess) private var requireAccess
     @Environment(FocusCoordinator.self) private var coordinator
     let settling: FocusCoordinator.Settling
 
@@ -224,8 +225,8 @@ struct SettleSheet: View {
                 .accessibilityIdentifier("settleStop")
             if isTask {
                 HStack(spacing: ThreadsSpace.tight) {
-                    PillButton(title: "Defer to tomorrow", fills: true) { coordinator.settle(.deferToTomorrow) }
-                    Button { coordinator.settle(.drop) } label: {
+                    PillButton(title: "Defer to tomorrow", fills: true) { if requireAccess(.deferTask) { coordinator.settle(.deferToTomorrow) } }
+                    Button { if requireAccess(.dropTask) { coordinator.settle(.drop) } } label: {
                         Text("Drop").threadsType(.row).foregroundStyle(threads.alert)
                             .frame(maxWidth: .infinity, minHeight: ThreadsHit.minimum).background(Capsule().fill(threads.alertSoft))
                     }

@@ -12,6 +12,7 @@ import JamaalCore
 /// table, and Mark done, Defer, Drop (and Stop repeating). Begin arrives with the focus session; Edit note with TK-04.
 struct TaskDetailSheet: View {
     @Environment(\.threads) private var threads
+    @Environment(\.requireAccess) private var requireAccess
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @Environment(FocusCoordinator.self) private var focus
@@ -143,7 +144,7 @@ struct TaskDetailSheet: View {
                 if !task.isCompleted {
                     PillButton(title: "Defer", fills: true) { startDefer() }
                         .accessibilityIdentifier("deferButton")
-                    Button { confirmingDrop = true } label: {
+                    Button { if requireAccess(.dropTask) { confirmingDrop = true } } label: {
                         Text("Drop").threadsType(.row).foregroundStyle(threads.alert)
                             .lineLimit(1)
                             .padding(.vertical, 12)
@@ -199,6 +200,7 @@ struct TaskDetailSheet: View {
 
     /// The first and second deferral move the task to tomorrow at once; from the third the picker opens.
     private func startDefer() {
+        guard requireAccess(.deferTask) else { return }
         let preview = TaskDeferral.preview(task, from: today)
         if preview.requiresPicker {
             deferring = true
@@ -209,11 +211,13 @@ struct TaskDetailSheet: View {
     }
 
     private func drop() {
+        guard requireAccess(.dropTask) else { return }
         TaskActions.drop(task, now: .now, boundary: boundary, context: context)
         dismiss()
     }
 
     private func stopRepeating() {
+        guard requireAccess(.editTask) else { return }
         TaskActions.stopRepeating(task)
         dismiss()
     }

@@ -36,6 +36,7 @@ struct TodayScreen: View {
     @Query(sort: \TaskCategory.sortOrder) private var allCategories: [TaskCategory]
     @Environment(ReminderCenter.self) private var reminders
     @Environment(\.openTab) private var openTab
+    @Environment(\.requireAccess) private var requireAccess
     @Environment(Storefront.self) private var store
     @State private var showingPlans = false
     @State private var bannerTick = 0
@@ -81,18 +82,18 @@ struct TodayScreen: View {
                         state: overview.state, loadScore: overview.loadScore, wholeDay: filter != nil
                     )
                     CapacitySlider(level: overview.level) { level in
-                        try? TodayDay.setLevel(level, in: context, now: now)
+                        if requireAccess(.setCapacityLevel) { try? TodayDay.setLevel(level, in: context, now: now) }
                     }
                     wellbeingStrip
                     if tonightCard(boundary: boundary) { tonightCardView }
                     if let nudge = todayNudge(boundary: boundary) { todayWellbeingCard(nudge, boundary: boundary) }
-                    if morningDue { morningCard }
+                    if morningDue && canShapeThePlan { morningCard }
                     ForEach(pickUps, id: \.task.id) { row in pickUpRow(row) }
                     anchorsSection(anchorItems)
                     habitsSection(todayHabits)
                     tasksSection(overview, filter: filter)
                     alsoToday(overview)
-                    if eveningDue && state != .allDone { planTomorrowRow }
+                    if eveningDue && state != .allDone && canShapeThePlan { planTomorrowRow }
                 }
             }
             .padding(.horizontal, ThreadsSpace.gutter)
@@ -225,6 +226,11 @@ struct TodayScreen: View {
         .accessibilityIdentifier("planTomorrowRow")
     }
 
+    /// Planning controls that have nothing to explain are hidden once the trial has ended (Plan tomorrow, the morning card).
+    private var canShapeThePlan: Bool {
+        store.access(settings: settings.first, boundary: TodayDay.boundary(in: context), now: now).canShapeThePlan
+    }
+
     // MARK: Day zero
 
     /// "Tonight, we'll plan tomorrow.": on the day onboarding finished, until tomorrow is being planned.
@@ -296,6 +302,7 @@ struct TodayScreen: View {
 
     private func todayWellbeingCard(_ nudge: WellbeingNudge, boundary: DayBoundary) -> some View {
         WellbeingCard(nudge: nudge, onAction: {
+            if nudge.pattern.kind != .habitNeglect && !requireAccess(.setCapacityLevel) { return }
             if case .openHabit = try? Wellbeing.apply(nudge, now: now, boundary: boundary, context: context) { openTab(.habits) }
             refreshWellbeing()
         }, onNotNow: {
@@ -415,12 +422,14 @@ struct TodayScreen: View {
     }
 
     private func pickForToday() {
+        guard requireAccess(.morningCard) else { return }
         try? MorningCard.dismiss(now: now, boundary: TodayDay.boundary(in: context), context: context)
         planning = try? PlanningFlow(context: context, mode: .morning)
     }
 
     /// Opens (or resumes) tonight's planning: tomorrow's plan, looking back at today.
     private func startPlanning() {
+        guard requireAccess(.planTomorrow) else { return }
         planning = try? PlanningFlow(context: context, mode: .evening)
     }
 
@@ -444,12 +453,14 @@ struct TodayScreen: View {
             }
             .accessibilityLabel("Filter tasks by category")
             .accessibilityIdentifier("filterButton")
-            Button(action: startPlanning) {
-                Image(systemName: "moon").font(.title3).frame(width: 52, height: 52).contentShape(Rectangle())
+            if canShapeThePlan {
+                Button(action: startPlanning) {
+                    Image(systemName: "moon").font(.title3).frame(width: 52, height: 52).contentShape(Rectangle())
+                }
+                .accessibilityLabel("Plan tomorrow")
+                .accessibilityIdentifier("planTomorrow")
             }
-            .accessibilityLabel("Plan tomorrow")
-            .accessibilityIdentifier("planTomorrow")
-            Button { isAdding = true } label: {
+            Button { if requireAccess(.createTask) { isAdding = true } } label: {
                 Image(systemName: "plus").font(.title3).frame(width: 52, height: 52).contentShape(Rectangle())
             }
             .accessibilityLabel("Add")

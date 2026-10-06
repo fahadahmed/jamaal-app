@@ -157,7 +157,7 @@ struct ReminderCenterTests {
 
     private func storefront(_ context: ModelContext, firstLaunchDaysAgo days: Int, subscribed: Bool = false) async -> Storefront {
         try? context.fetch(FetchDescriptor<UserSettings>()).first?.firstLaunchAt = morning(context).addingTimeInterval(-Double(days) * 86_400)
-        let store = Storefront(client: FakeStoreClient(active: subscribed), defaults: defaults())
+        let store = Storefront(client: FakeStoreClient(active: subscribed), defaults: defaults(), accessOverride: nil)
         await store.refresh()
         return store
     }

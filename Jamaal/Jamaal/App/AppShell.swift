@@ -20,6 +20,7 @@ struct AppShell: View {
     @Environment(Storefront.self) private var store
     @Environment(\.scenePhase) private var scenePhase
     @State private var showingPaywall = false
+    @State private var gate = AccessGate()
     @State private var clock = Date.now
     @Query(sort: \UserSettings.createdAt) private var settingsRows: [UserSettings]
     @State private var coordinator = FocusCoordinator()
@@ -85,6 +86,18 @@ struct AppShell: View {
             OnboardingFlow(startAt: OnboardingStep(rawValue: debugStartStep) ?? .meet)
         }
         .environment(coordinator)
+        .environment(\.requireAccess) { action in
+            let boundary = TodayDay.boundary(in: context)
+            if action.isAllowed(in: store.access(settings: settingsRows.first, boundary: boundary)) { return true }
+            gate.isShowingLocked = true
+            return false
+        }
+        .sheet(isPresented: $gate.isShowingLocked) {
+            LockedSheet {
+                gate.isShowingLocked = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { showingPaywall = true }
+            }
+        }
         .fullScreenCover(isPresented: $showingPaywall) { PaywallScreen() }
         .onChange(of: paywallDue, initial: true) { _, due in
             guard due else { return }

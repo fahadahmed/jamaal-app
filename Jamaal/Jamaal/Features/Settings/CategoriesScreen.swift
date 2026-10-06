@@ -13,6 +13,7 @@ import UniformTypeIdentifiers
 /// archive it; archived labels are kept below with Restore.
 struct CategoriesScreen: View {
     @Environment(\.threads) private var threads
+    @Environment(\.requireAccess) private var requireAccess
     @Environment(\.modelContext) private var context
     @Query private var all: [TaskCategory]
     @State private var openID: UUID?
@@ -64,6 +65,7 @@ struct CategoriesScreen: View {
         .dropDestination(for: String.self) { items, _ in
             guard let id = items.first.flatMap(UUID.init(uuidString:)), let moved = active.first(where: { $0.id == id }),
                   let to = active.firstIndex(where: { $0.id == category.id }) else { return false }
+            guard requireAccess(.editCategory) else { return false }
             try? CategoryEditing.move(moved, to: to, in: context)
             return true
         }
@@ -159,6 +161,7 @@ struct CategoriesScreen: View {
     // MARK: Changes
 
     private func open(_ category: TaskCategory) {
+        guard requireAccess(.editCategory) else { return }
         message = nil; adding = false
         draftName = category.name
         openID = category.id
@@ -176,6 +179,7 @@ struct CategoriesScreen: View {
     }
 
     private func startAdding() {
+        guard requireAccess(.createCategory) else { return }
         openID = nil; message = nil
         guard (try? CategoryEditing.canAdd(in: context)) ?? false else { message = SettingsCopy.message(for: .tooManyCategories); return }
         newName = ""
@@ -199,6 +203,7 @@ struct CategoriesScreen: View {
     }
 
     private func restore(_ category: TaskCategory) {
+        guard requireAccess(.archiveOrRestore) else { return }
         do { try CategoryEditing.restore(category, in: context); message = nil }
         catch let error as SettingsError { message = SettingsCopy.message(for: error) }
         catch { message = "That couldn't be restored. Try again." }

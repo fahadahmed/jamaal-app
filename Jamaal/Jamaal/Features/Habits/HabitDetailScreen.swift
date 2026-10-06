@@ -12,6 +12,7 @@ import JamaalCore
 /// read, and Pause / Resume / Archive. A grid per time of day when a habit has several.
 struct HabitDetailScreen: View {
     @Environment(\.threads) private var threads
+    @Environment(\.requireAccess) private var requireAccess
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @Environment(FocusCoordinator.self) private var focus
@@ -87,13 +88,13 @@ struct HabitDetailScreen: View {
             .accessibilityLabel("Back")
             Spacer()
             Menu {
-                Button("Edit habit…") { editing = true }
+                Button("Edit habit…") { if requireAccess(.editHabit) { editing = true } }
                 if HabitPauses.active(habit, on: today) != nil {
-                    Button("Resume") { HabitPauses.resume(habit, on: today) }
+                    Button("Resume") { if requireAccess(.pauseHabit) { HabitPauses.resume(habit, on: today) } }
                 } else {
-                    Button("Pause…") { pausing = true }
+                    Button("Pause…") { if requireAccess(.pauseHabit) { pausing = true } }
                 }
-                Button("Archive", role: .destructive) { habit.isArchived = true; dismiss() }
+                Button("Archive", role: .destructive) { if requireAccess(.archiveOrRestore) { habit.isArchived = true; dismiss() } }
             } label: {
                 HStack(spacing: 6) { Text("Edit").threadsType(.row); Image(systemName: "chevron.down").font(.footnote) }
                     .foregroundStyle(threads.ink).padding(.horizontal, 20).frame(height: 48)

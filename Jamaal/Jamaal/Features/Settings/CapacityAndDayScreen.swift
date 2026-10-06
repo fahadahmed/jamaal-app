@@ -11,6 +11,7 @@ import JamaalCore
 /// Capacity and day (ST-02): the normal day, each weekday's usual level, the working day, and the rollover.
 struct CapacityAndDayScreen: View {
     @Environment(\.threads) private var threads
+    @Environment(\.requireAccess) private var requireAccess
     @Environment(\.modelContext) private var context
     @Query(sort: \UserSettings.createdAt) private var rows: [UserSettings]
     @State private var message: String?
@@ -84,7 +85,7 @@ struct CapacityAndDayScreen: View {
                     Spacer()
                     Picker(SettingsCopy.weekdays[day - 1], selection: Binding(
                         get: { settings.defaultLevel(forISOWeekday: day) },
-                        set: { settings.setDefaultLevel($0, forISOWeekday: day) })) {
+                        set: { if requireAccess(.changeDaySettings) { settings.setDefaultLevel($0, forISOWeekday: day) } })) {
                         Text("Low").tag(CapacityLevel.low)
                         Text("Med").tag(CapacityLevel.medium)
                         Text("High").tag(CapacityLevel.high)
@@ -180,6 +181,7 @@ struct CapacityAndDayScreen: View {
     }
 
     private func run(_ change: () throws -> Void) {
+        guard requireAccess(.changeDaySettings) else { return }
         do { try change(); message = nil }
         catch let error as SettingsError { message = SettingsCopy.message(for: error) }
         catch { message = "That couldn't be saved. Try again." }
