@@ -15,8 +15,10 @@ struct SettingsScreen: View {
     @Query(sort: \UserSettings.createdAt) private var settings: [UserSettings]
     @Query private var categories: [TaskCategory]
     @Environment(ReminderCenter.self) private var reminders
+    @Environment(Storefront.self) private var store
+    @Environment(\.modelContext) private var context
 
-    enum Destination: Hashable { case capacity, notifications, categories }
+    enum Destination: Hashable { case capacity, notifications, categories, subscription }
 
     var body: some View {
         let _ = categories.map { [$0.name, $0.isArchived ? "1" : "0"] }
@@ -31,6 +33,8 @@ struct SettingsScreen: View {
                             ReminderCopy.homeValue(switchOn: reminders.remindersOnThisDevice, permission: reminders.permission, device: ReminderCenter.deviceName),
                             .notifications)
                         row("Categories", "\(categories.filter { !$0.isArchived }.count)", .categories)
+                        row("Subscription",
+                            SubscriptionCopy.homeValue(store.access(settings: settings.first, boundary: TodayDay.boundary(in: context))), .subscription)
                     }
                 }
                 .padding(.horizontal, ThreadsSpace.gutter).padding(.top, ThreadsSpace.row).padding(.bottom, 120)
@@ -44,6 +48,7 @@ struct SettingsScreen: View {
                 case .capacity: CapacityAndDayScreen()
                 case .notifications: NotificationsScreen()
                 case .categories: CategoriesScreen()
+                case .subscription: SubscriptionScreen()
                 }
             }
         }

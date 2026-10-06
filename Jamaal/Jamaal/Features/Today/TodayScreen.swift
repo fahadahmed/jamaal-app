@@ -36,6 +36,9 @@ struct TodayScreen: View {
     @Query(sort: \TaskCategory.sortOrder) private var allCategories: [TaskCategory]
     @Environment(ReminderCenter.self) private var reminders
     @Environment(\.openTab) private var openTab
+    @Environment(Storefront.self) private var store
+    @State private var showingPlans = false
+    @State private var bannerTick = 0
     @Query private var wellbeingLogs: [NudgeLog]
     @State private var wellbeing: WellbeingRead?
     /// The pattern whose card Today is showing this time; Today shows a card once a day, so it keeps its own.
@@ -72,6 +75,7 @@ struct TodayScreen: View {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 if let overview {
                     header(overview, categories: categories, filter: filter, state: state, unplanned: morningDue)
+                    if let banner = topBanner(eveningDue: eveningDue, clock: eveningNow ?? now, boundary: boundary) { bannerView(banner, boundary: boundary) }
                     CapacityMeter(
                         plannedMinutes: overview.plannedMinutes, budgetMinutes: overview.budgetMinutes,
                         state: overview.state, loadScore: overview.loadScore, wholeDay: filter != nil
@@ -83,7 +87,6 @@ struct TodayScreen: View {
                     if tonightCard(boundary: boundary) { tonightCardView }
                     if let nudge = todayNudge(boundary: boundary) { todayWellbeingCard(nudge, boundary: boundary) }
                     if morningDue { morningCard }
-                    if showsRemindersBanner(eveningDue: eveningDue, clock: eveningNow ?? now, boundary: boundary) { remindersBanner(boundary) }
                     ForEach(pickUps, id: \.task.id) { row in pickUpRow(row) }
                     anchorsSection(anchorItems)
                     habitsSection(todayHabits)
@@ -107,6 +110,7 @@ struct TodayScreen: View {
             if DebugLaunch.openTask { openTask = tasks.first { $0.title == "Call the clinic back" } }
             #endif
         }
+        .sheet(isPresented: $showingPlans) { PaywallScreen() }
         .sheet(item: $openTask) { task in
             TaskDetailSheet(task: task)
         }
@@ -302,6 +306,52 @@ struct TodayScreen: View {
             todayCardKey = nudge.pattern.subjectKey
             try? Wellbeing.markShown(nudge, now: now, boundary: boundary, context: context)
         }
+    }
+
+    // MARK: The slot at the top (SB-03, TD-05)
+
+    /// One banner at a time, most pressing first: the trial has ended, the trial is ending, reminders are off.
+    private func topBanner(eveningDue: Bool, clock: Date, boundary: DayBoundary) -> TodayBanner? {
+        _ = bannerTick
+        return TodayBanner.pick(
+            access: store.access(settings: settings.first, boundary: boundary, now: now),
+            trialBannerDismissedOn: store.trialBannerDismissedOn(), today: boundary.logicalDate(at: now),
+            notificationsOffBanner: showsRemindersBanner(eveningDue: eveningDue, clock: clock, boundary: boundary))
+    }
+
+    @ViewBuilder private func bannerView(_ banner: TodayBanner, boundary: DayBoundary) -> some View {
+        switch banner {
+        case .readOnly:
+            accessCard(symbol: "lock", text: SubscriptionCopy.readOnlyBanner, action: "Subscribe", id: "readOnlyBanner", dismiss: nil)
+        case .trialEnding(let daysLeft):
+            let start = store.trialStart(settings: settings.first, boundary: boundary)
+            accessCard(symbol: "calendar", text: SubscriptionCopy.trialBanner(daysLeft: daysLeft, trialStart: start), action: "See plans", id: "trialBanner") {
+                store.dismissTrialBanner(on: boundary.logicalDate(at: now)); bannerTick += 1
+            }
+        case .notificationsOff:
+            remindersBanner(boundary)
+        }
+    }
+
+    private func accessCard(symbol: String, text: String, action: String, id: String, dismiss: (() -> Void)?) -> some View {
+        VStack(alignment: .leading, spacing: ThreadsSpace.row) {
+            HStack(alignment: .top, spacing: ThreadsSpace.row) {
+                Image(systemName: symbol).font(.title3).foregroundStyle(threads.ink).frame(width: 28)
+                Text(text).threadsType(.lede).foregroundStyle(threads.ink)
+                Spacer(minLength: 0)
+                if let dismiss {
+                    Button(action: dismiss) { Image(systemName: "xmark").foregroundStyle(threads.ink2).frame(width: 44, height: 44).contentShape(Rectangle()) }
+                        .buttonStyle(.plain).accessibilityLabel("Dismiss").accessibilityIdentifier("\(id)Dismiss")
+                }
+            }
+            Button(action) { showingPlans = true }.threadsType(.row).foregroundStyle(threads.ink).buttonStyle(.plain)
+                .frame(minHeight: ThreadsHit.minimum).padding(.leading, 28 + ThreadsSpace.row).accessibilityIdentifier("\(id)Action")
+        }
+        .padding(ThreadsSpace.row)
+        .background(RoundedRectangle(cornerRadius: ThreadsRadius.card).fill(threads.card))
+        .overlay(RoundedRectangle(cornerRadius: ThreadsRadius.card).strokeBorder(threads.line2, lineWidth: 1))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier(id)
     }
 
     /// Reminders are wanted on this device but off in the system: said once an evening, after the planning time.

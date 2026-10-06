@@ -152,4 +152,48 @@ struct ReminderCenterTests {
         reminders.route = NotificationRoute.route(forID: "planning:2026-10-16")
         #expect(reminders.route == .planning(CalendarDate(year: 2026, month: 10, day: 16)!))
     }
+
+    // MARK: Access
+
+    private func storefront(_ context: ModelContext, firstLaunchDaysAgo days: Int, subscribed: Bool = false) async -> Storefront {
+        try? context.fetch(FetchDescriptor<UserSettings>()).first?.firstLaunchAt = morning(context).addingTimeInterval(-Double(days) * 86_400)
+        let store = Storefront(client: FakeStoreClient(active: subscribed), defaults: defaults())
+        await store.refresh()
+        return store
+    }
+
+    @Test func readOnlyStopsEverythingTheCentreWouldSchedule() async throws {
+        let context = try store()
+        let (reminders, client) = center(.granted)
+        reminders.storefront = await storefront(context, firstLaunchDaysAgo: 30)
+        await reminders.replan(in: context, now: morning(context))
+        #expect(await client.pending().isEmpty)
+    }
+
+    @Test func subscribingBringsThePlannerBackAtOnce() async throws {
+        let context = try store()
+        let (reminders, client) = center(.granted)
+        let store = await storefront(context, firstLaunchDaysAgo: 30)
+        reminders.storefront = store
+        await reminders.replan(in: context, now: morning(context))
+        #expect(await client.pending().isEmpty)
+        await store.purchase(.monthly)
+        await reminders.replan(in: context, now: morning(context))
+        #expect(!(await client.pending()).isEmpty)
+    }
+
+    @Test func theTrialAddsItsThreeQuietRemindersAtNineAndASubscriberHasNone() async throws {
+        let context = try store()
+        let (reminders, client) = center(.granted)
+        reminders.storefront = await storefront(context, firstLaunchDaysAgo: 9)           // day 10 today: 12, 14 and 15 are ahead
+        await reminders.replan(in: context, now: morning(context))
+        let trial = await client.pending().filter { $0.id.hasPrefix("trial:") }
+        #expect(Set(trial.map(\.id)) == ["trial:12", "trial:14", "trial:15"])
+        #expect(trial.allSatisfy { Calendar.current.component(.hour, from: $0.fireDate) == 9 })
+
+        let (other, otherClient) = center(.granted)
+        other.storefront = await storefront(context, firstLaunchDaysAgo: 9, subscribed: true)
+        await other.replan(in: context, now: morning(context))
+        #expect(await otherClient.pending().allSatisfy { !$0.id.hasPrefix("trial:") })
+    }
 }
