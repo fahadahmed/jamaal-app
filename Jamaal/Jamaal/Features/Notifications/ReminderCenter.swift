@@ -32,6 +32,8 @@ final class ReminderCenter {
     /// "Don't remind me": no banner, ever (local).
     var dontRemind: Bool { didSet { defaults.set(dontRemind, forKey: Keys.dontRemind) } }
 
+    /// Where access comes from; planning follows it (read-only stops the schedule, the trial adds its reminders).
+    var storefront: Storefront?
     private let client: any NotificationClient
     private let defaults: UserDefaults
     private var busy = false
@@ -112,8 +114,9 @@ final class ReminderCenter {
             await refresh()
             let inputs = PlannerInputs(
                 now: now, boundary: TodayDay.boundary(in: context),
-                // StoreKit isn't wired yet: nothing is read-only and there are no trial reminders until it is.
-                access: .subscribed, trialStart: nil,
+                access: storefront?.access(in: context, now: now) ?? .subscribed,
+                trialStart: storefront?.trialStart(settings: try? context.fetch(FetchDescriptor<UserSettings>()).min { $0.createdAt < $1.createdAt },
+                                                   boundary: TodayDay.boundary(in: context)),
                 permissionGranted: permission == .granted, remindersOnThisDevice: remindersOnThisDevice, morningNudgeEnabled: morningEnabled)
             guard let planned = try? NotificationPlanner.plan(inputs, context: context) else { return }
             let changes = NotificationDiff.make(planned: planned, pending: await client.pending())

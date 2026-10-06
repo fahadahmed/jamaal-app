@@ -16,6 +16,7 @@ struct JamaalApp: App {
     private let container: ModelContainer?
     private let openError: Error?
     @State private var reminders = ReminderCenter()
+    @State private var storefront = Storefront()
     private let notificationDelegate = NotificationDelegate()
 
     init() {
@@ -41,7 +42,10 @@ struct JamaalApp: App {
                     AppShell()
                         .modelContainer(container)
                         .environment(reminders)
+                        .environment(storefront)
+                        .task { await storefront.start() }
                         .onAppear {
+                            reminders.storefront = storefront
                             notificationDelegate.onRoute = { [reminders] route in reminders.route = route }
                             tick(container)
                         }

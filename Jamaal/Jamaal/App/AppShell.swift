@@ -17,6 +17,10 @@ struct AppShell: View {
     @Environment(\.modelContext) private var context
     @State private var selection: AppTab = .today
     @Environment(ReminderCenter.self) private var reminders
+    @Environment(Storefront.self) private var store
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var showingPaywall = false
+    @State private var clock = Date.now
     @Query(sort: \UserSettings.createdAt) private var settingsRows: [UserSettings]
     @State private var coordinator = FocusCoordinator()
     // The one live session, and the Anchors the chip's single line is drawn from.
@@ -30,6 +34,15 @@ struct AppShell: View {
         if DebugLaunch.inMemory && !DebugLaunch.onboarding { return false }
         #endif
         return Onboarding.isNeeded(settingsRows.first)
+    }
+
+    /// The paywall appears on the first open of each logical day once the trial has ended and nothing is subscribed: never
+    /// during onboarding or a focus session, and *Not now* is final for the day.
+    private var paywallDue: Bool {
+        guard !showsOnboarding else { return false }
+        let boundary = TodayDay.boundary(in: context)
+        let access = store.access(settings: settingsRows.first, boundary: boundary, now: clock)
+        return Paywall.shouldShow(access: access, lastShownOn: store.paywallShownOn(), today: boundary.logicalDate(at: clock), focusRunning: liveSession != nil)
     }
 
     private var debugStartStep: Int {
@@ -72,6 +85,13 @@ struct AppShell: View {
             OnboardingFlow(startAt: OnboardingStep(rawValue: debugStartStep) ?? .meet)
         }
         .environment(coordinator)
+        .fullScreenCover(isPresented: $showingPaywall) { PaywallScreen() }
+        .onChange(of: paywallDue, initial: true) { _, due in
+            guard due else { return }
+            store.markPaywallShown(on: TodayDay.boundary(in: context).logicalDate(at: clock))
+            showingPaywall = true
+        }
+        .onChange(of: scenePhase) { _, phase in if phase == .active { clock = .now } }
         .environment(\.openTab) { selection = $0 }
         .onAppear {
             coordinator.context = context

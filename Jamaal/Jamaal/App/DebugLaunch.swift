@@ -58,6 +58,18 @@ enum DebugLaunch {
         guard let i = args.firstIndex(of: "-JamaalOnboardingStep"), i + 1 < args.count else { return nil }
         return Int(args[i + 1])
     }
+    /// `-JamaalAccess subscribed | readOnly | trial:N` (N days left): the access state without the store, to look at each.
+    enum AccessOverride: Equatable { case subscribed, readOnly, trial(daysLeft: Int) }
+    static var access: AccessOverride? {
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-JamaalAccess"), i + 1 < args.count else { return nil }
+        switch args[i + 1] {
+        case "subscribed": return .subscribed
+        case "readOnly": return .readOnly
+        case let value where value.hasPrefix("trial:"): return Int(value.dropFirst(6)).map { .trial(daysLeft: $0) }
+        default: return nil
+        }
+    }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor
