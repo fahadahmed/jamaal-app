@@ -90,6 +90,30 @@ public enum DaySettings {
         return recently || same ? nil : value
     }
 
+    /// The same suggestion for Night Planning's Load step: **at most once in Night Planning** per value. Showing it there is
+    /// logged under its own key, so having seen it in Settings doesn't use up the one chance, and seeing it here doesn't
+    /// hide it from Settings. A decline (anywhere) silences it as usual.
+    @MainActor
+    public static func normalDaySuggestionForPlanning(in context: ModelContext, settings: UserSettings, today: CalendarDate) throws -> Int? {
+        guard let value = try normalDaySuggestion(in: context, settings: settings, today: today) else { return nil }
+        let shown = try context.fetch(FetchDescriptor<NudgeLog>()).contains { $0.nudgeKind == .normalDaySuggestion && $0.subjectKey == planningKey(value) }
+        return shown ? nil : value
+    }
+
+    /// Records that the suggestion was shown on the Load step (so it isn't shown there again).
+    @MainActor
+    public static func logShownInPlanning(_ minutes: Int, in context: ModelContext, now: Date) throws {
+        let key = planningKey(minutes)
+        guard try !context.fetch(FetchDescriptor<NudgeLog>()).contains(where: { $0.nudgeKind == .normalDaySuggestion && $0.subjectKey == key }) else { return }
+        let log = NudgeLog()
+        log.nudgeKind = .normalDaySuggestion
+        log.subjectKey = key
+        log.sentAt = now
+        context.insert(log)
+    }
+
+    private static func planningKey(_ minutes: Int) -> String { "\(minutes)@planning" }
+
     /// Records that a suggestion was shown (once per value until it is declined).
     @MainActor
     public static func logShown(_ minutes: Int, in context: ModelContext, now: Date) throws {

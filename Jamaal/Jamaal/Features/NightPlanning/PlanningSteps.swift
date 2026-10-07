@@ -355,7 +355,7 @@ struct BuildStep: View {
                 }
             }
             Button { isAdding = true } label: {
-                Label("Add a task", systemImage: "plus").threadsType(.row).foregroundStyle(threads.ink)
+                Label("Add a task or Anchor", systemImage: "plus").threadsType(.row).foregroundStyle(threads.ink)
                     .frame(minHeight: ThreadsHit.minimum, alignment: .leading)
             }
             .buttonStyle(.plain)
@@ -459,6 +459,8 @@ struct LoadStep: View {
     let flow: PlanningFlow
     let revision: Int
     let bump: () -> Void
+    /// Seen once on this step: fixed when it first appears, so it stays until answered but isn't offered again.
+    @State private var normalDay: Int?
 
     var body: some View {
         let check = try? flow.loadCheck()
@@ -476,11 +478,34 @@ struct LoadStep: View {
                         .threadsType(.meta).foregroundStyle(threads.terra)
                 }
                 if let suggestion = check.moveSuggestion { suggestionCard(suggestion) }
+                if let normalDay { normalDayCard(normalDay) }
                 if check.missingDurations > 0 {
                     Text(check.missingDurations == 1 ? "One task has no estimate, so it isn't counted." : "\(check.missingDurations) tasks have no estimate, so they aren't counted.")
                         .threadsType(.meta).foregroundStyle(threads.ink2)
                 }
             }
+        }
+        .task {
+            guard normalDay == nil, let offer = flow.normalDayOffer() else { return }
+            normalDay = offer
+            flow.markNormalDayOfferShown(offer)
+        }
+    }
+
+    /// "You usually do about 2h 40m — set your normal day to that?" A quiet line, never a push.
+    private func normalDayCard(_ minutes: Int) -> some View {
+        VStack(alignment: .leading, spacing: ThreadsSpace.row) {
+            Text(SettingsCopy.suggestion(minutes)).threadsType(.lede).foregroundStyle(threads.ink2).accessibilityIdentifier("normalDayOffer")
+            HStack(spacing: ThreadsSpace.tight) {
+                Button { flow.acceptNormalDay(minutes); normalDay = nil; bump() } label: {
+                    Text("Set it").threadsType(.row).foregroundStyle(threads.ink)
+                        .frame(maxWidth: .infinity, minHeight: 48).overlay(Capsule().strokeBorder(threads.ink, lineWidth: 1.2)).contentShape(Capsule())
+                }
+                .accessibilityIdentifier("setNormalDay")
+                PillButton(title: "Not now", fills: true) { flow.declineNormalDay(minutes); normalDay = nil }
+                    .accessibilityIdentifier("declineNormalDay")
+            }
+            .buttonStyle(.plain)
         }
     }
 
