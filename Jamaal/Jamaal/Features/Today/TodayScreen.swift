@@ -78,7 +78,7 @@ struct TodayScreen: View {
         let list = ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 if let overview {
-                    header(overview, categories: categories, filter: filter, state: state, unplanned: morningDue)
+                    header(overview, filter: filter, state: state, unplanned: morningDue)
                     if let banner = topBanner(eveningDue: eveningDue, clock: eveningNow ?? now, boundary: boundary) { bannerView(banner, boundary: boundary) }
                     CapacityMeter(
                         plannedMinutes: overview.plannedMinutes, budgetMinutes: overview.budgetMinutes,
@@ -104,15 +104,20 @@ struct TodayScreen: View {
             .padding(.bottom, 120)                                          // clear of the floating tab bar
         }
         .scrollIndicators(.hidden)
+        .background(threads.app.ignoresSafeArea())          // inside the stack: the stack's own ground is the system's white
+        .toolbar { todayToolbar(categories: categories, isFiltering: filter != nil, label: overview.map { TodayCopy.headerLabel($0.today) } ?? "") }
+        .toolbarTitleDisplayMode(.inline)
+        .toolbarBackground(.hidden, for: .navigationBar)
+        let listColumn = NavigationStack { list }
         return Group {
             if usesPanel {
                 HStack(spacing: 0) {
-                    list.frame(minWidth: 340, idealWidth: 440, maxWidth: 440)
+                    listColumn.frame(minWidth: 340, idealWidth: 440, maxWidth: 440)
                     Divider().overlay(threads.line)
                     detailPanel
                 }
             } else {
-                list
+                listColumn
             }
         }
         .onAppear {
@@ -174,7 +179,8 @@ struct TodayScreen: View {
 
     /// The task's detail beside the list on iPad and Mac; with nothing selected, a quiet line says what to do.
     @ViewBuilder private var detailPanel: some View {
-        Group {
+        NavigationStack {
+          Group {
             if let task = openTask {
                 TaskDetailSheet(task: task, embedded: true, onClose: { openTask = nil }).id(task.id)
             } else {
@@ -185,6 +191,9 @@ struct TodayScreen: View {
                 }
                 .frame(maxWidth: .infinity)
             }
+          }
+          .background(threads.app.ignoresSafeArea())
+          .toolbarBackground(.hidden, for: .navigationBar)
         }
         .frame(minWidth: 320, maxWidth: .infinity)
         .background(threads.app)
@@ -199,14 +208,9 @@ struct TodayScreen: View {
         }
     }
 
-    private func header(_ overview: TodayOverview, categories: [TaskCategory], filter: TaskCategory?, state: TodayState, unplanned: Bool) -> some View {
+    private func header(_ overview: TodayOverview, filter: TaskCategory?, state: TodayState, unplanned: Bool) -> some View {
         let headline = unplanned ? TodayCopy.unplanned(date: overview.today) : TodayCopy.headline(remaining: overview.shown.count)
         return VStack(alignment: .leading, spacing: ThreadsSpace.row) {
-            HStack(alignment: .center) {
-                Text(TodayCopy.headerLabel(overview.today)).threadsType(.label).foregroundStyle(threads.ink2)
-                Spacer()
-                toolbar(categories: categories, isFiltering: filter != nil)
-            }
             switch state {
             case .normal: DisplayHeadline(first: headline.first, second: headline.second)
             case .allDone:
@@ -478,37 +482,33 @@ struct TodayScreen: View {
             .accessibilityAddTraits(.isHeader)
     }
 
-    /// The glass capsule at the top right: the category filter, and Add. (Plan tomorrow's moon joins it with Night Planning.)
-    private func toolbar(categories: [TaskCategory], isFiltering: Bool) -> some View {
-        HStack(spacing: 0) {
+    /// The system toolbar, so it stays put while the list scrolls and the system can move it (to the side on a Duo's
+    /// outer display): the date on the left, then one glass group with the category filter, Plan tomorrow and Add.
+    @ToolbarContentBuilder
+    private func todayToolbar(categories: [TaskCategory], isFiltering: Bool, label: String) -> some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Text(label).threadsType(.label).foregroundStyle(threads.ink2).lineLimit(1).fixedSize()
+        }
+        .sharedBackgroundVisibility(.hidden)
+        ToolbarItemGroup(placement: .topBarTrailing) {
             Menu {
                 Picker("Show tasks from", selection: $filterID) {
                     Text("All").tag(UUID?.none)
                     ForEach(categories, id: \.id) { category in Text(category.name).tag(Optional(category.id)) }
                 }
             } label: {
-                Image(systemName: isFiltering ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease")
-                    .font(.title3).frame(width: 52, height: 52).contentShape(Rectangle())
+                Label("Filter", systemImage: isFiltering ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease")
+                    .labelStyle(.iconOnly)
             }
             .accessibilityLabel("Filter tasks by category")
             .accessibilityIdentifier("filterButton")
             if canShapeThePlan {
-                Button(action: startPlanning) {
-                    Image(systemName: "moon").font(.title3).frame(width: 52, height: 52).contentShape(Rectangle())
-                }
-                .accessibilityLabel("Plan tomorrow")
-                .accessibilityIdentifier("planTomorrow")
+                Button(action: startPlanning) { Label("Plan tomorrow", systemImage: "moon").labelStyle(.iconOnly) }
+                    .accessibilityIdentifier("planTomorrow")
             }
-            Button { if requireAccess(.createTask) { isAdding = true } } label: {
-                Image(systemName: "plus").font(.title3).frame(width: 52, height: 52).contentShape(Rectangle())
-            }
-            .accessibilityLabel("Add")
-            .accessibilityIdentifier("addButton")
+            Button { if requireAccess(.createTask) { isAdding = true } } label: { Label("Add", systemImage: "plus").labelStyle(.iconOnly) }
+                .accessibilityIdentifier("addButton")
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(threads.ink)
-        .glassEffect(.regular.interactive(), in: Capsule())
-        .contentShape(Capsule())
     }
 
     /// TD-06: a session was closed at the rollover; offer to pick its task back up, or put the offer away.

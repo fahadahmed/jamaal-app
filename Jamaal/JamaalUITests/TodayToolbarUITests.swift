@@ -89,4 +89,20 @@ final class TodayToolbarUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter().wait(for: [gone], timeout: 5), .completed)
         XCTAssertFalse(app.buttons["focusChip"].exists)
     }
+
+    @MainActor
+    func testTheToolbarStaysPutWhileTodayScrolls() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData"]
+        app.launch()
+        let add = app.buttons["addButton"]
+        XCTAssertTrue(add.waitForExistence(timeout: 10))
+        let before = add.frame
+        app.swipeUp()
+        app.swipeUp()
+        XCTAssertTrue(add.isHittable, "Add is still reachable after scrolling")
+        XCTAssertEqual(add.frame.minY, before.minY, accuracy: 2)
+        add.tap()
+        XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 5))
+    }
 }

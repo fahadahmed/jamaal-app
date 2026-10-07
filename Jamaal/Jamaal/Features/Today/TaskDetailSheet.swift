@@ -50,6 +50,7 @@ struct TaskDetailSheet: View {
             actions
         }
         .background(threads.app)
+        .toolbar { if embedded { ToolbarItem(placement: .topBarTrailing) { moreMenu } } }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .onAppear {
@@ -70,6 +71,23 @@ struct TaskDetailSheet: View {
         } message: {
             Text(task.repeatMode == .off ? "It leaves Today. Nothing else changes." : "The next one is created as usual.")
         }
+    }
+
+    /// The panel's ⋯ (the sheet has no toolbar): what isn't one of the four actions beneath.
+    private var moreMenu: some View {
+        Menu {
+            Button(TaskNotes.items(task.notes).isEmpty ? "Add a note" : "Edit note", systemImage: "square.and.pencil") {
+                if requireAccess(.editTask) { editingNote = true }
+            }
+            .accessibilityIdentifier("moreEditNote")
+            if task.repeatMode != .off && !task.isCompleted {
+                Button("Stop repeating", systemImage: "repeat") { stopRepeating() }
+                    .accessibilityIdentifier("moreStopRepeating")
+            }
+        } label: {
+            Label("More", systemImage: "ellipsis").labelStyle(.iconOnly)
+        }
+        .accessibilityIdentifier("moreMenu")
     }
 
     // MARK: Pieces
