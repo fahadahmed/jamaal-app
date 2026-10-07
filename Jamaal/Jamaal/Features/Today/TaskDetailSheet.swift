@@ -20,6 +20,7 @@ struct TaskDetailSheet: View {
     let task: TaskItem
     @State private var deferring = false
     @State private var confirmingDrop = false
+    @State private var editingNote = false
 
     private var boundary: DayBoundary { TodayDay.boundary(in: context) }
     private var today: CalendarDate { boundary.logicalDate(at: .now) }
@@ -45,6 +46,7 @@ struct TaskDetailSheet: View {
             if DebugLaunch.openDefer { deferring = true }
             #endif
         }
+        .fullScreenCover(isPresented: $editingNote) { NoteEditorScreen(task: task) }
         .sheet(isPresented: $deferring) {
             DeferSheet(task: task, today: today) { dismiss() }
         }
@@ -76,8 +78,8 @@ struct TaskDetailSheet: View {
 
     @ViewBuilder private var note: some View {
         let items = TaskNotes.items(task.notes)
-        if !items.isEmpty {
-            VStack(alignment: .leading, spacing: ThreadsSpace.row) {
+        VStack(alignment: .leading, spacing: ThreadsSpace.row) {
+            if !items.isEmpty {
                 ForEach(items, id: \.line) { item in
                     switch item.kind {
                     case .checkbox(let isDone):
@@ -101,6 +103,12 @@ struct TaskDetailSheet: View {
                     }
                 }
             }
+            Button { if requireAccess(.editTask) { editingNote = true } } label: {
+                Text(items.isEmpty ? "Add a note" : "Edit note").threadsType(.row).foregroundStyle(threads.ink)
+                    .frame(maxWidth: .infinity, minHeight: ThreadsHit.minimum, alignment: items.isEmpty ? .leading : .trailing)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain).accessibilityIdentifier("editNote")
         }
     }
 
