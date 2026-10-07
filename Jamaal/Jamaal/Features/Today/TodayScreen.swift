@@ -36,6 +36,7 @@ struct TodayScreen: View {
     @Query(sort: \TaskCategory.sortOrder) private var allCategories: [TaskCategory]
     @Environment(ReminderCenter.self) private var reminders
     @Environment(\.openTab) private var openTab
+    @AppStorage(AppPreferences.Keys.suggestionCards, store: AppPreferences.defaults) private var suggestionCards = true
     @Environment(\.requireAccess) private var requireAccess
     @Environment(Storefront.self) private var store
     @State private var showingPlans = false
@@ -262,7 +263,7 @@ struct TodayScreen: View {
         let first = Calendar.current.firstWeekday
         guard let snapshot = try? Wellbeing.snapshot(now: now, boundary: boundary, firstWeekday: first, context: context) else { return }
         let patterns = (try? Wellbeing.patterns(now: now, boundary: boundary, firstWeekday: first, context: context)) ?? []
-        let nudge = try? Wellbeing.currentNudge(patterns: patterns, now: now, boundary: boundary, nudgesEnabled: true, context: context)
+        let nudge = try? Wellbeing.currentNudge(patterns: patterns, now: now, boundary: boundary, nudgesEnabled: suggestionCards, context: context)
         wellbeing = WellbeingRead(snapshot: snapshot, nudge: nudge ?? nil)
     }
 

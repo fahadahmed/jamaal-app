@@ -31,9 +31,6 @@ struct AppShell: View {
     /// First launch: until onboarding is completed (a second device on the account has it already). Debug in-memory runs
     /// skip it unless asked, so tests don't change.
     private var showsOnboarding: Bool {
-        #if DEBUG
-        if DebugLaunch.inMemory && !DebugLaunch.onboarding { return false }
-        #endif
         return Onboarding.isNeeded(settingsRows.first)
     }
 

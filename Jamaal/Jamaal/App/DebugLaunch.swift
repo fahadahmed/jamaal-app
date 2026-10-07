@@ -70,6 +70,17 @@ enum DebugLaunch {
         default: return nil
         }
     }
+    /// `-JamaalFailOpen`: the store won't open until it is reset (the recovery screen).
+    static var failOpen: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalFailOpen") }
+    /// In-memory runs start with onboarding already done (so tests see Today), once per launch; a reset then really starts over.
+    nonisolated(unsafe) private static var autoCompleted = false
+    @MainActor
+    static func completeOnboardingForTests(in context: ModelContext, now: Date = .now) {
+        guard inMemory, !onboarding, !autoCompleted else { return }
+        guard let settings = try? context.fetch(FetchDescriptor<UserSettings>()).first else { return }
+        autoCompleted = true
+        Onboarding.complete(settings, now: now)
+    }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
     @MainActor
