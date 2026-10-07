@@ -18,6 +18,9 @@ struct TaskDetailSheet: View {
     @Environment(FocusCoordinator.self) private var focus
 
     let task: TaskItem
+    /// In the panel beside the list (regular width) it closes by clearing the selection instead of dismissing a sheet.
+    var embedded = false
+    var onClose: () -> Void = {}
     @State private var deferring = false
     @State private var confirmingDrop = false
     @State private var editingNote = false
@@ -30,8 +33,16 @@ struct TaskDetailSheet: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                     heading
-                    note
-                    table
+                    if embedded {
+                        // The panel is wide: the note beside the facts, as drawn for iPad.
+                        HStack(alignment: .top, spacing: ThreadsSpace.section) {
+                            note.frame(maxWidth: .infinity, alignment: .leading)
+                            table.frame(width: 200)
+                        }
+                    } else {
+                        note
+                        table
+                    }
                 }
                 .padding(.horizontal, ThreadsSpace.gutter)
                 .padding(.top, ThreadsSpace.section)
@@ -48,7 +59,7 @@ struct TaskDetailSheet: View {
         }
         .fullScreenCover(isPresented: $editingNote) { NoteEditorScreen(task: task) }
         .sheet(isPresented: $deferring) {
-            DeferSheet(task: task, today: today) { dismiss() }
+            DeferSheet(task: task, today: today) { close() }
         }
         .confirmationDialog(
             task.repeatMode == .off ? "Drop this task?" : "Skip just this one?",
@@ -105,7 +116,7 @@ struct TaskDetailSheet: View {
             }
             Button { if requireAccess(.editTask) { editingNote = true } } label: {
                 Text(items.isEmpty ? "Add a note" : "Edit note").threadsType(.row).foregroundStyle(threads.ink)
-                    .frame(maxWidth: .infinity, minHeight: ThreadsHit.minimum, alignment: items.isEmpty ? .leading : .trailing)
+                    .frame(maxWidth: .infinity, minHeight: ThreadsHit.minimum, alignment: items.isEmpty || embedded ? .leading : .trailing)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain).accessibilityIdentifier("editNote")
@@ -137,30 +148,21 @@ struct TaskDetailSheet: View {
     }
 
     private var actions: some View {
-        VStack(spacing: ThreadsSpace.tight) {
-            if !task.isCompleted {
-                Button(action: begin) {
-                    Label(isTimingThis ? "Open timer" : "Begin", systemImage: "play").threadsType(.row).foregroundStyle(.white)
-                        .frame(maxWidth: .infinity, minHeight: 56).background(Capsule().fill(threads.terra))
+        Group {
+            if embedded {
+                // One row: Begin takes the room, the rest hug their titles.
+                HStack(spacing: ThreadsSpace.tight) {
+                    if !task.isCompleted { beginButton.frame(minWidth: 130) }
+                    markDoneButton
+                    if !task.isCompleted { deferButton; dropButton }
                 }
-                .buttonStyle(.plain)
-                .accessibilityIdentifier("beginButton")
-            }
-            HStack(spacing: ThreadsSpace.tight) {
-                PillButton(title: task.isCompleted ? "Mark not done" : "Mark done", fills: true) { toggleDone() }
-                    .accessibilityIdentifier("markDone")
-                if !task.isCompleted {
-                    PillButton(title: "Defer", fills: true) { startDefer() }
-                        .accessibilityIdentifier("deferButton")
-                    Button { if requireAccess(.dropTask) { confirmingDrop = true } } label: {
-                        Text("Drop").threadsType(.row).foregroundStyle(threads.alert)
-                            .lineLimit(1)
-                            .padding(.vertical, 12)
-                            .frame(maxWidth: .infinity, minHeight: ThreadsHit.minimum)
-                            .background(Capsule().fill(threads.alertSoft))
+            } else {
+                VStack(spacing: ThreadsSpace.tight) {
+                    if !task.isCompleted { beginButton }
+                    HStack(spacing: ThreadsSpace.tight) {
+                        markDoneButton
+                        if !task.isCompleted { deferButton; dropButton }
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier("dropButton")
                 }
             }
         }
@@ -169,23 +171,58 @@ struct TaskDetailSheet: View {
         .background(threads.app)
     }
 
+    private var beginButton: some View {
+        Button(action: begin) {
+            Label(isTimingThis ? "Open timer" : "Begin", systemImage: "play").threadsType(.row).foregroundStyle(.white)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, minHeight: 56).background(Capsule().fill(threads.terra))
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("beginButton")
+    }
+
+    private var markDoneButton: some View {
+        PillButton(title: task.isCompleted ? "Mark not done" : "Mark done", fills: !embedded) { toggleDone() }
+            .accessibilityIdentifier("markDone")
+    }
+
+    private var deferButton: some View {
+        PillButton(title: "Defer", fills: !embedded) { startDefer() }
+            .accessibilityIdentifier("deferButton")
+    }
+
+    private var dropButton: some View {
+        Button { if requireAccess(.dropTask) { confirmingDrop = true } } label: {
+            Text("Drop").threadsType(.row).foregroundStyle(threads.alert)
+                .lineLimit(1)
+                .padding(.vertical, 12)
+                .padding(.horizontal, embedded ? 22 : 0)
+                .frame(maxWidth: embedded ? nil : .infinity, minHeight: ThreadsHit.minimum)
+                .background(Capsule().fill(threads.alertSoft))
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("dropButton")
+    }
+
     // MARK: Actions
 
     private var isTimingThis: Bool { FocusSessions.liveSession(in: context)?.task === task }
 
     /// Begin starts a session (or, if this task is already being timed, opens the timer). A second Begin while
     /// another task is running raises the settle sheet instead.
+    private func close() { embedded ? onClose() : dismiss() }
+
     private func begin() {
         if isTimingThis {
             focus.isShowingFocus = true
-            dismiss()
+            close()
         } else if FocusSessions.liveSession(in: context) == nil {
             focus.begin(.task(task))
-            dismiss()
+            close()
         } else {
             // The settle sheet is presented from the shell, so let this sheet finish dismissing first: two
             // presentations at once leave the second one unresponsive.
-            dismiss()
+            close()
             Task {
                 try? await Task.sleep(for: .milliseconds(600))
                 focus.begin(.task(task))
@@ -203,7 +240,7 @@ struct TaskDetailSheet: View {
         } else {
             TaskActions.complete(task, now: .now, boundary: boundary, context: context)
         }
-        dismiss()
+        close()
     }
 
     /// The first and second deferral move the task to tomorrow at once; from the third the picker opens.
@@ -214,20 +251,20 @@ struct TaskDetailSheet: View {
             deferring = true
         } else {
             _ = try? TaskDeferral.defer(task, from: today, to: today.addingDays(1), reason: .unspecified, now: .now, boundary: boundary, context: context)
-            dismiss()
+            close()
         }
     }
 
     private func drop() {
         guard requireAccess(.dropTask) else { return }
         TaskActions.drop(task, now: .now, boundary: boundary, context: context)
-        dismiss()
+        close()
     }
 
     private func stopRepeating() {
         guard requireAccess(.editTask) else { return }
         TaskActions.stopRepeating(task)
-        dismiss()
+        close()
     }
 
     private static func inline(_ markdown: String) -> AttributedString {

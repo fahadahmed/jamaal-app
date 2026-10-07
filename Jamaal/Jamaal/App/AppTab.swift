@@ -45,6 +45,9 @@ enum AppNavigation {
         onMac ? [.today, .habits, .anchors, .wellbeing] : [.today, .habits, .anchors, .wellbeing, .settings]
     }
 
+    /// At regular width the task detail sits beside the list as a panel; at compact width it is a bottom sheet.
+    static func showsDetailPanel(sizeClass: UserInterfaceSizeClass?) -> Bool { sizeClass == .regular }
+
     /// The Habits | Anchors segment is for the phone layout; at regular width Anchors is its own item.
     static func showsAnchorsSegment(sizeClass: UserInterfaceSizeClass?) -> Bool {
         sizeClass != .regular

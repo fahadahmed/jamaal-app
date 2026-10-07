@@ -36,6 +36,7 @@ struct TodayScreen: View {
     @Query(sort: \TaskCategory.sortOrder) private var allCategories: [TaskCategory]
     @Environment(ReminderCenter.self) private var reminders
     @Environment(\.openTab) private var openTab
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @AppStorage(AppPreferences.Keys.suggestionCards, store: AppPreferences.defaults) private var suggestionCards = true
     @Environment(\.requireAccess) private var requireAccess
     @Environment(Storefront.self) private var store
@@ -74,7 +75,7 @@ struct TodayScreen: View {
         let (morningNow, eveningNow) = promptClocks(boundary)
         let morningDue = morningNow.flatMap { try? MorningCard.isDue(now: $0, boundary: boundary, context: context) } ?? false
         let eveningDue = eveningNow.flatMap { try? NightPlanning.eveningPromptDue(now: $0, boundary: boundary, context: context) } ?? false
-        ScrollView {
+        let list = ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 if let overview {
                     header(overview, categories: categories, filter: filter, state: state, unplanned: morningDue)
@@ -103,6 +104,17 @@ struct TodayScreen: View {
             .padding(.bottom, 120)                                          // clear of the floating tab bar
         }
         .scrollIndicators(.hidden)
+        return Group {
+            if usesPanel {
+                HStack(spacing: 0) {
+                    list.frame(minWidth: 340, idealWidth: 440, maxWidth: 440)
+                    Divider().overlay(threads.line)
+                    detailPanel
+                }
+            } else {
+                list
+            }
+        }
         .onAppear {
             #if DEBUG
             if DebugLaunch.openAdd { isAdding = true }
@@ -115,7 +127,7 @@ struct TodayScreen: View {
         }
         .sheet(isPresented: $showingPlans) { PaywallScreen() }
         .sheet(item: $addingMinutes) { AddMinutesSheet(habit: $0.habit, window: $0.window, day: TodayDay.boundary(in: context).logicalDate(at: now)) }
-        .sheet(item: $openTask) { task in
+        .sheet(item: Binding(get: { usesPanel ? nil : openTask }, set: { openTask = $0 })) { task in
             TaskDetailSheet(task: task)
         }
         .fullScreenCover(item: $planning) { flow in NightPlanningScreen(flow: flow) }
@@ -154,6 +166,30 @@ struct TodayScreen: View {
         .onChange(of: scenePhase) { _, phase in if phase == .active { Task { await reminders.refresh() } } }
         // A new day starts unfiltered.
         .onChange(of: overview?.today) { _, _ in filterID = nil; dismissedPickUps = [] }
+    }
+
+    // MARK: The detail panel (regular width)
+
+    private var usesPanel: Bool { AppNavigation.showsDetailPanel(sizeClass: sizeClass) }
+
+    /// The task's detail beside the list on iPad and Mac; with nothing selected, a quiet line says what to do.
+    @ViewBuilder private var detailPanel: some View {
+        Group {
+            if let task = openTask {
+                TaskDetailSheet(task: task, embedded: true, onClose: { openTask = nil }).id(task.id)
+            } else {
+                VStack {
+                    Spacer()
+                    Text("Pick a task to see it here.").threadsType(.lede).foregroundStyle(threads.ink2).accessibilityIdentifier("detailPlaceholder")
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+        .frame(minWidth: 320, maxWidth: .infinity)
+        .background(threads.app)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("detailPanel")
     }
 
     private static func isPending(_ item: TodayAnchorItem) -> Bool {
@@ -568,7 +604,7 @@ struct TodayScreen: View {
                 ForEach(rows, id: \.id) { task in
                     TaskRow(task: task, doneTime: task.completedAt.map(Self.timeFormat.string(from:)),
                             trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
-                            onToggle: { toggle(task) }, onOpen: { openTask = task })
+                            onToggle: { toggle(task) }, onOpen: { openTask = task }, isSelected: usesPanel && openTask?.id == task.id)
                 }
             }
         }
@@ -593,7 +629,7 @@ struct TodayScreen: View {
                 if alsoTodayOpen {
                     ForEach(overview.alsoToday, id: \.id) { task in
                         TaskRow(task: task, doneTime: nil, trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
-                            onToggle: { toggle(task) }, onOpen: { openTask = task })
+                            onToggle: { toggle(task) }, onOpen: { openTask = task }, isSelected: usesPanel && openTask?.id == task.id)
                     }
                 }
             }
