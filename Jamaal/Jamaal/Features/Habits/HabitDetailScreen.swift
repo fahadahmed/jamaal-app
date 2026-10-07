@@ -65,10 +65,11 @@ struct HabitDetailScreen: View {
             .padding(.horizontal, ThreadsSpace.gutter)
             .padding(.top, 76)
             .padding(.bottom, 80)
+            .readableColumn()
         }
         .scrollIndicators(.hidden)
-        .overlay(alignment: .top) { topBar }
-        .background(threads.app)
+        .overlay(alignment: .top) { topBar.readableColumn() }
+        .background(threads.app.ignoresSafeArea())
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $pausing) { PauseSheet(habit: habit, today: today) }
         .sheet(isPresented: $editing) { NavigationStack { HabitFormScreen(editing: habit) } }
