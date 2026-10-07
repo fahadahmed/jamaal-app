@@ -72,7 +72,10 @@ struct HabitDetailScreen: View {
         .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $pausing) { PauseSheet(habit: habit, today: today) }
         .sheet(isPresented: $editing) { NavigationStack { HabitFormScreen(editing: habit) } }
-        .sheet(item: $correcting) { item in DayCorrectionSheet(habit: habit, window: item.window, day: item.day) }
+        .sheet(item: $correcting) { item in
+            if habit.habitKind == .timed { AddMinutesSheet(habit: habit, window: item.window, day: item.day) }
+            else { DayCorrectionSheet(habit: habit, window: item.window, day: item.day) }
+        }
     }
 
     // MARK: Pieces
@@ -143,9 +146,7 @@ struct HabitDetailScreen: View {
             DensityGrid(
                 cells: cells, columns: 14,
                 onTap: { cell in correcting = Correction(window: window, day: cell.day) },
-                isTappable: { cell in
-                    habit.habitKind != .timed && HabitLogging.canCorrect(habit, day: cell.day, today: today, boundary: boundary)
-                })
+                isTappable: { cell in HabitLogging.canCorrect(habit, day: cell.day, today: today, boundary: boundary) })
         }
     }
 
@@ -168,7 +169,11 @@ struct HabitDetailScreen: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel(amount >= max(1, target) ? "Mark \(habit.title) not done" : "Mark \(habit.title) done")
         case .timed:
-            PillButton(title: "Begin") { focus.begin(.habit(window)) }.accessibilityLabel("Begin \(habit.title)")
+            HStack(spacing: ThreadsSpace.tight) {
+                PillButton(title: "Add minutes") { correcting = Correction(window: window, day: today) }
+                    .accessibilityLabel("Add minutes to \(habit.title)")
+                PillButton(title: "Begin") { focus.begin(.habit(window)) }.accessibilityLabel("Begin \(habit.title)")
+            }
         case .avoid:
             HStack(spacing: ThreadsSpace.tight) {
                 PillButton(title: "Slip", dashed: true) { log(.logSlip, window) }.accessibilityLabel("Log a slip for \(habit.title)")

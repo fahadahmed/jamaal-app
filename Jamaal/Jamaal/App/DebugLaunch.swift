@@ -243,6 +243,17 @@ enum DebugLaunch {
                 let e = HabitEntry(); e.date = today.storedDate; e.target = target; e.amount = amount
                 if amount >= target { e.completedAt = now }
                 context.insert(e); e.window = w
+                if kind == .timed {
+                    // Minutes come from sessions, so the entry has one behind it: a finished timer session earlier today.
+                    let session = WorkSession()
+                    session.startedAt = now.addingTimeInterval(-3 * 3600)
+                    session.endedAt = now.addingTimeInterval(-3 * 3600 + Double(amount) * 60)
+                    session.day = today.storedDate
+                    session.outcome = SessionOutcome.finished.rawValue
+                    session.actualSeconds = amount * 60
+                    context.insert(session)
+                    session.habitWindow = w
+                }
             }
         }
         let morning = HabitGroup(); morning.title = "Morning"; context.insert(morning)
