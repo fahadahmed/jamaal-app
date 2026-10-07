@@ -31,7 +31,11 @@ struct TodayScreen: View {
     @State private var openTask: TaskItem?
     @State private var planning: PlanningFlow?
     // The category filter is local to this device and this day: it clears at the rollover and on relaunch.
-    @State private var filterID: UUID?
+    @Environment(TodayFilterState.self) private var filterState
+    private var filterID: UUID? {
+        get { filterState.selectedID }
+        nonmutating set { filterState.selectedID = newValue }
+    }
     @State private var dismissedPickUps: Set<UUID> = []
     @Query(sort: \TaskCategory.sortOrder) private var allCategories: [TaskCategory]
     @Environment(ReminderCenter.self) private var reminders
@@ -492,7 +496,7 @@ struct TodayScreen: View {
         .sharedBackgroundVisibility(.hidden)
         ToolbarItemGroup(placement: .topBarTrailing) {
             Menu {
-                Picker("Show tasks from", selection: $filterID) {
+                Picker("Show tasks from", selection: Binding(get: { filterState.selectedID }, set: { filterState.selectedID = $0 })) {
                     Text("All").tag(UUID?.none)
                     ForEach(categories, id: \.id) { category in Text(category.name).tag(Optional(category.id)) }
                 }
