@@ -40,6 +40,7 @@ struct TodayScreen: View {
     @Environment(\.requireAccess) private var requireAccess
     @Environment(Storefront.self) private var store
     @State private var showingPlans = false
+    @State private var addingMinutes: MinutesTarget?
     @State private var bannerTick = 0
     @Query private var wellbeingLogs: [NudgeLog]
     @State private var wellbeing: WellbeingRead?
@@ -113,6 +114,7 @@ struct TodayScreen: View {
             #endif
         }
         .sheet(isPresented: $showingPlans) { PaywallScreen() }
+        .sheet(item: $addingMinutes) { AddMinutesSheet(habit: $0.habit, window: $0.window, day: TodayDay.boundary(in: context).logicalDate(at: now)) }
         .sheet(item: $openTask) { task in
             TaskDetailSheet(task: task)
         }
@@ -527,10 +529,10 @@ struct TodayScreen: View {
                 SectionLabel(title: "Habits")
                     .accessibilityValue(TodayCopy.habitsSummary(done: habits.done, total: habits.total))
                 ForEach(habits.groups, id: \.group.id) { group in
-                    HabitGroupView(group: group, onAction: { row, action in log(action, on: row) }, onBegin: { focus.begin(.habit($0.window)) })
+                    HabitGroupView(group: group, onAction: { row, action in log(action, on: row) }, onBegin: { focus.begin(.habit($0.window)) }, onAddMinutes: { addingMinutes = MinutesTarget(habit: $0.habit, window: $0.window) })
                 }
                 ForEach(Array(habits.rows.enumerated()), id: \.element.window.id) { index, row in
-                    HabitRowView(row: row, onAction: { log($0, on: row) }, onBegin: { focus.begin(.habit(row.window)) })
+                    HabitRowView(row: row, onAction: { log($0, on: row) }, onBegin: { focus.begin(.habit(row.window)) }, onAddMinutes: { addingMinutes = MinutesTarget(habit: row.habit, window: row.window) })
                     if index < habits.rows.count - 1 { Divider().overlay(threads.line) }
                 }
             }
@@ -630,4 +632,11 @@ struct TodayScreen: View {
 struct WellbeingRead {
     var snapshot: WellbeingSnapshot
     var nudge: WellbeingNudge?
+}
+
+/// A timed habit's window the Add minutes sheet is open on.
+struct MinutesTarget: Identifiable {
+    let habit: Habit
+    let window: HabitTimeWindow
+    var id: UUID { window.id }
 }

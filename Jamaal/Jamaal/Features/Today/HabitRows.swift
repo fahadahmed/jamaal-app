@@ -14,6 +14,7 @@ struct HabitRowView: View {
     let row: TodayHabitRow
     let onAction: (HabitLogAction) -> Void
     var onBegin: () -> Void = {}
+    var onAddMinutes: () -> Void = {}
 
     var body: some View {
         HStack(alignment: .center, spacing: ThreadsSpace.row) {
@@ -54,8 +55,15 @@ struct HabitRowView: View {
                     .accessibilityLabel("Held today: \(row.title)")
             }
         case .timed where !row.isDone:
-            PillButton(title: "Begin", action: onBegin)
-                .accessibilityLabel("Begin \(row.title)")
+            HStack(spacing: ThreadsSpace.tight) {
+                Button(action: onAddMinutes) {
+                    Image(systemName: "plus").font(.body.weight(.semibold)).foregroundStyle(threads.ink)
+                        .frame(width: ThreadsHit.minimum, height: ThreadsHit.minimum).contentShape(Circle())
+                }
+                .buttonStyle(.plain).accessibilityLabel("Add minutes to \(row.title)")
+                PillButton(title: "Begin", action: onBegin)
+                    .accessibilityLabel("Begin \(row.title)")
+            }
         case .binary, .timed, .unknown:
             EmptyView()
         }
@@ -69,6 +77,7 @@ struct HabitGroupView: View {
     let group: TodayHabitGroup
     let onAction: (TodayHabitRow, HabitLogAction) -> Void
     var onBegin: (TodayHabitRow) -> Void = { _ in }
+    var onAddMinutes: (TodayHabitRow) -> Void = { _ in }
     @State private var isOpen = false
 
     var body: some View {
@@ -90,7 +99,7 @@ struct HabitGroupView: View {
 
             if isOpen {
                 ForEach(group.rows, id: \.window.id) { row in
-                    HabitRowView(row: row, onAction: { onAction(row, $0) }, onBegin: { onBegin(row) })
+                    HabitRowView(row: row, onAction: { onAction(row, $0) }, onBegin: { onBegin(row) }, onAddMinutes: { onAddMinutes(row) })
                     if row.window.id != group.rows.last?.window.id { Divider().overlay(threads.line) }
                 }
                 .padding(.top, ThreadsSpace.hair)
