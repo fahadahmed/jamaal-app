@@ -27,8 +27,15 @@ struct AddTaskSheet: View {
     @State private var showsEffortStepper = false
     @SwiftUI.FocusState private var titleFocused: Bool
 
+    /// In the panel beside the list (regular width) it closes by calling `onClose`, not by dismissing a sheet.
+    var embedded = false
+    var onClose: () -> Void = {}
+    private func close() { embedded ? onClose() : dismiss() }
+
     /// `dueDate` pre-fills the date: tomorrow, when adding from Night Planning's Build step.
-    init(today: CalendarDate, dueDate: CalendarDate? = nil) {
+    init(today: CalendarDate, dueDate: CalendarDate? = nil, embedded: Bool = false, onClose: @escaping () -> Void = {}) {
+        self.embedded = embedded
+        self.onClose = onClose
         let calendarFirst = Calendar.current.firstWeekday                       // 1 = Sunday
         _form = State(initialValue: AddTaskForm(today: today, firstWeekdayISO: calendarFirst == 1 ? 7 : calendarFirst - 1, dueDate: dueDate))
         let parts = Calendar.current.dateComponents([.hour, .minute], from: .now)
@@ -90,7 +97,7 @@ struct AddTaskSheet: View {
 
     private var header: some View {
         HStack {
-            Button { dismiss() } label: {
+            Button { close() } label: {
                 Image(systemName: "xmark").frame(width: ThreadsHit.minimum, height: ThreadsHit.minimum)
                     .foregroundStyle(threads.ink)
                     .background(Circle().fill(threads.card))
@@ -258,7 +265,7 @@ struct AddTaskSheet: View {
     private func save() {
         do {
             try TaskCreation.create(form.draft, in: context, now: .now)
-            dismiss()
+            close()
         } catch {
             // The form already keeps a dated task dated, so this is only an empty title; the button was disabled.
         }
@@ -327,7 +334,7 @@ extension AddTaskSheet {
                 title: oneOff.title, on: oneOff.day, startMinute: oneOff.startMinute, endMinute: oneOff.endMinute,
                 effortMinutes: oneOff.takes, remindAtStart: oneOff.remindAtStart, remindBeforeEndMinutes: oneOff.remindBeforeEnd,
                 in: context, boundary: boundary, now: .now)
-            dismiss()
+            close()
         } catch let error as AnchorEditError {
             oneOffMessage = AnchorsCopy.message(for: error)
         } catch {

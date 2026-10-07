@@ -140,9 +140,12 @@ struct TodayScreen: View {
             TaskDetailSheet(task: task)
         }
         .fullScreenCover(item: $planning) { flow in NightPlanningScreen(flow: flow) }
-        .sheet(isPresented: $isAdding) {
+        // At regular width Add is the panel beside the list; at compact width it is a sheet.
+        .sheet(isPresented: Binding(get: { !usesPanel && isAdding }, set: { isAdding = $0 })) {
             AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now))
         }
+        .onChange(of: isAdding) { _, adding in if adding && usesPanel { openTask = nil } }
+        .onChange(of: usesPanel) { _, panel in if !panel { isAdding = false } }        // wide to narrow: don't leave a half-written add behind a sheet
         .background(threads.app)
         .confirmationDialog(
             choosing?.title ?? "", isPresented: Binding(get: { choosing != nil }, set: { if !$0 { choosing = nil } }), titleVisibility: .visible
@@ -185,7 +188,9 @@ struct TodayScreen: View {
     @ViewBuilder private var detailPanel: some View {
         NavigationStack {
           Group {
-            if let task = openTask {
+            if isAdding {
+                AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now), embedded: true, onClose: { isAdding = false }).id("add")
+            } else if let task = openTask {
                 TaskDetailSheet(task: task, embedded: true, onClose: { openTask = nil }).id(task.id)
             } else {
                 VStack {
@@ -608,7 +613,7 @@ struct TodayScreen: View {
                 ForEach(rows, id: \.id) { task in
                     TaskRow(task: task, doneTime: task.completedAt.map(Self.timeFormat.string(from:)),
                             trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
-                            onToggle: { toggle(task) }, onOpen: { openTask = task }, isSelected: usesPanel && openTask?.id == task.id)
+                            onToggle: { toggle(task) }, onOpen: { isAdding = false; openTask = task }, isSelected: usesPanel && openTask?.id == task.id)
                 }
             }
         }
@@ -633,7 +638,7 @@ struct TodayScreen: View {
                 if alsoTodayOpen {
                     ForEach(overview.alsoToday, id: \.id) { task in
                         TaskRow(task: task, doneTime: nil, trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
-                            onToggle: { toggle(task) }, onOpen: { openTask = task }, isSelected: usesPanel && openTask?.id == task.id)
+                            onToggle: { toggle(task) }, onOpen: { isAdding = false; openTask = task }, isSelected: usesPanel && openTask?.id == task.id)
                     }
                 }
             }
