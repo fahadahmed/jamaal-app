@@ -15,6 +15,7 @@ struct WellbeingScreen: View {
     @Environment(\.requireAccess) private var requireAccess
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
+    @AppStorage(AppPreferences.Keys.suggestionCards, store: AppPreferences.defaults) private var suggestionCards = true
     // Observed so the read refreshes when a day is finalised or a plan changes, here or on another device.
     @Query private var plans: [DayPlan]
     @Query private var nudges: [NudgeLog]
@@ -27,7 +28,7 @@ struct WellbeingScreen: View {
         let boundary = TodayDay.boundary(in: context)
         let snapshot = try? Wellbeing.snapshot(now: now, boundary: boundary, firstWeekday: Calendar.current.firstWeekday, context: context)
         let patterns = (try? Wellbeing.patterns(now: now, boundary: boundary, firstWeekday: Calendar.current.firstWeekday, context: context)) ?? []
-        let nudge = try? Wellbeing.currentNudge(patterns: patterns, now: now, boundary: boundary, nudgesEnabled: true, context: context)
+        let nudge = try? Wellbeing.currentNudge(patterns: patterns, now: now, boundary: boundary, nudgesEnabled: suggestionCards, context: context)
         ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 Text("Wellbeing").threadsType(.display(.large)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)

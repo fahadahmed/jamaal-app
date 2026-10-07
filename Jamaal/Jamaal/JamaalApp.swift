@@ -13,8 +13,9 @@ import ThreadsTokens
 @main
 struct JamaalApp: App {
     @Environment(\.scenePhase) private var scenePhase
-    private let container: ModelContainer?
-    private let openError: Error?
+    @State private var container: ModelContainer?
+    @State private var openFailedAgain = false
+    @AppStorage(AppPreferences.Keys.theme, store: AppPreferences.defaults) private var theme = AppTheme.system.rawValue
     @State private var reminders = ReminderCenter()
     @State private var storefront = Storefront()
     private let notificationDelegate = NotificationDelegate()
@@ -26,13 +27,7 @@ struct JamaalApp: App {
 
         UNUserNotificationCenter.current().delegate = notificationDelegate
 
-        do {
-            container = try AppEngine.makeContainer()
-            openError = nil
-        } catch {
-            container = nil
-            openError = error
-        }
+        _container = State(initialValue: try? AppEngine.makeContainer())
     }
 
     var body: some Scene {
@@ -53,14 +48,25 @@ struct JamaalApp: App {
                             if phase == .active { tick(container) }
                         }
                 } else {
-                    // A store that won't open must not crash the app (docs: Permissions and problems).
-                    // The recovery screen (Try again / Reset this device's data) is its own change.
-                    PlaceholderScreen(eyebrow: "Jamaal", title: "Couldn't open your data",
-                                      note: openError.map { "\($0.localizedDescription)" } ?? "")
+                    // A store that won't open must not crash the app: say so, and offer Try again or a reset.
+                    RecoveryScreen(stillFailing: openFailedAgain, onTryAgain: tryAgain, onReset: reset)
                 }
             }
             .environment(\.threads, JamaalPalette())
+            .preferredColorScheme(AppTheme(rawValue: theme)?.scheme)
         }
+    }
+
+    @MainActor
+    private func tryAgain() {
+        if let opened = try? AppEngine.makeContainer() { container = opened; openFailedAgain = false } else { openFailedAgain = true }
+    }
+
+    /// Removes this device's copy (after two confirmations on the recovery screen), then opens again.
+    @MainActor
+    private func reset() {
+        AppEngine.deleteLocalStore()
+        tryAgain()
     }
 
     /// Keeps the data current on launch and whenever the app becomes active.

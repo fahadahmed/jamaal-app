@@ -16,9 +16,10 @@ struct SettingsScreen: View {
     @Query private var categories: [TaskCategory]
     @Environment(ReminderCenter.self) private var reminders
     @Environment(Storefront.self) private var store
+    @AppStorage(AppPreferences.Keys.theme, store: AppPreferences.defaults) private var theme = AppTheme.system.rawValue
     @Environment(\.modelContext) private var context
 
-    enum Destination: Hashable { case capacity, notifications, categories, subscription }
+    enum Destination: Hashable { case capacity, notifications, categories, appearance, subscription, yourData }
 
     var body: some View {
         let _ = categories.map { [$0.name, $0.isArchived ? "1" : "0"] }
@@ -33,8 +34,10 @@ struct SettingsScreen: View {
                             ReminderCopy.homeValue(switchOn: reminders.remindersOnThisDevice, permission: reminders.permission, device: ReminderCenter.deviceName),
                             .notifications)
                         row("Categories", "\(categories.filter { !$0.isArchived }.count)", .categories)
+                        row("Appearance", AppTheme(rawValue: theme)?.title ?? "System", .appearance)
                         row("Subscription",
                             SubscriptionCopy.homeValue(store.access(settings: settings.first, boundary: TodayDay.boundary(in: context))), .subscription)
+                        row("Privacy and your data", "", .yourData)
                     }
                 }
                 .padding(.horizontal, ThreadsSpace.gutter).padding(.top, ThreadsSpace.row).padding(.bottom, 120)
@@ -49,6 +52,8 @@ struct SettingsScreen: View {
                 case .notifications: NotificationsScreen()
                 case .categories: CategoriesScreen()
                 case .subscription: SubscriptionScreen()
+                case .appearance: AppearanceScreen()
+                case .yourData: YourDataScreen()
                 }
             }
         }
