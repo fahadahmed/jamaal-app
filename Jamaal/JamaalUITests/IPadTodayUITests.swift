@@ -41,7 +41,7 @@ final class IPadTodayUITests: XCTestCase {
         XCTAssertTrue(clinic.waitForExistence(timeout: 10))
         clinic.tap()
         XCTAssertTrue(app.buttons["beginButton"].waitForExistence(timeout: 5))         // the detail's actions are on screen
-        XCTAssertTrue(app.buttons["addButton"].exists)                                  // the list's toolbar is still part of the screen (it scrolls with the list)
+        XCTAssertTrue(app.buttons["addButton"].isHittable)                              // the list's toolbar is pinned: still there, still tappable
         XCTAssertTrue(row("Draft the architecture review", in: app).exists)             // the list is still there beside it
         XCTAssertFalse(app.staticTexts["detailPlaceholder"].exists)
         XCTAssertTrue(clinic.isSelected || clinic.value != nil || clinic.exists)        // the open task is marked in the list
@@ -99,5 +99,29 @@ final class IPadTodayUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["detailPlaceholder"].waitForExistence(timeout: 10))
         let anchors = app.descendants(matching: .any).matching(NSPredicate(format: "label == 'Anchors'")).firstMatch
         XCTAssertTrue(anchors.exists, "Anchors is its own item at regular width (the Habits segment is for the phone)")
+    }
+
+    @MainActor
+    func testTheToolbarStaysWhileTheListScrolls() throws {
+        let app = launch()
+        let add = app.buttons["addButton"]
+        XCTAssertTrue(add.waitForExistence(timeout: 10))
+        let before = add.frame
+        app.swipeUp()
+        app.swipeUp()
+        XCTAssertTrue(add.isHittable)
+        XCTAssertEqual(add.frame.minY, before.minY, accuracy: 2, "the toolbar doesn't move with the content")
+        add.tap()
+        XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testThePanelHasAMoreMenuWithTheNote() throws {
+        let app = launch()
+        row("Call the clinic back", in: app).tap()
+        let more = app.buttons["moreMenu"]
+        XCTAssertTrue(more.waitForExistence(timeout: 5))
+        more.tap()
+        XCTAssertTrue(app.buttons["Edit note"].waitForExistence(timeout: 5))
     }
 }
