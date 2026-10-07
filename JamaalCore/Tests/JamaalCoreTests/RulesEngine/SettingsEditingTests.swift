@@ -152,6 +152,44 @@ struct SettingsEditingTests {
         #expect(try DaySettings.normalDaySuggestion(in: c, settings: s, today: d(31)) == nil)
     }
 
+    @Test func inNightPlanningTheSuggestionIsOfferedAtMostOncePerValue() throws {
+        let c = try context(); let s = settings(c); s.mediumDayMinutes = 240
+        for i in 0..<14 { plan(c, daysAgo: i, minutes: 165) }
+        #expect(try DaySettings.normalDaySuggestionForPlanning(in: c, settings: s, today: d(30)) == 165)
+        try DaySettings.logShownInPlanning(165, in: c, now: d(30).storedDate)
+        try DaySettings.logShownInPlanning(165, in: c, now: d(30).storedDate)               // logged once
+        #expect(try c.fetchCount(FetchDescriptor<NudgeLog>()) == 1)
+        #expect(try DaySettings.normalDaySuggestionForPlanning(in: c, settings: s, today: d(31)) == nil)   // no second chance in planning
+        #expect(try DaySettings.normalDaySuggestion(in: c, settings: s, today: d(31)) == 165)              // Settings still has it
+    }
+
+    @Test func havingSeenItInSettingsDoesNotUseUpThePlanningChance() throws {
+        let c = try context(); let s = settings(c); s.mediumDayMinutes = 240
+        for i in 0..<14 { plan(c, daysAgo: i, minutes: 165) }
+        try DaySettings.logShown(165, in: c, now: d(30).storedDate)
+        #expect(try DaySettings.normalDaySuggestionForPlanning(in: c, settings: s, today: d(30)) == 165)
+    }
+
+    @Test func aDeclinedSuggestionIsNotOfferedInPlanningEither() throws {
+        let c = try context(); let s = settings(c); s.mediumDayMinutes = 240
+        for i in 0..<14 { plan(c, daysAgo: i, minutes: 165) }
+        try DaySettings.decline(165, in: c, now: d(30).storedDate)
+        #expect(try DaySettings.normalDaySuggestionForPlanning(in: c, settings: s, today: d(31)) == nil)
+    }
+
+    @Test func aChangedValueGetsItsOwnChanceInPlanning() throws {
+        let c = try context(); let s = settings(c); s.mediumDayMinutes = 300
+        for i in 0..<14 { plan(c, daysAgo: i, minutes: 165) }
+        try DaySettings.logShownInPlanning(165, in: c, now: d(30).storedDate)
+        for p in try c.fetch(FetchDescriptor<DayPlan>()) { p.completedEffortMinutes = 120 }          // the habit of the month changed
+        #expect(try DaySettings.normalDaySuggestionForPlanning(in: c, settings: s, today: d(30)) == 120)
+    }
+
+    @Test func noSuggestionMeansNothingToOfferInPlanning() throws {
+        let c = try context(); let s = settings(c)
+        #expect(try DaySettings.normalDaySuggestionForPlanning(in: c, settings: s, today: d(30)) == nil)
+    }
+
     @Test func decliningWithoutAPriorShowLogsItToo() throws {
         let c = try context()
         try DaySettings.decline(150, in: c, now: .now)

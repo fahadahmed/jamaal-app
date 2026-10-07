@@ -125,6 +125,16 @@ final class PlanningFlow: Identifiable {
 
     func setLevel(_ level: CapacityLevel) { NightPlanning.setCapacity(level, forDate: forDate, context: context) }
 
+    // MARK: The normal-day line on the Load step (at most once in Night Planning)
+
+    func normalDayOffer() -> Int? {
+        try? DaySettings.normalDaySuggestionForPlanning(in: context, settings: settings, today: boundary.logicalDate(at: now()))
+    }
+
+    func markNormalDayOfferShown(_ minutes: Int) { try? DaySettings.logShownInPlanning(minutes, in: context, now: now()) }
+    func acceptNormalDay(_ minutes: Int) { try? DaySettings.setNormalDay(minutes, on: settings) }
+    func declineNormalDay(_ minutes: Int) { try? DaySettings.decline(minutes, in: context, now: now()) }
+
     /// The engine's one specific suggestion on the Load step: move a task to the day it names (`false` if there is none).
     @discardableResult
     func moveSuggested(_ suggestion: MoveSuggestion, to date: CalendarDate? = nil) -> Bool {
