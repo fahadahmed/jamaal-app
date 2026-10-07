@@ -15,9 +15,10 @@ final class IPadTodayUITests: XCTestCase {
     }
 
     @MainActor
-    private func launch(_ extra: [String] = []) -> XCUIApplication {
+    private func launch(_ extra: [String] = [], landscape: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData"] + extra
+        XCUIDevice.shared.orientation = landscape ? .landscapeLeft : .portrait       // the simulator keeps its last orientation
         app.launch()
         return app
     }
@@ -65,10 +66,10 @@ final class IPadTodayUITests: XCTestCase {
         let drop = app.buttons["dropButton"]
         XCTAssertTrue(drop.waitForExistence(timeout: 5))
         drop.tap()
-        // On iPad the confirmation is a popover; the detail's own Drop button shares its label, so look inside the popover.
-        let popover = app.popovers.firstMatch
-        XCTAssertTrue(popover.waitForExistence(timeout: 5))
-        popover.buttons["Drop"].tap()
+        // The confirmation's Drop shares its label with the detail's own button, which has an identifier of its own.
+        let confirm = app.buttons.matching(NSPredicate(format: "label == 'Drop' AND identifier != 'dropButton'")).firstMatch
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
+        confirm.tap()
         XCTAssertTrue(app.staticTexts["detailPlaceholder"].waitForExistence(timeout: 5))
         XCTAssertFalse(row("Call the clinic back", in: app).exists)
     }
@@ -123,5 +124,45 @@ final class IPadTodayUITests: XCTestCase {
         XCTAssertTrue(more.waitForExistence(timeout: 5))
         more.tap()
         XCTAssertTrue(app.buttons["Edit note"].waitForExistence(timeout: 5))
+    }
+
+    // MARK: The sidebar's furniture (landscape shows the sidebar)
+
+    @MainActor
+    private func sidebar(_ id: String, in app: XCUIApplication) -> XCUIElement {
+        app.descendants(matching: .any).matching(identifier: id).firstMatch
+    }
+
+    @MainActor
+    func testTheSidebarHasTheWordmarkCategoriesAndPlanTomorrow() throws {
+        let app = launch(landscape: true)
+        XCTAssertTrue(sidebar("sidebarWordmark", in: app).waitForExistence(timeout: 10))
+        for name in ["Personal", "Family", "Work"] {
+            XCTAssertTrue(sidebar("sidebarCategory-\(name)", in: app).exists, name)
+        }
+        XCTAssertTrue(sidebar("sidebarPlanTomorrow", in: app).exists)
+    }
+
+    @MainActor
+    func testPickingACategoryInTheSidebarFiltersTodayAndPickingItAgainClears() throws {
+        let app = launch(landscape: true)
+        let work = sidebar("sidebarCategory-Work", in: app)
+        XCTAssertTrue(work.waitForExistence(timeout: 10))
+        XCTAssertTrue(row("Book Yusuf's swimming lessons", in: app).waitForExistence(timeout: 5))   // a Family task
+        work.tap()
+        XCTAssertTrue(row("Draft the architecture review", in: app).waitForExistence(timeout: 5))    // a Work task stays
+        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: row("Book Yusuf's swimming lessons", in: app))
+        XCTAssertEqual(XCTWaiter().wait(for: [gone], timeout: 5), .completed)
+        work.tap()
+        XCTAssertTrue(row("Book Yusuf's swimming lessons", in: app).waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testPlanTomorrowInTheSidebarOpensNightPlanning() throws {
+        let app = launch(landscape: true)
+        let plan = sidebar("sidebarPlanTomorrow", in: app)
+        XCTAssertTrue(plan.waitForExistence(timeout: 10))
+        plan.tap()
+        XCTAssertTrue(app.buttons["planContinue"].waitForExistence(timeout: 8))
     }
 }

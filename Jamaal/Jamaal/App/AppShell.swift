@@ -24,6 +24,9 @@ struct AppShell: View {
     @State private var clock = Date.now
     @Query(sort: \UserSettings.createdAt) private var settingsRows: [UserSettings]
     @State private var coordinator = FocusCoordinator()
+    @State private var todayFilter = TodayFilterState()
+    @Query(sort: \TaskCategory.sortOrder) private var categoryRows: [TaskCategory]
+    @Query private var tasks: [TaskItem]
     // The one live session, and the Anchors the chip's single line is drawn from.
     @Query(filter: #Predicate<WorkSession> { $0.outcome == "running" && $0.endedAt == nil }) private var liveSessions: [WorkSession]
     @Query private var anchors: [AnchorInstance]
@@ -51,11 +54,28 @@ struct AppShell: View {
         #endif
     }
 
+    /// What is left on Today, for the sidebar's count. Reading the attributes it depends on re-runs this when they change.
+    private var todayCount: Int {
+        let _ = tasks.map { [$0.isCompleted ? 1 : 0, $0.droppedAt == nil ? 0 : 1, Int($0.dueDate?.timeIntervalSince1970 ?? 0)] }
+        return (try? TodayDay.overview(in: context, now: .now))?.shown.count ?? 0
+    }
+
+    private var canShapeThePlan: Bool {
+        store.access(settings: settingsRows.first, boundary: TodayDay.boundary(in: context), now: clock).canShapeThePlan
+    }
+
+    /// The sidebar's Plan tomorrow: to Today, which opens Night Planning (and asks for access if the trial has ended).
+    private func planTomorrow() {
+        selection = .today
+        reminders.route = .planning(TodayDay.boundary(in: context).logicalDate(at: .now))
+    }
+
     private var liveSession: WorkSession? { liveSessions.min { $0.startedAt < $1.startedAt } }
 
     var body: some View {
         TabView(selection: $selection) {
             Tab(AppTab.today.title, systemImage: AppTab.today.symbol, value: AppTab.today) { TodayScreen() }
+                .badge(sizeClass == .regular ? todayCount : 0)
             Tab(AppTab.habits.title, systemImage: AppTab.habits.symbol, value: AppTab.habits) { HabitsScreen() }
             // At compact width Anchors is a segment of Habits, so it isn't a tab at all (iOS keeps every tab it is
             // given in the phone's tab bar); at regular width it is a sidebar item that the top tab bar leaves out.
@@ -67,6 +87,16 @@ struct AppShell: View {
             Tab(AppTab.settings.title, systemImage: AppTab.settings.symbol, value: AppTab.settings) { SettingsScreen() }
         }
         .tabViewStyle(.sidebarAdaptable)
+        // The sidebar's own furniture (iPad and Mac): the wordmark, the Categories list that filters Today, and Plan tomorrow.
+        .tabViewSidebarHeader { SidebarWordmark() }
+        .tabViewSidebarFooter {
+            SidebarCategories(categories: TodayTaskFilter.options(categoryRows), selectedID: todayFilter.selectedID) { id in
+                todayFilter.toggle(id)
+                selection = .today
+            }
+        }
+        .tabViewSidebarBottomBar { if canShapeThePlan { SidebarPlanTomorrow(action: planTomorrow) } }
+        .environment(todayFilter)
         // The chip (or, for five seconds after Done, its Undo toast) sits above the tab bar on every tab.
         .focusAccessory(isEnabled: liveSession != nil || coordinator.toast != nil) {
             if let toast = coordinator.toast {

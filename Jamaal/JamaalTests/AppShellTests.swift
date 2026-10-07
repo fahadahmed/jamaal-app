@@ -97,3 +97,17 @@ struct DetailPanelTests {
         #expect(!AppNavigation.showsDetailPanel(sizeClass: nil))
     }
 }
+
+struct TodayFilterStateTests {
+    @Test func pickingACategoryFiltersAndPickingItAgainClears() {
+        let state = TodayFilterState()
+        let work = UUID(), family = UUID()
+        #expect(state.selectedID == nil)
+        state.toggle(work)
+        #expect(state.selectedID == work)
+        state.toggle(family)
+        #expect(state.selectedID == family)
+        state.toggle(family)
+        #expect(state.selectedID == nil)
+    }
+}
