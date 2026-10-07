@@ -18,6 +18,8 @@ struct TaskRow: View {
     var isTiming = false
     let onToggle: () -> Void
     var onOpen: () -> Void = {}
+    /// The task open in the detail panel beside the list (regular width).
+    var isSelected = false
 
     var body: some View {
         HStack(alignment: .top, spacing: ThreadsSpace.row) {
@@ -42,7 +44,18 @@ struct TaskRow: View {
             .accessibilityHint("Shows its details")
         }
         .padding(.vertical, ThreadsSpace.hair)
+        .background {
+            // Drawn outside the row, into the margin, so the row's content doesn't move when it is picked.
+            if isSelected {
+                RoundedRectangle(cornerRadius: ThreadsRadius.card)
+                    .fill(threads.card)
+                    .overlay(RoundedRectangle(cornerRadius: ThreadsRadius.card).strokeBorder(threads.ink, lineWidth: 1.5))
+                    .padding(.horizontal, -ThreadsSpace.row)
+                    .padding(.vertical, -2)
+            }
+        }
         .accessibilityElement(children: .contain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     private var metaLine: some View {

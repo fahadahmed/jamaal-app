@@ -23,6 +23,7 @@ struct PillButton: View {
                 .foregroundStyle(threads.ink)
                 .lineLimit(1)
                 .minimumScaleFactor(0.85)
+                .fixedSize(horizontal: !fills, vertical: false)                 // a hugging pill keeps its title; its neighbour gives way
                 .padding(fills ? EdgeInsets(top: 12, leading: 8, bottom: 12, trailing: 8) : ThreadsSpace.pillButtonPadding)
                 .frame(maxWidth: fills ? .infinity : nil, minHeight: ThreadsHit.minimum)
                 .background(Capsule().fill(threads.card.opacity(0.6)))

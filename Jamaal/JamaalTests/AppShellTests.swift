@@ -89,3 +89,11 @@ struct AppShellTests {
         #expect(container.schema.entities.count == 14)
     }
 }
+
+struct DetailPanelTests {
+    @Test func theDetailSitsBesideTheListOnlyAtRegularWidth() {
+        #expect(AppNavigation.showsDetailPanel(sizeClass: .regular))
+        #expect(!AppNavigation.showsDetailPanel(sizeClass: .compact))
+        #expect(!AppNavigation.showsDetailPanel(sizeClass: nil))
+    }
+}
