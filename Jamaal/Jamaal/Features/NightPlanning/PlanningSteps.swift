@@ -95,6 +95,7 @@ struct CarryStep: View {
     let flow: PlanningFlow
     let revision: Int
     let bump: () -> Void
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var laterOpen: Set<UUID> = []
     @State private var pickingDateFor: TaskItem?
 
@@ -131,11 +132,23 @@ struct CarryStep: View {
     private func itemView(_ item: CarryItem) -> some View {
         let task = item.task
         let current = choice(for: item)
+        let meta = PlanningCopy.carryMeta(effortMinutes: task.effortMinutes, deferrals: task.deferralCount)
         return VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
-            Text(task.title).threadsType(.row).foregroundStyle(threads.ink)
-            Text(PlanningCopy.carryMeta(effortMinutes: task.effortMinutes, deferrals: task.deferralCount))
-                .threadsType(.meta).foregroundStyle(threads.ink2)
-            segmented(current, task: task, item: item)
+            if sizeClass == .regular {
+                // The wide frame: the title and its meta on the left, Keep | Later | Drop on the right of the same row.
+                HStack(alignment: .center, spacing: ThreadsSpace.section) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(task.title).threadsType(.row).foregroundStyle(threads.ink)
+                        Text(meta).threadsType(.meta).foregroundStyle(threads.ink2)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    segmented(current, task: task, item: item).frame(width: 280)
+                }
+            } else {
+                Text(task.title).threadsType(.row).foregroundStyle(threads.ink)
+                Text(meta).threadsType(.meta).foregroundStyle(threads.ink2)
+                segmented(current, task: task, item: item)
+            }
             if current == .later { laterOptions(task, item: item) }
             if case .moved = item.state, flow.canUndoCarry(task) { undoRow("Moved", task) }
             if case .dropped = item.state, flow.canUndoCarry(task) { undoRow("Dropped", task) }
@@ -281,6 +294,7 @@ struct BuildStep: View {
     let flow: PlanningFlow
     let revision: Int
     let bump: () -> Void
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var isAdding = false
 
     private var zone: TimeZone { flow.boundary.timeZone }
@@ -332,7 +346,65 @@ struct BuildStep: View {
         date.formatted(Date.FormatStyle(date: .omitted, time: .shortened, locale: .current, timeZone: zone))
     }
 
+    private var addTaskButton: some View {
+        Button { isAdding = true } label: {
+            Label("Add a task or Anchor", systemImage: "plus").threadsType(.row).foregroundStyle(threads.ink)
+                .frame(minHeight: ThreadsHit.minimum, alignment: .leading)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("buildAddTask")
+    }
+
+    /// The wide frame (NP-07): the day as a bar, the fixed commitments in two columns (title left, time right), and the
+    /// longest gap said in one line, instead of a gap line under every commitment.
+    @ViewBuilder private func wideShape(_ build: PlanBuild) -> some View {
+        let commitments = FreeTime.commitments(from: build.anchors).filter(\.isFixed).sorted { $0.start < $1.start }
+        let longest = build.freeTime.longestBlockMinutes
+        let longestBlock = build.freeTime.visibleBlocks.first { $0.minutes == longest }
+        let base = flow.boundary.instant(of: flow.forDate, atMinute: 0)
+        let minute: (Date) -> Int = { Int($0.timeIntervalSince(base) / 60) }
+        let (left, right) = PlanningCopy.columns(commitments)
+        VStack(alignment: .leading, spacing: ThreadsSpace.section) {
+            DayShapeBar(
+                startMinute: flow.settings.dayStartMinute, endMinute: flow.settings.dayEndMinute,
+                busy: commitments.map { minute($0.start)..<(minute($0.start) + max($0.minutes, 10)) },
+                longestGap: longestBlock.map { minute($0.start)..<(minute($0.start) + $0.minutes) })
+            if !commitments.isEmpty {
+                HStack(alignment: .top, spacing: 40) {
+                    commitmentColumn(left)
+                    commitmentColumn(right)
+                }
+            }
+            if let longestBlock, let line = PlanningCopy.longestGapLine(minutes: longestBlock.minutes, after: longestBlock.after, before: longestBlock.before) {
+                Text(line).threadsType(.meta).fontWeight(.semibold).foregroundStyle(threads.ink)
+            }
+            addTaskButton
+        }
+    }
+
+    private func commitmentColumn(_ items: [FreeTime.Commitment]) -> some View {
+        VStack(spacing: 0) {
+            ForEach(Array(items.enumerated()), id: \.offset) { _, c in
+                let title = PlanningCopy.wideCommitmentTitle(c.title)
+                let end = c.start.addingTimeInterval(Double(c.minutes) * 60)
+                HStack(alignment: .firstTextBaseline) {
+                    Text(title).threadsType(.row).foregroundStyle(threads.ink)
+                    Spacer(minLength: ThreadsSpace.tight)
+                    Text(c.minutes >= 30 ? "\(time(c.start))–\(time(end))" : time(c.start)).threadsType(.lede).foregroundStyle(threads.ink2)
+                }
+                .frame(minHeight: 44)
+                .accessibilityElement(children: .combine)
+                .accessibilityIdentifier("commitment-\(title)")
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+    }
+
     @ViewBuilder private func shape(_ build: PlanBuild) -> some View {
+        if sizeClass == .regular { wideShape(build) } else { compactShape(build) }
+    }
+
+    @ViewBuilder private func compactShape(_ build: PlanBuild) -> some View {
         let commitments = FreeTime.commitments(from: build.anchors).filter(\.isFixed)
         let longest = build.freeTime.longestBlockMinutes
         let entries = (commitments.map(Entry.commitment) + build.freeTime.visibleBlocks.map { Entry.gap($0, isLongest: $0.minutes == longest) })
@@ -354,12 +426,7 @@ struct BuildStep: View {
                         .padding(.bottom, ThreadsSpace.hair)
                 }
             }
-            Button { isAdding = true } label: {
-                Label("Add a task or Anchor", systemImage: "plus").threadsType(.row).foregroundStyle(threads.ink)
-                    .frame(minHeight: ThreadsHit.minimum, alignment: .leading)
-            }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("buildAddTask")
+            addTaskButton
         }
     }
 

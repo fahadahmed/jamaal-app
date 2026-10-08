@@ -62,6 +62,30 @@ enum PlanningCopy {
         return minutes > 0 ? "\(count) · \(TodayCopy.duration(minutes))" : count
     }
 
+    // MARK: The wide Build step
+
+    /// "School run · Drop-off" is "Drop-off" in the two-column list (the compact list keeps the rule's name).
+    static func wideCommitmentTitle(_ title: String) -> String {
+        title.components(separatedBy: " · ").last ?? title
+    }
+
+    /// The first half down the left, the rest down the right, so each column reads in time order.
+    static func columns<T>(_ items: [T]) -> (left: [T], right: [T]) {
+        let split = (items.count + 1) / 2
+        return (Array(items.prefix(split)), Array(items.dropFirst(split)))
+    }
+
+    static func longestGapLine(minutes: Int, after: String?, before: String?) -> String? {
+        let place: String
+        switch (after, before) {
+        case (let a?, let b?): place = "between \(a) and \(b)"
+        case (let a?, nil): place = "after \(a)"
+        case (nil, let b?): place = "before \(b)"
+        case (nil, nil): return nil
+        }
+        return "Longest gap: \(TodayCopy.duration(minutes)), \(place)."
+    }
+
     // MARK: Headlines
 
     static func reviewHeadline(date: CalendarDate) -> Headline { ("How \(weekday(date))", "went.") }

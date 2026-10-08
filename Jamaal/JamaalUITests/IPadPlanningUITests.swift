@@ -15,9 +15,9 @@ final class IPadPlanningUITests: XCTestCase {
     }
 
     @MainActor
-    private func launch(step: Int) -> XCUIApplication {
+    private func launch(step: Int, args: [String] = ["-JamaalSampleData"]) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalPlan", String(step)]
+        app.launchArguments = ["-JamaalInMemory"] + args + ["-JamaalPlan", String(step)]
         XCUIDevice.shared.orientation = .landscapeLeft
         app.launch()
         return app
@@ -96,5 +96,30 @@ final class IPadPlanningUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Close"].waitForExistence(timeout: 10))
         app.buttons["Close"].tap()
         XCTAssertTrue(app.buttons["addButton"].waitForExistence(timeout: 8), "back on Today")
+    }
+
+    // MARK: The wide step bodies
+
+    @MainActor
+    func testCarryChoicesSitBesideTheirTaskOnOneRow() throws {
+        let app = launch(step: 2)
+        let title = app.staticTexts.matching(identifier: "Draft the architecture review").firstMatch
+        let keep = app.buttons.matching(identifier: "keep-Draft the architecture review").firstMatch
+        XCTAssertTrue(title.waitForExistence(timeout: 10))
+        XCTAssertTrue(keep.exists)
+        XCTAssertEqual(title.frame.midY, keep.frame.midY, accuracy: 40, "the title and its choices share a row")
+        XCTAssertGreaterThan(keep.frame.minX, title.frame.maxX, "the choices are to the right of the title")
+    }
+
+    @MainActor
+    func testBuildListsTheFixedCommitmentsInTwoColumns() throws {
+        // The seeded rules include prayer times, which every day has, so there are always several commitments. With no sample
+        // tasks Carry has nothing to settle and is skipped, so Build is step 2.
+        let app = launch(step: 2, args: ["-JamaalAnchorRules", "-JamaalFakePlaces"])
+        let cells = app.descendants(matching: .any).matching(NSPredicate(format: "identifier BEGINSWITH 'commitment-'"))
+        XCTAssertTrue(cells.firstMatch.waitForExistence(timeout: 10))
+        XCTAssertGreaterThanOrEqual(cells.count, 2)
+        let lefts = Set((0..<cells.count).map { Int(cells.element(boundBy: $0).frame.minX / 100) })
+        XCTAssertGreaterThanOrEqual(lefts.count, 2, "the commitments run down two columns")
     }
 }
