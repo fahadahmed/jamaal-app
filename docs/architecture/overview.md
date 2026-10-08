@@ -53,6 +53,10 @@ user action / clock / sync
 - **Minimum OS: iOS 26 / macOS 26.** Liquid Glass is a system feature from 26, so the design needs no fallback; ThreadsKit's lower floor (iOS 18 / macOS 15) is irrelevant to the app. iPhone Duo-specific APIs (iOS 27.1) are newer and are gated behind availability checks.
 - Layout adapts by size class: system tab bar and toolbars on compact width, sidebar plus a detail pane on regular width, and iPhone Duo covered by the compact (outer display) and regular (inner display) layouts. Navigation must use the system components so this adaptation is automatic. See [App flow → Adaptive layout](../journeys/app-flow#adaptive-layout-ipad-and-mac).
 
+## Widgets and the watch
+
+Widgets are in v1 and a watch companion is v1.1 ([ADR 0003](decisions/0003-widgets-in-v1-watch-in-v1-1), [spec](widgets-and-watch)). A widget extension cannot open the app's private store, so the SwiftData store lives in an **App Group container** from the first sync-enabled build. Both the widgets and the watch read a pure, `Codable` `WidgetSnapshot` that JamaalCore builds from the engine's existing reads.
+
 ## Testing
 
 - **`JamaalCore`**: Swift Testing exclusively (`@Test`, `#expect`, `try #require`); the natural home for parameterised tests such as Anchor generation across time windows and prayer-time scenarios.
@@ -66,4 +70,4 @@ user action / clock / sync
 
 ## Where the detail lives
 
-[Home](../Home) · [App flow](../journeys/app-flow) · [Schema overview](../schema/overview) · [Rules engine](rules-engine) · [ADR 0001](decisions/0001-anchor-object-type) · [ADR 0002](decisions/0002-reconcile-master-summary-v2) · [Roadmap](../roadmap/phases)
+[Home](../Home) · [App flow](../journeys/app-flow) · [Schema overview](../schema/overview) · [Rules engine](rules-engine) · [ADR 0001](decisions/0001-anchor-object-type) · [ADR 0002](decisions/0002-reconcile-master-summary-v2) · [ADR 0003](decisions/0003-widgets-in-v1-watch-in-v1-1) · [Widgets and the watch](widgets-and-watch) · [Roadmap](../roadmap/phases)

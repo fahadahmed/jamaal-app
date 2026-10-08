@@ -190,7 +190,7 @@ Not covered anywhere in the docs yet (checked by search). Grouped by what they w
 - ~~**Recurring tasks.**~~ **Resolved** — simple repeat on Task, see [task.md](../schema/task#repeating-tasks).
 - ~~**Calendar and other apps.**~~ **Decided: out of v1** (one-off Anchors cover fixed-time events). The stated goal is to stop bouncing between reminder, task and calendar apps, but nothing says whether Jamaal reads calendar events, imports Reminders, or ignores them.
 - ~~**Habit pause.**~~ **Resolved** — pause with a reason (travel, illness, cycle, other); paused days are unscheduled, not missed. See [habit.md](../schema/habit#pauses).
-- ~~**Quick capture and system surfaces.**~~ **Decided: v1.1** (no widgets, share extension or App Intents in v1).  No widgets, share extension, App Intents/Siri, or Live Activities — likely important for a "Today" app, and they shape what data must be reachable outside the app.
+- ~~**Quick capture and system surfaces.**~~ **Decided (revised 8 Oct 2026, [ADR 0003](../architecture/decisions/0003-widgets-in-v1-watch-in-v1-1)): widgets are in v1** (Next Anchor and Today, on iPhone, iPad and Mac, with Lock Screen accessory widgets), which puts the store in an App Group from the first sync-enabled build. **Still v1.1:** App Intents and interactive widgets, Control Center controls, the share extension, quick capture, Live Activity, and a companion watchOS app. See [Widgets and the watch](../architecture/widgets-and-watch).
 - ~~**Privacy, export and account.**~~ **Resolved** — `ST-08` (privacy statement, JSON export, delete my data).  v2 called the app "privacy-first"; there is no data export/delete or privacy journey (also needed for App Store submission).
 
 **Would change the schema or engine**

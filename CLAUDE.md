@@ -44,6 +44,10 @@ No `.xcworkspace` — JamaalCore is a Swift Package (added as a local package de
 - Testing System: **Swift Testing with XCTest UI Tests** (see Testing section below)
 - Team: Personal (free) is fine for simulator builds and CI, but **iCloud/CloudKit and push can't be provisioned on it**, so the paid Apple Developer Program ($99/year) must be enrolled before any real-device sync testing (by the start of Phase 3 at the latest), and the CloudKit container identifier created then. It is also needed for TestFlight-with-others, production CloudKit and App Store submission. **Running on your own device with the free team works** because the Debug configuration signs with `Jamaal/Jamaal-Personal.entitlements` (empty); Release uses `Jamaal.entitlements` (push and iCloud) and needs the paid programme. When CloudKit is wired, point Debug back at the full file.
 
+## Widgets and the watch (decided 8 Oct 2026)
+
+**Widgets are in v1** (Next Anchor and Today, on iPhone, iPad and Mac, with Lock Screen accessory widgets); a **companion watchOS app is v1.1**; Live Activity, App Intents and interactive widgets are v1.1. The SwiftData store must live in an **App Group container from the first CloudKit-enabled build** (done with the CloudKit set-up once the paid programme is active, about 14 Oct 2026), so no user ever migrates. Widgets and the watch both read a pure, `Codable` `WidgetSnapshot` built in JamaalCore. v1 launches on iPhone, iPad and Mac together. See `docs/architecture/decisions/0003-widgets-in-v1-watch-in-v1-1.md` and `docs/architecture/widgets-and-watch.md`.
+
 ## Testing strategy
 
 - **JamaalCore** (`JamaalCoreTests`): **Swift Testing** exclusively (`@Test`, `#expect`, `try #require`). No XCTest here — this package is pure logic (rules engine, models), Apple's default for new unit tests in Xcode 26, and a good fit for parameterized tests (e.g. Anchor generation across time-window scenarios).

@@ -244,7 +244,7 @@ Each has a recommendation so the register can be locked in one pass.
 | 5 | **Widgets, share extension, App Intents.** Not designed. | **v1.1**; none in v1. |
 | 6 | **Calendar events / Reminders import.** The app's goal is fewer apps, but nothing reads a calendar. | **Out of v1**; one-off Anchors cover fixed-time events. |
 | 7 | **"What makes this score" (`WB-04`).** | **v1.1**; ship the score and plain read without a derivation view. |
-| 8 | **Avoid habits (`HB-08`).** Design has only a title. | Design draws **two options** from the brief; the owner picks; the screen stays in v1 because it was chosen for v1. |
+| 8 | **Avoid habits (`HB-08`).** Design had only a title. | **Settled 8 Oct 2026: Option A**, as drawn in the v4 `HB-08` frame (*Slip* and *Held today*, both explicit). The detail pass (its 6-week grid, the read, *Undo* on a held day) is still to build. |
 | 9 | **Category colours (`ST-04`).** | **Decided** (Journey 11): `accent`, `blue`, `ochre`, `plum`, `slate`; new ThreadsKit 1.2.0 tokens; hues to confirm against Design. |
 | 10 | **Onboarding skippability.** | Notifications (`OB-05`) and the Anchor step (`OB-08`) skippable; everything else required. |
 | 11 | **Mood** (`NP-01`). | **Removed** — no self-reporting anywhere; wellbeing derives from behaviour only. |
