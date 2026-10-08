@@ -139,7 +139,7 @@ struct TodayScreen: View {
         .sheet(item: Binding(get: { usesPanel ? nil : openTask }, set: { openTask = $0 })) { task in
             TaskDetailSheet(task: task)
         }
-        .fullScreenCoverOrSheet(item: $planning) { flow in NightPlanningScreen(flow: flow) }
+        .fullScreenCoverOrSheet(item: $planning, macSize: .canvas) { flow in NightPlanningScreen(flow: flow) }
         // At regular width Add is the panel beside the list; at compact width it is a sheet.
         .sheet(isPresented: Binding(get: { !usesPanel && isAdding }, set: { isAdding = $0 })) {
             AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now))
