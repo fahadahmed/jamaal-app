@@ -147,7 +147,7 @@ struct HabitFormScreen: View {
         .scrollDismissesKeyboard(.interactively)
         .background(threads.app)
         .navigationTitle(habit == nil ? "New habit" : "Edit habit")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
         .toolbar {
             if habit != nil { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
             ToolbarItem(placement: .confirmationAction) { Button("Save", action: save).accessibilityIdentifier("saveHabit") }

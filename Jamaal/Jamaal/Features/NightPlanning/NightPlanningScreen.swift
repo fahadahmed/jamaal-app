@@ -25,7 +25,7 @@ struct NightPlanningScreen: View {
             (flow.step == .close && flow.mode == .evening ? threads.deep : threads.app).ignoresSafeArea()
             if flow.step == .close, let summary {
                 CloseStep(flow: flow, summary: summary, firstAnchor: firstAnchor) { dismiss() }
-            } else if sizeClass == .regular {
+            } else if AppNavigation.isRegular(sizeClass) {
                 wideCanvas
             } else {
                 VStack(spacing: 0) {

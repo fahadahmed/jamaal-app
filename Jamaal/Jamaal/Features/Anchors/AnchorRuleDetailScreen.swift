@@ -60,7 +60,7 @@ struct AnchorRuleDetailScreen: View {
         .scrollIndicators(.hidden)
         .overlay(alignment: .top) { topBar.readableColumn() }
         .background(threads.app.ignoresSafeArea())
-        .toolbar(.hidden, for: .navigationBar)
+        .hidesNavigationBar()
         .sheet(isPresented: $editing) {
             if let draft = AnchorRuleDraft(editing: rule) {
                 NavigationStack { AnchorFormScreen(draft: draft, editing: rule) }

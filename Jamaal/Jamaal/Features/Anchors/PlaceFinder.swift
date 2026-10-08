@@ -28,7 +28,16 @@ final class SystemPlaceFinder: NSObject, PlaceFinding, CLLocationManagerDelegate
         manager.desiredAccuracy = kCLLocationAccuracyKilometer
     }
 
-    var canReadQuietly: Bool { [.authorizedWhenInUse, .authorizedAlways].contains(manager.authorizationStatus) }
+    /// iOS asks "while using"; macOS has one "authorised" state.
+    private static func isAuthorised(_ status: CLAuthorizationStatus) -> Bool {
+        #if os(macOS)
+        status == .authorizedAlways
+        #else
+        status == .authorizedWhenInUse || status == .authorizedAlways
+        #endif
+    }
+
+    var canReadQuietly: Bool { Self.isAuthorised(manager.authorizationStatus) }
 
     func current() async -> FoundPlace? {
         switch manager.authorizationStatus {
@@ -72,10 +81,10 @@ final class SystemPlaceFinder: NSObject, PlaceFinding, CLLocationManagerDelegate
     nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         let status = manager.authorizationStatus
         Task { @MainActor in
-            switch status {
-            case .authorizedWhenInUse, .authorizedAlways: if waiting != nil { self.manager.requestLocation() }
-            case .denied, .restricted: finish(nil)
-            default: break
+            if Self.isAuthorised(status) {
+                if waiting != nil { self.manager.requestLocation() }
+            } else if status == .denied || status == .restricted {
+                finish(nil)
             }
         }
     }

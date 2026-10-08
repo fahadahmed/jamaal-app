@@ -29,9 +29,14 @@ struct AppShellTests {
     }
 
     @Test func theHabitsAnchorsSegmentShowsOnlyAtCompactWidth() {
-        #expect(AppNavigation.showsAnchorsSegment(sizeClass: .compact))
         #expect(!AppNavigation.showsAnchorsSegment(sizeClass: .regular))
+        #if os(macOS)
+        #expect(!AppNavigation.showsAnchorsSegment(sizeClass: .compact))              // a Mac has no size classes: always the wide layout
+        #expect(!AppNavigation.showsAnchorsSegment(sizeClass: nil))
+        #else
+        #expect(AppNavigation.showsAnchorsSegment(sizeClass: .compact))
         #expect(AppNavigation.showsAnchorsSegment(sizeClass: nil))                    // unknown: the phone layout
+        #endif
     }
 
     @Test func everyTabHasATitleAndASymbol() {
@@ -93,8 +98,13 @@ struct AppShellTests {
 struct DetailPanelTests {
     @Test func theDetailSitsBesideTheListOnlyAtRegularWidth() {
         #expect(AppNavigation.showsDetailPanel(sizeClass: .regular))
+        #if os(macOS)
+        #expect(AppNavigation.showsDetailPanel(sizeClass: .compact))                  // a Mac is always wide
+        #expect(AppNavigation.showsDetailPanel(sizeClass: nil))
+        #else
         #expect(!AppNavigation.showsDetailPanel(sizeClass: .compact))
         #expect(!AppNavigation.showsDetailPanel(sizeClass: nil))
+        #endif
     }
 }
 

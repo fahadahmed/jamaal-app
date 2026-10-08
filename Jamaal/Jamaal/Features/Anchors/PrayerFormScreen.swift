@@ -151,7 +151,7 @@ struct PrayerFormScreen: View {
         .scrollDismissesKeyboard(.interactively)
         .background(threads.app)
         .navigationTitle("Prayer times")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
         .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
         .sheet(isPresented: $choosingPlace) {
             WhereSheet(finder: finder, working: $working, notice: $notice,
@@ -276,8 +276,12 @@ private struct CitySearchScreen: View {
         }
         .background(threads.app)
         .navigationTitle("Choose a city")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
+        #if os(iOS)
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search for a city")
+        #else
+        .searchable(text: $query, prompt: "Search for a city")
+        #endif
         .task(id: query) {
             try? await Task.sleep(for: .milliseconds(300))
             guard !Task.isCancelled else { return }
@@ -317,7 +321,7 @@ private struct MethodListScreen: View {
         }
         .background(threads.app)
         .navigationTitle("Method")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
     }
 }
 
@@ -364,6 +368,6 @@ private struct PrayerAdvancedScreen: View {
         }
         .background(threads.app)
         .navigationTitle("Advanced")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
     }
 }

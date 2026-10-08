@@ -134,7 +134,7 @@ struct CarryStep: View {
         let current = choice(for: item)
         let meta = PlanningCopy.carryMeta(effortMinutes: task.effortMinutes, deferrals: task.deferralCount)
         return VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
-            if sizeClass == .regular {
+            if AppNavigation.isRegular(sizeClass) {
                 // The wide frame: the title and its meta on the left, Keep | Later | Drop on the right of the same row.
                 HStack(alignment: .center, spacing: ThreadsSpace.section) {
                     VStack(alignment: .leading, spacing: 2) {
@@ -401,7 +401,7 @@ struct BuildStep: View {
     }
 
     @ViewBuilder private func shape(_ build: PlanBuild) -> some View {
-        if sizeClass == .regular { wideShape(build) } else { compactShape(build) }
+        if AppNavigation.isRegular(sizeClass) { wideShape(build) } else { compactShape(build) }
     }
 
     @ViewBuilder private func compactShape(_ build: PlanBuild) -> some View {

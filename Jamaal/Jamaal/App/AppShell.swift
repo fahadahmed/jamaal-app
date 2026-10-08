@@ -75,7 +75,7 @@ struct AppShell: View {
     var body: some View {
         TabView(selection: $selection) {
             Tab(AppTab.today.title, systemImage: AppTab.today.symbol, value: AppTab.today) { TodayScreen() }
-                .badge(sizeClass == .regular ? todayCount : 0)
+                .badge(AppNavigation.isRegular(sizeClass) ? todayCount : 0)
             Tab(AppTab.habits.title, systemImage: AppTab.habits.symbol, value: AppTab.habits) { HabitsScreen() }
             // At compact width Anchors is a segment of Habits, so it isn't a tab at all (iOS keeps every tab it is
             // given in the phone's tab bar); at regular width it is a sidebar item that the top tab bar leaves out.
@@ -109,7 +109,7 @@ struct AppShell: View {
                 }
             }
         }
-        .fullScreenCover(isPresented: .constant(showsOnboarding)) {
+        .fullScreenCoverOrSheet(isPresented: .constant(showsOnboarding)) {
             OnboardingFlow(startAt: OnboardingStep(rawValue: debugStartStep) ?? .meet)
         }
         .environment(coordinator)
@@ -125,7 +125,7 @@ struct AppShell: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { showingPaywall = true }
             }
         }
-        .fullScreenCover(isPresented: $showingPaywall) { PaywallScreen() }
+        .fullScreenCoverOrSheet(isPresented: $showingPaywall) { PaywallScreen() }
         .onChange(of: paywallDue, initial: true) { _, due in
             guard due else { return }
             store.markPaywallShown(on: TodayDay.boundary(in: context).logicalDate(at: clock))
@@ -157,7 +157,7 @@ struct AppShell: View {
                 coordinator.expireToastIfNeeded()
             }
         }
-        .fullScreenCover(isPresented: Binding(get: { coordinator.isShowingFocus && liveSession != nil }, set: { coordinator.isShowingFocus = $0 })) {
+        .fullScreenCoverOrSheet(isPresented: Binding(get: { coordinator.isShowingFocus && liveSession != nil }, set: { coordinator.isShowingFocus = $0 })) {
             if let live = liveSession { FocusScreen(session: live).environment(coordinator) }
         }
         .sheet(isPresented: Binding(get: { coordinator.settling != nil }, set: { if !$0 { coordinator.cancelSettle() } })) {
@@ -181,10 +181,15 @@ struct AppShell: View {
 private extension View {
     @ViewBuilder
     func focusAccessory<Accessory: View>(isEnabled: Bool, @ViewBuilder content: @escaping () -> Accessory) -> some View {
+        #if os(macOS)
+        // No tab bar to sit above on a Mac: the chip floats at the bottom of the window.
+        safeAreaInset(edge: .bottom) { if isEnabled { content().padding(.bottom, 8) } }
+        #else
         if #available(iOS 26.1, *) {
             tabViewBottomAccessory(isEnabled: isEnabled, content: content)
         } else {
             tabViewBottomAccessory(content: content)
         }
+        #endif
     }
 }

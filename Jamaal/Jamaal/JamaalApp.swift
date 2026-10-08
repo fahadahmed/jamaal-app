@@ -57,7 +57,13 @@ struct JamaalApp: App {
             }
             .environment(\.threads, JamaalPalette())
             .preferredColorScheme(AppTheme(rawValue: theme)?.scheme)
+            #if os(macOS)
+            .frame(minWidth: 900, minHeight: 600)
+            #endif
         }
+        #if os(macOS)
+        .defaultSize(width: 1180, height: 780)
+        #endif
     }
 
     @MainActor

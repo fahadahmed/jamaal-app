@@ -46,10 +46,19 @@ enum AppNavigation {
     }
 
     /// At regular width the task detail sits beside the list as a panel; at compact width it is a bottom sheet.
-    static func showsDetailPanel(sizeClass: UserInterfaceSizeClass?) -> Bool { sizeClass == .regular }
+    static func showsDetailPanel(sizeClass: UserInterfaceSizeClass?) -> Bool { isRegular(sizeClass) }
+
+    /// Regular width: an iPad (or a wide window on one), and always a Mac, whose windows are a desktop's and carry no size class.
+    static func isRegular(_ sizeClass: UserInterfaceSizeClass?) -> Bool {
+        #if os(macOS)
+        true
+        #else
+        sizeClass == .regular
+        #endif
+    }
 
     /// The Habits | Anchors segment is for the phone layout; at regular width Anchors is its own item.
     static func showsAnchorsSegment(sizeClass: UserInterfaceSizeClass?) -> Bool {
-        sizeClass != .regular
+        !isRegular(sizeClass)
     }
 }

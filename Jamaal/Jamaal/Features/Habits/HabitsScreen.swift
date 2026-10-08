@@ -80,7 +80,7 @@ struct HabitsScreen: View {
           .background(threads.app.ignoresSafeArea())          // the segment sits on the app ground, not the system's white
           .navigationDestination(for: Habit.self) { habit in HabitDetailScreen(habit: habit) }
           .navigationDestination(for: AnchorRule.self) { rule in AnchorRuleDetailScreen(rule: rule) }
-          .toolbar(.hidden, for: .navigationBar)
+          .hidesNavigationBar()
         }
     }
 }
