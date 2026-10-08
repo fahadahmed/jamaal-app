@@ -183,7 +183,7 @@ struct HabitDetailScreen: View {
             }
         case .avoid:
             HStack(spacing: ThreadsSpace.tight) {
-                PillButton(title: "Slip", dashed: true) { log(.logSlip, window) }.accessibilityLabel("Log a slip for \(habit.title)")
+                PillButton(title: "Slip") { log(.logSlip, window) }.accessibilityLabel("Log a slip for \(habit.title)")
                 PillButton(title: isHeld ? "Undo" : "Held today") { log(isHeld ? .undoHeld : .heldToday, window) }
                     .accessibilityLabel(isHeld ? "Undo held today for \(habit.title)" : "Held today: \(habit.title)")
             }
