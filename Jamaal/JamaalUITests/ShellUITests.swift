@@ -27,12 +27,11 @@ final class ShellUITests: XCTestCase {
         XCTAssertFalse(tabBar.buttons["Anchors"].exists, "Anchors isn't a tab on a phone")
 
         tabBar.buttons["Habits"].tap()
-        let segment = app.segmentedControls.firstMatch
-        XCTAssertTrue(segment.waitForExistence(timeout: 5))
-        XCTAssertTrue(segment.buttons["Habits"].exists)
-        XCTAssertTrue(segment.buttons["Anchors"].exists)
+        let habits = app.buttons["segment-habits"]
+        XCTAssertTrue(habits.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["segment-anchors"].exists)
 
-        segment.buttons["Anchors"].tap()
+        app.buttons["segment-anchors"].tap()
         XCTAssertTrue(app.staticTexts["Prayer times, the school run, bin night: the things your day moves around."].waitForExistence(timeout: 5))
     }
 

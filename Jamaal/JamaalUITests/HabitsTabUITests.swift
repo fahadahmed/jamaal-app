@@ -122,4 +122,43 @@ final class HabitsTabUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Habits"].waitForExistence(timeout: 5))
         XCTAssertFalse(row("Floss", in: app).exists)
     }
+
+    // MARK: The header (HB-01, AN-01): the switch and Add share a row, the title is below them
+
+    @MainActor
+    private func assertHeaderRow(add: String, title: String, in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
+        let segment = app.buttons["segment-habits"]
+        let plus = app.buttons[add]
+        let heading = app.staticTexts[title]
+        XCTAssertTrue(segment.waitForExistence(timeout: 8), file: file, line: line)
+        XCTAssertTrue(plus.waitForExistence(timeout: 5), file: file, line: line)
+        XCTAssertTrue(heading.waitForExistence(timeout: 5), file: file, line: line)
+        XCTAssertEqual(segment.frame.midY, plus.frame.midY, accuracy: 8, "the switch and Add are on one row", file: file, line: line)
+        XCTAssertLessThan(plus.frame.maxY, heading.frame.minY + 4, "the title is below that row", file: file, line: line)
+        XCTAssertGreaterThan(plus.frame.minX, segment.frame.maxX, "Add is to the right of the switch", file: file, line: line)
+    }
+
+    @MainActor
+    func testTheSwitchAndAddShareARowAboveTheHabitsTitle() throws {
+        try XCTSkipIf(UIDevice.current.userInterfaceIdiom != .phone, "the phone layout")
+        let app = launchOnHabits()
+        assertHeaderRow(add: "addHabit", title: "Habits", in: app)
+    }
+
+    @MainActor
+    func testTheSwitchAndAddShareARowAboveTheAnchorsTitleToo() throws {
+        try XCTSkipIf(UIDevice.current.userInterfaceIdiom != .phone, "the phone layout")
+        let app = launchOnHabits()
+        app.buttons["segment-anchors"].tap()
+        assertHeaderRow(add: "addAnchorRule", title: "Anchors", in: app)
+        XCTAssertFalse(app.buttons["addHabit"].exists, "Add follows the chosen segment")
+    }
+
+    @MainActor
+    func testAddOnTheSwitchRowOpensTheFlowForTheChosenSegment() throws {
+        try XCTSkipIf(UIDevice.current.userInterfaceIdiom != .phone, "the phone layout")
+        let app = launchOnHabits()
+        app.buttons["addHabit"].tap()
+        XCTAssertTrue(app.staticTexts["What kind of habit?"].waitForExistence(timeout: 5))
+    }
 }

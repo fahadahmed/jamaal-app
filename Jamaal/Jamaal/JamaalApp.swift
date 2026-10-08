@@ -26,6 +26,9 @@ struct JamaalApp: App {
         assert(failures.isEmpty, "Fonts failed to register: \(failures)")
 
         UNUserNotificationCenter.current().delegate = notificationDelegate
+        #if canImport(UIKit)
+        TabBarAppearance.apply(JamaalPalette())
+        #endif
 
         _container = State(initialValue: try? AppEngine.makeContainer())
     }

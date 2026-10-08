@@ -18,9 +18,9 @@ final class AnchorsTabUITests: XCTestCase {
         let tab = app.tabBars.buttons["Habits"]
         XCTAssertTrue(tab.waitForExistence(timeout: 10))
         tab.tap()
-        let segment = app.segmentedControls.firstMatch
+        let segment = app.buttons["segment-anchors"]
         XCTAssertTrue(segment.waitForExistence(timeout: 5))
-        segment.buttons["Anchors"].tap()
+        segment.tap()
         return app
     }
 

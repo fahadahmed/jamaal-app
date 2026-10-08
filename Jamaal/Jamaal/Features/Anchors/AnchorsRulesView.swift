@@ -19,7 +19,9 @@ struct AnchorsRulesView: View {
     // Observed so the list re-reads when rules change, here or on another device.
     @Query private var rules: [AnchorRule]
     @State private var now = Date.now
-    @State private var adding = false
+    /// Owned by the screen, so the Add button can sit up beside the Habits | Anchors switch on a phone.
+    @Binding var adding: Bool
+    var showsAddButton = true
     @State private var archivedOpen = false
 
     var body: some View {
@@ -31,13 +33,9 @@ struct AnchorsRulesView: View {
                 HStack(alignment: .center) {
                     Text("Anchors").threadsType(.display(.large)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
                     Spacer()
-                    Button { if requireAccess(.createAnchorRule) { adding = true } } label: {
-                        Image(systemName: "plus").font(.title3).foregroundStyle(threads.ink)
-                            .frame(width: 52, height: 52).glassEffect(.regular.interactive(), in: Circle()).contentShape(Circle())
+                    if showsAddButton {
+                        AddCircleButton(label: "Add an Anchor rule", identifier: "addAnchorRule") { if requireAccess(.createAnchorRule) { adding = true } }
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Add an Anchor rule")
-                    .accessibilityIdentifier("addAnchorRule")
                 }
                 if let overview {
                     if overview.rows.isEmpty && overview.archived.isEmpty {
@@ -125,9 +123,11 @@ struct AnchorsRulesView: View {
 
 /// Anchors as its own item (iPad and Mac sidebar): the same list in its own navigation.
 struct AnchorsScreen: View {
+    @State private var adding = false
+
     var body: some View {
         NavigationStack {
-            AnchorsRulesView()
+            AnchorsRulesView(adding: $adding)
                 .navigationDestination(for: AnchorRule.self) { AnchorRuleDetailScreen(rule: $0) }
                 .toolbar(.hidden, for: .navigationBar)
         }
