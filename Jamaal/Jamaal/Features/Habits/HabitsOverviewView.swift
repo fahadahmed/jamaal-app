@@ -23,7 +23,9 @@ struct HabitsOverviewView: View {
     @State private var now = Date.now
     @State private var openGroups: Set<UUID> = []
     @State private var archivedOpen = false
-    @State private var addingHabit = false
+    /// Owned by the screen, so the Add button can sit up beside the Habits | Anchors switch on a phone.
+    @Binding var addingHabit: Bool
+    var showsAddButton = true
 
     var body: some View {
         let _ = (habits.map { [$0.isArchived ? 1 : 0, $0.pausesData.count, $0.title.count] as [AnyHashable] },
@@ -36,14 +38,9 @@ struct HabitsOverviewView: View {
                     Text("Habits").threadsType(.display(.large)).foregroundStyle(threads.ink)
                         .accessibilityAddTraits(.isHeader)
                     Spacer()
-                    Button { if requireAccess(.createHabit) { addingHabit = true } } label: {
-                        Image(systemName: "plus").font(.title3).foregroundStyle(threads.ink)
-                            .frame(width: 52, height: 52).glassEffect(.regular.interactive(), in: Circle())
-                            .contentShape(Circle())
+                    if showsAddButton {
+                        AddCircleButton(label: "Add a habit", identifier: "addHabit") { if requireAccess(.createHabit) { addingHabit = true } }
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Add a habit")
-                    .accessibilityIdentifier("addHabit")
                 }
                 if let overview {
                     if overview.groups.isEmpty && overview.ungrouped.isEmpty && overview.archived.isEmpty {

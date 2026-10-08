@@ -120,7 +120,7 @@ final class ReadOnlyUITests: XCTestCase {
         add.tap()
         assertLocked(app)
         dismissSheet(app)
-        app.segmentedControls.firstMatch.buttons["Anchors"].tap()
+        app.buttons["segment-anchors"].tap()
         let addRule = app.buttons["addAnchorRule"]
         XCTAssertTrue(addRule.waitForExistence(timeout: 5))
         addRule.tap()

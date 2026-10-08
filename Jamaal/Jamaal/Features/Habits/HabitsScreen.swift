@@ -15,6 +15,9 @@ struct HabitsScreen: View {
 
     @Environment(\.threads) private var threads
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.requireAccess) private var requireAccess
+    @State private var addingHabit = false
+    @State private var addingAnchor = false
     @State private var segment: Segment = {
         #if DEBUG
         return DebugLaunch.anchorRules ? .anchors : .habits
@@ -26,18 +29,26 @@ struct HabitsScreen: View {
     var body: some View {
         NavigationStack {
           VStack(spacing: 0) {
-            if AppNavigation.showsAnchorsSegment(sizeClass: sizeClass) {
-                Picker("Habits or Anchors", selection: $segment) {
-                    ForEach(Segment.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+            let compact = AppNavigation.showsAnchorsSegment(sizeClass: sizeClass)
+            if compact {
+                // AN-01 / HB-01: the switch and Add share a row; the title is below them.
+                HStack(alignment: .center) {
+                    PillSegment(options: Segment.allCases, selection: $segment, title: { $0.rawValue }, identifier: { "segment-\($0.rawValue.lowercased())" })
+                    Spacer()
+                    if segment == .anchors {
+                        AddCircleButton(label: "Add an Anchor rule", identifier: "addAnchorRule") { if requireAccess(.createAnchorRule) { addingAnchor = true } }
+                    } else {
+                        AddCircleButton(label: "Add a habit", identifier: "addHabit") { if requireAccess(.createHabit) { addingHabit = true } }
+                    }
                 }
-                .pickerStyle(.segmented)
                 .padding(.horizontal, ThreadsSpace.gutter)
                 .padding(.top, ThreadsSpace.tight)
+                .zIndex(1)                                                // so the button's shadow isn't cut off by the list below
             }
-            if AppNavigation.showsAnchorsSegment(sizeClass: sizeClass), segment == .anchors {
-                AnchorsRulesView()
+            if compact, segment == .anchors {
+                AnchorsRulesView(adding: $addingAnchor, showsAddButton: false)
             } else {
-                HabitsOverviewView()
+                HabitsOverviewView(addingHabit: $addingHabit, showsAddButton: !compact)
             }
           }
           .background(threads.app.ignoresSafeArea())          // the segment sits on the app ground, not the system's white
