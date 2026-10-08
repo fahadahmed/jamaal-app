@@ -110,8 +110,8 @@ struct TodayScreen: View {
         .scrollIndicators(.hidden)
         .background(threads.app.ignoresSafeArea())          // inside the stack: the stack's own ground is the system's white
         .toolbar { todayToolbar(categories: categories, isFiltering: filter != nil, label: overview.map { TodayCopy.headerLabel($0.today) } ?? "") }
-        .toolbarTitleDisplayMode(.inline)
-        .toolbarBackground(.hidden, for: .navigationBar)
+        .inlineNavigationTitle()
+        .clearNavigationBarBackground()
         let listColumn = NavigationStack { list }
         return Group {
             if usesPanel {
@@ -139,7 +139,7 @@ struct TodayScreen: View {
         .sheet(item: Binding(get: { usesPanel ? nil : openTask }, set: { openTask = $0 })) { task in
             TaskDetailSheet(task: task)
         }
-        .fullScreenCover(item: $planning) { flow in NightPlanningScreen(flow: flow) }
+        .fullScreenCoverOrSheet(item: $planning) { flow in NightPlanningScreen(flow: flow) }
         // At regular width Add is the panel beside the list; at compact width it is a sheet.
         .sheet(isPresented: Binding(get: { !usesPanel && isAdding }, set: { isAdding = $0 })) {
             AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now))
@@ -202,7 +202,7 @@ struct TodayScreen: View {
             }
           }
           .background(threads.app.ignoresSafeArea())
-          .toolbarBackground(.hidden, for: .navigationBar)
+          .clearNavigationBarBackground()
         }
         .frame(minWidth: 320, maxWidth: .infinity)
         .background(threads.app)
@@ -495,11 +495,11 @@ struct TodayScreen: View {
     /// outer display): the date on the left, then one glass group with the category filter, Plan tomorrow and Add.
     @ToolbarContentBuilder
     private func todayToolbar(categories: [TaskCategory], isFiltering: Bool, label: String) -> some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
+        ToolbarItem(placement: .jamaalLeading) {
             Text(label).threadsType(.label).foregroundStyle(threads.ink2).lineLimit(1).fixedSize()
         }
         .sharedBackgroundVisibility(.hidden)
-        ToolbarItemGroup(placement: .topBarTrailing) {
+        ToolbarItemGroup(placement: .jamaalTrailing) {
             Menu {
                 Picker("Show tasks from", selection: Binding(get: { filterState.selectedID }, set: { filterState.selectedID = $0 })) {
                     Text("All").tag(UUID?.none)

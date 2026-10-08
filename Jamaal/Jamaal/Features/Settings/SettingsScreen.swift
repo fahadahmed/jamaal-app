@@ -26,7 +26,7 @@ struct SettingsScreen: View {
 
     var body: some View {
         let _ = categories.map { [$0.name, $0.isArchived ? "1" : "0"] }
-        if sizeClass == .regular {
+        if AppNavigation.isRegular(sizeClass) {
             widePanes
         } else {
             NavigationStack {
@@ -87,12 +87,12 @@ struct SettingsScreen: View {
             }
             .scrollIndicators(.hidden)
             .background(threads.app)
-            .toolbar(.hidden, for: .navigationBar)
+            .hidesNavigationBar()
             .task { await reminders.refresh() }
     }
 
     @ViewBuilder private func link<Content: View>(_ destination: Destination, @ViewBuilder content: () -> Content) -> some View {
-        if sizeClass == .regular {
+        if AppNavigation.isRegular(sizeClass) {
             Button { selected = destination } label: { content() }
         } else {
             NavigationLink(value: destination) { content() }
@@ -110,7 +110,7 @@ struct SettingsScreen: View {
             .frame(minHeight: 64).contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .paneSelected(sizeClass == .regular && selected == destination)
+        .paneSelected(AppNavigation.isRegular(sizeClass) && selected == destination)
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("settings-\(destination)")
         .overlay(alignment: .bottom) { Divider().overlay(threads.line) }
@@ -159,6 +159,6 @@ struct SettingsPage<Content: View>: View {
             .padding(.horizontal, ThreadsSpace.row).padding(.top, ThreadsSpace.hair)
         }
         .background(threads.app)
-        .toolbar(.hidden, for: .navigationBar)
+        .hidesNavigationBar()
     }
 }

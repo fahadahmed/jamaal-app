@@ -107,7 +107,7 @@ struct AnchorFormScreen: View {
         .scrollDismissesKeyboard(.interactively)
         .background(threads.app)
         .navigationTitle(rule == nil ? "New rule" : "Edit rule")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
         .toolbar {
             if rule != nil { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
             ToolbarItem(placement: .confirmationAction) { Button("Save", action: save).accessibilityIdentifier("saveAnchorRule") }

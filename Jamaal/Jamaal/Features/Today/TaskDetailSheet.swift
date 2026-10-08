@@ -50,7 +50,7 @@ struct TaskDetailSheet: View {
             actions
         }
         .background(threads.app)
-        .toolbar { if embedded { ToolbarItem(placement: .topBarTrailing) { moreMenu } } }
+        .toolbar { if embedded { ToolbarItem(placement: .jamaalTrailing) { moreMenu } } }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .onAppear {
@@ -58,7 +58,7 @@ struct TaskDetailSheet: View {
             if DebugLaunch.openDefer { deferring = true }
             #endif
         }
-        .fullScreenCover(isPresented: $editingNote) { NoteEditorScreen(task: task) }
+        .fullScreenCoverOrSheet(isPresented: $editingNote) { NoteEditorScreen(task: task) }
         .sheet(isPresented: $deferring) {
             DeferSheet(task: task, today: today) { close() }
         }

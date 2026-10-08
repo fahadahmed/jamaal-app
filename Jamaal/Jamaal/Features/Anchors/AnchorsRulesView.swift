@@ -140,7 +140,7 @@ struct AnchorsScreen: View {
     @State private var selected: AnchorRule?
 
     var body: some View {
-        if sizeClass == .regular {
+        if AppNavigation.isRegular(sizeClass) {
             // The rules on the left, the picked rule's detail beside them.
             HStack(spacing: 0) {
                 AnchorsRulesView(adding: $adding, selected: selected) { selected = $0 }
@@ -162,7 +162,7 @@ struct AnchorsScreen: View {
             NavigationStack {
                 AnchorsRulesView(adding: $adding)
                     .navigationDestination(for: AnchorRule.self) { AnchorRuleDetailScreen(rule: $0) }
-                    .toolbar(.hidden, for: .navigationBar)
+                    .hidesNavigationBar()
             }
         }
     }

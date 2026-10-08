@@ -61,7 +61,7 @@ struct OnboardingFlow: View {
             }
             .overlay(alignment: .topLeading) { if Onboarding.previous(before: step, icloudAvailable: icloudAvailable) != nil { back } }
             .navigationDestination(item: $addingAnchor) { choice in anchorForm(choice) }
-            .toolbar(.hidden, for: .navigationBar)
+            .hidesNavigationBar()
         }
         .onAppear { primeFromSettings() }
         .interactiveDismissDisabled()
