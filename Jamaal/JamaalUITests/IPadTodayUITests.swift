@@ -165,4 +165,68 @@ final class IPadTodayUITests: XCTestCase {
         plan.tap()
         XCTAssertTrue(app.buttons["planContinue"].waitForExistence(timeout: 8))
     }
+
+    // MARK: Add is a panel
+
+    @MainActor
+    private func tapAdd(_ app: XCUIApplication) {
+        let add = app.buttons["addButton"]
+        XCTAssertTrue(add.waitForExistence(timeout: 10))
+        add.tap()
+    }
+
+    @MainActor
+    func testAddOpensInThePanelBesideTheListNotInASheet() throws {
+        let app = launch()
+        tapAdd(app)
+        XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["addTaskButton"].exists)
+        XCTAssertFalse(app.staticTexts["detailPlaceholder"].exists)
+        XCTAssertTrue(app.buttons["addButton"].isHittable, "nothing modal covers the list's toolbar")
+        XCTAssertTrue(row("Draft the architecture review", in: app).exists, "the list is still there beside it")
+    }
+
+    @MainActor
+    func testAddingFromThePanelPutsTheTaskOnTheListAndClearsThePanel() throws {
+        let app = launch()
+        tapAdd(app)
+        let field = app.textFields["Title"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.tap()
+        field.typeText("Renew the passport")
+        app.buttons["High"].tap()                                                       // dated today, so it shows on Today
+        app.buttons["addTaskButton"].tap()
+        XCTAssertTrue(row("Renew the passport", in: app).waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["detailPlaceholder"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    func testClosingTheAddPanelClearsIt() throws {
+        let app = launch()
+        tapAdd(app)
+        XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 5))
+        app.buttons["Close"].tap()
+        XCTAssertTrue(app.staticTexts["detailPlaceholder"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.textFields["Title"].exists)
+    }
+
+    @MainActor
+    func testPickingATaskWhileAddingSwitchesToItsDetail() throws {
+        let app = launch()
+        tapAdd(app)
+        XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 5))
+        row("Call the clinic back", in: app).tap()
+        XCTAssertTrue(app.buttons["beginButton"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.textFields["Title"].exists)
+    }
+
+    @MainActor
+    func testAddingWhileATaskIsOpenReplacesItsDetail() throws {
+        let app = launch()
+        row("Call the clinic back", in: app).tap()
+        XCTAssertTrue(app.buttons["beginButton"].waitForExistence(timeout: 5))
+        tapAdd(app)
+        XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["beginButton"].exists)
+    }
 }

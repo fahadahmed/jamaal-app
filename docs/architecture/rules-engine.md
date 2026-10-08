@@ -426,6 +426,8 @@ At regular width (iPad, Mac, and a Duo's inner display) Today is a list with the
 
 **Detail screens at regular width.** The pushed Anchor rule detail and Habit detail (custom top bar, hidden navigation bar) are a **readable column**: 720 pt at most, centred in the pane, content left-aligned inside it and the top bar aligned to the same column, with the app ground running to the edges. Before, they ran edge to edge (a Coming-up row had its title and its time about 1500 pt apart) or, with little to show, shrank to their content with the system's white either side. The phone is unchanged (it is narrower than the column). A master/detail layout for Anchors and Habits stays with the content-panes slice.
 
+**Add is a panel at regular width.** Tapping + on a wide Today shows the Add form in the right-hand panel (the *no modals on wide* row of the adaptive-layout table), in place of the task detail or the placeholder, instead of a bottom sheet. It is the same form, with the Task | Anchor switch and its close button; saving or closing returns the panel to the placeholder. Picking a task while adding switches to that task's detail, and tapping + while a task is open replaces its detail with the form (the list's selection outline is cleared, since nothing is selected). At compact width it is the sheet it always was; going from wide to narrow drops a half-written add rather than leaving it behind a sheet. Night Planning's Build step still opens the form as a sheet, since Night Planning is its own modal until its wide canvas is built.
+
 Not yet done: visibility priority so Add stays visible longest when space is tight (the Duo-specific APIs are iOS 27.1 and gated).
 
 ## Access and the trial
