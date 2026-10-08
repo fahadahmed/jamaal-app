@@ -18,12 +18,55 @@ struct SettingsScreen: View {
     @Environment(Storefront.self) private var store
     @AppStorage(AppPreferences.Keys.theme, store: AppPreferences.defaults) private var theme = AppTheme.system.rawValue
     @Environment(\.modelContext) private var context
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    /// At regular width the picked section's screen is shown beside the list instead of pushed.
+    @State private var selected: Destination?
 
     enum Destination: Hashable { case capacity, notifications, categories, appearance, subscription, yourData }
 
     var body: some View {
         let _ = categories.map { [$0.name, $0.isArchived ? "1" : "0"] }
-        NavigationStack {
+        if sizeClass == .regular {
+            widePanes
+        } else {
+            NavigationStack {
+                list
+                    .navigationDestination(for: Destination.self) { destination in destinationView(destination) }
+            }
+        }
+    }
+
+    @ViewBuilder private func destinationView(_ destination: Destination) -> some View {
+        switch destination {
+        case .capacity: CapacityAndDayScreen()
+        case .notifications: NotificationsScreen()
+        case .categories: CategoriesScreen()
+        case .subscription: SubscriptionScreen()
+        case .appearance: AppearanceScreen()
+        case .yourData: YourDataScreen()
+        }
+    }
+
+    /// Regular width: the sections on the left, the picked one's screen beside them.
+    private var widePanes: some View {
+        HStack(spacing: 0) {
+            list.frame(minWidth: 320, idealWidth: 380, maxWidth: 380)
+            Divider()
+            Group {
+                if let selected {
+                    destinationView(selected).id(selected).environment(\.isInPane, true)
+                } else {
+                    PanePlaceholder(text: "Pick a setting to see it here.", identifier: "settingsPlaceholder")
+                }
+            }
+            .frame(minWidth: 320, maxWidth: .infinity)
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("settingsPane")
+        }
+        .background(threads.app.ignoresSafeArea())
+    }
+
+    private var list: some View {
             ScrollView {
                 VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                     Text("Settings").threadsType(.display(.large)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
@@ -46,21 +89,18 @@ struct SettingsScreen: View {
             .background(threads.app)
             .toolbar(.hidden, for: .navigationBar)
             .task { await reminders.refresh() }
-            .navigationDestination(for: Destination.self) { destination in
-                switch destination {
-                case .capacity: CapacityAndDayScreen()
-                case .notifications: NotificationsScreen()
-                case .categories: CategoriesScreen()
-                case .subscription: SubscriptionScreen()
-                case .appearance: AppearanceScreen()
-                case .yourData: YourDataScreen()
-                }
-            }
+    }
+
+    @ViewBuilder private func link<Content: View>(_ destination: Destination, @ViewBuilder content: () -> Content) -> some View {
+        if sizeClass == .regular {
+            Button { selected = destination } label: { content() }
+        } else {
+            NavigationLink(value: destination) { content() }
         }
     }
 
     private func row(_ title: String, _ value: String, _ destination: Destination) -> some View {
-        NavigationLink(value: destination) {
+        link(destination) {
             HStack {
                 Text(title).threadsType(.lede).foregroundStyle(threads.ink)
                 Spacer(minLength: ThreadsSpace.tight)
@@ -70,6 +110,7 @@ struct SettingsScreen: View {
             .frame(minHeight: 64).contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .paneSelected(sizeClass == .regular && selected == destination)
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("settings-\(destination)")
         .overlay(alignment: .bottom) { Divider().overlay(threads.line) }
@@ -80,6 +121,7 @@ struct SettingsScreen: View {
 struct SettingsPage<Content: View>: View {
     @Environment(\.threads) private var threads
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.isInPane) private var inPane
     let title: String
     var subtitle: String?
     @ViewBuilder var trailing: () -> AnyView
@@ -104,11 +146,13 @@ struct SettingsPage<Content: View>: View {
         .scrollDismissesKeyboard(.interactively)
         .overlay(alignment: .top) {
             HStack {
-                Button { dismiss() } label: {
-                    Image(systemName: "chevron.left").font(.body.weight(.semibold)).foregroundStyle(threads.ink)
-                        .frame(width: 48, height: 48).glassEffect(.regular.interactive(), in: Circle()).contentShape(Circle())
+                if !inPane {
+                    Button { dismiss() } label: {
+                        Image(systemName: "chevron.left").font(.body.weight(.semibold)).foregroundStyle(threads.ink)
+                            .frame(width: 48, height: 48).glassEffect(.regular.interactive(), in: Circle()).contentShape(Circle())
+                    }
+                    .buttonStyle(.plain).accessibilityLabel("Back")
                 }
-                .buttonStyle(.plain).accessibilityLabel("Back")
                 Spacer()
                 trailing()
             }

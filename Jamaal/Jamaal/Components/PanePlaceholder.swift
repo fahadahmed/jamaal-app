@@ -49,3 +49,15 @@ private struct PaneSelectedRow: ViewModifier {
             .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
+
+// MARK: In a pane
+
+private struct IsInPaneKey: EnvironmentKey { static let defaultValue = false }
+
+extension EnvironmentValues {
+    /// True for a screen shown in the pane beside a list (regular width) rather than pushed: it has no back button.
+    var isInPane: Bool {
+        get { self[IsInPaneKey.self] }
+        set { self[IsInPaneKey.self] = newValue }
+    }
+}
