@@ -18,6 +18,10 @@ struct HabitDetailScreen: View {
     @Environment(FocusCoordinator.self) private var focus
 
     let habit: Habit
+    /// In the pane beside the list (regular width): no back button, and archiving clears the selection.
+    var embedded = false
+    var onClose: () -> Void = {}
+    private func closeOrPop() { embedded ? onClose() : dismiss() }
     @Query private var entries: [HabitEntry]
     @State private var now = Date.now
     @State private var pausing = false
@@ -83,13 +87,15 @@ struct HabitDetailScreen: View {
 
     private var topBar: some View {
         HStack {
-            Button { dismiss() } label: {
-                Image(systemName: "chevron.left").font(.body.weight(.semibold)).foregroundStyle(threads.ink)
-                    .frame(width: 48, height: 48).glassEffect(.regular.interactive(), in: Circle())
-                    .contentShape(Circle())                      // the whole circle is the button, not just the glyph
+            if !embedded {
+                Button { dismiss() } label: {
+                    Image(systemName: "chevron.left").font(.body.weight(.semibold)).foregroundStyle(threads.ink)
+                        .frame(width: 48, height: 48).glassEffect(.regular.interactive(), in: Circle())
+                        .contentShape(Circle())                  // the whole circle is the button, not just the glyph
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Back")
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Back")
             Spacer()
             Menu {
                 Button("Edit habit…") { if requireAccess(.editHabit) { editing = true } }
@@ -98,7 +104,7 @@ struct HabitDetailScreen: View {
                 } else {
                     Button("Pause…") { if requireAccess(.pauseHabit) { pausing = true } }
                 }
-                Button("Archive", role: .destructive) { if requireAccess(.archiveOrRestore) { habit.isArchived = true; dismiss() } }
+                Button("Archive", role: .destructive) { if requireAccess(.archiveOrRestore) { habit.isArchived = true; closeOrPop() } }
             } label: {
                 HStack(spacing: 6) { Text("Edit").threadsType(.row); Image(systemName: "chevron.down").font(.footnote) }
                     .foregroundStyle(threads.ink).padding(.horizontal, 20).frame(height: 48)

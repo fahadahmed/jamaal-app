@@ -17,6 +17,10 @@ struct AnchorRuleDetailScreen: View {
     @Environment(\.dismiss) private var dismiss
 
     let rule: AnchorRule
+    /// In the pane beside the list (regular width): no back button, and archiving clears the selection.
+    var embedded = false
+    var onClose: () -> Void = {}
+    private func closeOrPop() { embedded ? onClose() : dismiss() }
     @Query private var rules: [AnchorRule]
     @State private var editing = false
     @State private var excepting = false
@@ -77,12 +81,14 @@ struct AnchorRuleDetailScreen: View {
 
     private var topBar: some View {
         HStack {
-            Button { dismiss() } label: {
-                Image(systemName: "chevron.left").font(.body.weight(.semibold)).foregroundStyle(threads.ink)
-                    .frame(width: 48, height: 48).glassEffect(.regular.interactive(), in: Circle()).contentShape(Circle())
+            if !embedded {
+                Button { dismiss() } label: {
+                    Image(systemName: "chevron.left").font(.body.weight(.semibold)).foregroundStyle(threads.ink)
+                        .frame(width: 48, height: 48).glassEffect(.regular.interactive(), in: Circle()).contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Back")
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Back")
             Spacer()
             Menu {
                 if breaks != nil { Button("Edit rule…") { if requireAccess(.editAnchorRule) { editing = true } } }
@@ -91,7 +97,7 @@ struct AnchorRuleDetailScreen: View {
                     guard requireAccess(.archiveOrRestore) else { return }
                     rule.isArchived = true
                     AppEngine.syncAnchors(in: context)
-                    dismiss()
+                    closeOrPop()
                 }
             } label: {
                 HStack(spacing: 6) { Text("Edit").threadsType(.row); Image(systemName: "chevron.down").font(.footnote) }

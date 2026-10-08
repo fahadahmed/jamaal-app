@@ -26,6 +26,17 @@ struct HabitsOverviewView: View {
     /// Owned by the screen, so the Add button can sit up beside the Habits | Anchors switch on a phone.
     @Binding var addingHabit: Bool
     var showsAddButton = true
+    /// In the list beside a detail pane (regular width) a row selects instead of pushing.
+    var selected: Habit? = nil
+    var onSelect: ((Habit) -> Void)? = nil
+
+    @ViewBuilder private func habitLink<Content: View>(_ habit: Habit, @ViewBuilder content: () -> Content) -> some View {
+        if let onSelect {
+            Button { onSelect(habit) } label: { content() }
+        } else {
+            NavigationLink(value: habit) { content() }
+        }
+    }
 
     var body: some View {
         let _ = (habits.map { [$0.isArchived ? 1 : 0, $0.pausesData.count, $0.title.count] as [AnyHashable] },
@@ -78,7 +89,7 @@ struct HabitsOverviewView: View {
     }
 
     private func row(_ summary: HabitSummary) -> some View {
-        NavigationLink(value: summary.habit) {
+        habitLink(summary.habit) {
             HStack {
                 VStack(alignment: .leading, spacing: ThreadsSpace.hair) {
                     Text(summary.habit.title).threadsType(.row).foregroundStyle(summary.isPaused ? threads.ink2 : threads.ink)
@@ -91,6 +102,7 @@ struct HabitsOverviewView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .paneSelected(selected?.id == summary.habit.id)
         .accessibilityElement(children: .combine)
     }
 
@@ -118,7 +130,7 @@ struct HabitsOverviewView: View {
             if isOpen {
                 VStack(spacing: 0) {
                     ForEach(group.habits, id: \.habit.id) { summary in
-                        NavigationLink(value: summary.habit) {
+                        habitLink(summary.habit) {
                             HStack(spacing: ThreadsSpace.row) {
                                 CheckCircle(isDone: summary.windows.allSatisfy(\.isDone) && !summary.windows.isEmpty).scaleEffect(0.85)
                                 Text(summary.habit.title).threadsType(.lede).foregroundStyle(summary.isPaused ? threads.ink2 : threads.ink)
@@ -130,6 +142,7 @@ struct HabitsOverviewView: View {
                             .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
+                        .paneSelected(selected?.id == summary.habit.id)
                     }
                 }
                 .padding(.leading, ThreadsSpace.tight)

@@ -5,12 +5,9 @@
 
 import XCTest
 
-/// The pushed Anchor rule and Habit details on an iPad: a readable column, not edge to edge and not shrunk to its content.
-/// They run on an iPad simulator and skip on a phone.
+/// Habits and Anchors as list + detail panes on an iPad (iPad-HB-02): the picked item's detail beside the list, in a readable
+/// column, with no back button. They run on an iPad simulator and skip on a phone (where a detail is pushed).
 final class IPadDetailUITests: XCTestCase {
-
-    /// The column's width (720 pt) plus a little for the buttons' own padding.
-    private let column: ClosedRange<CGFloat> = 600...760
 
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -18,7 +15,7 @@ final class IPadDetailUITests: XCTestCase {
     }
 
     @MainActor
-    private func launch(_ args: [String], landscape: Bool) -> XCUIApplication {
+    private func launch(_ args: [String], landscape: Bool = true) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-JamaalInMemory", "-JamaalFakePlaces"] + args
         XCUIDevice.shared.orientation = landscape ? .landscapeLeft : .portrait
@@ -26,7 +23,11 @@ final class IPadDetailUITests: XCTestCase {
         return app
     }
 
-    /// The sidebar is open in landscape (in portrait the top tab bar leaves Anchors out), so navigate there.
+    @MainActor
+    private func element(_ id: String, in app: XCUIApplication) -> XCUIElement {
+        app.descendants(matching: .any).matching(identifier: id).firstMatch
+    }
+
     @MainActor
     private func openSidebarItem(_ title: String, in app: XCUIApplication) {
         let item = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", title)).firstMatch
@@ -34,50 +35,104 @@ final class IPadDetailUITests: XCTestCase {
         item.tap()
     }
 
-    /// The span between the Back button and the Edit menu is the top bar's width: the column's.
     @MainActor
-    private func assertColumn(menu: String, in app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
-        let back = app.buttons["Back"]
-        let edit = app.descendants(matching: .any).matching(identifier: menu).firstMatch
-        XCTAssertTrue(back.waitForExistence(timeout: 8), "no Back button", file: file, line: line)
-        XCTAssertTrue(edit.exists, "no \(menu) menu", file: file, line: line)
-        let span = edit.frame.maxX - back.frame.minX
-        XCTAssertTrue(column.contains(span), "the top bar spans \(span) pt, not a ~720 pt column", file: file, line: line)
+    private func row(_ title: String, in app: XCUIApplication) -> XCUIElement {
+        app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", title)).firstMatch
+    }
+
+    // MARK: Habits
+
+    @MainActor
+    func testHabitsStartWithAPlaceholderBesideTheList() throws {
+        let app = launch(["-JamaalSampleData"])
+        openSidebarItem("Habits", in: app)
+        XCTAssertTrue(element("habitPlaceholder", in: app).waitForExistence(timeout: 8))
+        XCTAssertTrue(row("Floss", in: app).exists)
     }
 
     @MainActor
-    func testAnAnchorRuleDetailIsAReadableColumnInLandscape() throws {
-        let app = launch(["-JamaalAnchorRules"], landscape: true)
-        openSidebarItem("Anchors", in: app)
-        let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'School run'")).firstMatch
-        XCTAssertTrue(row.waitForExistence(timeout: 8))
-        row.tap()
-        assertColumn(menu: "ruleMenu", in: app)
+    func testPickingAHabitOpensItsDetailBesideTheListWithNoBackButton() throws {
+        let app = launch(["-JamaalSampleData"])
+        openSidebarItem("Habits", in: app)
+        let floss = row("Floss", in: app)
+        XCTAssertTrue(floss.waitForExistence(timeout: 8))
+        floss.tap()
+        let menu = element("habitMenu", in: app)
+        XCTAssertTrue(menu.waitForExistence(timeout: 8))
+        XCTAssertFalse(element("habitPlaceholder", in: app).exists)
+        XCTAssertFalse(app.buttons["Back"].exists, "nothing was pushed, so there is nothing to go back from")
+        XCTAssertGreaterThan(menu.frame.minX, floss.frame.maxX, "the detail is beside the list, not over it")
+        XCTAssertTrue(row("Water", in: app).exists, "the list is still there")
     }
 
     @MainActor
-    func testARuleWithLittleToShowStillFillsTheColumnInPortrait() throws {
-        // With the sample data the seeded rules need attention, so the detail has almost nothing in it.
-        let app = launch(["-JamaalSampleData", "-JamaalAnchorRules"], landscape: true)
+    func testPickingAnotherHabitSwapsTheDetail() throws {
+        let app = launch(["-JamaalSampleData"])
+        openSidebarItem("Habits", in: app)
+        row("Floss", in: app).tap()
+        XCTAssertTrue(element("habitMenu", in: app).waitForExistence(timeout: 8))
+        row("Water", in: app).tap()
+        XCTAssertTrue(element("habitMenu", in: app).exists, "a detail is still open")
+        XCTAssertFalse(element("habitPlaceholder", in: app).exists)
+    }
+
+    @MainActor
+    func testArchivingFromTheDetailClearsThePane() throws {
+        let app = launch(["-JamaalSampleData"])
+        openSidebarItem("Habits", in: app)
+        row("Floss", in: app).tap()
+        let menu = element("habitMenu", in: app)
+        XCTAssertTrue(menu.waitForExistence(timeout: 8))
+        menu.tap()
+        app.buttons["Archive"].tap()
+        XCTAssertTrue(element("habitPlaceholder", in: app).waitForExistence(timeout: 8))
+    }
+
+    // MARK: Anchors
+
+    @MainActor
+    func testAnAnchorRuleOpensBesideTheListAsAReadableColumn() throws {
+        let app = launch(["-JamaalAnchorRules"])
         openSidebarItem("Anchors", in: app)
-        XCTAssertTrue(app.buttons["addAnchorRule"].waitForExistence(timeout: 8), "didn't reach the Anchors list")
+        XCTAssertTrue(element("anchorPlaceholder", in: app).waitForExistence(timeout: 8))
+        let rule = row("School run", in: app)
+        XCTAssertTrue(rule.waitForExistence(timeout: 8))
+        rule.tap()
+        let menu = element("ruleMenu", in: app)
+        XCTAssertTrue(menu.waitForExistence(timeout: 8))
+        XCTAssertFalse(element("anchorPlaceholder", in: app).exists)
+        XCTAssertFalse(app.buttons["Back"].exists)
+        XCTAssertGreaterThan(menu.frame.minX, rule.frame.maxX, "the detail is beside the list, not over it")
+    }
+
+    @MainActor
+    func testARuleWithLittleToShowStillFillsItsPaneInPortrait() throws {
+        // With the sample data the seeded rules need attention, so the detail has almost nothing in it. Portrait shows the
+        // top tab bar, so go to Anchors in landscape (where the sidebar is open) and turn the iPad.
+        let app = launch(["-JamaalSampleData", "-JamaalAnchorRules"])
+        openSidebarItem("Anchors", in: app)
+        XCTAssertTrue(element("addAnchorRule", in: app).waitForExistence(timeout: 8))
         XCUIDevice.shared.orientation = .portrait
-        let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'School run'")).firstMatch
-        XCTAssertTrue(row.waitForExistence(timeout: 8))
-        row.tap()
-        assertColumn(menu: "ruleMenu", in: app)
+        let rule = row("School run", in: app)
+        XCTAssertTrue(rule.waitForExistence(timeout: 8))
+        rule.tap()
+        let menu = element("ruleMenu", in: app)
+        XCTAssertTrue(menu.waitForExistence(timeout: 8))
         let summary = app.staticTexts["ruleSummary"]
         XCTAssertTrue(summary.waitForExistence(timeout: 5))
-        XCTAssertLessThan(summary.frame.minX, app.buttons["Back"].frame.minX + 40, "the text is left-aligned in the column, not centred in it")
+        XCTAssertGreaterThan(summary.frame.minX, rule.frame.maxX, "the detail is beside the list")
+        XCTAssertLessThan(summary.frame.minX, menu.frame.minX, "its text starts at the left of the pane, not centred in it")
     }
 
     @MainActor
-    func testAHabitDetailIsAReadableColumnInLandscape() throws {
-        let app = launch(["-JamaalSampleData"], landscape: true)
-        openSidebarItem("Habits", in: app)
-        let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Floss'")).firstMatch
-        XCTAssertTrue(row.waitForExistence(timeout: 8))
-        row.tap()
-        assertColumn(menu: "habitMenu", in: app)
+    func testArchivingARuleFromTheDetailClearsThePane() throws {
+        let app = launch(["-JamaalAnchorRules"])
+        openSidebarItem("Anchors", in: app)
+        row("School run", in: app).tap()
+        let menu = element("ruleMenu", in: app)
+        XCTAssertTrue(menu.waitForExistence(timeout: 8))
+        menu.tap()
+        app.buttons["Archive"].tap()
+        XCTAssertTrue(element("anchorPlaceholder", in: app).waitForExistence(timeout: 8))
     }
 }
