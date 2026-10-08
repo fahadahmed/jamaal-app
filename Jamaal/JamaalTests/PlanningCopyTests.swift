@@ -129,4 +129,37 @@ struct PlanningCopyTests {
         #expect(h.second == "unplanned.")
         #expect(TodayCopy.morningCard == "No plan for today — two minutes to pick?")
     }
+
+    // MARK: The wide canvas's step rail
+
+    @Test func theRailNamesEachStepAndTheMorningFlowSaysTodayNotTomorrow() {
+        #expect(PlanningCopy.railTitle(.review, mode: .evening) == "Review today")
+        #expect(PlanningCopy.railTitle(.carry, mode: .evening) == "Carry forward")
+        #expect(PlanningCopy.railTitle(.build, mode: .evening) == "Build tomorrow")
+        #expect(PlanningCopy.railTitle(.load, mode: .evening) == "Check the load")
+        #expect(PlanningCopy.railTitle(.close, mode: .evening) == "Close the day")
+        #expect(PlanningCopy.railTitle(.build, mode: .morning) == "Build today")
+        #expect(PlanningCopy.railTitle(.close, mode: .morning) == "Set the day")
+    }
+
+    @Test func theRailEyebrowNamesTheDayBeingPlanned() {
+        #expect(PlanningCopy.railEyebrow(for: d(6), mode: .evening) == "PLANNING TUESDAY")
+        #expect(PlanningCopy.railEyebrow(for: d(6), mode: .morning) == "THIS MORNING")
+    }
+
+    @Test func theCarryLineSaysWhatIsLeftThenWhatWasDecided() {
+        #expect(PlanningCopy.carryRail(pending: 2, moved: 0, dropped: 0, settled: false) == "2 to settle")
+        #expect(PlanningCopy.carryRail(pending: 0, moved: 2, dropped: 0, settled: false) == "All settled")
+        #expect(PlanningCopy.carryRail(pending: 1, moved: 1, dropped: 0, settled: true) == "1 kept · 1 moved")
+        #expect(PlanningCopy.carryRail(pending: 0, moved: 1, dropped: 2, settled: true) == "1 moved · 2 dropped")
+        #expect(PlanningCopy.carryRail(pending: 3, moved: 0, dropped: 0, settled: true) == "3 kept")
+        #expect(PlanningCopy.carryRail(pending: 0, moved: 0, dropped: 0, settled: true) == "Nothing to settle")
+    }
+
+    @Test func theBuildLineCountsTasksAndTime() {
+        #expect(PlanningCopy.buildRail(tasks: 4, minutes: 210) == "4 tasks · 3h 30m")
+        #expect(PlanningCopy.buildRail(tasks: 1, minutes: 45) == "1 task · 45m")
+        #expect(PlanningCopy.buildRail(tasks: 2, minutes: 0) == "2 tasks")
+        #expect(PlanningCopy.buildRail(tasks: 0, minutes: 0) == "Nothing yet")
+    }
 }

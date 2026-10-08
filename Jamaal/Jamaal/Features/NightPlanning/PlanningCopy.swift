@@ -30,6 +30,38 @@ enum PlanningCopy {
         return mode == .morning ? "THIS MORNING · \(position) OF \(count)" : "\(position) OF \(count) · \(name)"
     }
 
+    // MARK: The wide canvas's step rail
+
+    static func railTitle(_ step: PlanningStep, mode: PlanningMode) -> String {
+        switch step {
+        case .review: "Review today"
+        case .carry: "Carry forward"
+        case .build: mode == .morning ? "Build today" : "Build tomorrow"
+        case .load: "Check the load"
+        case .close, .unknown: mode == .morning ? "Set the day" : "Close the day"
+        }
+    }
+
+    static func railEyebrow(for date: CalendarDate, mode: PlanningMode) -> String {
+        mode == .morning ? "THIS MORNING" : "PLANNING \(weekday(date).uppercased())"
+    }
+
+    /// While the step is open: what is left to settle. Once it is behind: what was decided (what was left untouched is kept).
+    static func carryRail(pending: Int, moved: Int, dropped: Int, settled: Bool) -> String {
+        guard settled else { return pending > 0 ? "\(pending) to settle" : "All settled" }
+        var parts: [String] = []
+        if pending > 0 { parts.append("\(pending) kept") }
+        if moved > 0 { parts.append("\(moved) moved") }
+        if dropped > 0 { parts.append("\(dropped) dropped") }
+        return parts.isEmpty ? "Nothing to settle" : parts.joined(separator: " · ")
+    }
+
+    static func buildRail(tasks: Int, minutes: Int) -> String {
+        guard tasks > 0 else { return "Nothing yet" }
+        let count = "\(tasks) \(tasks == 1 ? "task" : "tasks")"
+        return minutes > 0 ? "\(count) · \(TodayCopy.duration(minutes))" : count
+    }
+
     // MARK: Headlines
 
     static func reviewHeadline(date: CalendarDate) -> Headline { ("How \(weekday(date))", "went.") }

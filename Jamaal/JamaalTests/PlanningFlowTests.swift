@@ -40,6 +40,41 @@ struct PlanningFlowTests {
 
     // MARK: Which day, and the steps
 
+    @Test func theRailGoesBackToAnEarlierStepAndNeverForward() throws {
+        let c = try context()
+        task("Left over", due: 5, in: c)                       // carry has work
+        let f = try flow(c, now: at(5, 20))
+        f.next(); f.next(); f.next()                          // review → carry → build → load
+        #expect(f.step == .load)
+        f.go(to: .carry)
+        #expect(f.step == .carry)
+        f.go(to: .load)                                       // forward is Continue's job
+        #expect(f.step == .carry)
+        f.go(to: .review)
+        #expect(f.step == .review)
+        f.go(to: .review)                                     // already there
+        #expect(f.step == .review)
+    }
+
+    @Test func goingBackSkipsCarryWhenThereIsNothingToCarry() throws {
+        let c = try context()
+        let f = try flow(c, now: at(5, 20))
+        f.next()                                              // review → build (carry has no work, so it is skipped)
+        #expect(f.step == .build)
+        f.next()
+        #expect(f.step == .load)
+        f.go(to: .review)                                     // back over build, and carry is skipped again
+        #expect(f.step == .review)
+    }
+
+    @Test func theRailOnlyKnowsTheStepsOfTheShortenedMorningFlow() throws {
+        let c = try context()
+        let f = try flow(c, mode: .morning, now: at(5, 9))
+        #expect(f.steps == [.build, .load, .close])
+        f.go(to: .review)                                     // not part of this flow: nothing happens
+        #expect(f.step == .build)
+    }
+
     @Test func anEveningPlansTomorrowAndReviewsToday() throws {
         let c = try context()
         let f = try flow(c, now: at(5, 20))
