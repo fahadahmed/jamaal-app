@@ -18,6 +18,7 @@ struct HabitsScreen: View {
     @Environment(\.requireAccess) private var requireAccess
     @State private var addingHabit = false
     @State private var addingAnchor = false
+    @State private var selectedHabit: Habit?
     @State private var segment: Segment = {
         #if DEBUG
         return DebugLaunch.anchorRules ? .anchors : .habits
@@ -26,10 +27,35 @@ struct HabitsScreen: View {
         #endif
     }()
 
+    private var compact: Bool { AppNavigation.showsAnchorsSegment(sizeClass: sizeClass) }
+
     var body: some View {
+        if compact { compactBody } else { widePanes }
+    }
+
+    /// Regular width (iPad, Mac): the habits on the left, the picked habit's detail beside them (iPad-HB-02).
+    private var widePanes: some View {
+        HStack(spacing: 0) {
+            HabitsOverviewView(addingHabit: $addingHabit, showsAddButton: true, selected: selectedHabit) { selectedHabit = $0 }
+                .frame(minWidth: 320, idealWidth: 380, maxWidth: 380)
+            Divider()
+            Group {
+                if let habit = selectedHabit, !habit.isArchived {
+                    HabitDetailScreen(habit: habit, embedded: true, onClose: { selectedHabit = nil }).id(habit.id)
+                } else {
+                    PanePlaceholder(text: "Pick a habit to see it here.", identifier: "habitPlaceholder")
+                }
+            }
+            .frame(minWidth: 320, maxWidth: .infinity)
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("habitPane")
+        }
+        .background(threads.app.ignoresSafeArea())
+    }
+
+    private var compactBody: some View {
         NavigationStack {
           VStack(spacing: 0) {
-            let compact = AppNavigation.showsAnchorsSegment(sizeClass: sizeClass)
             if compact {
                 // AN-01 / HB-01: the switch and Add share a row; the title is below them.
                 HStack(alignment: .center) {

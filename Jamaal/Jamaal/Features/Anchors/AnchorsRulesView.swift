@@ -22,6 +22,17 @@ struct AnchorsRulesView: View {
     /// Owned by the screen, so the Add button can sit up beside the Habits | Anchors switch on a phone.
     @Binding var adding: Bool
     var showsAddButton = true
+    /// In the list beside a detail pane (regular width) a row selects instead of pushing.
+    var selected: AnchorRule? = nil
+    var onSelect: ((AnchorRule) -> Void)? = nil
+
+    @ViewBuilder private func ruleLink<Content: View>(_ rule: AnchorRule, @ViewBuilder content: () -> Content) -> some View {
+        if let onSelect {
+            Button { onSelect(rule) } label: { content() }
+        } else {
+            NavigationLink(value: rule) { content() }
+        }
+    }
     @State private var archivedOpen = false
 
     var body: some View {
@@ -74,7 +85,7 @@ struct AnchorsRulesView: View {
     }
 
     private func ruleRow(_ row: AnchorsOverview.Row, today: CalendarDate, boundary: DayBoundary) -> some View {
-        NavigationLink(value: row.rule) {
+        ruleLink(row.rule) {
             HStack(alignment: .top, spacing: ThreadsSpace.row) {
                 if case .needsAttention = row.state {
                     Image(systemName: "exclamationmark.circle").font(.title3).foregroundStyle(threads.ink).padding(.top, 2)
@@ -90,6 +101,7 @@ struct AnchorsRulesView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .paneSelected(selected?.id == row.rule.id)
         .accessibilityElement(children: .combine)
     }
 
@@ -123,13 +135,35 @@ struct AnchorsRulesView: View {
 
 /// Anchors as its own item (iPad and Mac sidebar): the same list in its own navigation.
 struct AnchorsScreen: View {
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var adding = false
+    @State private var selected: AnchorRule?
 
     var body: some View {
-        NavigationStack {
-            AnchorsRulesView(adding: $adding)
-                .navigationDestination(for: AnchorRule.self) { AnchorRuleDetailScreen(rule: $0) }
-                .toolbar(.hidden, for: .navigationBar)
+        if sizeClass == .regular {
+            // The rules on the left, the picked rule's detail beside them.
+            HStack(spacing: 0) {
+                AnchorsRulesView(adding: $adding, selected: selected) { selected = $0 }
+                    .frame(minWidth: 320, idealWidth: 380, maxWidth: 380)
+                Divider()
+                Group {
+                    if let rule = selected, !rule.isArchived {
+                        AnchorRuleDetailScreen(rule: rule, embedded: true, onClose: { selected = nil }).id(rule.id)
+                    } else {
+                        PanePlaceholder(text: "Pick an Anchor rule to see it here.", identifier: "anchorPlaceholder")
+                    }
+                }
+                .frame(minWidth: 320, maxWidth: .infinity)
+                .accessibilityElement(children: .contain)
+                .accessibilityIdentifier("anchorPane")
+            }
+            .background(Color.clear)
+        } else {
+            NavigationStack {
+                AnchorsRulesView(adding: $adding)
+                    .navigationDestination(for: AnchorRule.self) { AnchorRuleDetailScreen(rule: $0) }
+                    .toolbar(.hidden, for: .navigationBar)
+            }
         }
     }
 }
