@@ -162,4 +162,30 @@ struct PlanningCopyTests {
         #expect(PlanningCopy.buildRail(tasks: 2, minutes: 0) == "2 tasks")
         #expect(PlanningCopy.buildRail(tasks: 0, minutes: 0) == "Nothing yet")
     }
+
+    // MARK: The wide Build step
+
+    @Test func aCommitmentInTheWideListDropsItsRulesName() {
+        #expect(PlanningCopy.wideCommitmentTitle("School run · Drop-off") == "Drop-off")
+        #expect(PlanningCopy.wideCommitmentTitle("Salah · Dhuhr") == "Dhuhr")
+        #expect(PlanningCopy.wideCommitmentTitle("Site visit") == "Site visit")
+    }
+
+    @Test func theCommitmentsRunDownTwoColumnsInTimeOrder() {
+        let (left, right) = PlanningCopy.columns(["a", "b", "c", "d", "e", "f"])
+        #expect(left == ["a", "b", "c"] && right == ["d", "e", "f"])
+        let odd = PlanningCopy.columns(["a", "b", "c", "d", "e"])
+        #expect(odd.left == ["a", "b", "c"] && odd.right == ["d", "e"])
+        let one = PlanningCopy.columns(["a"])
+        #expect(one.left == ["a"] && one.right.isEmpty)
+        let none = PlanningCopy.columns([String]())
+        #expect(none.left.isEmpty && none.right.isEmpty)
+    }
+
+    @Test func theLongestGapIsNamedByWhatItSitsBetween() {
+        #expect(PlanningCopy.longestGapLine(minutes: 105, after: "Dhuhr", before: "the pick-up") == "Longest gap: 1h 45m, between Dhuhr and the pick-up.")
+        #expect(PlanningCopy.longestGapLine(minutes: 70, after: "Asr", before: nil) == "Longest gap: 1h 10m, after Asr.")
+        #expect(PlanningCopy.longestGapLine(minutes: 65, after: nil, before: "Dhuhr") == "Longest gap: 1h 5m, before Dhuhr.")
+        #expect(PlanningCopy.longestGapLine(minutes: 640, after: nil, before: nil) == nil)
+    }
 }
