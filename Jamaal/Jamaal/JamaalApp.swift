@@ -63,6 +63,7 @@ struct JamaalApp: App {
         }
         #if os(macOS)
         .defaultSize(width: MacWindow.defaultWidth, height: MacWindow.defaultHeight)
+        .commands { JamaalCommands() }
         #endif
     }
 

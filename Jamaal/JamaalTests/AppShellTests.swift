@@ -141,3 +141,26 @@ struct MacWindowTests {
         #expect(MacWindow.defaultHeight > MacWindow.minHeight)
     }
 }
+
+@MainActor
+struct MacCommandsTests {
+    @Test func theSectionsAreCommandOneToFourInTheSidebarsOrder() {
+        let keys = AppNavigation.sidebarTabs(onMac: true).map(\.commandKey)
+        #expect(keys == ["1", "2", "3", "4"])
+        #expect(AppTab.settings.commandKey == ",")                                       // as in every Mac app
+    }
+
+    @Test func noTwoSectionsShareAKey() {
+        let keys = AppTab.allCases.map(\.commandKey)
+        #expect(Set(keys).count == keys.count)
+    }
+
+    @Test func aNewTaskRequestWaitsUntilSomethingTakesIt() {
+        let center = CommandCenter()
+        #expect(!center.newTaskRequested)
+        center.requestNewTask()
+        #expect(center.newTaskRequested)
+        center.newTaskRequested = false                                                  // what Today does once it has opened the form
+        #expect(!center.newTaskRequested)
+    }
+}

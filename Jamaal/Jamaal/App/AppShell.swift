@@ -25,6 +25,7 @@ struct AppShell: View {
     @Query(sort: \UserSettings.createdAt) private var settingsRows: [UserSettings]
     @State private var coordinator = FocusCoordinator()
     @State private var todayFilter = TodayFilterState()
+    @State private var commandCenter = CommandCenter()
     @Query(sort: \TaskCategory.sortOrder) private var categoryRows: [TaskCategory]
     @Query private var tasks: [TaskItem]
     // The one live session, and the Anchors the chip's single line is drawn from.
@@ -72,7 +73,17 @@ struct AppShell: View {
 
     private var liveSession: WorkSession? { liveSessions.min { $0.startedAt < $1.startedAt } }
 
-    var body: some View {
+    @ViewBuilder private var shell: some View {
+        #if os(macOS)
+        macShell
+        #else
+        tabShell
+        #endif
+    }
+
+    #if !os(macOS)
+    /// iPhone and iPad: the system tab view (a floating bar, or the sidebar on an iPad).
+    private var tabShell: some View {
         TabView(selection: $selection) {
             Tab(AppTab.today.title, systemImage: AppTab.today.symbol, value: AppTab.today) { TodayScreen() }
                 .badge(AppNavigation.isRegular(sizeClass) ? todayCount : 0)
@@ -96,7 +107,38 @@ struct AppShell: View {
             }
         }
         .tabViewSidebarBottomBar { if canShapeThePlan { SidebarPlanTomorrow(action: planTomorrow) } }
+    }
+    #endif
+
+    #if os(macOS)
+    /// Mac: a real sidebar beside the section (SwiftUI's tab view has no sidebar style on a Mac).
+    private var macShell: some View {
+        NavigationSplitView {
+            MacSidebar(
+                selection: $selection, todayCount: todayCount, categories: TodayTaskFilter.options(categoryRows),
+                selectedCategoryID: todayFilter.selectedID, canPlan: canShapeThePlan,
+                onPickCategory: { id in todayFilter.toggle(id); selection = .today }, onPlan: planTomorrow)
+        } detail: {
+            switch selection {
+            case .today: TodayScreen()
+            case .habits: HabitsScreen()
+            case .anchors: AnchorsScreen()
+            case .wellbeing: WellbeingScreen()
+            case .settings: SettingsScreen()
+            }
+        }
+    }
+    #endif
+
+    var body: some View {
+        shell
         .environment(todayFilter)
+        .environment(commandCenter)
+        // What the Mac's menu bar can do in this window (⌘N, ⇧⌘P, ⌘1–⌘4, ⌘,).
+        .focusedSceneValue(\.jamaalActions, JamaalCommandActions(
+            newTask: { selection = .today; commandCenter.requestNewTask() },
+            planTomorrow: planTomorrow,
+            go: { tab in selection = (tab == .anchors && AppNavigation.showsAnchorsSegment(sizeClass: sizeClass)) ? .habits : tab }))
         // The chip (or, for five seconds after Done, its Undo toast) sits above the tab bar on every tab.
         .focusAccessory(isEnabled: liveSession != nil || coordinator.toast != nil) {
             if let toast = coordinator.toast {
