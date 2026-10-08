@@ -41,6 +41,7 @@ struct TodayScreen: View {
     @Environment(ReminderCenter.self) private var reminders
     @Environment(\.openTab) private var openTab
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(CommandCenter.self) private var commands
     @AppStorage(AppPreferences.Keys.suggestionCards, store: AppPreferences.defaults) private var suggestionCards = true
     @Environment(\.requireAccess) private var requireAccess
     @Environment(Storefront.self) private var store
@@ -145,6 +146,12 @@ struct TodayScreen: View {
             AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now))
         }
         .onChange(of: isAdding) { _, adding in if adding && usesPanel { openTask = nil } }
+        // ⌘N on a Mac (from any section: the request waits until Today is on screen).
+        .onChange(of: commands.newTaskRequested, initial: true) { _, requested in
+            guard requested else { return }
+            commands.newTaskRequested = false
+            if requireAccess(.createTask) { isAdding = true }
+        }
         .onChange(of: usesPanel) { _, panel in if !panel { isAdding = false } }        // wide to narrow: don't leave a half-written add behind a sheet
         .background(threads.app)
         .confirmationDialog(
