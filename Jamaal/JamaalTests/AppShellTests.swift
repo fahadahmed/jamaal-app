@@ -121,3 +121,23 @@ struct TodayFilterStateTests {
         #expect(state.selectedID == nil)
     }
 }
+
+struct MacWindowTests {
+    @Test func everyMacSheetFitsInsideTheSmallestWindow() {
+        for size in [MacSheetSize.page, MacSheetSize.canvas] {
+            #expect(size.width.upperBound <= MacWindow.minWidth + 120)          // ideal may be a little larger than the window
+            #expect(size.width.lowerBound < MacWindow.minWidth)
+            #expect(size.height.lowerBound < MacWindow.minHeight)
+        }
+    }
+
+    @Test func theCanvasHasRoomForTheStepRailBesideItsStep() {
+        // The rail is 340 pt plus 32 pt of margin in the left 40% of the canvas.
+        #expect(MacSheetSize.canvas.width.lowerBound * 0.4 >= 340 + 32)
+    }
+
+    @Test func theDefaultWindowIsLargerThanTheMinimum() {
+        #expect(MacWindow.defaultWidth > MacWindow.minWidth)
+        #expect(MacWindow.defaultHeight > MacWindow.minHeight)
+    }
+}
