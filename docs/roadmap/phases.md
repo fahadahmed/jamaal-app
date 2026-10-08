@@ -61,6 +61,7 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 - **Habits**: the four kinds, the density grid and pauses.
 - **Anchors**: rules, one-offs, prayer times (using `adhan-swift`), exceptions and window states.
 - **Enrol in the paid Apple Developer Program and create the CloudKit container** before any real-device sync testing (required for iCloud and push).
+- **Move the SwiftData store into an App Group container** in the same change as the CloudKit container (no user ever migrates; widgets need it): see [ADR 0003](../architecture/decisions/0003-widgets-in-v1-watch-in-v1-1).
 - **Real-device iCloud spike** (first thing after enrolment): verify what happens to the synced store on sign-out or an account change (G-80), and that two devices converge on the dedup keys.
 
 ## Phase 4 — The evening ritual
@@ -71,6 +72,7 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 
 ## Phase 5 — Ship preparation
 
+- **Widgets** (Next Anchor and Today on iPhone, iPad and Mac, with Lock Screen accessories): `WidgetSnapshot` and the timeline logic first (no entitlements needed), then the extension after the App Group: see [Widgets and the watch](../architecture/widgets-and-watch).
 - iPad, Mac and iPhone Duo layouts; accessibility (Dynamic Type, VoiceOver for the custom components, no colour-only states); right-to-left and Arabic-Indic numerals.
 - **Trial and paywall**, with the read-only state.
 - Privacy, data export and the App Store material.
@@ -79,9 +81,9 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 
 ## After v1
 
-**v1.1:** Live Activity and Dynamic Island for the running session, detected habits (the offer to promote a repeating task), and sharing / referral if a real need shows up.
+**v1.1:** a **companion watchOS app** (Today, Anchors, the habit counter, the focus timer, complications; fed by `WidgetSnapshot` over WatchConnectivity), App Intents and interactive widgets, Control Center controls, Live Activity and Dynamic Island for the running session, detected habits (the offer to promote a repeating task), and sharing / referral if a real need shows up.
 **Later:** native Android.
 
 ## Open items that could move things
 
-Decisions still open are listed at the end of [App flow](../journeys/app-flow): avoid-habit design, fonts, whether to read calendar events, widgets and quick capture, and the accessibility and localisation plan.
+Decisions still open are listed at the end of [App flow](../journeys/app-flow): fonts, whether to read calendar events, and the accessibility and localisation plan. (Avoid-habit design is settled as Option A; widgets are in v1.)

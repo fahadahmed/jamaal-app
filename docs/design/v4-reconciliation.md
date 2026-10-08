@@ -17,7 +17,7 @@
 | Navigation | Anchors is its own sidebar item on iPad and Mac; on Mac, Settings moves to the app menu | Anchors only as a segment of Habits | **v4 wins** |
 | Night Planning on wide | one canvas with a step rail | app-flow said a centred modal | **Step rail** (matches register and brief) |
 | Paywall prices | placeholders $29.99/yr and $3.99/mo | $24.99/yr and $2.99/mo | Product prices unchanged; the UI shows StoreKit's `displayPrice` |
-| Avoid habits (`HB-08`) | one treatment, *Slip* and *Held today*, three moments | owner to choose between two | Treated as the **chosen treatment** unless the owner says otherwise |
+| Avoid habits (`HB-08`) | one treatment, *Slip* and *Held today*, three moments | owner to choose between two | **Owner confirmed Option A on 8 Oct 2026** (the treatment in the `HB-08` frame: *Slip* and *Held today*, both explicit; option B, inferring the hold from the day, is dropped) |
 | App icon | monogram 1d, layered SVGs | none | Added at [`assets/icon/`](../../assets/icon) for Icon Composer |
 
 ## Still to do from the handoff
