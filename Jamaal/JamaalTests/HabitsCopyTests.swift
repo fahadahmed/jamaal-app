@@ -85,7 +85,7 @@ struct HabitsCopyTests {
         var read = DensityRead(windowDays: 42)
         read.completed = 31; read.partial = 2; read.missed = 5
         #expect(HabitsCopy.read(read, kind: .counted) == "Reached the target on 31 of 38 days.")
-        #expect(HabitsCopy.read(read, kind: .avoid) == "Held on 31 of 38 days. Days nothing was logged stay empty: they aren't counted either way.")
+        #expect(HabitsCopy.read(read, kind: .avoid) == "Held on 31 of 38 days. Days nothing was logged stay empty — they aren't counted either way.")
         var slipping = DensityRead(windowDays: 21)
         slipping.completed = 4; slipping.missed = 9
         #expect(HabitsCopy.read(slipping, kind: .binary) == "Done on 4 of 13 days. That may be more than this season allows: try a lighter schedule?")

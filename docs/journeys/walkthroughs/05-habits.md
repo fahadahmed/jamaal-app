@@ -75,7 +75,7 @@
 - **Writes:** `HabitEntry.amount` (slips); `completedAt` on **Held today**.
 - **Rules:** `missed` if slips exceed the allowance; `complete` only if within it **and** the user engaged that day; otherwise `empty`. There is no "days since the last slip" counter.
 - **Assumes:** "engaged that day" can be computed — **✗ G-40** (the docs say "any recorded activity" but don't list which records count, and opening the app leaves no record).
-- **Note:** Design has only a title for this screen (H-06); it still needs the owner's pick from two drawn treatments.
+- **Note:** **Settled 8 Oct 2026: Option A** (*Say it: two actions on the row*), as drawn in the v4 `HB-08` frame. Option B (inferring the hold from the day) is dropped. Built: the three moments on the Today row, and the detail's grid and read.
 
 ## HB-09 Minutes by hand
 

@@ -26,7 +26,7 @@ struct HabitRowView: View {
                 CheckCircle(isDone: true).accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: ThreadsSpace.hair) {
-                Text(row.title).threadsType(.row).foregroundStyle(row.isDone ? threads.ink2 : threads.ink)
+                Text(row.title).threadsType(.row).foregroundStyle(row.isDone && row.kind != .avoid ? threads.ink2 : threads.ink)   // a held day is a good day: its title stays ink
                 if let detail = TodayCopy.habitDetail(kind: row.kind, amount: row.amount, target: row.target, isDone: row.isDone) {
                     Text(detail).threadsType(.meta).foregroundStyle(threads.ink2)
                 }
@@ -44,12 +44,12 @@ struct HabitRowView: View {
             StepperPill(title: row.title, canDecrement: row.amount > 0, onDecrement: { onAction(.decrement) }, onIncrement: { onAction(.increment) })
         case .avoid where row.isDone:
             Button("Undo") { onAction(.undoHeld) }
-                .threadsType(.row).foregroundStyle(threads.accent).buttonStyle(.plain)
+                .threadsType(.row).foregroundStyle(threads.ink).buttonStyle(.plain)
                 .frame(minHeight: ThreadsHit.minimum)
                 .accessibilityLabel("Undo held today for \(row.title)")
         case .avoid:
             HStack(spacing: ThreadsSpace.tight) {
-                PillButton(title: "Slip", dashed: true) { onAction(.logSlip) }
+                PillButton(title: "Slip") { onAction(.logSlip) }
                     .accessibilityLabel("Log a slip for \(row.title)")
                 PillButton(title: "Held today") { onAction(.heldToday) }
                     .accessibilityLabel("Held today: \(row.title)")

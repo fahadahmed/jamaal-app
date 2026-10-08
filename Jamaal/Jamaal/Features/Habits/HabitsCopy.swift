@@ -100,7 +100,7 @@ enum HabitsCopy {
         guard read.due > 0 else { return "Nothing to read yet. A week or so of days first." }
         let reached = kind == .avoid ? "Held on" : (kind == .counted || kind == .timed ? "Reached the target on" : "Done on")
         var text = "\(reached) \(read.completed) of \(read.due) days."
-        if kind == .avoid { text += " Days nothing was logged stay empty: they aren't counted either way." }
+        if kind == .avoid { text += " Days nothing was logged stay empty — they aren't counted either way." }
         if read.suggestsLighterCadence { text += " That may be more than this season allows: try a lighter schedule?" }
         return text
     }

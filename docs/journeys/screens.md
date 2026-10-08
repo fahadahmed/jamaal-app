@@ -128,7 +128,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. *De
 | HB-05 | Group create / assign | HB-03 / HB-01 | Visual bundle: name, members, collapsed preview (no emoji) | **Drawn** v3·18 · not redrawn in v4 | v1 |
 | HB-06 | **Pause with reason** | HB-02 | Travel · illness · cycle · other; open-ended allowed | **Drawn v4** · 1 frame | v1 |
 | HB-07 | Edit / archive | HB-02 | History is never deleted | **Drawn v4** · 1 frame | v1 |
-| HB-08 | Avoid logging | TD-01 / HB-02 | **Log a slip**, **Held today**, allowance — *needs a design pass* | **Drawn v4** · 1 frame | v1 |
+| HB-08 | Avoid logging | TD-01 / HB-02 | **Log a slip**, **Held today**, allowance (Option A, settled 8 Oct 2026) | **Drawn v4** · 1 frame · built | v1 |
 | HB-09 | Add minutes by hand | TD-01 / HB-02 | Timed habits only; stored as a `manual` session | **Drawn v4** · 1 frame | v1 |
 
 ### Anchors (`AN`)
@@ -244,7 +244,7 @@ Each has a recommendation so the register can be locked in one pass.
 | 5 | **Widgets, share extension, App Intents.** Not designed. | **v1.1**; none in v1. |
 | 6 | **Calendar events / Reminders import.** The app's goal is fewer apps, but nothing reads a calendar. | **Out of v1**; one-off Anchors cover fixed-time events. |
 | 7 | **"What makes this score" (`WB-04`).** | **v1.1**; ship the score and plain read without a derivation view. |
-| 8 | **Avoid habits (`HB-08`).** Design had only a title. | **Settled 8 Oct 2026: Option A**, as drawn in the v4 `HB-08` frame (*Slip* and *Held today*, both explicit). The detail pass (its 6-week grid, the read, *Undo* on a held day) is still to build. |
+| 8 | **Avoid habits (`HB-08`).** Design had only a title. | **Settled 8 Oct 2026: Option A**, as drawn in the v4 `HB-08` frame (*Slip* and *Held today*, both explicit). The detail pass is built (the three moments on the row, the 6-week grid, the read, *Undo* on a held day). |
 | 9 | **Category colours (`ST-04`).** | **Decided** (Journey 11): `accent`, `blue`, `ochre`, `plum`, `slate`; new ThreadsKit 1.2.0 tokens; hues to confirm against Design. |
 | 10 | **Onboarding skippability.** | Notifications (`OB-05`) and the Anchor step (`OB-08`) skippable; everything else required. |
 | 11 | **Mood** (`NP-01`). | **Removed** — no self-reporting anywhere; wellbeing derives from behaviour only. |
