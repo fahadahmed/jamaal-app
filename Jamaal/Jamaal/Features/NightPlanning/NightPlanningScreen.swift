@@ -13,6 +13,7 @@ import JamaalCore
 struct NightPlanningScreen: View {
     @Environment(\.threads) private var threads
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.horizontalSizeClass) private var sizeClass
     let flow: PlanningFlow
     /// Bumped after any change and passed to the steps, so they read the engine again (it isn't observable).
     @State private var revision = 0
@@ -24,6 +25,8 @@ struct NightPlanningScreen: View {
             (flow.step == .close && flow.mode == .evening ? threads.deep : threads.app).ignoresSafeArea()
             if flow.step == .close, let summary {
                 CloseStep(flow: flow, summary: summary, firstAnchor: firstAnchor) { dismiss() }
+            } else if sizeClass == .regular {
+                wideCanvas
             } else {
                 VStack(spacing: 0) {
                     header
@@ -38,6 +41,66 @@ struct NightPlanningScreen: View {
                 }
             }
         }
+    }
+
+    // MARK: The wide canvas (NP-07)
+
+    /// One canvas at regular width: the step rail on the left, the open step on the right in a readable column.
+    private var wideCanvas: some View {
+        HStack(spacing: 0) {
+            HStack(spacing: 0) {
+                Spacer(minLength: 0)
+                PlanningRail(flow: flow, revision: revision, onGo: { flow.go(to: $0); revision += 1 }, onSkip: { flow.skip(); dismiss() })
+                    .frame(width: 340)
+            }
+            .padding(.vertical, ThreadsSpace.section)
+            .padding(.trailing, 32)
+            .containerRelativeFrame(.horizontal, count: 5, span: 2, spacing: 0)
+            Divider().overlay(threads.line)
+            VStack(spacing: 0) {
+                ScrollView {
+                    content
+                        .frame(maxWidth: 640, alignment: .leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 40).padding(.trailing, 24)
+                        .padding(.top, ThreadsSpace.section + 36)
+                        .padding(.bottom, ThreadsSpace.section)
+                }
+                .scrollIndicators(.hidden)
+                wideFooter
+            }
+            .frame(maxWidth: .infinity)
+            .overlay(alignment: .topTrailing) {
+                roundButton("xmark", label: "Close") { dismiss() }.padding(.top, ThreadsSpace.tight).padding(.trailing, ThreadsSpace.gutter)
+            }
+        }
+    }
+
+    /// Continue (hugging its title) and the keyboard hint: ⌘↵ does the same.
+    private var wideFooter: some View {
+        HStack(spacing: ThreadsSpace.row) {
+            Button(action: advance) {
+                HStack(spacing: 8) {
+                    Text("Continue").threadsType(.row)
+                    Image(systemName: "arrow.right")
+                }
+                .foregroundStyle(.white)
+                .padding(.horizontal, 36)
+                .frame(minHeight: 56)
+                .background(Capsule().fill(threads.terra))
+            }
+            .buttonStyle(.plain)
+            .keyboardShortcut(.return, modifiers: .command)
+            .accessibilityIdentifier("planContinue")
+            Text("⌘↵").threadsType(.label).foregroundStyle(threads.ink2)
+                .padding(.horizontal, 10).padding(.vertical, 6)
+                .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(threads.line))
+                .accessibilityHidden(true)
+        }
+        .frame(maxWidth: 640, alignment: .leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.leading, 40).padding(.trailing, 24)
+        .padding(.vertical, ThreadsSpace.section)
     }
 
     // MARK: Chrome

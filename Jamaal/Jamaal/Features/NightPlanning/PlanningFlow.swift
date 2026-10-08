@@ -64,6 +64,16 @@ final class PlanningFlow: Identifiable {
     }
 
     func next() { NightPlanning.advance(session, carryHasWork: carryHasWork) }
+
+    /// Back to an earlier step (the wide canvas's rail), one `back()` at a time so Carry is skipped when it has no work.
+    func go(to target: PlanningStep) {
+        guard let index = steps.firstIndex(of: target) else { return }
+        while position - 1 > index {
+            let before = step
+            back()
+            if step == before { return }
+        }
+    }
     func back() { NightPlanning.back(session, carryHasWork: carryHasWork) }
 
     /// *Skip tonight*: no plan is written, and choices already made stay.
