@@ -71,6 +71,15 @@ struct AppShell: View {
         reminders.route = .planning(TodayDay.boundary(in: context).logicalDate(at: .now))
     }
 
+    /// The chip above the tab bar (not on a Mac, where it is in the sidebar).
+    private var windowChipShown: Bool {
+        #if os(macOS)
+        false
+        #else
+        liveSession != nil
+        #endif
+    }
+
     private var liveSession: WorkSession? { liveSessions.min { $0.startedAt < $1.startedAt } }
 
     @ViewBuilder private var shell: some View {
@@ -117,6 +126,7 @@ struct AppShell: View {
             MacSidebar(
                 selection: $selection, todayCount: todayCount, categories: TodayTaskFilter.options(categoryRows),
                 selectedCategoryID: todayFilter.selectedID, canPlan: canShapeThePlan,
+                liveSession: liveSession, onOpenFocus: { coordinator.isShowingFocus = true },
                 onPickCategory: { id in todayFilter.toggle(id); selection = .today }, onPlan: planTomorrow)
         } detail: {
             switch selection {
@@ -139,11 +149,12 @@ struct AppShell: View {
             newTask: { selection = .today; commandCenter.requestNewTask() },
             planTomorrow: planTomorrow,
             go: { tab in selection = (tab == .anchors && AppNavigation.showsAnchorsSegment(sizeClass: sizeClass)) ? .habits : tab }))
-        // The chip (or, for five seconds after Done, its Undo toast) sits above the tab bar on every tab.
-        .focusAccessory(isEnabled: liveSession != nil || coordinator.toast != nil) {
+        // The chip (or, for five seconds after Done, its Undo toast) sits above the tab bar on every tab. A Mac has no tab
+        // bar: its chip is in the sidebar, and only the Undo toast comes up from the bottom of the window.
+        .focusAccessory(isEnabled: windowChipShown || coordinator.toast != nil) {
             if let toast = coordinator.toast {
                 UndoToast(title: toast.title) { coordinator.undoToast() }
-            } else if let live = liveSession {
+            } else if windowChipShown, let live = liveSession {
                 TimelineView(.periodic(from: .now, by: 30)) { timeline in
                     FocusChip(session: live, edge: FocusSessions.approachingEdge(anchors: anchors, now: timeline.date)) {
                         coordinator.isShowingFocus = true
