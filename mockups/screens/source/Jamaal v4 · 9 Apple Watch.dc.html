@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,SOFT,WONK,wght@0,9..144,0..100,0..1,300..900;1,9..144,0..100,0..1,300..900&amp;family=Hanken+Grotesk:wght@300..700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; }
+  a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { color: var(--terra); }
+  [data-th="dark"] { --board:#030D14 !important; --chrome:#EAF3F6 !important; --chrome2:#B8CDD6 !important; --line2:rgba(231,241,244,0.24) !important; --terra:#DDA080 !important; }
+</style>
+</helmet>
+
+<div data-th="{{ theme }}" style="--board:#ADBCC5; --chrome:#0A3A53; --chrome2:#26424F; --terra:#9A4F2E; --line2:rgba(10,58,83,0.24); --wg:#071B27; --on:#EAF3F6; --on2:#B8CDD6; --acc:#8FCBB8; --terraD:#DDA080; --onT:#16242E; --gl:rgba(255,255,255,0.09); --gle:rgba(255,255,255,0.16); --tr:rgba(234,243,246,0.18); background:var(--board); font-family:'Hanken Grotesk',system-ui,sans-serif; padding:56px 48px 120px; display:flex; flex-direction:column; gap:72px; min-height:100vh; -webkit-font-smoothing:antialiased">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;max-width:1720px;width:100%;margin:0 auto">
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:820px">
+      <div style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2);display:flex;align-items:center;gap:10px"><span style="width:24px;height:1px;background:var(--terra);display:inline-block"></span>Jamaal · v4 · batch 9 · watch · v1.1</div>
+      <h1 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:54px;line-height:1.04;letter-spacing:-0.02em;margin:0;color:var(--chrome)">Apple Watch</h1>
+      <p style="font-size:17px;line-height:1.6;color:var(--chrome2);margin:0;max-width:64ch">A companion that does four things: shows the next task, the open Anchor window, the day's habits and a running focus session, and lets you act on each with one tap or a turn of the crown. The iPhone owns the data; the watch queues what you do. Frames are 46 mm (208 × 248 pt), shown at 1.5× for review. Register IDs WA-01 to WA-08 are new.</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;padding:7px 12px;border-radius:999px;border:1px dashed var(--chrome);color:var(--chrome)">v1.1 · not in launch scope</span>
+      <div onClick="{{ toggleTheme }}" style="display:flex;align-items:center;gap:10px;padding:0 20px;height:44px;border-radius:999px;border:1px solid var(--line2);cursor:pointer;font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--chrome)"><span style="width:8px;height:8px;border-radius:999px;background:var(--terra)"></span>{{ themeLabel }}</div>
+    </div>
+  </div>
+
+  <div style="max-width:1720px;width:100%;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px 40px;border-top:1px solid var(--line2);padding-top:26px">
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Ground</div><div style="font-size:15px;line-height:1.55;color:var(--chrome)">Deep dark (<span style="font-family:'JetBrains Mono',monospace;font-size:13px">#071B27</span>) edge to edge, onDeep type, glass-tinted rows (white α0.09). One appearance: the watch is always dark.</div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">The one action</div><div style="font-size:15px;line-height:1.55;color:var(--chrome)">Each screen has at most one terracotta fill (the dark terra, <span style="font-family:'JetBrains Mono',monospace;font-size:13px">#DDA080</span> with <span style="font-family:'JetBrains Mono',monospace;font-size:13px">#16242E</span> type). Second actions are glass outlines. Buttons are 44 pt tall.</div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Navigation</div><div style="font-size:15px;line-height:1.55;color:var(--chrome)">Three vertical pages, turned with the crown: Today · Anchors · Habits. Focus covers them while a session runs and the app opens straight into it.</div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Haptics</div><div style="font-size:15px;line-height:1.55;color:var(--chrome)">One soft tap on Done, on Attended and at a focus estimate. A crown detent per glass. Nothing buzzes to ask.</div></div>
+  </div>
+
+  <section id="flow" data-screen-label="WA-00 App flow" style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap"><h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">How the app flows</h2><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Ways in · three pages · one level in · focus over everything</span></div>
+
+    <div style="display:grid;grid-template-columns:minmax(200px,1fr) 28px minmax(220px,1.1fr) 28px minmax(240px,1.3fr) 28px minmax(240px,1.2fr);gap:0;align-items:stretch;overflow-x:auto">
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2);display:flex;align-items:center;gap:10px"><span style="width:24px;height:1px;background:var(--terra)"></span>1 · Ways in</div>
+        <div style="border:1px solid var(--line2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:600;color:var(--chrome)">App icon</span><span style="font-size:13px;line-height:1.45;color:var(--chrome2)">Opens on the launch rule below</span></div>
+        <div style="border:1px solid var(--line2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:600;color:var(--chrome)">Next Anchor complication</span><span style="font-size:13px;line-height:1.45;color:var(--chrome2)">→ Anchors page</span></div>
+        <div style="border:1px solid var(--line2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:600;color:var(--chrome)">Smart Stack card</span><span style="font-size:13px;line-height:1.45;color:var(--chrome2)">→ Anchors page</span></div>
+        <div style="border:1px solid var(--line2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:600;color:var(--chrome)">Today complication</span><span style="font-size:13px;line-height:1.45;color:var(--chrome2)">→ Today page</span></div>
+        <div style="border:1px solid var(--line2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:600;color:var(--chrome)">Focus complication</span><span style="font-size:13px;line-height:1.45;color:var(--chrome2)">→ Focus, running</span></div>
+        <div style="border:1px dashed var(--line2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:600;color:var(--chrome)">Notification</span><span style="font-size:13px;line-height:1.45;color:var(--chrome2)">Mark done acts in place and the app doesn't open. Tapping the body opens the matching page</span></div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--chrome2)">→</div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2);display:flex;align-items:center;gap:10px"><span style="width:24px;height:1px;background:var(--terra)"></span>2 · Root: three pages</div>
+        <div style="background:var(--wg);color:var(--on);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:6px">
+          <div style="border-radius:12px;background:var(--gl);padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600"><span style="color:var(--acc)">Today</span> · <a href="#WA-01">WA-01</a></span><span style="font-size:13px;color:var(--on2)">Next task, then the rest</span></div>
+          <div style="text-align:center;font-size:12px;color:var(--on2)">↕ crown or swipe</div>
+          <div style="border-radius:12px;background:var(--gl);padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600"><span style="color:var(--acc)">Anchors</span> · <a href="#WA-02">WA-02</a></span><span style="font-size:13px;color:var(--on2)">Open window, then today's others</span></div>
+          <div style="text-align:center;font-size:12px;color:var(--on2)">↕</div>
+          <div style="border-radius:12px;background:var(--gl);padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600"><span style="color:var(--acc)">Habits</span> · <a href="#WA-03">WA-03</a></span><span style="font-size:13px;color:var(--on2)">Today's habits</span></div>
+        </div>
+        <div style="font-size:13px;line-height:1.5;color:var(--chrome2)">Vertical page <span style="font-family:'JetBrains Mono',monospace;font-size:12px">TabView</span> with a page dot on the side. Each page scrolls inside itself first; at its end the crown moves to the next page. No tab bar and no menus.</div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--chrome2)">→</div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2);display:flex;align-items:center;gap:10px"><span style="width:24px;height:1px;background:var(--terra)"></span>3 · One level in</div>
+        <div style="border:1px solid var(--line2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px">
+          <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">From Today</span>
+          <span style="font-size:14px;line-height:1.5;color:var(--chrome)"><strong>Done</strong> or a row's check → <a href="#WA-01-done">Done</a> (2 s, Undo) → back to the page</span>
+          <span style="font-size:14px;line-height:1.5;color:var(--chrome)">Tap a title → <a href="#WA-01-detail">Task detail</a> → <strong>Begin</strong> → Focus</span>
+        </div>
+        <div style="border:1px solid var(--line2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px">
+          <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">From Anchors</span>
+          <span style="font-size:14px;line-height:1.5;color:var(--chrome)"><strong>Attended</strong> acts in place. Long-press a row → Attended / Skipped</span>
+        </div>
+        <div style="border:1px solid var(--line2);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px">
+          <span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">From Habits</span>
+          <span style="font-size:14px;line-height:1.5;color:var(--chrome)">Binary: the check acts in place</span>
+          <span style="font-size:14px;line-height:1.5;color:var(--chrome)">Counted → <a href="#WA-03-water">crown screen</a></span>
+          <span style="font-size:14px;line-height:1.5;color:var(--chrome)">Avoid → <a href="#WA-03-avoid">Held today / Log a slip</a></span>
+          <span style="font-size:14px;line-height:1.5;color:var(--chrome)">Timed → <a href="#WA-03-timed">Begin</a> → Focus</span>
+        </div>
+        <div style="font-size:13px;line-height:1.5;color:var(--chrome2)">A pushed screen. Back is the top-left chevron or a swipe from the left edge. Nothing goes deeper than one level.</div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--chrome2)">→</div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2);display:flex;align-items:center;gap:10px"><span style="width:24px;height:1px;background:var(--terra)"></span>4 · Focus, over everything</div>
+        <div style="background:var(--wg);color:var(--on);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:6px">
+          <div style="border-radius:12px;background:var(--gl);padding:10px 12px;font-size:15px;font-weight:600"><a href="#WA-04">Running</a></div>
+          <div style="text-align:center;font-size:12px;color:var(--on2)">Pause ⇅ Resume</div>
+          <div style="border-radius:12px;background:var(--gl);padding:10px 12px;font-size:15px;font-weight:600"><a href="#WA-04-paused">Paused</a></div>
+          <div style="text-align:center;font-size:12px;color:var(--on2)">↓ Finish</div>
+          <div style="border-radius:12px;background:var(--gl);padding:10px 12px;font-size:15px;font-weight:600"><a href="#WA-04-finished">Finished</a> · Done / Stop for now</div>
+          <div style="text-align:center;font-size:12px;color:var(--on2)">↓</div>
+          <div style="border-radius:12px;border:1px dashed var(--gle);padding:10px 12px;font-size:13px;color:var(--on2)">Closes and returns to the page you came from. Done shows WA-01's Done first</div>
+        </div>
+        <div style="font-size:13px;line-height:1.5;color:var(--chrome2)">A full-screen cover, not a push. While a session runs, swiping down shows the pages underneath with a small timer pill at the top that leads back. A session started on the iPhone appears here too.</div>
+      </div>
+
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px 40px;border-top:1px solid var(--line2);padding-top:22px">
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Launch rule</div><div style="font-size:15px;line-height:1.55;color:var(--chrome)">1. A session is running → Focus. 2. An Anchor window is open and unmarked → Anchors. 3. Otherwise → Today. After an hour away, it doesn't reopen where you left off; it follows the rule again.</div></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Every action</div><div style="font-size:15px;line-height:1.55;color:var(--chrome)">Shows at once, queues to the iPhone, and keeps a dashed mark until the phone confirms (<a href="#WA-06">WA-06</a>). No screen waits on the phone, and none shows a spinner.</div></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Dead ends, by design</div><div style="font-size:15px;line-height:1.55;color:var(--chrome)">No add, defer, drop, planning, Wellbeing or settings. Where someone might look for them (the task detail), one line says <em>More on your iPhone</em> and the system's handoff picks it up.</div></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">First run</div><div style="font-size:15px;line-height:1.55;color:var(--chrome)">No onboarding on the watch. Before the first snapshot arrives, Today says <em>Open Jamaal on your iPhone to begin.</em> Read-only users see the pages without action buttons.</div></div>
+    </div>
+  </section>
+
+  <section style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap"><h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Today</h2><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Next task · the crown scrolls the rest · done · all done</span></div>
+    <div style="display:flex;gap:36px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="WA-01" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Next task</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-01 Next task" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px 12px 12px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;padding:2px 10px 0;font-size:14px;font-weight:600"><span style="color:var(--acc)">Today</span><span>14:42</span></div>
+            <div style="margin-top:14px;padding:0 6px;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--on2)"><span style="width:7px;height:7px;border-radius:999px;background:#9DB9E8"></span>Next · 60 min</div>
+            <div style="padding:4px 6px 0;font-size:21px;font-weight:600;line-height:1.2">Draft the architecture review</div>
+            <div style="margin-top:auto;height:44px;border-radius:999px;background:var(--terraD);color:var(--onT);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Done</div>
+            <div style="text-align:center;font-size:12px;color:var(--on2);padding-top:6px">3 more below</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The first task in Today's order, large. Done completes it through the phone's engine. Tapping the title opens a detail with Begin.</p>
+      </div>
+
+      <div id="WA-01-list" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">The rest, by crown</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-01 List" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px 10px;box-sizing:border-box;gap:6px;position:relative">
+            <div style="display:flex;justify-content:space-between;padding:2px 12px 0;font-size:14px;font-weight:600"><span style="color:var(--acc)">Today</span><span>14:42</span></div>
+            <div style="padding:2px 8px 2px;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:17px;line-height:1.1">Four things, <em style="color:var(--acc)">gently paced.</em></div>
+            <div style="background:var(--gl);border-radius:14px;padding:8px 10px;display:flex;gap:8px;align-items:center"><div style="width:20px;height:20px;border-radius:999px;border:1.5px solid var(--on2);box-sizing:border-box;flex-shrink:0"></div><div style="min-width:0"><div style="font-size:15px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Call the clinic back</div><div style="font-size:12px;color:var(--on2)">15 min · Family</div></div></div>
+            <div style="background:var(--gl);border-radius:14px;padding:8px 10px;display:flex;gap:8px;align-items:center"><div style="width:20px;height:20px;border-radius:999px;border:1.5px solid var(--on2);box-sizing:border-box;flex-shrink:0"></div><div style="min-width:0"><div style="font-size:15px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Renew the registration</div><div style="font-size:12px;color:var(--on2)">20 min · Personal</div></div></div>
+            <div style="background:var(--gl);border-radius:14px;padding:8px 10px;display:flex;gap:8px;align-items:center;opacity:0.6"><div style="width:20px;height:20px;border-radius:999px;border:1.5px solid var(--on2);box-sizing:border-box;flex-shrink:0"></div><div style="font-size:15px;font-weight:600">Pack the swim bag</div></div>
+            <div style="position:absolute;right:3px;top:84px;width:3px;height:40px;border-radius:999px;background:var(--on2);opacity:0.6"></div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Below the next task, the rest as rows with a check circle (20 pt mark, 44 pt target). No reordering, no adding, no Defer: those stay on the phone.</p>
+      </div>
+
+      <div id="WA-01-detail" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Task detail</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-01 Task detail" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:2px 8px 0;font-size:14px;font-weight:600"><span style="display:flex;align-items:center;gap:2px;color:var(--acc)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>Today</span><span>14:42</span></div>
+            <div style="margin-top:10px;padding:0 6px;font-size:18px;font-weight:600;line-height:1.2">Draft the architecture review</div>
+            <div style="padding:4px 6px 0;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--on2)"><span style="width:7px;height:7px;border-radius:999px;background:#9DB9E8"></span>Work · 60 min</div>
+            <div style="padding:8px 6px 0;font-size:12px;color:var(--on2)">2 of 4 checklist · More on your iPhone</div>
+            <div style="margin-top:auto;display:flex;flex-direction:column;gap:6px">
+              <div style="height:44px;border-radius:999px;background:var(--terraD);color:var(--onT);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Begin</div>
+              <div style="height:40px;border-radius:999px;background:var(--gl);border:1px solid var(--gle);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Done</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The only pushed screen from Today. Begin is the fill here because you came in to start it, so Done steps down to glass. The checklist is shown read-only and can be ticked during focus.</p>
+      </div>
+
+      <div id="WA-01-done" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Done</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-01 Done" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;align-items:center;padding:12px;box-sizing:border-box;text-align:center">
+            <div style="align-self:stretch;display:flex;justify-content:space-between;padding:2px 10px 0;font-size:14px;font-weight:600"><span style="color:var(--acc)">Today</span><span>14:43</span></div>
+            <div style="margin-top:26px;width:44px;height:44px;border-radius:999px;background:var(--acc);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16242E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+            <div style="margin-top:12px;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:26px;line-height:1">Done.</div>
+            <div style="margin-top:8px;font-size:13px;color:var(--on2);line-height:1.35">Next: Call the clinic back</div>
+            <div style="margin-top:auto;font-size:14px;font-weight:600;color:var(--acc);height:32px;display:flex;align-items:center">Undo</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">One soft tap. Holds for two seconds with Undo (SY-03's rule), then the next task slides up.</p>
+      </div>
+
+      <div id="WA-01-all" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-01</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">All done</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-01 All done" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;padding:2px 10px 0;font-size:14px;font-weight:600"><span style="color:var(--acc)">Today</span><span>17:10</span></div>
+            <div style="margin-top:auto;padding:0 8px;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:26px;line-height:1.08">All done. <em style="color:var(--acc)">The rest is yours.</em></div>
+            <div style="margin:14px 0 6px;padding:10px;border-radius:14px;background:var(--gl);font-size:14px"><span style="color:var(--acc);font-weight:600">Isha</span> · from 19:48</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">No count of what was done. The next Anchor is the only other thing on the page.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap"><h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Anchors</h2><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">The open window · the Smart Stack card</span></div>
+    <div style="display:flex;gap:36px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="WA-02" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-02</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Window open</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-02 Anchor open" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;padding:2px 10px 0;font-size:14px;font-weight:600"><span style="color:var(--acc)">Anchors</span><span>14:52</span></div>
+            <div style="margin-top:12px;padding:0 6px;font-size:13px;color:var(--on2)">Salah · open</div>
+            <div style="padding:0 6px;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:36px;line-height:1.05;color:var(--acc)">Dhuhr</div>
+            <div style="padding:2px 6px 0;font-size:15px">until 15:32 · 40 min left</div>
+            <div style="margin:8px 6px 0;height:6px;border-radius:999px;background:var(--tr);overflow:hidden"><div style="width:18%;height:100%;border-radius:999px;background:var(--acc)"></div></div>
+            <div style="margin-top:auto;height:44px;border-radius:999px;background:var(--terraD);color:var(--onT);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Attended</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Inside the app, time left is said in words; complications keep to the clock time. Below, by crown: the rest of today's windows, with Skipped on a long press.</p>
+      </div>
+
+      <div id="WA-02-stack" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-02</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Smart Stack card</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-02 Smart Stack" style="width:208px;height:248px;border-radius:44px;background:#000;box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:#FFFFFF;display:flex;flex-direction:column;padding:12px 10px;box-sizing:border-box;gap:8px">
+            <div style="text-align:right;padding:2px 12px 0;font-family:Fraunces,Georgia,serif;font-weight:300;font-size:40px;line-height:1">14:52</div>
+            <div style="border-radius:22px;background:var(--wg);padding:12px 14px;display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--on2)">Jamaal · Salah</div>
+              <div style="font-size:16px;font-weight:600"><span style="color:var(--acc)">Dhuhr</span> · until 15:32</div>
+              <div style="height:4px;border-radius:999px;background:var(--tr);overflow:hidden;margin-top:2px"><div style="width:18%;height:100%;border-radius:999px;background:var(--acc)"></div></div>
+              <div style="font-size:12px;color:var(--on2);margin-top:2px">Asr opens 15:33</div>
+            </div>
+            <div style="border-radius:22px;background:rgba(255,255,255,0.1);height:40px;opacity:0.5"></div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">A relevance entry for each open window, so the card rises to the top by itself while a window is open and sinks after. Tap opens WA-02.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap"><h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Habits</h2><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">The list · counted by crown · avoid · timed</span></div>
+    <div style="display:flex;gap:36px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="WA-03" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-03</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Today's habits</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-03 Habits" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px 10px;box-sizing:border-box;gap:6px">
+            <div style="display:flex;justify-content:space-between;padding:2px 12px 4px;font-size:14px;font-weight:600"><span style="color:var(--acc)">Habits</span><span>14:42</span></div>
+            <div style="background:var(--gl);border-radius:14px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:15px;font-weight:600">Water</div><div style="font-size:12px;color:var(--on2)">3 of 8</div></div><svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="rgba(234,243,246,0.18)" stroke-width="3"></circle><circle cx="12" cy="12" r="9" fill="none" stroke="#8FCBB8" stroke-width="3" stroke-linecap="round" stroke-dasharray="21 57" transform="rotate(-90 12 12)"></circle></svg></div>
+            <div style="background:var(--gl);border-radius:14px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:15px;font-weight:600">Qur'an</div><div style="font-size:12px;color:var(--on2)">0 of 15 min</div></div><span style="font-size:13px;font-weight:600;color:var(--acc)">Begin</span></div>
+            <div style="background:var(--gl);border-radius:14px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:15px;font-weight:600">Morning walk</div><div style="font-size:12px;color:var(--on2)">Done</div></div><div style="width:22px;height:22px;border-radius:999px;background:var(--acc);display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16242E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div></div>
+            <div style="background:var(--gl);border-radius:14px;padding:8px 10px;opacity:0.6"><div style="font-size:15px;font-weight:600">Phone after 22:00</div></div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Today's habits in the app's order, each with its own mark: a ring for counted, Begin for timed, a check for binary. No density grid: that view stays on the phone.</p>
+      </div>
+
+      <div id="WA-03-water" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-03</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Water, by crown</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-03 Water" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;align-items:center;padding:12px;box-sizing:border-box;position:relative">
+            <div style="align-self:stretch;display:flex;justify-content:space-between;padding:2px 10px 0;font-size:14px;font-weight:600"><span style="color:var(--acc)">Water</span><span>14:42</span></div>
+            <div style="margin-top:14px;width:132px;height:132px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <svg style="position:absolute;inset:0" width="132" height="132" viewBox="0 0 132 132"><circle cx="66" cy="66" r="60" fill="none" stroke="rgba(234,243,246,0.18)" stroke-width="6"></circle><circle cx="66" cy="66" r="60" fill="none" stroke="#8FCBB8" stroke-width="6" stroke-linecap="round" stroke-dasharray="141 377" transform="rotate(-90 66 66)"></circle></svg>
+              <span style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:54px;line-height:1;font-variant-numeric:tabular-nums">3</span>
+              <span style="font-size:14px;color:var(--on2)">of 8 glasses</span>
+            </div>
+            <div style="margin-top:auto;font-size:12px;color:var(--on2)">Turn the crown</div>
+            <div style="position:absolute;right:3px;top:96px;width:3px;height:40px;border-radius:999px;background:var(--acc)"></div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">One detent per glass, saved as you turn (debounced into one queued action). Past the target the ring stays full and the number keeps going: no praise, no cap.</p>
+      </div>
+
+      <div id="WA-03-avoid" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-03</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Avoid habit</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-03 Avoid" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;padding:2px 10px 0;font-size:14px;font-weight:600"><span style="color:var(--acc)">Habits</span><span>21:30</span></div>
+            <div style="margin-top:12px;padding:0 6px;font-size:20px;font-weight:600;line-height:1.2">Phone after 22:00</div>
+            <div style="padding:4px 6px 0;font-size:13px;color:var(--on2)">No slips this week · 1 allowed</div>
+            <div style="margin-top:auto;display:flex;flex-direction:column;gap:6px">
+              <div style="height:44px;border-radius:999px;background:var(--terraD);color:var(--onT);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Held today</div>
+              <div style="height:40px;border-radius:999px;background:var(--gl);border:1px solid var(--gle);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Log a slip</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">HB-08's two actions. Log a slip is undoable and silent. There's no "days since"; the line under the title is the allowance, not a count-up.</p>
+      </div>
+
+      <div id="WA-03-timed" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-03</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Timed habit</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-03 Timed" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;padding:2px 10px 0;font-size:14px;font-weight:600"><span style="color:var(--acc)">Habits</span><span>06:10</span></div>
+            <div style="margin-top:12px;padding:0 6px;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:30px;line-height:1.05">Qur'an</div>
+            <div style="padding:4px 6px 0;font-size:14px;color:var(--on2)">15 min today · none yet</div>
+            <div style="margin:10px 6px 0;height:6px;border-radius:999px;background:var(--tr)"></div>
+            <div style="margin-top:auto;height:44px;border-radius:999px;background:var(--terraD);color:var(--onT);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Begin</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Begin starts a focus session for the habit (FS-02 timed habit), created on the phone so the one-live-session rule holds. Then WA-04.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap"><h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Focus</h2><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Running · paused · finished · no alarm</span></div>
+    <div style="display:flex;gap:36px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="WA-04" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-04</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Running</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-04 Focus running" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;padding:2px 10px 0;font-size:14px;font-weight:600"><span style="color:var(--acc)">In focus</span><span>15:06</span></div>
+            <div style="margin-top:10px;padding:0 6px;font-size:14px;font-weight:600;line-height:1.25;color:var(--on2)">Draft the architecture review</div>
+            <div style="padding:0 6px;font-family:Fraunces,Georgia,serif;font-weight:300;font-size:58px;line-height:1.05;font-variant-numeric:tabular-nums">24:18</div>
+            <div style="margin:4px 6px 0;height:4px;border-radius:999px;background:var(--tr);overflow:hidden"><div style="width:40%;height:100%;border-radius:999px;background:var(--acc)"></div></div>
+            <div style="padding:4px 6px 0;font-size:12px;color:var(--on2)">of 60 min</div>
+            <div style="margin-top:auto;display:flex;gap:6px">
+              <div style="flex:1;height:44px;border-radius:999px;background:var(--gl);border:1px solid var(--gle);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Pause</div>
+              <div style="flex:1;height:44px;border-radius:999px;background:var(--terraD);color:var(--onT);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Finish</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Count-up timer text; an extended-runtime session keeps the screen live. At the estimate, one soft tap and the line becomes <em>past the 60-min estimate</em>. No alarm.</p>
+      </div>
+
+      <div id="WA-04-paused" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-04</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Paused</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-04 Focus paused" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;padding:2px 10px 0;font-size:14px;font-weight:600"><span style="color:var(--on2)">Paused</span><span>15:20</span></div>
+            <div style="margin-top:10px;padding:0 6px;font-size:14px;font-weight:600;line-height:1.25;color:var(--on2)">Draft the architecture review</div>
+            <div style="padding:0 6px;font-family:Fraunces,Georgia,serif;font-weight:300;font-size:58px;line-height:1.05;font-variant-numeric:tabular-nums;color:var(--on2)">24:18</div>
+            <div style="padding:6px 6px 0;font-size:12px;color:var(--on2)">since 15:06</div>
+            <div style="margin-top:auto;display:flex;gap:6px">
+              <div style="flex:1;height:44px;border-radius:999px;background:var(--gl);border:1px solid var(--gle);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Resume</div>
+              <div style="flex:1;height:44px;border-radius:999px;background:var(--terraD);color:var(--onT);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Finish</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The time holds and dims, as FS-04 and FS-08. The extended-runtime session ends while paused.</p>
+      </div>
+
+      <div id="WA-04-finished" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-04</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Finished</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-04 Focus finished" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;padding:2px 10px 0;font-size:14px;font-weight:600"><span style="color:var(--acc)">Finished</span><span>15:48</span></div>
+            <div style="margin-top:12px;padding:0 6px;font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:28px;line-height:1.05">42 min <em style="color:var(--acc)">logged.</em></div>
+            <div style="padding:6px 6px 0;font-size:14px;color:var(--on2);line-height:1.3">Is the architecture review done?</div>
+            <div style="margin-top:auto;display:flex;flex-direction:column;gap:6px">
+              <div style="height:44px;border-radius:999px;background:var(--terraD);color:var(--onT);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Done</div>
+              <div style="height:40px;border-radius:999px;background:var(--gl);border:1px solid var(--gle);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Stop for now</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">FS-05's two choices. Stop for now keeps the task on Today with the minutes logged. Defer, Drop and the timestamped note line stay in the phone's finish sheet (FS-05).</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap"><h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Complications</h2><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Next Anchor · Today · Focus, in priority order</span></div>
+    <div style="display:flex;gap:36px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="WA-05-face-a" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-05</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Corners and circulars</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-05 Face corners" style="width:208px;height:248px;border-radius:44px;background:#000;box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:#FFFFFF;position:relative">
+            <svg style="position:absolute;inset:0" width="208" height="248" viewBox="0 0 208 248"><defs><path id="cornerTL" d="M10 96 A 86 86 0 0 1 96 10"></path></defs><path d="M14 74 A 66 66 0 0 1 74 14" fill="none" stroke="rgba(143,203,184,0.25)" stroke-width="3" stroke-linecap="round"></path><path d="M14 74 A 66 66 0 0 1 24 42" fill="none" stroke="#8FCBB8" stroke-width="3" stroke-linecap="round"></path><text font-family="Hanken Grotesk" font-size="12" font-weight="700" fill="#FFFFFF" letter-spacing="0.5"><textPath href="#cornerTL" startOffset="18%">DHUHR 15:32</textPath></text></svg>
+            <div style="position:absolute;top:60px;left:0;right:0;text-align:center;font-family:Fraunces,Georgia,serif;font-weight:300;font-size:64px;line-height:1">14:52</div>
+            <div style="position:absolute;bottom:22px;left:30px;width:52px;height:52px;border-radius:999px;background:#1A1A1A;display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <svg style="position:absolute" width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="22" fill="none" stroke="rgba(143,203,184,0.25)" stroke-width="4"></circle><circle cx="26" cy="26" r="22" fill="none" stroke="#8FCBB8" stroke-width="4" stroke-linecap="round" stroke-dasharray="25 138" transform="rotate(-90 26 26)"></circle></svg>
+              <span style="font-size:9px;font-weight:600;color:#B8CDD6;line-height:1">until</span><span style="font-size:13px;font-weight:700;line-height:1.1">15:32</span>
+            </div>
+            <div style="position:absolute;bottom:22px;right:30px;width:52px;height:52px;border-radius:999px;background:#1A1A1A;display:flex;align-items:center;justify-content:center">
+              <svg style="position:absolute" width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="22" fill="none" stroke="rgba(234,243,246,0.2)" stroke-width="4"></circle><circle cx="26" cy="26" r="22" fill="none" stroke="#EAF3F6" stroke-width="4" stroke-linecap="round" stroke-dasharray="104 138" transform="rotate(-90 26 26)"></circle></svg>
+              <span style="font-family:Fraunces,Georgia,serif;font-weight:500;font-size:20px;line-height:1">4</span>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Corner: curved <em>Dhuhr 15:32</em> with a soft arc for the window passed. Circular, left: Next Anchor ring with the closing time. Circular, right: Today, planned time against budget with tasks left inside.</p>
+      </div>
+
+      <div id="WA-05-face-b" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-05</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Inline and rectangular</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-05 Face rectangular" style="width:208px;height:248px;border-radius:44px;background:#000;box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:#FFFFFF;display:flex;flex-direction:column;padding:16px 14px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:0 10px;font-size:13px;font-weight:600"><span style="color:#8FCBB8">Dhuhr · until 15:32</span></div>
+            <div style="padding:2px 10px 0;font-family:Fraunces,Georgia,serif;font-weight:300;font-size:52px;line-height:1">14:52</div>
+            <div style="margin-top:auto;padding:8px 10px;display:flex;flex-direction:column;gap:3px">
+              <div style="font-size:15px;font-weight:700;color:#8FCBB8">Dhuhr <span style="color:#FFFFFF">· until 15:32</span></div>
+              <div style="height:4px;border-radius:999px;background:rgba(234,243,246,0.2);overflow:hidden"><div style="width:18%;height:100%;border-radius:999px;background:#8FCBB8"></div></div>
+              <div style="font-size:13px;color:#B8CDD6">closes in 40 min · Asr 15:33</div>
+            </div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Inline at the top: the Anchor and its closing time. Rectangular: the window, a bar and the next one beneath; the only size allowed <em>closes in</em>.</p>
+      </div>
+
+      <div id="WA-05-specimens" style="width:520px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-05</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">Today, Focus, locked and tinted · 2×</span></div>
+        <div data-screen-label="WA-05 Specimens" style="background:#000;border-radius:28px;padding:24px;display:grid;grid-template-columns:auto 1fr;gap:20px 24px;align-items:center;color:#FFFFFF">
+          <div style="width:180px;padding:12px 14px;border-radius:18px;background:#141414;display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;color:#B8CDD6">Today · next</span><span style="font-size:15px;font-weight:700">Call the clinic back</span><span style="font-size:13px;color:#B8CDD6">15 min</span></div>
+          <span style="font-size:14px;line-height:1.45;color:#B8CDD6">Today rectangular: the next task and its effort.</span>
+          <div style="width:180px;padding:12px 14px;border-radius:18px;background:#141414;display:flex;flex-direction:column;gap:6px"><span style="font-size:12px;color:#B8CDD6">Today · next</span><span style="height:12px;width:80%;border-radius:999px;background:rgba(255,255,255,0.22)"></span><span style="font-size:13px;color:#B8CDD6">15 min</span></div>
+          <span style="font-size:14px;line-height:1.45;color:#B8CDD6">Watch locked (off wrist or passcode): the title becomes a bar; effort stays.</span>
+          <div style="width:180px;padding:12px 14px;border-radius:18px;background:#141414;display:flex;flex-direction:column;gap:3px"><span style="font-size:12px;color:#8FCBB8">In focus</span><span style="font-family:Fraunces,Georgia,serif;font-weight:300;font-size:30px;line-height:1;font-variant-numeric:tabular-nums">24:18</span><span style="font-size:13px;color:#B8CDD6">of 60 min</span></div>
+          <span style="font-size:14px;line-height:1.45;color:#B8CDD6">Focus: only while a session runs, surfaced in the Smart Stack. Count-up text; tap opens WA-04.</span>
+          <div style="display:flex;gap:10px"><div style="width:52px;height:52px;border-radius:999px;background:#1A1714;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center"><svg style="position:absolute" width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="22" fill="none" stroke="rgba(240,180,90,0.25)" stroke-width="4"></circle><circle cx="26" cy="26" r="22" fill="none" stroke="#F0B45A" stroke-width="4" stroke-linecap="round" stroke-dasharray="25 138" transform="rotate(-90 26 26)"></circle></svg><span style="font-size:13px;font-weight:700;color:#F6E2C2">15:32</span></div><div style="width:52px;height:52px;border-radius:999px;background:#1A1714;position:relative;display:flex;align-items:center;justify-content:center"><svg style="position:absolute" width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="22" fill="none" stroke="rgba(246,226,194,0.2)" stroke-width="4"></circle><circle cx="26" cy="26" r="22" fill="none" stroke="#F0B45A" stroke-width="4" stroke-linecap="round" stroke-dasharray="104 138" transform="rotate(-90 26 26)"></circle></svg><span style="font-family:Fraunces,Georgia,serif;font-size:20px;color:#F6E2C2">4</span></div></div>
+          <span style="font-size:14px;line-height:1.45;color:#B8CDD6">Tinted face (example tint): rings, fills and the Anchor name are the accent group; numerals and labels go primary.</span>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">Not on a face: the Wellbeing score, anything streak-like, an overdue count. The habit counter complication (<em>Water 3 of 8</em>) waits for configurable widgets.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap"><h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">When the iPhone is out of reach</h2><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Queued · stale snapshot</span></div>
+    <div style="display:flex;gap:36px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="WA-06" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-06</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">A queued mark</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-06 Queued" style="width:208px;height:248px;border-radius:44px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px 10px;box-sizing:border-box;gap:6px">
+            <div style="display:flex;justify-content:space-between;padding:2px 12px 2px;font-size:14px;font-weight:600"><span style="color:var(--acc)">Today</span><span>14:58</span></div>
+            <div style="background:var(--gl);border-radius:14px;padding:8px 10px;display:flex;gap:8px;align-items:center"><div style="width:20px;height:20px;border-radius:999px;border:1.5px dashed var(--acc);box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#8FCBB8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div><div style="min-width:0"><div style="font-size:15px;font-weight:600;line-height:1.2">Call the clinic back</div><div style="font-size:12px;color:var(--on2)">Done · waiting for iPhone</div></div></div>
+            <div style="background:var(--gl);border-radius:14px;padding:8px 10px;display:flex;gap:8px;align-items:center"><div style="width:20px;height:20px;border-radius:999px;border:1.5px solid var(--on2);box-sizing:border-box;flex-shrink:0"></div><div><div style="font-size:15px;font-weight:600;line-height:1.2">Renew the registration</div><div style="font-size:12px;color:var(--on2)">20 min</div></div></div>
+            <div style="margin-top:auto;padding:0 12px 6px;font-size:12px;color:var(--on2);line-height:1.35">As of 14:20. It'll catch up when your iPhone is near.</div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The mark applies at once with a dashed ring until the phone confirms. If the phone disagrees, it wins and the row quietly updates. The footer appears only after 15 minutes without a snapshot.</p>
+      </div>
+
+      <div style="width:520px;display:flex;flex-direction:column;gap:16px;padding-top:44px">
+        <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">How it works</div>
+        <div data-screen-label="WA-07 Data flow" style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch">
+          <div style="border:1px solid var(--line2);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">iPhone</span><span style="font-size:15px;line-height:1.5;color:var(--chrome)">Owns the store and the engine. Builds <span style="font-family:'JetBrains Mono',monospace;font-size:13px">WidgetSnapshot</span> after every save.</span></div>
+          <div style="display:flex;flex-direction:column;justify-content:center;gap:18px;font-size:13px;color:var(--chrome2);text-align:center"><span>snapshot →<br>latest wins</span><span>← actions<br>queued, idempotent</span></div>
+          <div style="border:1px solid var(--line2);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px"><span style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">Watch</span><span style="font-size:15px;line-height:1.5;color:var(--chrome)">Reads the last snapshot. Shows marks at once; sends each action with an id and a time.</span></div>
+        </div>
+        <div style="font-size:15px;line-height:1.6;color:var(--chrome)">Not on the watch: Night Planning, Wellbeing, Settings, adding a task, Defer and Drop. Notifications for window-closing and the evening mirror from the iPhone; <em>Mark done</em> becomes a notification action.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <section style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap"><h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">App icon</h2><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">The 1d monogram, circular · one appearance</span></div>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+      <div id="WA-09" style="width:300px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-09</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome);white-space:nowrap">The icon · 1024 master</span></div>
+        <div data-screen-label="WA-09 Watch icon" style="width:240px;height:240px;border-radius:999px;background:#0C4767;box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <svg width="240" height="240" viewBox="0 0 100 100"><path d="M55.93 26.98Q55.76 27.68 55.12 30Q54.48 32.33 53.55 35.71Q52.63 39.09 51.56 43.07Q50.48 47.05 49.41 51.04Q48.34 55.03 47.4 58.55Q46.46 62.060 45.81 64.6Q45.17 67.14 44.87 68.13Q44.05 71.86 42.33 74.29Q40.62 76.71 38.27 77.92Q35.93 79.12 33.16 79.12Q30.72 79.12 29.56 78.03Q28.41 76.94 28.41 75.43Q28.44 74.14 29.28 73.28Q30.12 72.42 31.61 72.42Q32.43 72.42 33.19 72.72Q33.95 73.02 34.71 73.43Q35.47 73.84 36.19 74.17Q36.92 74.5 37.61 74.5Q38.8 74.5 39.58 73.64Q40.35 72.79 40.55 70.71Q40.55 70.08 40.25 69.39Q39.96 68.69 39.54 67.99Q39.13 67.28 38.75 66.48Q38.37 65.69 38.22 64.82Q38.08 63.94 38.31 62.95Q38.54 62.13 39.15 59.95Q39.76 57.77 40.58 54.67Q41.41 51.57 42.42 48.05Q43.42 44.54 44.35 41.06Q45.27 37.58 46.11 34.54Q46.95 31.5 47.51 29.41Q48.07 27.31 48.21 26.59Q48.6 25.2 48.37 24.66Q48.14 24.11 47.28 23.91L45.04 23.45Q44.48 23.25 44.23 22.96Q43.98 22.66 44.02 22.23Q44.02 21.64 44.41 21.26Q44.81 20.88 45.7 20.88L60.32 20.88Q61.18 20.88 61.44 21.19Q61.7 21.5 61.7 22.07Q61.7 22.63 61.37 22.96Q61.04 23.29 60.52 23.52L58.01 23.98Q57.48 24.11 57.15 24.39Q56.82 24.67 56.54 25.23Q56.26 25.79 55.93 26.98Z" fill="#EFF4F0"></path><circle cx="66.59" cy="64.08" r="5" fill="#DDA080"></circle></svg>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">The same three layers as the iPhone icon (deep ground, J, terracotta stop), with the system's circle as the mask instead of the rounded square. The J's ink bounds already sit inside the circle, so nothing is redrawn.</p>
+      </div>
+
+      <div id="WA-09-grid" style="width:330px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-09</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome);white-space:nowrap">Home Screen, grid view</span></div>
+        <div style="zoom:1.5;width:208px;margin:6px">
+          <div data-screen-label="WA-09 Grid" style="width:208px;height:248px;border-radius:44px;background:#000;box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;position:relative">
+            <div style="position:absolute;left:14px;top:30px;width:46px;height:46px;border-radius:999px;background:#2A2A2A"></div>
+            <div style="position:absolute;left:81px;top:30px;width:46px;height:46px;border-radius:999px;background:#2A2A2A"></div>
+            <div style="position:absolute;left:148px;top:30px;width:46px;height:46px;border-radius:999px;background:#2A2A2A"></div>
+            <div style="position:absolute;left:47px;top:88px;width:46px;height:46px;border-radius:999px;background:#2A2A2A"></div>
+            <div style="position:absolute;left:115px;top:88px;width:46px;height:46px;border-radius:999px;background:#2A2A2A"></div>
+            <div style="position:absolute;left:14px;top:146px;width:46px;height:46px;border-radius:999px;background:#2A2A2A"></div>
+            <div style="position:absolute;left:73px;top:138px;width:62px;height:62px;border-radius:999px;background:#0C4767;display:flex;align-items:center;justify-content:center;overflow:hidden"><svg width="62" height="62" viewBox="0 0 100 100"><path d="M55.93 26.98Q55.76 27.68 55.12 30Q54.48 32.33 53.55 35.71Q52.63 39.09 51.56 43.07Q50.48 47.05 49.41 51.04Q48.34 55.03 47.4 58.55Q46.46 62.06 45.81 64.6Q45.17 67.14 44.87 68.13Q44.05 71.86 42.33 74.29Q40.62 76.71 38.27 77.92Q35.93 79.12 33.16 79.12Q30.72 79.12 29.56 78.03Q28.41 76.94 28.41 75.43Q28.44 74.14 29.28 73.28Q30.12 72.42 31.61 72.42Q32.43 72.42 33.19 72.72Q33.95 73.02 34.71 73.43Q35.47 73.84 36.19 74.17Q36.92 74.5 37.61 74.5Q38.8 74.5 39.58 73.64Q40.35 72.79 40.55 70.71Q40.55 70.08 40.25 69.39Q39.96 68.69 39.54 67.99Q39.13 67.28 38.75 66.48Q38.37 65.69 38.22 64.82Q38.08 63.94 38.31 62.95Q38.54 62.13 39.15 59.95Q39.76 57.77 40.58 54.67Q41.41 51.57 42.42 48.05Q43.42 44.54 44.35 41.06Q45.27 37.58 46.11 34.54Q46.95 31.5 47.51 29.41Q48.07 27.31 48.21 26.59Q48.6 25.2 48.37 24.66Q48.14 24.11 47.28 23.91L45.04 23.45Q44.48 23.25 44.23 22.96Q43.98 22.66 44.02 22.23Q44.02 21.64 44.41 21.26Q44.81 20.88 45.7 20.88L60.32 20.88Q61.18 20.88 61.44 21.19Q61.7 21.5 61.7 22.07Q61.7 22.63 61.37 22.96Q61.04 23.29 60.52 23.52L58.01 23.98Q57.48 24.11 57.15 24.39Q56.82 24.67 56.54 25.23Q56.26 25.79 55.93 26.98Z" fill="#EFF4F0"></path><circle cx="66.59" cy="64.08" r="6" fill="#DDA080"></circle></svg></div>
+            <div style="position:absolute;left:148px;top:146px;width:46px;height:46px;border-radius:999px;background:#2A2A2A"></div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">On black, the deep blue reads as a calm, dark tile among brighter icons. The terracotta stop is what makes it findable at a glance. Neighbouring icons are placeholders.</p>
+      </div>
+
+      <div id="WA-09-small" style="width:420px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-09</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome);white-space:nowrap">List view, notification, small sizes · 2×</span></div>
+        <div data-screen-label="WA-09 Small sizes" style="background:#000;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:18px;color:#FFFFFF">
+          <div style="display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:22px;background:#1A1A1A">
+            <div style="width:64px;height:64px;border-radius:999px;background:#0C4767;flex-shrink:0;overflow:hidden"><svg width="64" height="64" viewBox="0 0 100 100"><path d="M55.93 26.98Q55.76 27.68 55.12 30Q54.48 32.33 53.55 35.71Q52.63 39.09 51.56 43.07Q50.48 47.05 49.41 51.04Q48.34 55.03 47.4 58.55Q46.46 62.06 45.81 64.6Q45.17 67.14 44.87 68.13Q44.05 71.86 42.33 74.29Q40.62 76.71 38.27 77.92Q35.93 79.12 33.16 79.12Q30.72 79.12 29.56 78.03Q28.41 76.94 28.41 75.43Q28.44 74.14 29.28 73.28Q30.12 72.42 31.61 72.42Q32.43 72.42 33.19 72.72Q33.95 73.02 34.71 73.43Q35.47 73.84 36.19 74.17Q36.92 74.5 37.61 74.5Q38.8 74.5 39.58 73.64Q40.35 72.79 40.55 70.71Q40.55 70.08 40.25 69.39Q39.96 68.69 39.54 67.99Q39.13 67.28 38.75 66.48Q38.37 65.69 38.22 64.82Q38.08 63.94 38.31 62.95Q38.54 62.13 39.15 59.95Q39.76 57.77 40.58 54.67Q41.41 51.57 42.42 48.05Q43.42 44.54 44.35 41.06Q45.27 37.58 46.11 34.54Q46.95 31.5 47.51 29.41Q48.07 27.31 48.21 26.59Q48.6 25.2 48.37 24.66Q48.14 24.11 47.28 23.91L45.04 23.45Q44.48 23.25 44.23 22.96Q43.98 22.66 44.02 22.23Q44.02 21.64 44.41 21.26Q44.81 20.88 45.7 20.88L60.32 20.88Q61.18 20.88 61.44 21.19Q61.7 21.5 61.7 22.07Q61.7 22.63 61.37 22.96Q61.04 23.29 60.52 23.52L58.01 23.98Q57.48 24.11 57.15 24.39Q56.82 24.67 56.54 25.23Q56.26 25.79 55.93 26.98Z" fill="#EFF4F0"></path><circle cx="66.59" cy="64.08" r="6" fill="#DDA080"></circle></svg></div>
+            <span style="font-size:22px;font-weight:600">Jamaal</span>
+          </div>
+          <div style="display:flex;gap:14px;padding:14px;border-radius:22px;background:#1A1A1A">
+            <div style="width:40px;height:40px;border-radius:999px;background:#0C4767;flex-shrink:0;overflow:hidden"><svg width="40" height="40" viewBox="0 0 100 100"><path d="M55.93 26.98Q55.76 27.68 55.12 30Q54.48 32.33 53.55 35.71Q52.63 39.09 51.56 43.07Q50.48 47.05 49.41 51.04Q48.34 55.03 47.4 58.55Q46.46 62.06 45.81 64.6Q45.17 67.14 44.87 68.13Q44.05 71.86 42.33 74.29Q40.62 76.71 38.27 77.92Q35.93 79.12 33.16 79.12Q30.72 79.12 29.56 78.03Q28.41 76.94 28.41 75.43Q28.44 74.14 29.28 73.28Q30.12 72.42 31.61 72.42Q32.43 72.42 33.19 72.72Q33.95 73.02 34.71 73.43Q35.47 73.84 36.19 74.17Q36.92 74.5 37.61 74.5Q38.8 74.5 39.58 73.64Q40.35 72.79 40.55 70.71Q40.55 70.08 40.25 69.39Q39.96 68.69 39.54 67.99Q39.13 67.28 38.75 66.48Q38.37 65.69 38.22 64.82Q38.08 63.94 38.31 62.95Q38.54 62.13 39.15 59.95Q39.76 57.77 40.58 54.67Q41.41 51.57 42.42 48.05Q43.42 44.54 44.35 41.06Q45.27 37.58 46.11 34.54Q46.95 31.5 47.51 29.41Q48.07 27.31 48.21 26.59Q48.6 25.2 48.37 24.66Q48.14 24.11 47.28 23.91L45.04 23.45Q44.48 23.25 44.23 22.96Q43.98 22.66 44.02 22.23Q44.02 21.64 44.41 21.26Q44.81 20.88 45.7 20.88L60.32 20.88Q61.18 20.88 61.44 21.19Q61.7 21.5 61.7 22.07Q61.7 22.63 61.37 22.96Q61.04 23.29 60.52 23.52L58.01 23.98Q57.48 24.11 57.15 24.39Q56.82 24.67 56.54 25.23Q56.26 25.79 55.93 26.98Z" fill="#EFF4F0"></path><circle cx="66.59" cy="64.08" r="7" fill="#DDA080"></circle></svg></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><span style="font-size:13px;color:#B8CDD6">Jamaal</span><span style="font-size:17px;font-weight:600">Dhuhr closes at 15:32</span><span style="font-size:15px;color:#B8CDD6">Mark it when you're ready.</span></div>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2)">At list and notification sizes (below about 29 pt), use the existing small-size J from <span style="font-family:'JetBrains Mono',monospace;font-size:12px">icon/small/</span> (heavier weight, larger stop). It's drawn here as the standard J with a larger stop. No dark or tinted variants: watchOS shows one appearance.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section style="max-width:1720px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap"><h2 style="font-family:Fraunces,Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1;font-weight:500;font-size:34px;margin:0;color:var(--chrome)">Sizes</h2><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">The tightest of each group · 40 mm · 44 mm · 49 mm</span></div>
+    <div style="display:flex;gap:36px;flex-wrap:wrap;align-items:flex-end">
+
+      <div id="WA-08-40" style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-08</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">40 mm · 162 × 197</span></div>
+        <div style="zoom:1.5;width:162px;margin:6px">
+          <div data-screen-label="WA-08 40mm" style="width:162px;height:197px;border-radius:36px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:10px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;padding:2px 8px 0;font-size:13px;font-weight:600"><span style="color:var(--acc)">Today</span><span>14:42</span></div>
+            <div style="margin-top:8px;padding:0 4px;font-size:12px;color:var(--on2)">Next · 60 min</div>
+            <div style="padding:2px 4px 0;font-size:17px;font-weight:600;line-height:1.2">Draft the architecture review</div>
+            <div style="margin-top:auto;height:40px;border-radius:999px;background:var(--terraD);color:var(--onT);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Done</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="WA-08-44" style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-08</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">44 mm · 184 × 224</span></div>
+        <div style="zoom:1.5;width:184px;margin:6px">
+          <div data-screen-label="WA-08 44mm" style="width:184px;height:224px;border-radius:40px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #3A3A3A;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;padding:2px 8px 0;font-size:14px;font-weight:600"><span style="color:var(--acc)">Today</span><span>14:42</span></div>
+            <div style="margin-top:12px;padding:0 4px;font-size:13px;color:var(--on2)">Next · 60 min</div>
+            <div style="padding:2px 4px 0;font-size:19px;font-weight:600;line-height:1.2">Draft the architecture review</div>
+            <div style="margin-top:auto;height:44px;border-radius:999px;background:var(--terraD);color:var(--onT);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Done</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="WA-08-49" style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px/1 'JetBrains Mono',monospace;letter-spacing:0.12em;padding:7px 10px;border-radius:999px;background:var(--chrome);color:var(--board)">WA-08</span><span style="font:600 16px/1.2 'Hanken Grotesk',sans-serif;color:var(--chrome)">49 mm · 205 × 251</span></div>
+        <div style="zoom:1.5;width:205px;margin:6px">
+          <div data-screen-label="WA-08 49mm" style="width:205px;height:251px;border-radius:40px;background:var(--wg);box-shadow:0 0 0 5px #0E0E0E,0 0 0 6px #4A4038;overflow:hidden;color:var(--on);display:flex;flex-direction:column;padding:12px;box-sizing:border-box">
+            <div style="display:flex;justify-content:space-between;padding:2px 10px 0;font-size:14px;font-weight:600"><span style="color:var(--acc)">Today</span><span>14:42</span></div>
+            <div style="margin-top:14px;padding:0 6px;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--on2)"><span style="width:7px;height:7px;border-radius:999px;background:#9DB9E8"></span>Next · 60 min</div>
+            <div style="padding:4px 6px 0;font-size:21px;font-weight:600;line-height:1.2">Draft the architecture review</div>
+            <div style="padding:6px 6px 0;font-size:13px;color:var(--on2)">then Call the clinic back</div>
+            <div style="margin-top:auto;height:44px;border-radius:999px;background:var(--terraD);color:var(--onT);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Done</div>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin:0;font-size:14px;line-height:1.5;color:var(--chrome2);max-width:340px">Design to 40 mm: the title steps to 17 pt and the button to 40 pt (the only place under 44, as watchOS allows). Larger sizes gain air first; 49 mm adds one line, the task after next. Every type size follows Dynamic Type on the watch.</p>
+    </div>
+  </section>
+
+  <div style="max-width:1720px;width:100%;margin:0 auto;border-top:1px solid var(--line2);padding-top:24px;display:flex;flex-direction:column;gap:10px">
+    <div style="font:500 12px/1.35 'JetBrains Mono',monospace;letter-spacing:0.16em;text-transform:uppercase;color:var(--chrome2)">§7 check</div>
+    <div style="font-size:15px;line-height:1.6;color:var(--chrome);max-width:110ch">One terracotta fill per screen · no red, no alarm, no streaks, no scores, no "days since" · closing windows said in words, clock times on faces · task titles redacted while locked · every action goes through the phone's engine functions, so watch and phone never diverge for long.</div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { theme: 'light' };
+  renderVals() {
+    const dark = this.state.theme === 'dark';
+    return {
+      theme: this.state.theme,
+      themeLabel: dark ? 'Dark board · switch to light' : 'Light board · switch to dark',
+      toggleTheme: () => this.setState({ theme: dark ? 'light' : 'dark' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

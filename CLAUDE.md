@@ -46,7 +46,7 @@ No `.xcworkspace` — JamaalCore is a Swift Package (added as a local package de
 
 ## Widgets and the watch (decided 8 Oct 2026)
 
-**Widgets are in v1** (Next Anchor and Today, on iPhone, iPad and Mac, with Lock Screen accessory widgets); a **companion watchOS app is v1.1**; Live Activity, App Intents and interactive widgets are v1.1. The SwiftData store must live in an **App Group container from the first CloudKit-enabled build** (done with the CloudKit set-up once the paid programme is active, about 14 Oct 2026), so no user ever migrates. Widgets and the watch both read a pure, `Codable` `WidgetSnapshot` built in JamaalCore. v1 launches on iPhone, iPad and Mac together; **tvOS is not planned** (the medium doesn't suit the app) and visionOS is a possible later step. See `docs/architecture/decisions/0003-widgets-in-v1-watch-in-v1-1.md` and `docs/architecture/widgets-and-watch.md`.
+**Widgets are in v1** (Next Anchor and Today, on iPhone, iPad and Mac, with Lock Screen accessory widgets); a **companion watchOS app is v1.1**; Live Activity, App Intents and interactive widgets are v1.1. The SwiftData store must live in an **App Group container from the first CloudKit-enabled build** (done with the CloudKit set-up once the paid programme is active, about 14 Oct 2026), so no user ever migrates. Widgets and the watch both read a pure, `Codable` `WidgetSnapshot` built in JamaalCore. v1 launches on iPhone, iPad and Mac together; **tvOS is not planned** (the medium doesn't suit the app) and visionOS is a possible later step. See `docs/architecture/decisions/0003-widgets-in-v1-watch-in-v1-1.md`, `docs/architecture/widgets-and-watch.md` and, for what Design's batches 8–9 decided, `docs/design/widgets-and-watch-reconciliation.md`.
 
 ## Testing strategy
 
@@ -132,5 +132,5 @@ All new code or documentation work is tracked through a GitHub issue and lands v
 - [x] CI: `.github/workflows/ci.yml` builds and tests `JamaalCore` and the app's unit tests on every code PR and push to `main` (docs-only changes skip it). XCUITest joins once it covers real screens
 - [x] ThreadsKit 2.0.0 is wired into `Jamaal.xcodeproj` (remote, Up to Next Major) with `Package.resolved` committed; fonts register at launch. Remaining design items are in `docs/design/threadskit-usage.md`
 - [ ] Open owner items (region table review, Anchor reminders while read-only, category hues, fonts, merge order of the stacked PRs, paid programme and iCloud spike) are collected in `docs/journeys/walkthroughs/overview.md#open-owner-items`
-- [x] `mockups/screens/` holds the Design v4 frames (110) and editable sources; `mockups/legacy/` is layout reference only
+- [x] `mockups/screens/` holds the Design v4 frames (110 in batches 1–7, plus batches 8 and 9 for widgets and the Apple Watch) and editable sources; `mockups/legacy/` is layout reference only
 - [x] Reconcile against prior planning-chat data — done, see ADR 0002. Remaining open decisions are listed in `docs/journeys/app-flow.md` ("Still open")

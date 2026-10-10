@@ -3,7 +3,7 @@
 ## Overview
 ThreadsKit is the shared SwiftUI design-token package for fhdamd's apps. Jamaal is the first and only product palette. This bundle has:
 1. the **token contract** to build as the `ThreadsTokens` target, with `Palettes/Jamaal.swift` and `Colors-Jamaal.xcassets`;
-2. **Jamaal v4 screens**: seven batches covering iPhone, iPad, iPhone Duo, macOS and Live Activity. They are named by register ID (TD-, TM-, HB-, AN-, NP-, WB-, ST-, OB-, PW-, DUO-, LA-…) and match `docs/journeys/screens.md` in the `jamaal-app` repo;
+2. **Jamaal v4 screens**: nine batches covering iPhone, iPad, iPhone Duo, macOS, Live Activity, widgets and the Apple Watch (batches 8 and 9 came later: see [widgets and watch reconciliation](widgets-and-watch-reconciliation)). They are named by register ID (TD-, TM-, HB-, AN-, NP-, WB-, ST-, OB-, PW-, DUO-, LA-…) and match `docs/journeys/screens.md` in the `jamaal-app` repo;
 3. the **app icon** (chosen: monogram 1d) as three layer SVGs for Icon Composer.
 
 The first task is the package. The screens are for reference when building views after that.
@@ -145,7 +145,7 @@ The package mirrors the repo layout, so `mockups/` copies straight into `jamaal-
 
 - `README.md`: this file. Keep it as `docs/design/threadskit-handoff.md` or similar.
 - `mockups/README.md`: the new top-level index for the mockups folder.
-- `mockups/screens/README.md`: index of all 110 frames, by batch and register ID.
+- `mockups/screens/README.md`: index of every frame (110 in batches 1–7, then batches 8 and 9), by batch and register ID.
 - `mockups/screens/<batch>/*.png`: 2× light-mode exports, one per frame, named `<REGISTER-ID>-<state>.png`.
-- `mockups/screens/source/`: the editable HTML (seven `Jamaal v4 · …` batches, `ThreadsKit Tokens`, `Jamaal App Icon`) and `support.js`, which they need to open.
+- `mockups/screens/source/`: the editable HTML (nine `Jamaal v4 · …` batches, `ThreadsKit Tokens`, `Jamaal App Icon`) and `support.js`, which they need to open.
 - `icon/`: the outlined icon layers, the small-size variant, previews and `JamaalMark.svg`. Move these into the Xcode project or an `assets/` folder rather than `mockups/`.

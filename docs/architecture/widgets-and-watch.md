@@ -1,6 +1,6 @@
 # Widgets and the watch
 
-How Jamaal appears outside the app: the **v1 widgets** and the **v1.1 watch companion**. The decision and its reasons are in [ADR 0003](decisions/0003-widgets-in-v1-watch-in-v1-1). Frames are still to be drawn: see the [Design brief](../design/widgets-and-watch-brief).
+How Jamaal appears outside the app: the **v1 widgets** and the **v1.1 watch companion**. The decision and its reasons are in [ADR 0003](decisions/0003-widgets-in-v1-watch-in-v1-1). The frames are drawn (batches 8 and 9, `WG-` and `WA-` in the [register](../journeys/screens)); what they decided is in the [reconciliation](../design/widgets-and-watch-reconciliation). Where this page and the frames differ on detail, the frames win and this page is updated to match.
 
 ## v1 widgets: scope
 
@@ -9,9 +9,18 @@ How Jamaal appears outside the app: the **v1 widgets** and the **v1.1 watch comp
 | **Next Anchor** | Small; Lock Screen circular, rectangular and inline | The current or next Anchor window: *Dhuhr · until 15:32*, *School run opens 15:00* | Opens Today |
 | **Today** | Small, medium, large | The headline (*Four things, gently paced.*), the capacity bar, the next two or three tasks (more on large) | Opens Today (a task opens its detail on a wide layout) |
 
-On iPhone, iPad and Mac (desktop and Notification Center). In the evening the Today widget can offer *Plan tomorrow*, which opens Night Planning. Not in v1: interactive habit logging, Control Center controls, StandBy-specific designs, Live Activity.
+On iPhone, iPad and Mac (desktop and Notification Center). *Plan tomorrow* (which opens Night Planning) appears from the planning time on the **medium and large** Today widget only, never on the Lock Screen, and is the **only terracotta on any widget**. Not in v1: interactive habit logging, Control Center controls, StandBy-specific designs, Live Activity.
 
 Rules for what a widget shows: the same words and figures as the app (it reuses the engine's reads), no streaks, no red, **no Wellbeing score**, nothing that nags. A day that has nothing in it says so calmly.
+
+**What the frames decided (widgets)** (`WG-01` to `WG-06`; the numbered list is in the reconciliation):
+- **No checkboxes:** v1 widgets aren't interactive, so a task shows a category dot (a primary-coloured dot when tinted), never a check circle.
+- **Accent group:** `widgetAccentable()` goes on the Anchor name, Today's count, the italic headline line and the bar fills; everything else is primary.
+- **Next Anchor states:** upcoming; open; **closing soon** (keeps the accent colour; only the word and the bar's length change); none left today; **needs attention** (a window that closed unmarked: a neutral full bar and *Not marked yet*, neither accent nor error).
+- **Today states:** normal; **all done** (the capacity bar is hidden; *4 of 4 done* and the next Anchor); **blank day** (the next Anchor and no "add something" prompt); evening with *Plan tomorrow*; **read-only** (the same data, no *Plan tomorrow*, one quiet *View only* line, and no upgrade prompt on a widget).
+- **Dynamic Type at accessibility sizes:** the medium drops its headline to the count and shows one task, truncated to one line.
+- **Habits stay off the large widget for now** (provisional; *owner to confirm*).
+- On the Mac the widget is full colour when the desktop is focused and vibrant with a window in front.
 
 ## The data: `WidgetSnapshot`
 
@@ -35,7 +44,7 @@ Widgets use a `jamaal://` link: `jamaal://today`, `jamaal://plan` (Night Plannin
 
 ## Privacy and rendering
 
-- **Task titles are marked privacy-sensitive**, so they are hidden on the Lock Screen while the device is locked. Anchor titles (a prayer name, the school run) show, because the Next Anchor widget is useless without them. *Owner to confirm.*
+- **Task titles are marked privacy-sensitive**, so they are hidden on the Lock Screen while the device is locked. Anchor titles (a prayer name, the school run) show on a locked Lock Screen, because the Next Anchor widget is useless without them; `WG-05` draws it that way (*owner to confirm*). Redacted titles are drawn as a plain bar, on a locked Lock Screen, in StandBy and on an iPad Lock Screen.
 - Full-colour, tinted (accented) and Lock Screen (vibrant) rendering are all designed for. Fonts are bundled into the extension.
 - A widget needs no network. Read-only users see the same data with no editing prompts.
 
@@ -71,6 +80,19 @@ One widget extension target for iOS and macOS, built on JamaalCore and ThreadsKi
 
 Not on the watch: Night Planning, Wellbeing (a score on the wrist would feel judgemental), Settings, and adding a task (a dictated quick add is a later decision, because it needs defaults for effort and importance).
 
+### Navigation and screens (as drawn in `WA-00` to `WA-04`)
+
+- **Navigation:** three vertical pages (**Today · Anchors · Habits**), at most one level of push, and **Focus as a full-screen cover**. No tab bar.
+- **Launch rule:** a running session opens Focus; otherwise an open, unmarked Anchor window opens Anchors; otherwise Today. After an hour away the rule runs again.
+- **Task detail exists on the watch:** *Begin* is the filled button and *Done* is glass; the checklist is read-only; *More on your iPhone* points the way to defer and drop.
+- **Finish** offers the finish sheet's two choices, **Done** and **Stop for now**; defer, drop and the note line stay on the phone.
+- **Anchors:** *Attended* is the filled action, and a long-press on a row gives *Attended* or *Skipped*. The app says the time left in words (*40 min left*); complications show the clock time.
+- **Counted habits** are saved as you turn the crown, debounced into one queued action; past the target the ring stays full and the number keeps going.
+- **Pending state:** a queued action shows a dashed ring and *waiting for iPhone*; an *As of 14:20* footer appears only after 15 minutes without a snapshot.
+- **First run:** before the first snapshot arrives, Today says *Open Jamaal on your iPhone to begin.* Read-only users see the pages with no action buttons.
+- **40 mm:** the primary button is 40 pt tall there, the only place below 44.
+- **Icon:** the existing monogram layers with a circular mask, one appearance, and the small-size J at list and notification sizes.
+
 ### How it works (option 1: companion)
 
 - The **iPhone owns the store.** It sends the latest `WidgetSnapshot` to the watch with `updateApplicationContext` (latest wins). The watch app and its complications read it from the watch's own container and reload their timelines.
@@ -85,6 +107,8 @@ The watchOS platform added to JamaalCore (its manifest lists iOS and macOS today
 
 ## Open questions
 
-- Anchor titles visible on the locked Lock Screen: yes (proposed) or hidden too?
-- Live Activity stays v1.1 (proposed).
-- Whether the Today widget's large size shows habits as well as tasks.
+Settled by the frames and the owner (see the reconciliation): Live Activity stays v1.1; the Next Anchor complication shows the closing clock time and not a draining ring.
+
+Still **owner** sign-offs (the frames assume them):
+- **Anchor titles visible on a locked Lock Screen** (proposed and drawn: yes).
+- **Habits off the large Today widget** for now (provisional).
