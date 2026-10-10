@@ -5,6 +5,7 @@
 //  Created by Fahad Ahmed on 25/9/2026.
 //
 
+import JamaalCore
 import SwiftData
 import SwiftUI
 import UserNotifications
@@ -46,10 +47,15 @@ struct JamaalApp: App {
                             reminders.storefront = storefront
                             notificationDelegate.onRoute = { [reminders] route in reminders.route = route }
                             tick(container)
+                            #if DEBUG
+                            if let url = DebugLaunch.openURL { open(url, in: container) }
+                            #endif
                         }
                         .onChange(of: scenePhase) { _, phase in
                             if phase == .active { tick(container) }
                         }
+                        // A widget link takes the same path in as a notification tap.
+                        .onOpenURL { url in open(url, in: container) }
                 } else {
                     // A store that won't open must not crash the app: say so, and offer Try again or a reset.
                     RecoveryScreen(stillFailing: openFailedAgain, onTryAgain: tryAgain, onReset: reset)
@@ -81,6 +87,13 @@ struct JamaalApp: App {
 
     /// Keeps the data current on launch and whenever the app becomes active.
     @MainActor
+    /// A widget link takes the same path in as a notification tap: it sets the route the shell and Today already act on.
+    /// A link that isn't one of ours is ignored.
+    private func open(_ url: URL, in container: ModelContainer) {
+        let today = TodayDay.boundary(in: container.mainContext).logicalDate(at: .now)
+        if let route = JamaalLink.route(from: url, today: today) { reminders.route = route }
+    }
+
     private func tick(_ container: ModelContainer) {
         do {
             try AppEngine.tick(context: container.mainContext)

@@ -199,7 +199,7 @@ struct AppShell: View {
         }
         .onChange(of: reminders.route) { _, route in
             switch route {
-            case .planning, .today: selection = .today
+            case .planning, .today, .task: selection = .today
             case .subscription: selection = .settings
             case nil: break
             }
