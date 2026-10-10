@@ -54,6 +54,8 @@ No `.xcworkspace` — JamaalCore is a Swift Package (added as a local package de
 - **Jamaal app** (`JamaalTests`): Swift Testing, for view models / app-layer logic.
 - **Jamaal app** (`JamaalUITests`): **XCTest / XCUITest** — non-negotiable, Apple hasn't replaced XCUITest with Swift Testing. Use for the custom, interaction-heavy components (capacity slider, night-planning wizard) that are easy to silently break in a SwiftUI refactor.
 
+- **Jamaal Mac app** (`JamaalMacUITests`): **XCUITest on a real Mac** (macOS only; the iOS UI tests can't run there). It launches the Mac app with the same debug arguments and checks the sidebar, the menu shortcuts (⌘1–⌘4, ⌘N, ⌘, and ⇧⌘P), the focus chip and the right-click menu. Run it with `xcodebuild test -project Jamaal/Jamaal.xcodeproj -scheme JamaalMac -destination 'platform=macOS'`. **It drives the real desktop: it takes over the mouse and keyboard while it runs, so keep your hands off, and the first run may ask you to allow control of the computer.** An automated agent session can't screenshot the Mac or press keys in it, so this is how Mac behaviour is verified.
+
 ## SwiftData / CloudKit constraints (applies to all three primitives)
 
 The authoritative model list, conventions and dedup keys are in `docs/schema/overview.md`.

@@ -28,12 +28,20 @@
 			remoteGlobalIDString = EC072FBD30666379000ED989;
 			remoteInfo = Jamaal;
 		};
+		EC0B00000000000000000008 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC072FB630666379000ED989 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EC072FBD30666379000ED989;
+			remoteInfo = Jamaal;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		EC072FBE3066637A000ED989 /* Jamaal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jamaal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC072FCF3066637B000ED989 /* JamaalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamaalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC072FD93066637B000ED989 /* JamaalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamaalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC0B00000000000000000001 /* JamaalMacUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamaalMacUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -65,6 +73,11 @@
 			path = JamaalUITests;
 			sourceTree = "<group>";
 		};
+		EC0B00000000000000000002 /* JamaalMacUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = JamaalMacUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +100,11 @@
 			files = (
 			);
 		};
+		EC0B00000000000000000004 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -96,6 +114,7 @@
 				EC072FC03066637A000ED989 /* Jamaal */,
 				EC072FD23066637B000ED989 /* JamaalTests */,
 				EC072FDC3066637B000ED989 /* JamaalUITests */,
+				EC0B00000000000000000002 /* JamaalMacUITests */,
 				EC072FBF3066637A000ED989 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -106,6 +125,7 @@
 				EC072FBE3066637A000ED989 /* Jamaal.app */,
 				EC072FCF3066637B000ED989 /* JamaalTests.xctest */,
 				EC072FD93066637B000ED989 /* JamaalUITests.xctest */,
+				EC0B00000000000000000001 /* JamaalMacUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -181,6 +201,27 @@
 			productReference = EC072FD93066637B000ED989 /* JamaalUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		EC0B00000000000000000006 /* JamaalMacUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC0B00000000000000000011 /* Build configuration list for PBXNativeTarget "JamaalMacUITests" */;
+			buildPhases = (
+				EC0B00000000000000000003 /* Sources */,
+				EC0B00000000000000000004 /* Frameworks */,
+				EC0B00000000000000000005 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EC0B00000000000000000007 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				EC0B00000000000000000002 /* JamaalMacUITests */,
+			);
+			name = JamaalMacUITests;
+			productName = JamaalMacUITests;
+			productReference = EC0B00000000000000000001 /* JamaalMacUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -199,6 +240,10 @@
 						TestTargetID = EC072FBD30666379000ED989;
 					};
 					EC072FD83066637B000ED989 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = EC072FBD30666379000ED989;
+					};
+					EC0B00000000000000000006 = {
 						CreatedOnToolsVersion = 27.0;
 						TestTargetID = EC072FBD30666379000ED989;
 					};
@@ -225,6 +270,7 @@
 				EC072FBD30666379000ED989 /* Jamaal */,
 				EC072FCE3066637B000ED989 /* JamaalTests */,
 				EC072FD83066637B000ED989 /* JamaalUITests */,
+				EC0B00000000000000000006 /* JamaalMacUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -241,6 +287,11 @@
 			);
 		};
 		EC072FD73066637B000ED989 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		EC0B00000000000000000005 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -263,6 +314,11 @@
 			files = (
 			);
 		};
+		EC0B00000000000000000003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -275,6 +331,11 @@
 			isa = PBXTargetDependency;
 			target = EC072FBD30666379000ED989 /* Jamaal */;
 			targetProxy = EC072FDA3066637B000ED989 /* PBXContainerItemProxy */;
+		};
+		EC0B00000000000000000007 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EC072FBD30666379000ED989 /* Jamaal */;
+			targetProxy = EC0B00000000000000000008 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -562,6 +623,50 @@
 			};
 			name = Release;
 		};
+		EC0B00000000000000000009 /* Debug configuration for PBXNativeTarget "JamaalMacUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y395QDPS3G;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fhdamd.JamaalMacUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = Jamaal;
+			};
+			name = Debug;
+		};
+		EC0B00000000000000000010 /* Release configuration for PBXNativeTarget "JamaalMacUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y395QDPS3G;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fhdamd.JamaalMacUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = Jamaal;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -594,6 +699,14 @@
 			buildConfigurations = (
 				EC072FE93066637B000ED989 /* Debug configuration for PBXNativeTarget "JamaalUITests" */,
 				EC072FEA3066637B000ED989 /* Release configuration for PBXNativeTarget "JamaalUITests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		EC0B00000000000000000011 /* Build configuration list for PBXNativeTarget "JamaalMacUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC0B00000000000000000009 /* Debug configuration for PBXNativeTarget "JamaalMacUITests" */,
+				EC0B00000000000000000010 /* Release configuration for PBXNativeTarget "JamaalMacUITests" */,
 			);
 			defaultConfigurationName = Release;
 		};
