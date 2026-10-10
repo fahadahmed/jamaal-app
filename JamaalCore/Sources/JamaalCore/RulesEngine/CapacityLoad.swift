@@ -2,7 +2,7 @@ import Foundation
 
 /// How loaded a day is, from `loadScore` (planned task minutes as a percentage of the budget).
 /// Thresholds are from docs/architecture/rules-engine.md, module 7.
-public enum LoadState: Sendable, Hashable {
+public enum LoadState: Sendable, Hashable, Codable {
     case light, balanced, full, overloaded, exhausting
 
     /// `< 70` light · `< 90` balanced · `< 110` full · `≤ 140` overloaded · beyond that exhausting.

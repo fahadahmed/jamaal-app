@@ -24,6 +24,12 @@ public enum AnchorAttendance {
     static let closingSoonFraction = 0.25
     static let closingSoonMinimum: TimeInterval = 10 * 60
 
+    /// When a window turns `closingSoon`: its last 25%, and never less than 10 minutes before it closes.
+    static func closingSoonStart(windowStart: Date, windowEnd: Date) -> Date {
+        let length = windowEnd.timeIntervalSince(windowStart)
+        return windowEnd.addingTimeInterval(-max(length * closingSoonFraction, closingSoonMinimum))
+    }
+
     public static func windowState(of anchor: Anchor, at now: Date) -> AnchorWindowState {
         if now < anchor.windowStart { return .upcoming }
         if now >= anchor.windowEnd { return .closed }

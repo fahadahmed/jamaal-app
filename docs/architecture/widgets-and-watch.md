@@ -28,9 +28,11 @@ A pure, `Codable`, device-independent value in JamaalCore (no UI, no SwiftData o
 
 - `generatedAt`, the logical day it describes, and `isReadOnly` (the trial ended without a subscription)
 - the headline count of tasks left, and the capacity (planned minutes, budget, level, load state)
-- the first *N* tasks: id, title, effort, category colour key, done or not (and how many more there are)
-- the next *N* Anchors: id, title, state (upcoming, open, closing), window start and end
-- the evening planning time and whether it is due
+- the count of tasks left and done, and the first *N* of what is left in Today's order (id, title, effort, category colour key), with how many more there are; the done tasks are only counted
+- the next *N* Anchors still to attend, as windows: id, name, the rule's title when there is one, phase (`open`, `closingSoon`, `upcoming`, or `needsAttention` for a closed window nobody marked), start, end, progress. Attended, skipped and delegated ones are left out; open ones come first, then upcoming, then unmarked ones
+- the evening planning time and whether it has passed (the link is offered only when not read-only), and when the logical day ends
+
+Built as `WidgetSnapshot.make(in:now:access:)` in JamaalCore. It only reads: it never marks a prompt as shown.
 
 It is tested like any engine module. The phone's and iPad's widgets, the Mac's, and the watch all use it.
 

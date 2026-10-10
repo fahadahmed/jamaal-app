@@ -73,7 +73,7 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 
 ## Phase 5 — Ship preparation
 
-- **Widgets** (Next Anchor and Today on iPhone, iPad and Mac, with Lock Screen accessories; frames drawn in batch 8): `WidgetSnapshot` and the timeline logic first (no entitlements needed), then the extension after the App Group: see [Widgets and the watch](../architecture/widgets-and-watch).
+- **Widgets** (Next Anchor and Today on iPhone, iPad and Mac, with Lock Screen accessories; frames drawn in batch 8): `WidgetSnapshot` and the timeline logic are built and tested in JamaalCore (no entitlements needed; #214), then the extension after the App Group: see [Widgets and the watch](../architecture/widgets-and-watch).
 - iPad, Mac and iPhone Duo layouts; accessibility (Dynamic Type, VoiceOver for the custom components, no colour-only states); right-to-left and Arabic-Indic numerals.
 - **Trial and paywall**, with the read-only state.
 - Privacy, data export and the App Store material.
