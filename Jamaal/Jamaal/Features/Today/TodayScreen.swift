@@ -29,6 +29,9 @@ struct TodayScreen: View {
     @State private var choosing: AnchorInstance?
     @State private var isAdding = false
     @State private var droppingTask: TaskItem?
+    #if os(macOS)
+    @SwiftUI.FocusState private var listFocused: Bool
+    #endif
     @State private var openTask: TaskItem?
     @State private var planning: PlanningFlow?
     // The category filter is local to this device and this day: it clears at the rollover and on relaunch.
@@ -110,6 +113,12 @@ struct TodayScreen: View {
             .padding(.bottom, 120)                                          // clear of the floating tab bar
         }
         .scrollIndicators(.hidden)
+        #if os(macOS)
+        .modifier(MacListKeys(
+            focused: $listFocused, navigable: navigableTasks(overview, filter: filter),
+            select: { task in isAdding = false; openTask = task },
+            selected: openTask, toggle: toggle, drop: { droppingTask = $0 }))
+        #endif
         .background(threads.app.ignoresSafeArea())          // inside the stack: the stack's own ground is the system's white
         .toolbar { todayToolbar(categories: categories, isFiltering: filter != nil, label: overview.map { TodayCopy.headerLabel($0.today) } ?? "") }
         #if os(macOS)
@@ -636,7 +645,7 @@ struct TodayScreen: View {
                 ForEach(rows, id: \.id) { task in
                     TaskRow(task: task, doneTime: task.completedAt.map(Self.timeFormat.string(from:)),
                             trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
-                            onToggle: { toggle(task) }, onOpen: { isAdding = false; openTask = task }, isSelected: usesPanel && openTask?.id == task.id,
+                            onToggle: { toggle(task) }, onOpen: { isAdding = false; openTask = task; focusList() }, isSelected: usesPanel && openTask?.id == task.id,
                             onBegin: rowBegin(task), onDrop: rowDrop(task))
                 }
             }
@@ -662,7 +671,7 @@ struct TodayScreen: View {
                 if alsoTodayOpen {
                     ForEach(overview.alsoToday, id: \.id) { task in
                         TaskRow(task: task, doneTime: nil, trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
-                            onToggle: { toggle(task) }, onOpen: { isAdding = false; openTask = task }, isSelected: usesPanel && openTask?.id == task.id,
+                            onToggle: { toggle(task) }, onOpen: { isAdding = false; openTask = task; focusList() }, isSelected: usesPanel && openTask?.id == task.id,
                             onBegin: rowBegin(task), onDrop: rowDrop(task))
                     }
                 }
@@ -683,6 +692,18 @@ struct TodayScreen: View {
     /// The right-click menu is for regular width (a Mac, or an iPad with a pointer); the phone's rows have none.
     private func rowBegin(_ task: TaskItem) -> (() -> Void)? {
         usesPanel ? { if requireAccess(.beginFocus) { focus.begin(.task(task)) } } : nil
+    }
+
+    /// The tasks the arrow keys walk, in the order Today draws them: the list, then "Also today" when it is open.
+    private func navigableTasks(_ overview: TodayOverview?, filter: TaskCategory?) -> [TaskItem] {
+        guard let overview else { return [] }
+        return TodayTaskFilter.apply(overview.shown + overview.completedToday, to: filter) + (alsoTodayOpen ? overview.alsoToday : [])
+    }
+
+    private func focusList() {
+        #if os(macOS)
+        listFocused = true
+        #endif
     }
 
     private func rowDrop(_ task: TaskItem) -> (() -> Void)? {

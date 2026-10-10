@@ -101,6 +101,7 @@ struct TaskDetailSheet: View {
                 }
             }
             Text(task.title).threadsType(.display(.compact)).foregroundStyle(threads.ink)
+                .accessibilityIdentifier("detailTitle")
                 .accessibilityAddTraits(.isHeader)
         }
     }
