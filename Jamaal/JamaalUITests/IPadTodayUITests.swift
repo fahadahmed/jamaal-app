@@ -196,6 +196,9 @@ final class IPadTodayUITests: XCTestCase {
         field.typeText("Renew the passport")
         app.buttons["High"].tap()                                                       // dated today, so it shows on Today
         app.buttons["addTaskButton"].tap()
+        // At weekends the sample day's budget is Low and already over, so "Day is full" offers first: carry on.
+        let anyway = app.buttons["addAnyway"]
+        if anyway.waitForExistence(timeout: 3) { anyway.tap() }
         XCTAssertTrue(row("Renew the passport", in: app).waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["detailPlaceholder"].waitForExistence(timeout: 5))
     }
@@ -228,5 +231,44 @@ final class IPadTodayUITests: XCTestCase {
         tapAdd(app)
         XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["beginButton"].exists)
+    }
+
+    // MARK: The row's context menu (right-click on a Mac, press and hold on an iPad)
+
+    @MainActor
+    func testPressingARowOffersItsMenu() throws {
+        let app = launch()
+        let clinic = row("Call the clinic back", in: app)
+        XCTAssertTrue(clinic.waitForExistence(timeout: 10))
+        clinic.press(forDuration: 1.2)
+        XCTAssertTrue(app.buttons["Begin"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Mark done"].exists)
+        XCTAssertTrue(app.buttons["Open"].exists)
+        XCTAssertTrue(app.buttons["Drop"].exists)
+    }
+
+    @MainActor
+    func testBeginFromTheMenuStartsTheTimer() throws {
+        let app = launch()
+        let clinic = row("Call the clinic back", in: app)
+        XCTAssertTrue(clinic.waitForExistence(timeout: 10))
+        clinic.press(forDuration: 1.2)
+        app.buttons["Begin"].tap()
+        XCTAssertTrue(app.buttons["focusChip"].waitForExistence(timeout: 8), "a session is running")
+    }
+
+    @MainActor
+    func testDropFromTheMenuAsksFirstThenRemovesTheTask() throws {
+        let app = launch()
+        let clinic = row("Call the clinic back", in: app)
+        XCTAssertTrue(clinic.waitForExistence(timeout: 10))
+        clinic.press(forDuration: 1.2)
+        app.buttons["Drop"].tap()
+        let confirm = app.buttons.matching(NSPredicate(format: "label == 'Drop' AND identifier != 'dropButton'")).firstMatch
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5), "it asks before dropping")
+        XCTAssertTrue(row("Call the clinic back", in: app).exists, "nothing has gone yet")
+        confirm.tap()
+        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: row("Call the clinic back", in: app))
+        XCTAssertEqual(XCTWaiter().wait(for: [gone], timeout: 8), .completed)
     }
 }

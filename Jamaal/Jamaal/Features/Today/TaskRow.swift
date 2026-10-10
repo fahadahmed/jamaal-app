@@ -20,8 +20,35 @@ struct TaskRow: View {
     var onOpen: () -> Void = {}
     /// The task open in the detail panel beside the list (regular width).
     var isSelected = false
+    /// The right-click menu (regular width): Begin and Drop; Open and Mark done come from the row's own actions.
+    var onBegin: (() -> Void)? = nil
+    var onDrop: (() -> Void)? = nil
+    @State private var hovering = false
+
+    private var hasMenu: Bool { onBegin != nil || onDrop != nil }
+    /// A Mac shows the task being timed as a filled row (macOS-TD-01); elsewhere the chip says it.
+    private var inFocusRow: Bool {
+        #if os(macOS)
+        isTiming && !task.isCompleted
+        #else
+        false
+        #endif
+    }
 
     var body: some View {
+        if hasMenu { row.contextMenu { menu } } else { row }
+    }
+
+    @ViewBuilder private var menu: some View {
+        Button("Open") { onOpen() }
+        if let onBegin, !task.isCompleted, !isTiming { Button("Begin", action: onBegin) }
+        Button(task.isCompleted ? "Mark not done" : "Mark done", action: onToggle)
+        if let onDrop, !task.isCompleted {
+            Button(TodayCopy.dropMenuTitle(repeating: task.repeatMode != .off), role: .destructive, action: onDrop)
+        }
+    }
+
+    private var row: some View {
         HStack(alignment: .top, spacing: ThreadsSpace.row) {
             Button(action: onToggle) { CheckCircle(isDone: task.isCompleted) }
                 .buttonStyle(.plain)
@@ -32,11 +59,18 @@ struct TaskRow: View {
                         Text(task.title)
                             .threadsType(.row)
                             .strikethrough(task.isCompleted, color: threads.ink3)
-                            .foregroundStyle(task.isCompleted ? threads.ink3 : threads.ink)
-                        metaLine
+                            .foregroundStyle(inFocusRow ? threads.onAccent : (task.isCompleted ? threads.ink3 : threads.ink))
+                        if !inFocusRow { metaLine }
                     }
                     .padding(.top, 9)
                     Spacer(minLength: 0)
+                    if inFocusRow {
+                        TimelineView(.periodic(from: .now, by: 1)) { context in
+                            Text(FocusCopy.inFocus(seconds: FocusSessions.trackedSeconds(of: task, at: context.date)))
+                                .threadsType(.meta).foregroundStyle(threads.onAccent).monospacedDigit()
+                        }
+                        .padding(.top, 11)
+                    }
                 }
                 .contentShape(Rectangle())
             }
@@ -45,15 +79,22 @@ struct TaskRow: View {
         }
         .padding(.vertical, ThreadsSpace.hair)
         .background {
-            // Drawn outside the row, into the margin, so the row's content doesn't move when it is picked.
-            if isSelected {
+            // Drawn outside the row, into the margin, so the row's content doesn't move when it is picked, hovered or timed.
+            if inFocusRow {
+                RoundedRectangle(cornerRadius: ThreadsRadius.card).fill(threads.accent)
+                    .padding(.horizontal, -ThreadsSpace.row).padding(.vertical, -2)
+            } else if isSelected {
                 RoundedRectangle(cornerRadius: ThreadsRadius.card)
                     .fill(threads.card)
                     .overlay(RoundedRectangle(cornerRadius: ThreadsRadius.card).strokeBorder(threads.ink, lineWidth: 1.5))
                     .padding(.horizontal, -ThreadsSpace.row)
                     .padding(.vertical, -2)
+            } else if hovering {
+                RoundedRectangle(cornerRadius: ThreadsRadius.card).fill(threads.line)
+                    .padding(.horizontal, -ThreadsSpace.row).padding(.vertical, -2)
             }
         }
+        .onHover { hovering = $0 }
         .accessibilityElement(children: .contain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }

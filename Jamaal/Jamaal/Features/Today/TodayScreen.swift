@@ -28,6 +28,7 @@ struct TodayScreen: View {
     @State private var alsoTodayOpen = false
     @State private var choosing: AnchorInstance?
     @State private var isAdding = false
+    @State private var droppingTask: TaskItem?
     @State private var openTask: TaskItem?
     @State private var planning: PlanningFlow?
     // The category filter is local to this device and this day: it clears at the rollover and on relaunch.
@@ -111,6 +112,10 @@ struct TodayScreen: View {
         .scrollIndicators(.hidden)
         .background(threads.app.ignoresSafeArea())          // inside the stack: the stack's own ground is the system's white
         .toolbar { todayToolbar(categories: categories, isFiltering: filter != nil, label: overview.map { TodayCopy.headerLabel($0.today) } ?? "") }
+        #if os(macOS)
+        .navigationTitle("Today")
+        .navigationSubtitle((overview.map { TodayCopy.headerLabel($0.today) } ?? "").capitalized)
+        #endif
         .inlineNavigationTitle()
         .clearNavigationBarBackground()
         let listColumn = NavigationStack { list }
@@ -146,6 +151,14 @@ struct TodayScreen: View {
             AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now))
         }
         .onChange(of: isAdding) { _, adding in if adding && usesPanel { openTask = nil } }
+        .confirmationDialog(
+            droppingTask.map { TodayCopy.dropMenuTitle(repeating: $0.repeatMode != .off) + "?" } ?? "",
+            isPresented: Binding(get: { droppingTask != nil }, set: { if !$0 { droppingTask = nil } }), titleVisibility: .visible, presenting: droppingTask
+        ) { task in
+            Button(TodayCopy.dropMenuTitle(repeating: task.repeatMode != .off), role: .destructive) { drop(task) }
+        } message: { task in
+            Text(task.repeatMode == .off ? "It leaves Today. Nothing else changes." : "The next one is created as usual.")
+        }
         // ⌘N on a Mac (from any section: the request waits until Today is on screen).
         .onChange(of: commands.newTaskRequested, initial: true) { _, requested in
             guard requested else { return }
@@ -502,10 +515,12 @@ struct TodayScreen: View {
     /// outer display): the date on the left, then one glass group with the category filter, Plan tomorrow and Add.
     @ToolbarContentBuilder
     private func todayToolbar(categories: [TaskCategory], isFiltering: Bool, label: String) -> some ToolbarContent {
+        #if !os(macOS)
         ToolbarItem(placement: .jamaalLeading) {
             Text(label).threadsType(.label).foregroundStyle(threads.ink2).lineLimit(1).fixedSize()
         }
         .sharedBackgroundVisibility(.hidden)
+        #endif
         ToolbarItemGroup(placement: .jamaalTrailing) {
             Menu {
                 Picker("Show tasks from", selection: Binding(get: { filterState.selectedID }, set: { filterState.selectedID = $0 })) {
@@ -620,7 +635,8 @@ struct TodayScreen: View {
                 ForEach(rows, id: \.id) { task in
                     TaskRow(task: task, doneTime: task.completedAt.map(Self.timeFormat.string(from:)),
                             trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
-                            onToggle: { toggle(task) }, onOpen: { isAdding = false; openTask = task }, isSelected: usesPanel && openTask?.id == task.id)
+                            onToggle: { toggle(task) }, onOpen: { isAdding = false; openTask = task }, isSelected: usesPanel && openTask?.id == task.id,
+                            onBegin: rowBegin(task), onDrop: rowDrop(task))
                 }
             }
         }
@@ -645,7 +661,8 @@ struct TodayScreen: View {
                 if alsoTodayOpen {
                     ForEach(overview.alsoToday, id: \.id) { task in
                         TaskRow(task: task, doneTime: nil, trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
-                            onToggle: { toggle(task) }, onOpen: { isAdding = false; openTask = task }, isSelected: usesPanel && openTask?.id == task.id)
+                            onToggle: { toggle(task) }, onOpen: { isAdding = false; openTask = task }, isSelected: usesPanel && openTask?.id == task.id,
+                            onBegin: rowBegin(task), onDrop: rowDrop(task))
                     }
                 }
             }
@@ -660,6 +677,22 @@ struct TodayScreen: View {
     private func perform(_ action: AnchorAction, on anchor: AnchorInstance) {
         now = .now
         try? TodayAnchors.perform(action, on: anchor, now: now, boundary: TodayDay.boundary(in: context))
+    }
+
+    /// The right-click menu is for regular width (a Mac, or an iPad with a pointer); the phone's rows have none.
+    private func rowBegin(_ task: TaskItem) -> (() -> Void)? {
+        usesPanel ? { if requireAccess(.beginFocus) { focus.begin(.task(task)) } } : nil
+    }
+
+    private func rowDrop(_ task: TaskItem) -> (() -> Void)? {
+        usesPanel ? { droppingTask = task } : nil
+    }
+
+    private func drop(_ task: TaskItem) {
+        guard requireAccess(.dropTask) else { return }
+        TaskActions.drop(task, now: .now, boundary: TodayDay.boundary(in: context), context: context)
+        if openTask?.id == task.id { openTask = nil }
+        now = .now
     }
 
     private func toggle(_ task: TaskItem) {

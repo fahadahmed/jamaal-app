@@ -96,6 +96,9 @@ enum TodayCopy {
 
     // MARK: Rows
 
+    /// The right-click menu's drop item: a repeating task is skipped for today, not dropped for good.
+    static func dropMenuTitle(repeating: Bool) -> String { repeating ? "Skip this one" : "Drop" }
+
     /// The parts of a task row's second line, before the category: how often it has slipped, and the estimate.
     static func taskMeta(deferrals: Int, effortMinutes: Int?) -> [String] {
         var parts: [String] = []

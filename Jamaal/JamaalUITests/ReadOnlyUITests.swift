@@ -74,10 +74,11 @@ final class ReadOnlyUITests: XCTestCase {
         let app = launchReadOnly()
         let slider = app.sliders["Capacity for today"]
         XCTAssertTrue(slider.waitForExistence(timeout: 10))
+        let before = slider.value as? String                                      // Medium on a weekday, Low at weekends
         slider.coordinate(withNormalizedOffset: CGVector(dx: 0.97, dy: 0.2)).tap()
         assertLocked(app)
         dismissSheet(app)
-        XCTAssertEqual(slider.value as? String, "Medium")                        // unchanged
+        XCTAssertEqual(slider.value as? String, before)                          // unchanged
     }
 
     @MainActor

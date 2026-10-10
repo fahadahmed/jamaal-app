@@ -47,6 +47,9 @@ enum FocusCopy {
         return m == 0 ? nil : "\(m) min"
     }
 
+    /// The in-focus row on a Mac: "In focus · 24:18".
+    static func inFocus(seconds: Int) -> String { "In focus · \(clock(seconds))" }
+
     static func settleEyebrow(minutes: Int) -> String { "Timing now · \(minutes) min" }
     static let settleLine = "Settle this one first. Its time is kept whichever you pick."
     static func thenBegin(_ title: String) -> String { "Then Begin \"\(title)\"" }

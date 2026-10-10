@@ -174,3 +174,16 @@ struct HabitCopyTests {
         #expect(TodayCopy.habitsSummary(done: 0, total: 0) == "none today")
     }
 }
+
+struct MacRowCopyTests {
+    @Test func theInFocusRowSaysItsRunningTime() {
+        #expect(FocusCopy.inFocus(seconds: 24 * 60 + 18) == "In focus · 24:18")
+        #expect(FocusCopy.inFocus(seconds: 0) == "In focus · 0:00")
+        #expect(FocusCopy.inFocus(seconds: 3600 + 5 * 60 + 9) == "In focus · 1:05:09")
+    }
+
+    @Test func aRepeatingTaskIsSkippedNotDroppedFromTheMenu() {
+        #expect(TodayCopy.dropMenuTitle(repeating: false) == "Drop")
+        #expect(TodayCopy.dropMenuTitle(repeating: true) == "Skip this one")
+    }
+}
