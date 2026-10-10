@@ -42,7 +42,7 @@ A widget does not tick. Its entries are computed ahead for the moments that chan
 
 ## Opening the app
 
-Widgets use a `jamaal://` link: `jamaal://today`, `jamaal://plan` (Night Planning), `jamaal://task/<id>`. The app turns a link into the same route a notification tap uses, so there is one path in.
+Widgets use a `jamaal://` link: `jamaal://today`, `jamaal://plan` (Night Planning), `jamaal://task/<id>`. The app turns a link into the same route a notification tap uses, so there is one path in: `JamaalLink` (JamaalCore) parses the URL into a `NotificationRoute` (`jamaal://plan` is Night Planning for tomorrow; `jamaal://task/<id>` is the new `.task` route, which opens that task on Today), and anything unrecognised (a wrong host, a bad id, extra path) is ignored rather than guessed at. The app registers the `jamaal` scheme and handles `onOpenURL`. A link while read-only still works, and `plan` is refused by the same access check as the Plan tomorrow button. iOS shows its own "Open in Jamaal?" confirmation for links opened from outside the app (Safari, the `simctl openurl` command); a widget's own tap does not.
 
 ## Privacy and rendering
 

@@ -44,6 +44,8 @@ public enum NotificationRoute: Equatable, Sendable {
     case planning(CalendarDate)
     case today
     case subscription
+    /// A link from a widget to one task.
+    case task(UUID)
 
     /// The route for a planned notification's stable id; anything unrecognised opens Today.
     public static func route(forID id: String) -> NotificationRoute {

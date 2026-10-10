@@ -189,9 +189,10 @@ struct TodayScreen: View {
             if morningDue { try? MorningCard.markShown(now: promptClocks(boundary).morning ?? now, boundary: boundary, context: context) }
         }
         .task(id: wellbeingFingerprint) { refreshWellbeing() }
-        // A tapped planning notification opens Night Planning (always tomorrow's plan, looking back at today).
+        // A tapped planning notification opens Night Planning (always tomorrow's plan, looking back at today); a widget's task link opens that task.
         .task(id: reminders.route) {
             if case .planning = reminders.route { startPlanning() }
+            if case .task(let id) = reminders.route, let task = tasks.first(where: { $0.id == id }) { isAdding = false; openTask = task }
             if reminders.route != nil { reminders.route = nil }
         }
         .task { await reminders.refresh() }
