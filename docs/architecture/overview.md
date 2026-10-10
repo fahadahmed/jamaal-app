@@ -66,6 +66,7 @@ Widgets are in v1 and a watch companion is v1.1 ([ADR 0003](decisions/0003-widge
 - **`JamaalCore`**: Swift Testing exclusively (`@Test`, `#expect`, `try #require`); the natural home for parameterised tests such as Anchor generation across time windows and prayer-time scenarios.
 - **App view models**: Swift Testing in `JamaalTests`.
 - **Custom, interaction-heavy components** (capacity slider, Night Planning wizard, focus chip): XCUITest in `JamaalUITests`.
+- **The Mac app** (sidebar, menu shortcuts, the right-click menu): XCUITest on a real Mac in `JamaalMacUITests` (scheme `JamaalMac`, a template to copy locally; see `CLAUDE.md`). It drives the real desktop, so it is run by hand, not in an unattended session.
 
 ## Business constraints that shape the build
 
