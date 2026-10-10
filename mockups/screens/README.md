@@ -4,7 +4,7 @@ High-fidelity reference frames for the current design: the cool ThreadsKit palet
 
 - **PNGs** are exported at 2× from the source files. iPhone frames are 393 pt wide (786 px). Frames taller than 852 pt are long-scroll captures showing the full content.
 - **Light appearance only.** Every source file has a light/dark toggle at the top right; dark values are in `docs/design/threadskit-usage.md` and the token file.
-- **File names start with the register ID** from `docs/journeys/screens.md` (TD-, TK-, FS-, HB-, AN-, NP-, WB-, ST-, OB-, SB-, SY-). Wide-layout files are prefixed with iPad, Duo or macOS.
+- **File names start with the register ID** from `docs/journeys/screens.md` (TD-, TK-, FS-, HB-, AN-, NP-, WB-, ST-, OB-, SB-, SY-, WG-, WA-). Wide-layout files are prefixed with iPad, Duo or macOS.
 - `source/` holds the editable HTML. Open any `.dc.html` in a browser with `support.js` next to it. Each frame carries the decisions and §10 checklist notes as annotations.
 - iPhone Duo point sizes are estimates. Confirm them against Apple's design resources.
 
@@ -166,6 +166,36 @@ Source: `source/Jamaal v4 · 7 Live Activity.dc.html`
 | FS-08 Minimal | [`7-live-activity/FS-08-minimal.png`](7-live-activity/FS-08-minimal.png) |
 | FS-08 Expanded | [`7-live-activity/FS-08-expanded.png`](7-live-activity/FS-08-expanded.png) |
 | FS-08 Duo outer | [`7-live-activity/FS-08-duo-outer.png`](7-live-activity/FS-08-duo-outer.png) |
+
+## 8 · Widgets (v1)
+
+Source: `source/Jamaal v4 · 8 Widgets.dc.html`. What these frames decided: [`docs/design/widgets-and-watch-reconciliation.md`](../../docs/design/widgets-and-watch-reconciliation.md). Tinted, clear and vibrant renderings belong to the system: the frames show which views take `widgetAccentable()`, not exact pixels.
+
+| Frame | File |
+|---|---|
+| WG-01 Next Anchor, Home Screen | [`8-widgets/WG-01-next-anchor-home.png`](8-widgets/WG-01-next-anchor-home.png) |
+| WG-02 Next Anchor, Lock Screen | [`8-widgets/WG-02-next-anchor-lock-screen.png`](8-widgets/WG-02-next-anchor-lock-screen.png) |
+| WG-03 Today, sizes | [`8-widgets/WG-03-today-sizes.png`](8-widgets/WG-03-today-sizes.png) |
+| WG-03 Today, states | [`8-widgets/WG-03-today-states.png`](8-widgets/WG-03-today-states.png) |
+| WG-04 Renderings (full colour, tinted, clear) | [`8-widgets/WG-04-renderings.png`](8-widgets/WG-04-renderings.png) |
+| WG-05 Privacy, Dynamic Type, right-to-left | [`8-widgets/WG-05-privacy-type-rtl.png`](8-widgets/WG-05-privacy-type-rtl.png) |
+| WG-06 iPad and Mac | [`8-widgets/WG-06-ipad-mac.png`](8-widgets/WG-06-ipad-mac.png) |
+
+## 9 · Apple Watch (v1.1)
+
+Source: `source/Jamaal v4 · 9 Apple Watch.dc.html`. Watch frames are 46 mm (208 × 248 pt), shown at 1.5×; take real point sizes and safe areas from Apple's design resources.
+
+| Frame | File |
+|---|---|
+| WA-00 App flow | [`9-watch/WA-00-app-flow.png`](9-watch/WA-00-app-flow.png) |
+| WA-01 Today | [`9-watch/WA-01-today.png`](9-watch/WA-01-today.png) |
+| WA-02 Anchors | [`9-watch/WA-02-anchors.png`](9-watch/WA-02-anchors.png) |
+| WA-03 Habits | [`9-watch/WA-03-habits.png`](9-watch/WA-03-habits.png) |
+| WA-04 Focus | [`9-watch/WA-04-focus.png`](9-watch/WA-04-focus.png) |
+| WA-05 Complications | [`9-watch/WA-05-complications.png`](9-watch/WA-05-complications.png) |
+| WA-06 and WA-07 Out of reach, data flow | [`9-watch/WA-06-07-out-of-reach-data-flow.png`](9-watch/WA-06-07-out-of-reach-data-flow.png) |
+| WA-08 Sizes (40, 44, 49 mm) | [`9-watch/WA-08-sizes.png`](9-watch/WA-08-sizes.png) |
+| WA-09 Watch app icon | [`9-watch/WA-09-app-icon.png`](9-watch/WA-09-app-icon.png) |
 
 ## Also in `source/`
 

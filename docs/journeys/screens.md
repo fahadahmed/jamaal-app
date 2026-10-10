@@ -4,7 +4,7 @@
 
 ## 1. How to read this
 
-**IDs** are stable: `TD` Today · `TK` tasks · `FS` focus sessions · `HB` habits · `AN` Anchors · `NP` Night Planning · `WB` Wellbeing · `ST` Settings · `OB` Onboarding · `SB` subscription · `SY` system and cross-cutting. Use them as the names of Design frames and as the names of the Swift views' screens.
+**IDs** are stable: `TD` Today · `TK` tasks · `FS` focus sessions · `HB` habits · `AN` Anchors · `NP` Night Planning · `WB` Wellbeing · `ST` Settings · `OB` Onboarding · `SB` subscription · `SY` system and cross-cutting · `WG` widgets · `WA` Apple Watch. Use them as the names of Design frames and as the names of the Swift views' screens.
 
 **Design status** — what Claude Design has today:
 
@@ -76,6 +76,8 @@ Each flow lists its trigger, the screens it passes through, its branches and its
 **F14 Categories.** `ST-04` (list, rename, reorder, add, archive and restore, one of five label colours; at most eight active); the picker inside `TK-01` / `TK-02`; optional Today filter (Tasks only; the meter stays whole-day; local, clears at rollover).
 
 **F15 Problems.** iCloud issue → `OB-03` (onboarding) or `SY-05` (later); an Anchor rule that can't be decoded → `AN-07`; two devices that both started a session → the later one is closed as abandoned and one quiet line says so on next open; a local store that won't open → a recovery screen (*Try again* / *Reset this device's data*); an iCloud account change → a notice with *Export my data* first; a value from a newer version → kept and shown as *Update Jamaal to see this*.
+
+**F-WA Watch.** Trigger: app icon, complication, Smart Stack, notification. Launch rule: a running session → `WA-04`; an open, unmarked Anchor window → `WA-02`; otherwise `WA-01`. After an hour away, the rule runs again. Pages move with the crown; one level of push (`WA-01` detail, `WA-03` kind screens); `WA-04` covers everything and returns to the page it came from. Every action shows at once and queues to the phone (`WA-06`).
 
 ## 4. Screen register
 
@@ -208,6 +210,32 @@ Columns: **ID · screen · entry · content and states · design · phase**. *De
 | SY-04 | Sheets vs panels | Sheets on compact; panels beside the list on regular | **Drawn** v3·D2 · not redrawn in v4 | v1 |
 | SY-05 | Problem states | iCloud problem line (dismissible; says the data is safe); account-changed notice; store-won't-open recovery screen; the quiet timer-clash line | **Drawn v4** · 3 frames | v1 |
 | SY-06 | App icon and launch screen | Three icon directions exist in the earlier mockups | **Drawn v4** · 1 frame | v1 |
+
+### Widgets (`WG`)
+
+| ID | Screen | Entry | Content and states | Design | Phase |
+|---|---|---|---|---|---|
+| WG-01 | **Next Anchor** (Home Screen small) | System | The current or next Anchor window, closing clock time, WindowBar. States: upcoming · open · closing soon · none left today · needs attention (window closed, not marked). Tap → `jamaal://today` | **Drawn v4** · 5 frames | v1 |
+| WG-02 | **Next Anchor** (Lock Screen accessory) | System | Inline (*Dhuhr · until 15:32*), circular (ring for window passed, closing time inside), rectangular (Anchor, window, next one beneath; the only size with *closes in N min*). Same five states. Vibrant rendering | **Drawn v4** · 2 frames | v1 |
+| WG-03 | **Today** (Home Screen small / medium / large) | System | Small: count left + CapacityMeter. Medium: headline, meter, next two tasks. Large: headline, meter, next five, Anchor line. States: normal · all done · blank day · evening with *Plan tomorrow* (Link → `jamaal://plan`) · read-only | **Drawn v4** · 7 frames | v1 |
+| WG-04 | Renderings | — | Full colour light and dark; tinted/clear accent grouping | **Drawn v4** · 3 frames | v1 |
+| WG-05 | Privacy, Dynamic Type, RTL | — | Redacted task titles (locked, StandBy, iPad Lock Screen); accessibility XXL layout; right-to-left | **Drawn v4** · 3 frames | v1 |
+| WG-06 | Mac desktop and Notification Center | System | Full colour when the desktop is focused, vibrant with a window in front | **Drawn v4** · 1 frame | v1 |
+
+### Apple Watch (`WA`)
+
+| ID | Screen | Entry | Content and states | Design | Phase |
+|---|---|---|---|---|---|
+| WA-00 | **App flow** | — | Ways in, three vertical pages (Today · Anchors · Habits), one level of push, Focus as a full-screen cover; launch rule | **Drawn v4** · flow | v1.1 |
+| WA-01 | **Today** | Page 1 | Next task large + Done; crown list with check circles; task detail (Begin filled, Done glass); Done + Undo (2 s); all done | **Drawn v4** · 5 frames | v1.1 |
+| WA-02 | **Anchors** | Page 2 / complication / Smart Stack | Open window, time left in words, Attended; long-press a row → Attended / Skipped. Smart Stack card with relevance | **Drawn v4** · 2 frames | v1.1 |
+| WA-03 | **Habits** | Page 3 | List; counted by crown; avoid (Held today / Log a slip); timed (Begin → WA-04) | **Drawn v4** · 4 frames | v1.1 |
+| WA-04 | **Focus** | Begin / launch rule / complication | Running · paused · finished (Done / Stop for now). Count-up timer, soft haptic at the estimate, no alarm | **Drawn v4** · 3 frames | v1.1 |
+| WA-05 | **Complications** | Watch face | Next Anchor: inline, rectangular, corner, circular. Today: circular, rectangular (redacted when locked). Focus: Smart Stack while running. Tinted grouping | **Drawn v4** · 3 frames | v1.1 |
+| WA-06 | Out of reach | Any page | Dashed pending mark on queued actions; *As of 14:20* footer after 15 min without a snapshot | **Drawn v4** · 1 frame | v1.1 |
+| WA-07 | Data flow | — | Snapshot → watch (latest wins); actions → phone (queued, idempotent) | **Drawn v4** · diagram | v1.1 |
+| WA-08 | Sizes | — | 40 mm, 44 mm, 49 mm | **Drawn v4** · 3 frames | v1.1 |
+| WA-09 | Watch app icon | — | 1d monogram, circular mask; small-size J at list/notification sizes | **Drawn v4** · 3 frames | v1.1 |
 
 ### Layout variants that need their own frames
 

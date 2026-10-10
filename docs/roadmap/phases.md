@@ -73,7 +73,7 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 
 ## Phase 5 — Ship preparation
 
-- **Widgets** (Next Anchor and Today on iPhone, iPad and Mac, with Lock Screen accessories): `WidgetSnapshot` and the timeline logic first (no entitlements needed), then the extension after the App Group: see [Widgets and the watch](../architecture/widgets-and-watch).
+- **Widgets** (Next Anchor and Today on iPhone, iPad and Mac, with Lock Screen accessories; frames drawn in batch 8): `WidgetSnapshot` and the timeline logic first (no entitlements needed), then the extension after the App Group: see [Widgets and the watch](../architecture/widgets-and-watch).
 - iPad, Mac and iPhone Duo layouts; accessibility (Dynamic Type, VoiceOver for the custom components, no colour-only states); right-to-left and Arabic-Indic numerals.
 - **Trial and paywall**, with the read-only state.
 - Privacy, data export and the App Store material.
@@ -82,7 +82,7 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 
 ## After v1
 
-**v1.1:** a **companion watchOS app** (Today, Anchors, the habit counter, the focus timer, complications; fed by `WidgetSnapshot` over WatchConnectivity), App Intents and interactive widgets, Control Center controls, Live Activity and Dynamic Island for the running session, detected habits (the offer to promote a repeating task), and sharing / referral if a real need shows up.
+**v1.1:** a **companion watchOS app** (Today, Anchors, the habit counter, the focus timer, complications; fed by `WidgetSnapshot` over WatchConnectivity; frames drawn in batch 9), App Intents and interactive widgets, Control Center controls, Live Activity and Dynamic Island for the running session, detected habits (the offer to promote a repeating task), and sharing / referral if a real need shows up.
 **Later:** native Android.
 
 ## Open items that could move things

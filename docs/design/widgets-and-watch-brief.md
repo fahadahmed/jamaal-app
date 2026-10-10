@@ -1,5 +1,7 @@
 # Brief for Claude Design: widgets and the watch
 
+> **Status: delivered.** Design drew batches 8 (widgets, `WG`) and 9 (Apple Watch, `WA`) from this brief. The frames are in `mockups/screens/8-widgets` and `9-watch`; what they decided, and the items that still need the owner's sign-off, are in [widgets and watch reconciliation](widgets-and-watch-reconciliation). The text below is the brief as sent.
+
 Jamaal has no widget or watch frames yet. This is what to draw, in the v4 language (ink on `app`, `terra` as the only action colour, Fraunces for headlines, Hanken Grotesk for text, JetBrains Mono for labels, no red, no streaks, no scores, calm copy). The architecture is in [Widgets and the watch](../architecture/widgets-and-watch); the decision is [ADR 0003](../architecture/decisions/0003-widgets-in-v1-watch-in-v1-1).
 
 ## v1: widgets
