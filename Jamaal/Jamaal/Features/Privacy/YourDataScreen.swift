@@ -5,6 +5,7 @@
 
 import SwiftData
 import SwiftUI
+import UniformTypeIdentifiers
 import ThreadsTokens
 import JamaalCore
 #if canImport(UIKit)
@@ -18,6 +19,11 @@ struct YourDataScreen: View {
     @Environment(\.modelContext) private var context
     @Environment(ReminderCenter.self) private var reminders
     @State private var exported: ExportedFile?
+    #if os(macOS)
+    @State private var exportFile = ExportFile(data: Data())
+    @State private var isSaving = false
+    @State private var savingRecords = 0
+    #endif
     @State private var message: String?
     @State private var firstConfirmation = false
     @State private var secondConfirmation = false
@@ -51,6 +57,15 @@ struct YourDataScreen: View {
         #if canImport(UIKit)
         .sheet(item: $exported) { file in ActivityView(url: file.url).presentationDetents([.medium, .large]) }
         #endif
+        #if os(macOS)
+        .fileExporter(isPresented: $isSaving, document: exportFile, contentType: .json, defaultFilename: PrivacyCopy.fileName(.now)) { result in
+            switch result {
+            case .success: message = PrivacyCopy.saved(records: savingRecords)
+            case .failure(let error):
+                if (error as? CocoaError)?.code != .userCancelled { message = "That couldn't be saved. Try again." }
+            }
+        }
+        #endif
         .alert(PrivacyCopy.firstTitle, isPresented: $firstConfirmation) {
             Button("Cancel", role: .cancel) {}
             Button("Continue", role: .destructive) { DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { secondConfirmation = true } }
@@ -65,11 +80,17 @@ struct YourDataScreen: View {
         do {
             let now = Date.now
             let data = try DataExport.json(in: context, now: now)
+            let records = try DataExport.records(in: context).values.reduce(0) { $0 + $1.count }
+            #if os(macOS)
+            exportFile = ExportFile(data: data)
+            savingRecords = records
+            isSaving = true                                  // the save panel; the message waits until it has been saved
+            #else
             let url = FileManager.default.temporaryDirectory.appendingPathComponent(PrivacyCopy.fileName(now))
             try data.write(to: url, options: .atomic)
-            let records = try DataExport.records(in: context).values.reduce(0) { $0 + $1.count }
             message = PrivacyCopy.exported(records: records)
             exported = ExportedFile(url: url)
+            #endif
         } catch {
             message = "That couldn't be exported. Try again."
         }

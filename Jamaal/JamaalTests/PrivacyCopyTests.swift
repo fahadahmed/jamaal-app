@@ -6,6 +6,7 @@
 import Foundation
 import SwiftUI
 import Testing
+import UniformTypeIdentifiers
 @testable import Jamaal
 
 struct PrivacyCopyTests {
@@ -21,6 +22,8 @@ struct PrivacyCopyTests {
     @Test func theExportMessageCountsRecords() {
         #expect(PrivacyCopy.exported(records: 1) == "Exported 1 record. Choose where to keep the file.")
         #expect(PrivacyCopy.exported(records: 42) == "Exported 42 records. Choose where to keep the file.")
+        #expect(PrivacyCopy.saved(records: 1) == "Saved 1 record.")
+        #expect(PrivacyCopy.saved(records: 42) == "Saved 42 records.")
     }
 
     @Test func deletionAsksTwiceAndSaysItCannotBeUndone() {
@@ -42,5 +45,15 @@ struct PrivacyCopyTests {
         #expect(AppTheme.system.scheme == nil && AppTheme.light.scheme == .light && AppTheme.dark.scheme == .dark)
         #expect(AppTheme.allCases.map(\.title) == ["System", "Light", "Dark"])
         #expect(AppTheme(rawValue: "nonsense") == nil)
+    }
+}
+
+/// The export document the Mac's save panel writes.
+struct ExportFileTests {
+    @Test func itHoldsTheExportAsJSON() {
+        let payload = Data("{\"ok\":true}".utf8)
+        let file = ExportFile(data: payload)
+        #expect(file.data == payload)
+        #expect(ExportFile.readableContentTypes == [.json])
     }
 }
