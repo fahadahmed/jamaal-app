@@ -450,7 +450,9 @@ At regular width (iPad, Mac, and a Duo's inner display) Today is a list with the
 
 **Keyboard on Today's list (Mac).** With the list focused, ↓ and ↑ move the selection one task at a time (the task shown in the panel; it stops at the ends, and with none selected ↓ picks the first and ↑ the last), Space marks the selected task done or not done, and Delete (or forward delete) asks to drop it with the usual confirmation (a done task can't be dropped). The walk covers the list in the order Today draws it, then "Also today" when it is open, and follows the category filter. Clicking a row focuses the list. There is no separate Return action: moving the selection already opens the task in the panel. `TaskListNavigation` holds the step logic (unit tested) and `MacListKeys` the key handling. Four Mac UI tests (`MacListKeysUITests`) cover it; they have not yet been seen to pass, because the Mac UI runner could not see the app's window when they were written (the existing smoke test failed the same way), so run them with ⌘U on the `JamaalMac` scheme.
 
-Not yet on the Mac: `fileExporter` for the data export (the share sheet is UIKit); the Mac app icon; and a macOS CI job.
+**Export my data (Mac).** The iOS share sheet is UIKit, so on a Mac the button opens the standard save panel through SwiftUI's `fileExporter` (the sandbox already allows user-selected files), with the file named as on iOS (`Jamaal-export-yyyy-mm-dd.json`). The line under the button says "Saved N records." only once the file has been saved, not when the panel opens; cancelling the panel leaves it as it was, and a failed save says "That couldn't be saved. Try again." The export content (`DataExport`) is unchanged, and the export stays available while read-only. `ExportFile` is the document the panel writes. Not checked by a UI test (the Mac UI runner couldn't see the app's window when this was written, and a save panel is a system window).
+
+Not yet on the Mac: the Mac app icon and a macOS CI job.
 
 Not yet done: visibility priority so Add stays visible longest when space is tight (the Duo-specific APIs are iOS 27.1 and gated).
 

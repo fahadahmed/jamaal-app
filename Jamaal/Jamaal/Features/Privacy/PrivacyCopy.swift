@@ -20,6 +20,8 @@ enum PrivacyCopy {
     }
 
     static func exported(records: Int) -> String { "Exported \(records) \(records == 1 ? "record" : "records"). Choose where to keep the file." }
+    /// On a Mac the file is saved through the save panel, so it says "Saved" only once it has been.
+    static func saved(records: Int) -> String { "Saved \(records) \(records == 1 ? "record" : "records")." }
     static let deleted = "Everything was deleted. Jamaal starts again from the beginning."
 
     static let firstTitle = "Delete all your data?"
