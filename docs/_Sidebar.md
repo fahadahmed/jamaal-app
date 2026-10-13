@@ -26,6 +26,7 @@
 ### Roadmap
 
 - [Phases](roadmap/phases)
+- [TestFlight readiness](roadmap/testflight-readiness)
 
 ### Design
 
