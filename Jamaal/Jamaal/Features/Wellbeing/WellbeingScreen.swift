@@ -149,11 +149,10 @@ struct WellbeingCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.row) {
-            HStack(alignment: .top, spacing: ThreadsSpace.row) {
-                CompanionMark()
+            CompanionRow {
                 Text(WellbeingCopy.cardText(nudge.pattern)).threadsType(.lede).foregroundStyle(threads.ink)
             }
-            HStack(spacing: ThreadsSpace.tight) {
+            AdaptiveButtons {
                 Button(action: onAction) {
                     Text(WellbeingCopy.cardAction(nudge.pattern)).threadsType(.row).foregroundStyle(.white)
                         .frame(maxWidth: .infinity, minHeight: 52).background(Capsule().fill(threads.terra)).contentShape(Capsule())

@@ -22,3 +22,20 @@ struct CompanionMark: View {
             .accessibilityHidden(true)
     }
 }
+
+/// The mark beside a companion line, which stacks above it at accessibility text sizes: beside a line set that large
+/// a long word ("tomorrow.") needs more width than is left, and widens the whole column.
+struct CompanionRow<Content: View>: View {
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        let layout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: ThreadsSpace.row))
+            : AnyLayout(HStackLayout(alignment: .top, spacing: ThreadsSpace.row))
+        layout {
+            CompanionMark()
+            content
+        }
+    }
+}

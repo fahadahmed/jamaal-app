@@ -24,7 +24,7 @@ struct PillSegment<Option: Hashable>: View {
                         .font(.custom(isOn ? "HankenGrotesk-SemiBold" : "HankenGrotesk-Regular", size: 15, relativeTo: .subheadline))
                         .foregroundStyle(isOn ? threads.ink : threads.ink2)
                         .padding(.horizontal, 18)
-                        .frame(height: 38)
+                        .frame(minHeight: 38)                                   // grows with the text: a fixed height clipped it at large sizes
                         .background { if isOn { Capsule().fill(threads.selected) } }
                         .contentShape(Capsule())
                 }

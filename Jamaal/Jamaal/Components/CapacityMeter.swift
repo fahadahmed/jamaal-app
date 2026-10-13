@@ -20,10 +20,10 @@ struct CapacityMeter: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
-            HStack {
+            AdaptiveRow {
                 Text(TodayCopy.meter(plannedMinutes: plannedMinutes, budgetMinutes: budgetMinutes, wholeDay: wholeDay))
                     .threadsType(.body).foregroundStyle(threads.ink)
-                Spacer()
+            } trailing: {
                 Text(TodayCopy.stateWord(state))
                     .threadsType(.label)
                     .foregroundStyle(TodayCopy.isOver(state) ? threads.terra : threads.ink2)
