@@ -73,6 +73,8 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 
 ## Phase 5 — Ship preparation
 
+- **First TestFlight build (target 18 Oct 2026):** see [TestFlight readiness](testflight-readiness) for what is ready, what waits for the paid programme and what needs your decision.
+
 - **Widgets** (Next Anchor and Today on iPhone, iPad and Mac, with Lock Screen accessories; frames drawn in batch 8): `WidgetSnapshot` and the timeline logic are built and tested in JamaalCore (no entitlements needed; #214), and so is the `jamaal://` link routing (#216), then the extension after the App Group: see [Widgets and the watch](../architecture/widgets-and-watch).
 - iPad, Mac and iPhone Duo layouts; accessibility (Dynamic Type, VoiceOver for the custom components, no colour-only states); right-to-left and Arabic-Indic numerals.
 - **Trial and paywall**, with the read-only state.
