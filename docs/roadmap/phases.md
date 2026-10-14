@@ -75,7 +75,7 @@ Schema, journeys and the rules engine are specified; the earlier planning was re
 
 - **First TestFlight build (target 18 Oct 2026):** see [TestFlight readiness](testflight-readiness) for what is ready, what waits for the paid programme and what needs your decision.
 
-- **Widgets** (Next Anchor and Today on iPhone, iPad and Mac, with Lock Screen accessories; frames drawn in batch 8): `WidgetSnapshot` and the timeline logic are built and tested in JamaalCore (no entitlements needed; #214), and so is the `jamaal://` link routing (#216), then the extension after the App Group: see [Widgets and the watch](../architecture/widgets-and-watch).
+- **Widgets** (Next Anchor and Today on iPhone, iPad and Mac, with Lock Screen accessories; frames drawn in batch 8): `WidgetSnapshot` and the timeline logic are built and tested in JamaalCore (no entitlements needed; #214), and so is the `jamaal://` link routing (#216); the extension target and the small Next Anchor widget are built (#231, it reads the shared store once the App Group is on); the Today widget and the Lock Screen accessories are next, then the App Group: see [Widgets and the watch](../architecture/widgets-and-watch).
 - iPad, Mac and iPhone Duo layouts; accessibility (Dynamic Type, VoiceOver for the custom components, no colour-only states) (first pass done in #227, see [Accessibility](../architecture/accessibility); a VoiceOver listening pass on a device is still to do); right-to-left and Arabic-Indic numerals.
 - **Trial and paywall**, with the read-only state.
 - Privacy, data export and the App Store material.

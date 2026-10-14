@@ -38,7 +38,7 @@ struct JamaalApp: App {
         WindowGroup {
             Group {
                 if let container {
-                    AppShell()
+                    RootView()
                         .modelContainer(container)
                         .environment(reminders)
                         .environment(storefront)

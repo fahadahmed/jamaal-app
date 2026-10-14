@@ -21,6 +21,8 @@ enum DebugLaunch {
     static var openFocus: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenFocus") }
     /// `-JamaalPickUp` adds a session on the clinic task that the rollover closed this morning (42 minutes).
     static var pickUp: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalPickUp") }
+    /// `-JamaalWidgetGallery` shows the widget views in each state, light and dark, to look at them without a Home Screen.
+    static var widgetGallery: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalWidgetGallery") }
     /// `-JamaalOpenURL jamaal://plan` opens that link as a widget tap would (the system's own "Open in Jamaal?"
     /// confirmation for links from outside can't be tapped in a test).
     static var openURL: URL? {
