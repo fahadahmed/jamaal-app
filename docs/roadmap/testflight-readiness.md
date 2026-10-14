@@ -17,10 +17,10 @@ The plan agreed on 11 Oct 2026: the **first TestFlight build around 18 Oct** wit
 
 The paid programme is active (15 Oct 2026): Xcode shows the Individual team `Y395QDPS3G` as paid, the same ID as the free Personal Team, so the project's `DEVELOPMENT_TEAM` and the Mac group identifier needed no change. Progress (#239):
 1. [x] **Paid team on the targets:** nothing to change (same Team ID).
-2. [x] **App Groups:** `com.apple.security.application-groups` with `$(APP_GROUP_ID)` is in `Jamaal.entitlements`, `Jamaal-Mac.entitlements`, `JamaalWidgets.entitlements` and `JamaalWidgets-Mac.entitlements`. The IDs are *registered in your Apple account* by the first signed build with `-allowProvisioningUpdates` (or Xcode's own signing): that has not been run yet.
-3. [x] **iCloud container** `iCloud.dev.fhdamd.Jamaal` is listed (with CloudKit and push) in the iOS and Mac entitlements, and **Debug now uses the full entitlements** (the empty personal file is only a free-team fallback). The container is created in your account by the same first signed build.
+2. [x] **App Groups:** `com.apple.security.application-groups` with `$(APP_GROUP_ID)` is in `Jamaal.entitlements`, `Jamaal-Mac.entitlements`, `JamaalWidgets.entitlements` and `JamaalWidgets-Mac.entitlements`. **Registered (15 Oct 2026)** by a signed `xcodebuild -allowProvisioningUpdates` build for iOS: provisioning profiles exist for `dev.fhdamd.Jamaal` and `dev.fhdamd.Jamaal.Widgets`, and the signed app and widget both carry `group.dev.fhdamd.Jamaal`. The Mac has not been built signed yet (it would also register this Mac as a development device).
+3. [x] **iCloud container** `iCloud.dev.fhdamd.Jamaal` is listed (with CloudKit and push) in the iOS and Mac entitlements, **Debug uses the full entitlements**, and the signed iOS app carries the container, CloudKit and `aps-environment = development`.
 4. [ ] **Turn CloudKit on** in the code (`cloudKitDatabase: .private("iCloud.dev.fhdamd.Jamaal")`): the next change, after the IDs and the container exist.
-5. [ ] **Check** the store's location after the first signed run: `<group>/Library/Application Support/Jamaal.store` (on the Mac, `~/Library/Group Containers/<id>/Library/Application Support/`), and the old `default.store` no longer written.
+5. [x] **Checked on the iPhone simulator (signed):** the store is `<group>/Library/Application Support/Jamaal.store` and the app's own folder holds no `default.store`. **Still to check** on a real iPhone and the Mac (`~/Library/Group Containers/<id>/Library/Application Support/`). The location rule: `<group>/Library/Application Support/Jamaal.store` (on the Mac, `~/Library/Group Containers/<id>/Library/Application Support/`), and the old `default.store` no longer written.
 
 ## Needs the paid programme
 
