@@ -345,6 +345,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=macosx*]" = AppIconMac;
+				APP_GROUP_ID = group.dev.fhdamd.Jamaal;
+				"APP_GROUP_ID[sdk=macosx*]" = "$(TeamIdentifierPrefix)dev.fhdamd.Jamaal";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Jamaal/Jamaal-Personal.entitlements";
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "Jamaal/Jamaal-Mac.entitlements";
@@ -382,6 +384,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=macosx*]" = AppIconMac;
+				APP_GROUP_ID = group.dev.fhdamd.Jamaal;
+				"APP_GROUP_ID[sdk=macosx*]" = "$(TeamIdentifierPrefix)dev.fhdamd.Jamaal";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Jamaal/Jamaal.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "Jamaal/Jamaal-Mac.entitlements";

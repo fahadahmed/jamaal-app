@@ -56,7 +56,7 @@ final class Storefront {
             return suite
         }
         #endif
-        return .standard
+        return AppGroup.defaults                     // shared with the widgets once the App Group is on; the standard ones until then
     }
 
     #if DEBUG

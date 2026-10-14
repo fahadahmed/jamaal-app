@@ -32,10 +32,19 @@ enum AppEngine {
     static func makeContainer(inMemory: Bool = false) throws -> ModelContainer {
         #if DEBUG
         if DebugLaunch.failOpen && !storeWasReset { throw CocoaError(.fileReadCorruptFile) }
-        return try JamaalSchema.makeContainer(inMemory: inMemory || DebugLaunch.inMemory)
-        #else
-        return try JamaalSchema.makeContainer(inMemory: inMemory)
+        let inMemory = inMemory || DebugLaunch.inMemory
         #endif
+        return try JamaalSchema.makeContainer(inMemory: inMemory, configuration: try groupConfiguration(inMemory: inMemory))
+    }
+
+    /// The store inside the App Group container, when the app has one (so widgets read the same data); nil otherwise,
+    /// which leaves the store where it has always been.
+    @MainActor
+    private static func groupConfiguration(inMemory: Bool) throws -> ModelConfiguration? {
+        guard !inMemory, AppGroup.containerURL != nil else { return nil }
+        let url = StoreLocation.current
+        try StoreLocation.prepare(url)
+        return ModelConfiguration(schema: JamaalSchema.current, url: url, cloudKitDatabase: .none)
     }
 
     #if DEBUG
@@ -50,7 +59,7 @@ enum AppEngine {
         storeWasReset = true
         if DebugLaunch.inMemory { return }
         #endif
-        let url = ModelConfiguration(schema: JamaalSchema.current, isStoredInMemoryOnly: false, cloudKitDatabase: .none).url
+        let url = StoreLocation.current
         for suffix in ["", "-shm", "-wal"] {
             try? FileManager.default.removeItem(at: URL(fileURLWithPath: url.path + suffix))
         }
