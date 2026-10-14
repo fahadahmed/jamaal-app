@@ -32,9 +32,12 @@ public struct AnchorsOverview {
         let live = all.filter { !$0.isArchived }.sorted { ($0.createdAt, $0.title, $0.id.uuidString) < ($1.createdAt, $1.title, $1.id.uuidString) }
         let rows = live.map { rule -> Row in
             let state = state(of: rule, today: today)
+            // An occurrence that is already done is not "next", even while its window is still open: Isha runs past midnight.
+            let done = Set((rule.anchors ?? []).filter { [.attended, .skipped, .delegated].contains($0.status) }
+                .map { "\(CalendarDate(storedDate: $0.occurrenceDate).isoString)|\($0.slotKey)" })
             let next = AnchorGenerator
                 .preview(rule: rule, days: (0..<horizonDays).map { today.addingDays($0) }, boundary: boundary)
-                .filter { $0.windowEnd > now }
+                .filter { $0.windowEnd > now && !done.contains("\($0.occurrenceDate.isoString)|\($0.slotKey)") }
                 .min { ($0.windowStart, $0.slotKey) < ($1.windowStart, $1.slotKey) }
             return Row(rule: rule, state: state, next: next)
         }
