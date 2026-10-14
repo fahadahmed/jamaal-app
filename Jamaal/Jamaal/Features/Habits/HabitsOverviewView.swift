@@ -112,11 +112,13 @@ struct HabitsOverviewView: View {
             Button {
                 withAnimation(.snappy) { if isOpen { openGroups.remove(group.group.id) } else { openGroups.insert(group.group.id) } }
             } label: {
-                HStack {
+                AdaptiveRow {
                     Text(group.group.title).threadsType(.row).foregroundStyle(threads.ink)
-                    Spacer()
-                    Text(HabitsCopy.groupCount(done: group.doneToday, due: group.dueToday)).threadsType(.body).foregroundStyle(threads.ink2)
-                    Image(systemName: isOpen ? "chevron.up" : "chevron.down").foregroundStyle(threads.ink3)
+                } trailing: {
+                    HStack(spacing: ThreadsSpace.tight) {
+                        Text(HabitsCopy.groupCount(done: group.doneToday, due: group.dueToday)).threadsType(.body).foregroundStyle(threads.ink2)
+                        Image(systemName: isOpen ? "chevron.up" : "chevron.down").foregroundStyle(threads.ink3)
+                    }
                 }
                 .frame(minHeight: ThreadsHit.minimum)
                 .contentShape(Rectangle())

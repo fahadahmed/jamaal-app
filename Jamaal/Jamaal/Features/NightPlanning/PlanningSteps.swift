@@ -563,7 +563,7 @@ struct LoadStep: View {
     private func normalDayCard(_ minutes: Int) -> some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.row) {
             Text(SettingsCopy.suggestion(minutes)).threadsType(.lede).foregroundStyle(threads.ink2).accessibilityIdentifier("normalDayOffer")
-            HStack(spacing: ThreadsSpace.tight) {
+            AdaptiveButtons {
                 Button { flow.acceptNormalDay(minutes); normalDay = nil; bump() } label: {
                     Text("Set it").threadsType(.row).foregroundStyle(threads.ink)
                         .frame(maxWidth: .infinity, minHeight: 48).overlay(Capsule().strokeBorder(threads.ink, lineWidth: 1.2)).contentShape(Capsule())
@@ -585,8 +585,7 @@ struct LoadStep: View {
 
     private func suggestionCard(_ suggestion: MoveSuggestion) -> some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.row) {
-            HStack(alignment: .top, spacing: ThreadsSpace.row) {
-                CompanionMark()
+            CompanionRow {
                 Text(PlanningCopy.moveOffer(title: suggestion.task.title, target: suggestion.target, today: flow.forDate))
                     .threadsType(.lede).foregroundStyle(threads.ink)
             }

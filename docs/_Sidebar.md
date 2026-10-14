@@ -6,6 +6,7 @@
 - [ADR 0002: Reconcile planning chat v2](architecture/decisions/0002-reconcile-master-summary-v2)
 - [ADR 0003: Widgets, watch and the App Group](architecture/decisions/0003-widgets-in-v1-watch-in-v1-1)
 - [Widgets and the watch](architecture/widgets-and-watch)
+- [Accessibility](architecture/accessibility)
 
 ### Schema
 

@@ -108,6 +108,9 @@ struct TodayScreen: View {
                     if eveningDue && state != .allDone && canShapeThePlan { planTomorrowRow }
                 }
             }
+            // Pinned to the visible width: at accessibility sizes one long word in a title would otherwise widen the whole
+            // column past its margins instead of wrapping.
+            .containerRelativeFrame(.horizontal, alignment: .leading) { width, _ in width - ThreadsSpace.gutter * 2 }
             .padding(.horizontal, ThreadsSpace.gutter)
             .padding(.top, ThreadsSpace.row)
             .padding(.bottom, 120)                                          // clear of the floating tab bar
@@ -321,8 +324,7 @@ struct TodayScreen: View {
     }
 
     private var tonightCardView: some View {
-        HStack(alignment: .top, spacing: ThreadsSpace.row) {
-            CompanionMark()
+        CompanionRow {
             VStack(alignment: .leading, spacing: 2) {
                 Text(OnboardingCopy.tonightTitle).threadsType(.lede).foregroundStyle(threads.ink)
                 Text(OnboardingCopy.tonightLine(planningMinute: settings.first?.planningMinute ?? 1200)).threadsType(.body).foregroundStyle(threads.ink2)
@@ -454,7 +456,7 @@ struct TodayScreen: View {
     private func remindersBanner(_ boundary: DayBoundary) -> some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.row) {
             Text(ReminderCopy.banner).threadsType(.lede).foregroundStyle(threads.ink)
-            HStack(spacing: ThreadsSpace.tight) {
+            AdaptiveButtons {
                 Button(action: startPlanning) {
                     Text("Plan tomorrow").threadsType(.row).foregroundStyle(.white)
                         .frame(maxWidth: .infinity, minHeight: 52).background(Capsule().fill(threads.terra)).contentShape(Capsule())
@@ -478,11 +480,10 @@ struct TodayScreen: View {
     /// TD-07: no plan was confirmed for today. Pick for today opens the shortened flow; Not now puts it away.
     private var morningCard: some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.row) {
-            HStack(alignment: .top, spacing: ThreadsSpace.row) {
-                CompanionMark()
+            CompanionRow {
                 Text(TodayCopy.morningCard).threadsType(.lede).foregroundStyle(threads.ink)
             }
-            HStack(spacing: ThreadsSpace.tight) {
+            AdaptiveButtons {
                 Button(action: pickForToday) {
                     Text("Pick for today").threadsType(.row).foregroundStyle(.white)
                         .frame(maxWidth: .infinity, minHeight: 52).background(Capsule().fill(threads.terra))

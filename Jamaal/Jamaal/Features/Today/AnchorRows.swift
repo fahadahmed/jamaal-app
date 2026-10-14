@@ -78,12 +78,14 @@ struct AnchorGroupRowView: View {
                 HStack(alignment: .top, spacing: ThreadsSpace.row) {
                     CheckCircle(isDone: allAttended, isMuted: false)
                     VStack(alignment: .leading, spacing: ThreadsSpace.hair) {
-                        HStack(alignment: .firstTextBaseline) {
+                        AdaptiveRow(alignment: .firstTextBaseline) {
                             Text(group.title).threadsType(.row).foregroundStyle(group.isAllDecided ? threads.ink2 : threads.ink)
-                            Spacer(minLength: ThreadsSpace.tight)
-                            Text(TodayCopy.groupCount(attended: group.attended, counting: group.counting))
-                                .threadsType(.label).foregroundStyle(threads.ink2)
-                            Image(systemName: isOpen ? "chevron.up" : "chevron.down").foregroundStyle(threads.ink3)
+                        } trailing: {
+                            HStack(spacing: ThreadsSpace.tight) {
+                                Text(TodayCopy.groupCount(attended: group.attended, counting: group.counting))
+                                    .threadsType(.label).foregroundStyle(threads.ink2)
+                                Image(systemName: isOpen ? "chevron.up" : "chevron.down").foregroundStyle(threads.ink3)
+                            }
                         }
                         Text(TodayCopy.groupDetail(
                             nextTitle: group.next?.anchor.title, nextState: group.next?.state,

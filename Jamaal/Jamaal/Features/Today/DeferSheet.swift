@@ -37,8 +37,7 @@ struct DeferSheet: View {
                     Text(TaskDetailCopy.ordinal(preview.ordinal)).threadsType(.label).foregroundStyle(threads.ink2)
                     Text(task.title).threadsType(.display(.compact)).foregroundStyle(threads.ink)
                 }
-                HStack(alignment: .top, spacing: ThreadsSpace.row) {
-                    CompanionMark()
+                CompanionRow {
                     VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
                         Text(TaskDetailCopy.deferLine(preview)).threadsType(.lede).foregroundStyle(threads.ink)
                         if let ease = TaskDetailCopy.easeNote(preview) {
