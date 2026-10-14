@@ -119,6 +119,31 @@ final class AnchorsTabUITests: XCTestCase {
         XCTAssertTrue(row("Choir", in: app).waitForExistence(timeout: 10))
     }
 
+    /// The window of a time steps by five minutes either way, down to five and up to eight hours.
+    @MainActor
+    func testATimesWindowCanBeShortenedAsWellAsLengthened() throws {
+        let app = launch(rules: false)
+        app.buttons["addAnchorRule"].tap()
+        let custom = app.buttons["type-custom"]
+        XCTAssertTrue(custom.waitForExistence(timeout: 5))
+        custom.tap()
+        type("School pickup", into: app.textFields["anchorName"])
+        app.buttons["addSlot"].tap()
+        app.buttons["slot-0"].tap()
+        let fewer = app.buttons["Take one from window"], more = app.buttons["Add one to window"]
+        XCTAssertTrue(fewer.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["30 min"].exists, "a new time starts at 30 minutes")
+        fewer.tap()
+        XCTAssertTrue(app.staticTexts["25 min"].waitForExistence(timeout: 3), "one tap on minus takes five minutes off")
+        fewer.tap(); fewer.tap()
+        XCTAssertTrue(app.staticTexts["15 min"].waitForExistence(timeout: 3))
+        more.tap()
+        XCTAssertTrue(app.staticTexts["20 min"].waitForExistence(timeout: 3))
+        for _ in 0..<4 { fewer.tap() }
+        XCTAssertTrue(app.staticTexts["5 min"].waitForExistence(timeout: 3), "down to the five-minute floor")
+        XCTAssertFalse(fewer.isEnabled, "and no lower")
+    }
+
     @MainActor
     func testABreakCanBeAddedToARuleAndRemoved() throws {
         let app = launch(rules: true)

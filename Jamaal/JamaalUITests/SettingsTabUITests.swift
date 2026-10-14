@@ -56,6 +56,23 @@ final class SettingsTabUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["normalDay"].label, "2h 45m")
     }
 
+    /// A finger lands anywhere on a stepper's button, not on the thin line of the minus sign. The test taps near each
+    /// button's corner, away from the symbol, as a thumb would.
+    @MainActor
+    func testTheSteppersWorkWhenTappedAwayFromTheSymbol() throws {
+        let app = launch()
+        open("settings-capacity", in: app)
+        XCTAssertEqual(app.staticTexts["normalDay"].label, "3h")
+        let more = app.buttons["Add one to normal day"], fewer = app.buttons["Take one from normal day"]
+        XCTAssertTrue(more.waitForExistence(timeout: 5))
+        more.coordinate(withNormalizedOffset: CGVector(dx: 0.15, dy: 0.12)).tap()
+        XCTAssertEqual(app.staticTexts["normalDay"].label, "3h 15m", "the plus works away from its centre")
+        fewer.coordinate(withNormalizedOffset: CGVector(dx: 0.15, dy: 0.12)).tap()
+        XCTAssertEqual(app.staticTexts["normalDay"].label, "3h", "the minus works away from its centre")
+        fewer.coordinate(withNormalizedOffset: CGVector(dx: 0.85, dy: 0.88)).tap()
+        XCTAssertEqual(app.staticTexts["normalDay"].label, "2h 45m", "and from the opposite corner")
+    }
+
     @MainActor
     func testAWeekdayLevelChangesAndTheNormalDayShowsOnTheHomeRow() throws {
         let app = launch()

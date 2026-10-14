@@ -44,17 +44,40 @@ struct StepperPill: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            Button(action: onDecrement) { Image(systemName: "minus").frame(width: 54, height: ThreadsHit.minimum) }
-                .disabled(!canDecrement)
-                .opacity(canDecrement ? 1 : 0.35)
-                .accessibilityLabel("Take one from \(title)")
+            Button {
+                trace("minus", enabled: canDecrement)
+                onDecrement()
+            } label: {
+                Image(systemName: "minus").frame(width: 54, height: ThreadsHit.minimum).contentShape(Rectangle())
+            }
+            .disabled(!canDecrement)
+            .opacity(canDecrement ? 1 : 0.35)
+            .accessibilityLabel("Take one from \(title)")
             Rectangle().fill(threads.line2).frame(width: 1, height: 22)
-            Button(action: onIncrement) { Image(systemName: "plus").frame(width: 54, height: ThreadsHit.minimum) }
-                .accessibilityLabel("Add one to \(title)")
+            Button {
+                trace("plus", enabled: true)
+                onIncrement()
+            } label: {
+                Image(systemName: "plus").frame(width: 54, height: ThreadsHit.minimum).contentShape(Rectangle())
+            }
+            .accessibilityLabel("Add one to \(title)")
         }
         .buttonStyle(.plain)
         .foregroundStyle(threads.ink)
         .background(Capsule().fill(threads.card.opacity(0.6)))
-        .overlay(Capsule().strokeBorder(threads.line2, lineWidth: 1))
+        .overlay(Capsule().strokeBorder(threads.line2, lineWidth: 1).allowsHitTesting(false))
+    }
+
+    /// Debug builds log each tap that reaches the button (Console, category "stepper"), to tell a tap that never arrives
+    /// from one that arrives and changes nothing.
+    private func trace(_ side: String, enabled: Bool) {
+        #if DEBUG
+        stepperLog.info("\(side, privacy: .public) tapped on \(title, privacy: .public), enabled=\(enabled)")
+        #endif
     }
 }
+
+#if DEBUG
+import os
+private let stepperLog = Logger(subsystem: "dev.fhdamd.Jamaal", category: "stepper")
+#endif
