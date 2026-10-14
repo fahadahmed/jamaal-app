@@ -11,6 +11,9 @@
 		EC0A00000000000000000002 /* JamaalCore in Frameworks */ = {isa = PBXBuildFile; productRef = EC0A00000000000000000012 /* JamaalCore */; };
 		EC0A00000000000000000003 /* ThreadsTokens in Frameworks */ = {isa = PBXBuildFile; productRef = EC0A00000000000000000013 /* ThreadsTokens */; };
 		EC0A00000000000000000004 /* JamaalCore in Frameworks */ = {isa = PBXBuildFile; productRef = EC0A00000000000000000014 /* JamaalCore */; };
+		EC0C00000000000000000002 /* ThreadsTokens in Frameworks */ = {isa = PBXBuildFile; productRef = EC0C00000000000000000015 /* ThreadsTokens */; };
+		EC0C00000000000000000003 /* JamaalCore in Frameworks */ = {isa = PBXBuildFile; productRef = EC0C00000000000000000016 /* JamaalCore */; };
+		EC0C00000000000000000004 /* JamaalWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = EC0C00000000000000000001 /* JamaalWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,13 +38,33 @@
 			remoteGlobalIDString = EC072FBD30666379000ED989;
 			remoteInfo = Jamaal;
 		};
+		EC0C00000000000000000013 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC072FB630666379000ED989 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EC0C00000000000000000012;
+			remoteInfo = JamaalWidgets;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EC0C00000000000000000011 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+				EC0C00000000000000000004 /* JamaalWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		EC072FBE3066637A000ED989 /* Jamaal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jamaal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC072FCF3066637B000ED989 /* JamaalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamaalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC072FD93066637B000ED989 /* JamaalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamaalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC0B00000000000000000001 /* JamaalMacUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamaalMacUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC0C00000000000000000001 /* JamaalWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = JamaalWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -49,6 +72,21 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+			);
+			target = EC072FBD30666379000ED989 /* Jamaal */;
+		};
+		EC0C00000000000000000006 /* Exceptions for "JamaalWidgets" folder in "JamaalWidgets" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = EC0C00000000000000000012 /* JamaalWidgets */;
+		};
+		EC0C00000000000000000007 /* Exceptions for "JamaalWidgets" folder in "Jamaal" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				JamaalWidgets.swift,
 			);
 			target = EC072FBD30666379000ED989 /* Jamaal */;
 		};
@@ -78,6 +116,15 @@
 			path = JamaalMacUITests;
 			sourceTree = "<group>";
 		};
+		EC0C00000000000000000005 /* JamaalWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				EC0C00000000000000000007 /* Exceptions for "JamaalWidgets" folder in "Jamaal" target */,
+				EC0C00000000000000000006 /* Exceptions for "JamaalWidgets" folder in "JamaalWidgets" target */,
+			);
+			path = JamaalWidgets;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +152,13 @@
 			files = (
 			);
 		};
+		EC0C00000000000000000009 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				EC0C00000000000000000002 /* ThreadsTokens in Frameworks */,
+				EC0C00000000000000000003 /* JamaalCore in Frameworks */,
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -115,6 +169,7 @@
 				EC072FD23066637B000ED989 /* JamaalTests */,
 				EC072FDC3066637B000ED989 /* JamaalUITests */,
 				EC0B00000000000000000002 /* JamaalMacUITests */,
+				EC0C00000000000000000005 /* JamaalWidgets */,
 				EC072FBF3066637A000ED989 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -126,6 +181,7 @@
 				EC072FCF3066637B000ED989 /* JamaalTests.xctest */,
 				EC072FD93066637B000ED989 /* JamaalUITests.xctest */,
 				EC0B00000000000000000001 /* JamaalMacUITests.xctest */,
+				EC0C00000000000000000001 /* JamaalWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -140,11 +196,16 @@
 				EC072FBA30666379000ED989 /* Sources */,
 				EC072FBB30666379000ED989 /* Frameworks */,
 				EC072FBC30666379000ED989 /* Resources */,
+				EC0C00000000000000000011 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
+			dependencies = (
+				EC0C00000000000000000014 /* PBXTargetDependency */,
+			);
 			fileSystemSynchronizedGroups = (
 				EC072FC03066637A000ED989 /* Jamaal */,
+				EC0C00000000000000000005 /* JamaalWidgets */,
 			);
 			name = Jamaal;
 			packageProductDependencies = (
@@ -222,6 +283,28 @@
 			productReference = EC0B00000000000000000001 /* JamaalMacUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		EC0C00000000000000000012 /* JamaalWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC0C00000000000000000017 /* Build configuration list for PBXNativeTarget "JamaalWidgets" */;
+			buildPhases = (
+				EC0C00000000000000000008 /* Sources */,
+				EC0C00000000000000000009 /* Frameworks */,
+				EC0C00000000000000000010 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				EC0C00000000000000000005 /* JamaalWidgets */,
+			);
+			name = JamaalWidgets;
+			packageProductDependencies = (
+				EC0C00000000000000000015 /* ThreadsTokens */,
+				EC0C00000000000000000016 /* JamaalCore */,
+			);
+			productName = JamaalWidgets;
+			productReference = EC0C00000000000000000001 /* JamaalWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -247,6 +330,9 @@
 						CreatedOnToolsVersion = 27.0;
 						TestTargetID = EC072FBD30666379000ED989;
 					};
+					EC0C00000000000000000012 = {
+						CreatedOnToolsVersion = 27.0;
+					};
 				};
 			};
 			buildConfigurationList = EC072FB930666379000ED989 /* Build configuration list for PBXProject "Jamaal" */;
@@ -271,6 +357,7 @@
 				EC072FCE3066637B000ED989 /* JamaalTests */,
 				EC072FD83066637B000ED989 /* JamaalUITests */,
 				EC0B00000000000000000006 /* JamaalMacUITests */,
+				EC0C00000000000000000012 /* JamaalWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -292,6 +379,11 @@
 			);
 		};
 		EC0B00000000000000000005 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		EC0C00000000000000000010 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -319,6 +411,11 @@
 			files = (
 			);
 		};
+		EC0C00000000000000000008 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -337,16 +434,21 @@
 			target = EC072FBD30666379000ED989 /* Jamaal */;
 			targetProxy = EC0B00000000000000000008 /* PBXContainerItemProxy */;
 		};
+		EC0C00000000000000000014 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EC0C00000000000000000012 /* JamaalWidgets */;
+			targetProxy = EC0C00000000000000000013 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		EC072FE13066637B000ED989 /* Debug configuration for PBXNativeTarget "Jamaal" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=macosx*]" = AppIconMac;
 				APP_GROUP_ID = group.dev.fhdamd.Jamaal;
 				"APP_GROUP_ID[sdk=macosx*]" = "$(TeamIdentifierPrefix)dev.fhdamd.Jamaal";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=macosx*]" = AppIconMac;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Jamaal/Jamaal-Personal.entitlements";
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "Jamaal/Jamaal-Mac.entitlements";
@@ -382,10 +484,10 @@
 		EC072FE23066637B000ED989 /* Release configuration for PBXNativeTarget "Jamaal" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=macosx*]" = AppIconMac;
 				APP_GROUP_ID = group.dev.fhdamd.Jamaal;
 				"APP_GROUP_ID[sdk=macosx*]" = "$(TeamIdentifierPrefix)dev.fhdamd.Jamaal";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=macosx*]" = AppIconMac;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Jamaal/Jamaal.entitlements;
 				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "Jamaal/Jamaal-Mac.entitlements";
@@ -673,6 +775,72 @@
 			};
 			name = Release;
 		};
+		EC0C00000000000000000018 /* Debug configuration for PBXNativeTarget "JamaalWidgets" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APP_GROUP_ID = group.dev.fhdamd.Jamaal;
+				"APP_GROUP_ID[sdk=macosx*]" = "$(TeamIdentifierPrefix)dev.fhdamd.Jamaal";
+				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "JamaalWidgets/JamaalWidgets-Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y395QDPS3G;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = JamaalWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Jamaal;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fhdamd.Jamaal.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EC0C00000000000000000019 /* Release configuration for PBXNativeTarget "JamaalWidgets" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APP_GROUP_ID = group.dev.fhdamd.Jamaal;
+				"APP_GROUP_ID[sdk=macosx*]" = "$(TeamIdentifierPrefix)dev.fhdamd.Jamaal";
+				"CODE_SIGN_ENTITLEMENTS[sdk=macosx*]" = "JamaalWidgets/JamaalWidgets-Mac.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y395QDPS3G;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = JamaalWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Jamaal;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fhdamd.Jamaal.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -716,6 +884,14 @@
 			);
 			defaultConfigurationName = Release;
 		};
+		EC0C00000000000000000017 /* Build configuration list for PBXNativeTarget "JamaalWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC0C00000000000000000018 /* Debug configuration for PBXNativeTarget "JamaalWidgets" */,
+				EC0C00000000000000000019 /* Release configuration for PBXNativeTarget "JamaalWidgets" */,
+			);
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
@@ -752,6 +928,15 @@
 			productName = ThreadsTokens;
 		};
 		EC0A00000000000000000014 /* JamaalCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = JamaalCore;
+		};
+		EC0C00000000000000000015 /* ThreadsTokens */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EC0A00000000000000000021 /* XCRemoteSwiftPackageReference "threads-kit" */;
+			productName = ThreadsTokens;
+		};
+		EC0C00000000000000000016 /* JamaalCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = JamaalCore;
 		};

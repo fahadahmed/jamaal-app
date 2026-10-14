@@ -1,11 +1,11 @@
 //
 //  AppGroupTests.swift
-//  JamaalTests
+//  JamaalCoreTests
 //
 
 import Foundation
 import Testing
-@testable import Jamaal
+@testable import JamaalCore
 
 /// Where the store lives: inside the App Group container when there is one (so widgets read the same data), and
 /// where it always has been when there isn't (the free team, tests, previews).
