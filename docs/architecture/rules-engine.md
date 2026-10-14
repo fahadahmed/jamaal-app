@@ -483,6 +483,8 @@ Not yet done: visibility priority so Add stays visible longest when space is tig
 
 **Links.** `JamaalLink` parses `jamaal://today`, `jamaal://plan` and `jamaal://task/<id>` (scheme and host ignore case; a trailing slash is fine; anything else is nil) into the `NotificationRoute` a tap uses; `plan` means tomorrow's plan, so it needs today's logical date. `NotificationRoute` gains `.task(UUID)`. The app registers the scheme in `Info.plist`, handles `onOpenURL` in one function, and Today opens the task. In debug builds `-JamaalOpenURL <link>` feeds a link through the same function, because the system's confirmation for outside links can't be tapped in a test. The task link has a parser test but no UI test (the sample tasks' ids change on every launch).
 
+**A rule's "next" skips what is already done (#235).** The Anchors list shows each rule's next occurrence: the earliest dry-run occurrence whose window has not closed. An occurrence that was attended, skipped or marked "someone else did it" is no longer next, even while its window is still open. This matters for Isha, whose window runs past midnight: after Isha is done the Salah rule's next is tomorrow's first prayer, not that same Isha with its closing time on the next day. Undo puts it back. Today's Salah row already read as done after Isha; the Anchors list did not.
+
 **A store that won't open** shows a recovery screen, not a crash: **Try again**, or **Reset this device's data** (two confirmations; the iCloud copy downloads again; never silent). **Unknown raw values** from a newer version are kept inert — see the [schema overview](../schema/overview#raw-values).
 
 ## Open questions
