@@ -17,9 +17,15 @@ struct NextAnchorEntry: TimelineEntry {
     var display: NextAnchorDisplay { snapshot?.nextAnchorDisplay ?? .noneLeft }
 }
 
+/// The fonts are registered once per process: WidgetKit may build the provider more than once, and registering a font that is
+/// already registered is logged by the system each time.
+private enum WidgetFonts {
+    static let registered: [ThreadsFonts.Failure] = ThreadsFonts.registerAll()
+}
+
 /// Reads the shared store without ever writing to it, and plans the entries from `WidgetTimeline`.
 struct NextAnchorProvider: TimelineProvider {
-    init() { _ = ThreadsFonts.registerAll() }
+    init() { _ = WidgetFonts.registered }
 
     func placeholder(in context: Context) -> NextAnchorEntry { NextAnchorEntry(date: .now, snapshot: nil) }
 
