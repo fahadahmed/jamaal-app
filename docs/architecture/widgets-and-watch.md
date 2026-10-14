@@ -54,6 +54,10 @@ Widgets use a `jamaal://` link: `jamaal://today`, `jamaal://plan` (Night Plannin
 
 The SwiftData store moves into an **App Group container**, with the **CloudKit container set-up, in the first sync-enabled build**, so no user ever migrates. The in-memory test and debug modes are unaffected. On the Mac the group identifier is team-prefixed.
 
+**How it is wired (#229).** One build setting, `APP_GROUP_ID`, is `group.dev.fhdamd.Jamaal` on iOS and `$(TeamIdentifierPrefix)dev.fhdamd.Jamaal` on the Mac; it reaches `Info.plist` as `JamaalAppGroup` (the app reads it) and the entitlement files. `AppGroup` resolves the group's folder and the shared defaults; `StoreLocation` decides the store's URL (`<group>/Library/Application Support/Jamaal.store`) in one place, used by the container, by "reset this device's data" and, later, by the widget extension. **With no group** (the free team, tests, previews) it falls back to exactly where the store has always been, and the entitlement cache stays in the standard defaults, so nothing changes until the full entitlements are on. The preferences other than the entitlement cache (theme, suggestion cards, prompt state) stay in the standard defaults for v1. **An existing store in the old location is not migrated** (the only data there is the developer's own, before the first release).
+
+**Switch-on, once the paid programme is active:** see the checklist in [TestFlight readiness](../roadmap/testflight-readiness).
+
 ## Targets
 
 One widget extension target for iOS and macOS, built on JamaalCore and ThreadsKit (and the same fonts). It needs its own App ID, the App Groups capability on the app and the extension, and the paid programme.
