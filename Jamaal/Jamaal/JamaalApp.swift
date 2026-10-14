@@ -19,19 +19,19 @@ struct JamaalApp: App {
     @AppStorage(AppPreferences.Keys.theme, store: AppPreferences.defaults) private var theme = AppTheme.system.rawValue
     @State private var reminders = ReminderCenter()
     @State private var storefront = Storefront()
-    private let notificationDelegate = NotificationDelegate()
+    private var notificationDelegate: NotificationDelegate { AppBootstrap.notificationDelegate }
 
     init() {
         // Fraunces, Hanken Grotesk and JetBrains Mono ship inside ThreadsKit; register them before the first view.
-        let failures = ThreadsFonts.registerAll()
+        let failures = AppBootstrap.fonts
         assert(failures.isEmpty, "Fonts failed to register: \(failures)")
 
-        UNUserNotificationCenter.current().delegate = notificationDelegate
+        _ = AppBootstrap.notificationDelegate                       // the system's delegate, set once
         #if canImport(UIKit)
         TabBarAppearance.apply(JamaalPalette())
         #endif
 
-        _container = State(initialValue: try? AppEngine.makeContainer())
+        _container = State(initialValue: AppBootstrap.firstContainer)
     }
 
     var body: some Scene {
