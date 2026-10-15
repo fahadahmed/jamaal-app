@@ -13,29 +13,25 @@ import WidgetKit
 final class WidgetRefresher {
     static let shared = WidgetRefresher()
 
-    private let delay: Duration
+    private let debouncer: Debouncer
     private let reload: () -> Void
-    private var pending: Task<Void, Never>?
 
     init(delay: Duration = .seconds(1), reload: @escaping () -> Void = { WidgetCenter.shared.reloadAllTimelines() }) {
-        self.delay = delay
+        self.debouncer = Debouncer(delay: delay)
         self.reload = reload
     }
 
-    /// Reloads after things have been quiet for `delay`.
+    /// Reloads after things have been quiet for the delay.
     func requestReload() {
-        pending?.cancel()
-        pending = Task { [delay, reload] in
-            try? await Task.sleep(for: delay)
-            guard !Task.isCancelled else { return }
-            reload()
-        }
+        debouncer.schedule { [reload] in reload() }
     }
 
     /// Reloads now (the app is coming forward or leaving it), folding in anything pending.
     func reloadNow() {
-        pending?.cancel()
-        pending = nil
+        debouncer.cancel()
         reload()
     }
+
+    /// Runs a pending reload now (what the timer does once things are quiet); for tests.
+    func flushPending() { debouncer.flush() }
 }

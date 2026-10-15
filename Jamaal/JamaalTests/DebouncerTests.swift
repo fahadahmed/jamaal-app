@@ -7,48 +7,54 @@ import Foundation
 import Testing
 @testable import Jamaal
 
-/// A burst of triggers is one action, run once things have gone quiet. The waits poll (`eventually`) instead of sleeping a fixed time,
-/// so a slow machine only makes the test slower, never wrong.
+/// A burst of triggers is one action. These test the logic with `flush()`, which is what the timer calls once things are quiet, so
+/// they do not depend on a clock (a shared CI runner is too unpredictable for one).
 @MainActor
 struct DebouncerTests {
 
     private final class Counter { var runs = 0 }
 
-    @Test func aBurstIsOneRunAfterTheQuiet() async {
+    @Test func aBurstIsOneRun() {
         let counter = Counter()
-        let debouncer = Debouncer(delay: .milliseconds(20))
+        let debouncer = Debouncer(delay: .seconds(60))
         for _ in 0..<5 { debouncer.schedule { counter.runs += 1 } }
-        #expect(counter.runs == 0, "not before it has gone quiet")
-        #expect(await eventually { counter.runs >= 1 })
-        await settle()                                                       // the four it replaced were cancelled, so none follows
+        #expect(counter.runs == 0, "nothing runs before it has gone quiet")
+        debouncer.flush()
         #expect(counter.runs == 1)
+        debouncer.flush()
+        #expect(counter.runs == 1, "and nothing is left to run")
     }
 
-    @Test func triggersSpacedApartRunSeparately() async {
-        let counter = Counter()
-        let debouncer = Debouncer(delay: .milliseconds(10))
-        debouncer.schedule { counter.runs += 1 }
-        #expect(await eventually { counter.runs == 1 })
-        debouncer.schedule { counter.runs += 1 }
-        #expect(await eventually { counter.runs == 2 })
-    }
-
-    @Test func theLatestActionIsTheOneThatRuns() async {
+    @Test func theLatestActionIsTheOneThatRuns() {
         let ran = Counter()
-        let debouncer = Debouncer(delay: .milliseconds(20))
+        let debouncer = Debouncer(delay: .seconds(60))
         debouncer.schedule { ran.runs += 1 }
         debouncer.schedule { ran.runs += 10 }
-        #expect(await eventually { ran.runs > 0 })
-        await settle()
+        debouncer.flush()
         #expect(ran.runs == 10)
     }
 
-    @Test func cancelDropsAPendingRun() async {
+    @Test func triggersAfterARunStartAFreshWait() {
         let counter = Counter()
-        let debouncer = Debouncer(delay: .milliseconds(20))
+        let debouncer = Debouncer(delay: .seconds(60))
+        debouncer.schedule { counter.runs += 1 }
+        debouncer.flush()
+        debouncer.schedule { counter.runs += 1 }
+        debouncer.flush()
+        #expect(counter.runs == 2)
+    }
+
+    @Test func cancelDropsAPendingRun() {
+        let counter = Counter()
+        let debouncer = Debouncer(delay: .seconds(60))
         debouncer.schedule { counter.runs += 1 }
         debouncer.cancel()
-        await settle()
+        debouncer.flush()
         #expect(counter.runs == 0)
+    }
+
+    @Test func flushWithNothingScheduledDoesNothing() {
+        let debouncer = Debouncer(delay: .seconds(60))
+        debouncer.flush()                                                    // must not crash or run anything
     }
 }
