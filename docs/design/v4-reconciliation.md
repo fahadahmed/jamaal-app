@@ -29,3 +29,7 @@
 ## Batches 8 and 9
 
 The widgets (batch 8) and Apple Watch (batch 9) frames came later and are reconciled in [widgets and watch reconciliation](widgets-and-watch-reconciliation).
+
+## Tab and sidebar icons (#247)
+
+The frames draw their own icons as inline SVG on a 24 pt grid (1.75 stroke, round caps and joins), not SF Symbols: **Today** three left-aligned lines (16, 16 and 10 wide), **Habits** four outlined rounded squares, **Anchors** a clock, **Wellbeing** a pulse line, **Settings** three sliders. The app drew the nearest SF Symbols, which are heavier, and which the system swaps for their solid variant when selected (Habits became four filled squares). The drawings are now template vector assets (`TabToday`, `TabHabits`, `TabAnchors`, `TabWellbeing`, `TabSettings` in `Assets.xcassets`, from the design's own paths) used by the tab bar and by the iPad and Mac sidebars (`AppTab.icon`). **Not matched:** the design shows unselected tabs in `ink3` (a muted teal) and the selected one in `ink`; the iOS 26 glass tab bar ignores a custom unselected colour, so unselected icons and labels follow the system colour.

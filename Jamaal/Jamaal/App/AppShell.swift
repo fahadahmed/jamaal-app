@@ -94,17 +94,17 @@ struct AppShell: View {
     /// iPhone and iPad: the system tab view (a floating bar, or the sidebar on an iPad).
     private var tabShell: some View {
         TabView(selection: $selection) {
-            Tab(AppTab.today.title, systemImage: AppTab.today.symbol, value: AppTab.today) { TodayScreen() }
+            Tab(AppTab.today.title, image: AppTab.today.icon, value: AppTab.today) { TodayScreen() }
                 .badge(AppNavigation.isRegular(sizeClass) ? todayCount : 0)
-            Tab(AppTab.habits.title, systemImage: AppTab.habits.symbol, value: AppTab.habits) { HabitsScreen() }
+            Tab(AppTab.habits.title, image: AppTab.habits.icon, value: AppTab.habits) { HabitsScreen() }
             // At compact width Anchors is a segment of Habits, so it isn't a tab at all (iOS keeps every tab it is
             // given in the phone's tab bar); at regular width it is a sidebar item that the top tab bar leaves out.
             if !AppNavigation.showsAnchorsSegment(sizeClass: sizeClass) {
-                Tab(AppTab.anchors.title, systemImage: AppTab.anchors.symbol, value: AppTab.anchors) { AnchorsScreen() }
+                Tab(AppTab.anchors.title, image: AppTab.anchors.icon, value: AppTab.anchors) { AnchorsScreen() }
                     .defaultVisibility(.hidden, for: .tabBar)
             }
-            Tab(AppTab.wellbeing.title, systemImage: AppTab.wellbeing.symbol, value: AppTab.wellbeing) { WellbeingScreen() }
-            Tab(AppTab.settings.title, systemImage: AppTab.settings.symbol, value: AppTab.settings) { SettingsScreen() }
+            Tab(AppTab.wellbeing.title, image: AppTab.wellbeing.icon, value: AppTab.wellbeing) { WellbeingScreen() }
+            Tab(AppTab.settings.title, image: AppTab.settings.icon, value: AppTab.settings) { SettingsScreen() }
         }
         .tabViewStyle(.sidebarAdaptable)
         // The sidebar's own furniture (iPad and Mac): the wordmark, the Categories list that filters Today, and Plan tomorrow.
