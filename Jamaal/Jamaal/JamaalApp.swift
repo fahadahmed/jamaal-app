@@ -53,6 +53,7 @@ struct JamaalApp: App {
                         }
                         .onChange(of: scenePhase) { _, phase in
                             if phase == .active { tick(container) }
+                            if phase != .inactive { WidgetRefresher.shared.reloadNow() }       // coming forward or leaving it
                         }
                         // A widget link takes the same path in as a notification tap.
                         .onOpenURL { url in open(url, in: container) }

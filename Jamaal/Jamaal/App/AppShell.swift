@@ -195,7 +195,16 @@ struct AppShell: View {
         }
         // Any save (a habit logged, a night planned, a rule edited) may change what should be scheduled.
         .task {
-            for await _ in NotificationCenter.default.notifications(named: ModelContext.didSave) { reminders.scheduleReplan(in: context) }
+            for await _ in NotificationCenter.default.notifications(named: ModelContext.didSave) {
+                reminders.scheduleReplan(in: context)
+                WidgetRefresher.shared.requestReload()                       // the widgets read the same store
+            }
+        }
+        // A change arriving from iCloud on another device is not a local save: it comes as a remote change on the store.
+        .task {
+            for await _ in NotificationCenter.default.notifications(named: Notification.Name("NSPersistentStoreRemoteChangeNotification")) {
+                WidgetRefresher.shared.requestReload()
+            }
         }
         .onChange(of: reminders.route) { _, route in
             switch route {
