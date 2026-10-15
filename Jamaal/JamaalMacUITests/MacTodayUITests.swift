@@ -35,13 +35,17 @@ final class MacTodayUITests: XCTestCase {
         XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 10), "⌘N lands on Today with the Add form open")
     }
 
-    /// The Add form's Category and Repeat rows are menus: on a Mac they have to open under a click and keep the choice.
+    /// The Add form's Category and Repeat rows are menus: on a Mac they have to open under a click and keep the choice. Checked end to
+    /// end: the saved task shows its category on its row, and a repeating task's menu says "Skip this one" where a one-off's says "Drop".
     @MainActor
     func testTheAddFormsCategoryAndRepeatCanBeChosen() throws {
         let app = launch()
         XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "addButton").firstMatch.waitForExistence(timeout: 15))
         app.typeKey("n", modifierFlags: .command)
-        XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 10))
+        let title = app.textFields["Title"]
+        XCTAssertTrue(title.waitForExistence(timeout: 10))
+        title.click()
+        title.typeText("Menu check")
 
         let category = app.descendants(matching: .any).matching(identifier: "categoryRow").firstMatch
         XCTAssertTrue(category.waitForExistence(timeout: 5))
@@ -49,8 +53,6 @@ final class MacTodayUITests: XCTestCase {
         let family = app.menuItems["Family"]
         XCTAssertTrue(family.waitForExistence(timeout: 5), "clicking the Category row opens its menu")
         family.click()
-        XCTAssertTrue(category.label.contains("Family") || (category.value as? String)?.contains("Family") == true,
-                      "the row shows the choice: \(category.label)")
 
         let repeating = app.descendants(matching: .any).matching(identifier: "repeatRow").firstMatch
         XCTAssertTrue(repeating.waitForExistence(timeout: 5))
@@ -58,8 +60,17 @@ final class MacTodayUITests: XCTestCase {
         let daily = app.menuItems["Daily"]
         XCTAssertTrue(daily.waitForExistence(timeout: 5), "clicking the Repeat row opens its menu")
         daily.click()
-        XCTAssertTrue(repeating.label.contains("Daily") || (repeating.value as? String)?.contains("Daily") == true,
-                      "the row shows the choice: \(repeating.label)")
+
+        let save = app.buttons["addTaskButton"]
+        XCTAssertTrue(save.waitForExistence(timeout: 5))
+        save.click()
+
+        let made = task("Menu check", in: app)
+        XCTAssertTrue(made.waitForExistence(timeout: 10), "the task is on Today")
+        XCTAssertTrue(made.label.contains("Family"), "its row shows the category it was given: \(made.label)")
+        made.rightClick()
+        XCTAssertTrue(app.menuItems["Skip this one"].waitForExistence(timeout: 5), "it repeats, so its menu offers to skip this one")
+        app.typeKey(.escape, modifierFlags: [])
     }
 
     @MainActor
