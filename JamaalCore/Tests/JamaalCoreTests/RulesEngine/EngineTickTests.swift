@@ -19,6 +19,27 @@ struct EngineTickTests {
         try EngineTick.run(in: c, now: now, timeZone: utc, lastProcessed: last)
     }
 
+    /// Another device seeds the same defaults, and iCloud brings them in after this device has already ticked. The next tick merges them.
+    @Test func defaultsThatArriveBetweenTicksAreMergedByTheNextOne() throws {
+        let c = try context()
+        _ = try tick(c, now: at(15))
+        for name in ["Personal", "Family", "Work"] {                          // what the other device's first launch made
+            let copy = TaskCategory(name: name)
+            copy.presetKey = name.lowercased()
+            copy.createdAt = at(15, 10)
+            c.insert(copy)
+        }
+        let doubled = UserSettings(); doubled.createdAt = at(15, 10); c.insert(doubled)
+        try c.save()
+        #expect(try c.fetchCount(FetchDescriptor<TaskCategory>()) == 6, "doubled, as the Mac showed")
+        let result = try tick(c, now: at(15, 11))
+        #expect(try c.fetchCount(FetchDescriptor<TaskCategory>()) == 3)
+        #expect(try c.fetchCount(FetchDescriptor<UserSettings>()) == 1)
+        #expect(result.dedup.removed >= 4)
+        let again = try tick(c, now: at(15, 12))
+        #expect(again.dedup.removed == 0, "a settled store changes nothing")
+    }
+
     @Test func aFreshStoreIsSeededAndStartsFromYesterday() throws {
         let c = try context()
         let result = try tick(c, now: at(15))
