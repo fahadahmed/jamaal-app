@@ -8,6 +8,17 @@
 Onboarding → Today (day 0) → evening: Night Planning → Today (day 1) → during day → evening: Night Planning → …
 ```
 
+```mermaid
+flowchart LR
+  Onboard["Onboarding<br/>first task, habit, Anchor"] --> Day0["Today, day 0"]
+  Day0 --> Night["Evening: Night Planning"]
+  Night --> Day1["Today, tomorrow"]
+  Day1 --> Live["During the day<br/>tick, log, attend, focus"]
+  Live --> Night
+  Night -.->|skip tonight| Morning["Morning card<br/>two minutes to pick?"]
+  Morning --> Live
+```
+
 The app is a daily rhythm: **plan at night, live from one list by day.** Everything else (Habits, Wellbeing, Settings) supports that loop.
 
 ## The companion

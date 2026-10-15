@@ -6,6 +6,25 @@ Walks a new user through setting up the app and creating one example of each pri
 
 ## Flow
 
+```mermaid
+flowchart TD
+  A["1. Meet Jamaal"] --> B["2. The idea<br/>Tasks, Habits, Anchors"]
+  B --> C["3. iCloud check<br/>silent when all is well"]
+  C --> D["4. Your normal day<br/>sets the medium level"]
+  D --> E["5. Notifications and the<br/>evening planning time"]
+  E --> F["6. Your first Task<br/>due today"]
+  F --> G["7. Your first Habit<br/>a preset, or something else"]
+  G --> H["8. Your first Anchor"]
+  H --> I["9. Ready<br/>land on Today"]
+  H -.->|Not now| I
+  C -.->|signed out or offline| N["A plain note:<br/>works without iCloud"]
+  N --> D
+```
+
+<table><tr><td align="center" valign="top"><img src="../../mockups/screens/5-wellbeing-settings-onboarding/OB-02-the-idea.png" width="130" alt="OB-02-the-idea"><br><sub>OB-02</sub></td><td align="center" valign="top"><img src="../../mockups/screens/5-wellbeing-settings-onboarding/OB-03-icloud-check.png" width="130" alt="OB-03-icloud-check"><br><sub>OB-03</sub></td><td align="center" valign="top"><img src="../../mockups/screens/5-wellbeing-settings-onboarding/OB-04-normal-day.png" width="130" alt="OB-04-normal-day"><br><sub>OB-04</sub></td><td align="center" valign="top"><img src="../../mockups/screens/5-wellbeing-settings-onboarding/OB-05-reminders.png" width="130" alt="OB-05-reminders"><br><sub>OB-05</sub></td><td align="center" valign="top"><img src="../../mockups/screens/5-wellbeing-settings-onboarding/OB-06-first-task.png" width="130" alt="OB-06-first-task"><br><sub>OB-06</sub></td><td align="center" valign="top"><img src="../../mockups/screens/5-wellbeing-settings-onboarding/OB-07-first-habit.png" width="130" alt="OB-07-first-habit"><br><sub>OB-07</sub></td><td align="center" valign="top"><img src="../../mockups/screens/5-wellbeing-settings-onboarding/OB-08-first-anchor.png" width="130" alt="OB-08-first-anchor"><br><sub>OB-08</sub></td><td align="center" valign="top"><img src="../../mockups/screens/5-wellbeing-settings-onboarding/OB-09-ready.png" width="130" alt="OB-09-ready"><br><sub>OB-09</sub></td></tr></table>
+
+The steps in detail:
+
 1. **Meet Jamaal** — the companion introduces itself: calm, supportive, non-judgmental. Tagline: "One list. Just today. Beautifully ordered."
 2. **The idea** — one list for everything; three ways of tracking: things you **do** (Tasks), things you **cultivate** (Habits), things your life **moves around** (Anchors). A general productivity app — Islamic practices are presets, not a mode.
 3. **Account readiness** — CloudKit / iCloud check. Silent when signed in and nothing is wrong; a plain explanation if iCloud is signed out, restricted or offline (*"Jamaal works without iCloud; your data just won't sync until you sign in."*). On a fresh install the step first waits briefly ("Checking iCloud…") for data to sync: if the account already has a `UserSettings.onboardingCompletedAt`, this is a **second device**, so the user sees a short **Welcome back** and skips the rest of onboarding.

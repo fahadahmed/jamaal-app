@@ -4,6 +4,13 @@
 
 The single unified list spanning every category — the app's home screen ("One list. Just today. Beautifully ordered."). Replaces bouncing between separate reminder/task/calendar apps.
 
+<table><tr>
+<td align="center" valign="top"><img src="../../mockups/screens/1-today-capture/TD-01-today-default.png" width="240" alt="Today, as designed"><br><sub>Designed (TD-01)</sub></td>
+<td align="center" valign="top"><img src="../images/app-iphone-today.png" width="240" alt="Today, as built"><br><sub>Built</sub></td>
+</tr></table>
+
+More screens are in the [Screen gallery](screen-gallery); how adding a task works is drawn in [Diagrams](../architecture/diagrams#adding-a-task).
+
 ## Layout
 
 Top to bottom:

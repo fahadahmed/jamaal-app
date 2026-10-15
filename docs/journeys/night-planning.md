@@ -6,6 +6,12 @@ A guided end-of-day flow: look back at the day, decide what happens to what's un
 
 On phone the five steps are five screens in a full-screen modal with a progress bar; Back is available from step 2 onward and Close is always available. On wide layouts (iPad, Mac, Duo unfolded) they are five stops on **one canvas** — a step rail beside a working area — so the user always sees where they are without losing the step they're on.
 
+The five steps as designed:
+
+<table><tr><td align="center" valign="top"><img src="../../mockups/screens/4-night-planning/NP-01-review-today.png" width="150" alt="NP-01-review-today"><br><sub>NP-01 review today</sub></td><td align="center" valign="top"><img src="../../mockups/screens/4-night-planning/NP-02-carry-forward.png" width="150" alt="NP-02-carry-forward"><br><sub>NP-02 carry forward</sub></td><td align="center" valign="top"><img src="../../mockups/screens/4-night-planning/NP-03-build-tomorrow.png" width="150" alt="NP-03-build-tomorrow"><br><sub>NP-03 build tomorrow</sub></td><td align="center" valign="top"><img src="../../mockups/screens/4-night-planning/NP-04-check-the-load.png" width="150" alt="NP-04-check-the-load"><br><sub>NP-04 check the load</sub></td><td align="center" valign="top"><img src="../../mockups/screens/4-night-planning/NP-05-close-the-day.png" width="150" alt="NP-05-close-the-day"><br><sub>NP-05 close the day</sub></td></tr></table>
+
+The same flow as a state machine (with the skip and reopen paths) is in [Diagrams](../architecture/diagrams#night-planning); the wide iPad layout is in the [Screen gallery](screen-gallery#ipad-and-mac).
+
 ## Triggers
 
 - The fixed **evening notification** (user-set time, default 20:00), set up during onboarding.

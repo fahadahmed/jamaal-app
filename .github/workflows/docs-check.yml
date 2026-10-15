@@ -1,0 +1,29 @@
+name: Docs check
+
+# The wiki is built from docs/ by .github/scripts/sync_wiki.py, which fails on a missing image or a link to a missing page.
+# Docs-only changes skip the build in ci.yml, so this runs the sync's tests (including a sync of the real docs/) on them.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'mockups/**'
+      - '.github/scripts/**'
+      - '.github/workflows/docs-check.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'mockups/**'
+      - '.github/scripts/**'
+
+jobs:
+  wiki-sync:
+    name: Wiki sync (links and images)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test the sync, and sync the real docs
+        working-directory: .github/scripts
+        run: python3 -m unittest test_sync_wiki -v
