@@ -26,8 +26,8 @@ struct LastProcessedStore {
 /// The app's side of the engine: the store, and the tick that keeps it current.
 enum AppEngine {
 
-    /// The model container. CloudKit is **off** until the paid Apple Developer Program provides the iCloud
-    /// container (docs/roadmap/phases.md); sync is switched on by passing a configuration here.
+    /// The model container. It syncs through iCloud (the private database of `iCloud.dev.fhdamd.Jamaal`) when the app is signed
+    /// with its App Group; see `SyncMode`.
     @MainActor
     static func makeContainer(inMemory: Bool = false) throws -> ModelContainer {
         #if DEBUG
@@ -37,14 +37,20 @@ enum AppEngine {
         return try JamaalSchema.makeContainer(inMemory: inMemory, configuration: try groupConfiguration(inMemory: inMemory))
     }
 
-    /// The store inside the App Group container, when the app has one (so widgets read the same data); nil otherwise,
-    /// which leaves the store where it has always been.
+    /// The store inside the App Group container, when the app has one (so widgets read the same data), syncing through
+    /// iCloud; nil otherwise, which leaves the store where it has always been, local.
     @MainActor
     private static func groupConfiguration(inMemory: Bool) throws -> ModelConfiguration? {
         guard !inMemory, AppGroup.containerURL != nil else { return nil }
         let url = StoreLocation.current
         try StoreLocation.prepare(url)
-        return ModelConfiguration(schema: JamaalSchema.current, url: url, cloudKitDatabase: .none)
+        #if DEBUG
+        let disabled = DebugLaunch.noCloudKit
+        #else
+        let disabled = false
+        #endif
+        let sync = SyncMode.resolve(inMemory: inMemory, hasGroup: true, disabled: disabled)
+        return ModelConfiguration(schema: JamaalSchema.current, url: url, cloudKitDatabase: sync.database)
     }
 
     #if DEBUG

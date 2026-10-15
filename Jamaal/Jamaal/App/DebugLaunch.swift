@@ -23,6 +23,8 @@ enum DebugLaunch {
     static var pickUp: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalPickUp") }
     /// `-JamaalWidgetGallery` shows the widget views in each state, light and dark, to look at them without a Home Screen.
     static var widgetGallery: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalWidgetGallery") }
+    /// `-JamaalNoCloudKit` keeps the store local even when the app is signed with iCloud (to rule sync out).
+    static var noCloudKit: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalNoCloudKit") }
     /// `-JamaalOpenURL jamaal://plan` opens that link as a widget tap would (the system's own "Open in Jamaal?"
     /// confirmation for links from outside can't be tapped in a test).
     static var openURL: URL? {
