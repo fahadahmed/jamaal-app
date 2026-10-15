@@ -59,6 +59,28 @@ final class MacShellUITests: XCTestCase {
         XCTAssertTrue(element("addButton", in: app).waitForExistence(timeout: 8), "⌘1 is Today")
     }
 
+    /// A person clicks the sidebar. (The shortcuts above reach the same sections by keyboard; this is the mouse.)
+    @MainActor
+    func testClickingASidebarSectionShowsIt() throws {
+        let app = launch(["-JamaalSampleData", "-JamaalAnchorRules"])
+        XCTAssertTrue(element("addButton", in: app).waitForExistence(timeout: 15), "Today first")
+
+        element("sidebar-habits", in: app).click()
+        XCTAssertTrue(element("addHabit", in: app).waitForExistence(timeout: 8), "clicking Habits shows Habits")
+        XCTAssertFalse(element("addButton", in: app).exists)
+
+        element("sidebar-anchors", in: app).click()
+        XCTAssertTrue(element("addAnchorRule", in: app).waitForExistence(timeout: 8), "clicking Anchors shows Anchors")
+
+        element("sidebar-wellbeing", in: app).click()
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS 'Wellbeing' AND identifier != 'sidebar-wellbeing'"))
+            .firstMatch.waitForExistence(timeout: 8), "clicking Wellbeing shows Wellbeing")
+        XCTAssertFalse(element("addAnchorRule", in: app).exists)
+
+        element("sidebar-today", in: app).click()
+        XCTAssertTrue(element("addButton", in: app).waitForExistence(timeout: 8), "clicking Today comes back")
+    }
+
     @MainActor
     func testCommandCommaOpensSettingsInTheMainWindow() throws {
         let app = launch()

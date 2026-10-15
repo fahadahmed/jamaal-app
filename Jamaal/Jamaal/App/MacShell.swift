@@ -26,8 +26,11 @@ struct MacSidebar: View {
     let onPlan: () -> Void
 
     var body: some View {
-        List(selection: $selection) {
-            ForEach(AppNavigation.sidebarTabs(onMac: true)) { tab in
+        // The list takes an optional selection; clearing it is ignored, so a section is always showing.
+        List(selection: Binding<AppTab?>(get: { selection }, set: { if let tab = $0 { selection = tab } })) {
+            // Identified by the tab itself, not its string id: `ForEach` tags each row with its id, and a tag of a different type from the
+            // selection leaves every row unselectable on a Mac (each read as disabled, and clicking a section did nothing).
+            ForEach(AppNavigation.sidebarTabs(onMac: true), id: \.self) { tab in
                 Label(tab.title, image: tab.icon)
                     .tag(tab)
                     .badge(tab == .today ? todayCount : 0)
