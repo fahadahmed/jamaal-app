@@ -36,11 +36,11 @@ final class MacListKeysUITests: XCTestCase {
     @MainActor
     func testTheArrowKeysMoveTheSelectionDownAndBackUp() throws {
         let app = launch()
-        let first = row("Reply to Sam", in: app)
+        let first = row("Draft the architecture review", in: app)                         // the first task in Today's order: ↓ has somewhere to go
         XCTAssertTrue(first.waitForExistence(timeout: 15))
         first.click()
         let start = panelTitle(app)
-        XCTAssertEqual(start, "Reply to Sam")
+        XCTAssertEqual(start, "Draft the architecture review")
 
         app.typeKey(.downArrow, modifierFlags: [])
         let moved = panelTitle(app)
@@ -87,7 +87,8 @@ final class MacListKeysUITests: XCTestCase {
         XCTAssertTrue(reply.waitForExistence(timeout: 15))
         reply.click()
         app.typeKey(.delete, modifierFlags: [])
-        let confirm = app.sheets.buttons["Drop"]
+        // The confirmation's button, not the detail panel's own Drop button (identifier dropButton); a Mac may present it as a sheet or a dialog.
+        let confirm = app.descendants(matching: .button).matching(NSPredicate(format: "label == 'Drop' AND identifier != 'dropButton'")).firstMatch
         XCTAssertTrue(confirm.waitForExistence(timeout: 5), "Delete asks first")
         app.typeKey(.escape, modifierFlags: [])
         XCTAssertTrue(row("Reply to Sam", in: app).waitForExistence(timeout: 5), "cancelling keeps the task")

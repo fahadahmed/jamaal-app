@@ -8,7 +8,7 @@ import JamaalCore
 import SwiftUI
 
 /// Today's list from the keyboard on a Mac: ↓ and ↑ move the selection (the task shown in the panel), Space marks it
-/// done or not done, Delete asks to drop it (the usual confirmation), Escape closes the panel.
+/// done or not done, Delete (⌫ or forward delete) asks to drop it (the usual confirmation), Escape closes the panel.
 struct MacListKeys: ViewModifier {
     var focused: SwiftUI.FocusState<Bool>.Binding
     let navigable: [TaskItem]
@@ -29,11 +29,18 @@ struct MacListKeys: ViewModifier {
                 toggle(selected)
                 return .handled
             }
-            .onKeyPress(keys: [.delete, .deleteForward]) { _ in
+            // The Delete key (⌫) reaches a focused view as AppKit's delete command, not as a key press; forward delete is a key press.
+            .onDeleteCommand { dropSelected() }
+            .onKeyPress(.deleteForward) {
                 guard let selected, !selected.isCompleted else { return .ignored }
-                drop(selected)
+                dropSelected()
                 return .handled
             }
+    }
+
+    private func dropSelected() {
+        guard let selected, !selected.isCompleted else { return }          // a done task has nothing to drop
+        drop(selected)
     }
 
     private func move(_ step: TaskListNavigation.Step) -> KeyPress.Result {
