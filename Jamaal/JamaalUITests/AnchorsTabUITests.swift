@@ -193,9 +193,9 @@ final class AnchorsTabUITests: XCTestCase {
         let add = app.buttons["addButton"]
         XCTAssertTrue(add.waitForExistence(timeout: 10))
         add.tap()
-        let mode = app.segmentedControls["addMode"]
-        XCTAssertTrue(mode.waitForExistence(timeout: 5))
-        mode.buttons["Anchor"].tap()
+        let anchorMode = app.buttons["addMode-anchor"]
+        XCTAssertTrue(anchorMode.waitForExistence(timeout: 5))
+        anchorMode.tap()
         type("Dentist", into: app.textFields["oneOffTitle"])
         app.buttons["Tomorrow"].tap()
         app.buttons["Add Anchor for tomorrow"].tap()

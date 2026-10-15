@@ -35,6 +35,33 @@ final class MacTodayUITests: XCTestCase {
         XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 10), "⌘N lands on Today with the Add form open")
     }
 
+    /// The Add form's Category and Repeat rows are menus: on a Mac they have to open under a click and keep the choice.
+    @MainActor
+    func testTheAddFormsCategoryAndRepeatCanBeChosen() throws {
+        let app = launch()
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "addButton").firstMatch.waitForExistence(timeout: 15))
+        app.typeKey("n", modifierFlags: .command)
+        XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 10))
+
+        let category = app.descendants(matching: .any).matching(identifier: "categoryRow").firstMatch
+        XCTAssertTrue(category.waitForExistence(timeout: 5))
+        category.click()
+        let family = app.menuItems["Family"]
+        XCTAssertTrue(family.waitForExistence(timeout: 5), "clicking the Category row opens its menu")
+        family.click()
+        XCTAssertTrue(category.label.contains("Family") || (category.value as? String)?.contains("Family") == true,
+                      "the row shows the choice: \(category.label)")
+
+        let repeating = app.descendants(matching: .any).matching(identifier: "repeatRow").firstMatch
+        XCTAssertTrue(repeating.waitForExistence(timeout: 5))
+        repeating.click()
+        let daily = app.menuItems["Daily"]
+        XCTAssertTrue(daily.waitForExistence(timeout: 5), "clicking the Repeat row opens its menu")
+        daily.click()
+        XCTAssertTrue(repeating.label.contains("Daily") || (repeating.value as? String)?.contains("Daily") == true,
+                      "the row shows the choice: \(repeating.label)")
+    }
+
     @MainActor
     func testTheFocusChipIsInTheSidebarWhileASessionRuns() throws {
         let app = launch(["-JamaalSampleData", "-JamaalBegin"])
