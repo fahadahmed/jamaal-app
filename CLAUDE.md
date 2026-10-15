@@ -120,6 +120,10 @@ Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity s
 
 **Docs/flows-first.** Screens and flows are locked in `docs/journeys/screens.md` (the register) before they are drawn or built, and all eleven journeys have been walked against the schema and engine (`docs/journeys/walkthroughs/overview.md`: 89 gaps decided and applied; the remaining owner items are listed at its end). This repo was restarted from scratch specifically because the previous JamaalCore attempt skipped this step. `docs/schema/*`, `docs/journeys/*`, and `docs/architecture/rules-engine.md` are now filled in and resolved for v1 (see issues #5–#8) — implementation can begin. Don't skip this step for future primitives or major features; keep docs ahead of code.
 
+## Docs conventions
+
+Pages are Markdown in `docs/`, published to the wiki by `.github/scripts/sync_wiki.py` (which flattens page names). Draw with **Mermaid** code fences (flowcharts, sequence, state and class diagrams); the repo view and the wiki both render them. Show screens with ordinary relative image paths to `mockups/screens/...` (the design frames) or `docs/images/...` (screenshots of the built app); use an `<img src=... width=...>` tag when a size is needed. The sync copies each referenced image into the wiki and **fails on a missing image or a link to a missing page**; `python3 -m unittest test_sync_wiki` in `.github/scripts` runs the same check over the real docs, and the *Docs check* workflow runs it on docs changes. `docs/architecture/diagrams.md` and `docs/journeys/screen-gallery.md` are the two pages that hold the pictures: update them when a flow or a screen changes.
+
 ## Git workflow
 
 All new code or documentation work is tracked through a GitHub issue and lands via a PR — no direct commits to `main`, except trivial fixes (typos, formatting) explicitly requested as a direct commit.

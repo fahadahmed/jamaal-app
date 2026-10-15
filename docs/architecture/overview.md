@@ -1,6 +1,8 @@
 # Architecture overview
 
 > **Status: draft, needs review.** A map of how the pieces fit, pointing at the pages that hold the detail. It repeats no schema or rules — see the linked docs.
+>
+> **Pictures:** the components, the data model, the engine tick, sync, widgets and the state machines are drawn in [Diagrams](diagrams); every screen is in the [Screen gallery](../journeys/screen-gallery).
 
 ## Shape of the system
 
