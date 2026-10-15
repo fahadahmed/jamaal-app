@@ -7,37 +7,38 @@ import Foundation
 import Testing
 @testable import Jamaal
 
-/// The widgets only know what the app tells them: a burst of saves is one reload, a reload "now" is immediate.
+/// The widgets only know what the app tells them: a burst of saves is one reload, a reload "now" is immediate. The waits poll
+/// (`eventually`) so a slow CI runner cannot fail them.
 @MainActor
 struct WidgetRefresherTests {
 
     private final class Counter { var reloads = 0 }
 
-    @Test func aBurstOfRequestsIsOneReload() async throws {
+    @Test func aBurstOfRequestsIsOneReload() async {
         let counter = Counter()
-        let refresher = WidgetRefresher(delay: .milliseconds(60)) { counter.reloads += 1 }
+        let refresher = WidgetRefresher(delay: .milliseconds(20)) { counter.reloads += 1 }
         for _ in 0..<5 { refresher.requestReload() }
-        try await Task.sleep(for: .milliseconds(250))
+        #expect(await eventually { counter.reloads >= 1 })
+        await settle()
         #expect(counter.reloads == 1)
     }
 
-    @Test func requestsSpacedApartAreReloadedSeparately() async throws {
+    @Test func requestsSpacedApartAreReloadedSeparately() async {
         let counter = Counter()
-        let refresher = WidgetRefresher(delay: .milliseconds(40)) { counter.reloads += 1 }
+        let refresher = WidgetRefresher(delay: .milliseconds(10)) { counter.reloads += 1 }
         refresher.requestReload()
-        try await Task.sleep(for: .milliseconds(200))
+        #expect(await eventually { counter.reloads == 1 })
         refresher.requestReload()
-        try await Task.sleep(for: .milliseconds(200))
-        #expect(counter.reloads == 2)
+        #expect(await eventually { counter.reloads == 2 })
     }
 
-    @Test func reloadNowIsImmediateAndCancelsAPendingOne() async throws {
+    @Test func reloadNowIsImmediateAndCancelsAPendingOne() async {
         let counter = Counter()
-        let refresher = WidgetRefresher(delay: .milliseconds(80)) { counter.reloads += 1 }
+        let refresher = WidgetRefresher(delay: .milliseconds(200)) { counter.reloads += 1 }
         refresher.requestReload()
         refresher.reloadNow()
         #expect(counter.reloads == 1, "immediately")
-        try await Task.sleep(for: .milliseconds(250))
+        await settle(.milliseconds(400))
         #expect(counter.reloads == 1, "the pending one was folded into it")
     }
 }
