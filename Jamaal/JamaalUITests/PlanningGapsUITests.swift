@@ -27,9 +27,9 @@ final class PlanningGapsUITests: XCTestCase {
         XCTAssertTrue(add.waitForExistence(timeout: 10))
         XCTAssertEqual(add.label, "Add a task or Anchor")
         add.tap()
-        let mode = app.segmentedControls["addMode"]
-        XCTAssertTrue(mode.waitForExistence(timeout: 5))
-        mode.buttons["Anchor"].tap()
+        let anchorMode = app.buttons["addMode-anchor"]
+        XCTAssertTrue(anchorMode.waitForExistence(timeout: 5))
+        anchorMode.tap()
         let title = app.textFields["oneOffTitle"]
         XCTAssertTrue(title.waitForExistence(timeout: 5))
         title.tap()

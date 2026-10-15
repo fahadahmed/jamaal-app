@@ -106,12 +106,11 @@ struct AddTaskSheet: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Close")
             Spacer()
-            Picker("Add", selection: $mode) {
-                Text("Task").tag(Mode.task)
-                Text("Anchor").tag(Mode.anchor)
-            }
-            .pickerStyle(.segmented).frame(width: 190)
-            .accessibilityIdentifier("addMode")
+            // Our own pill, not the system's segmented control: on a Mac that is a small AppKit control beside the chips.
+            PillSegment(options: [Mode.task, Mode.anchor], selection: $mode,
+                        title: { $0 == .task ? "Task" : "Anchor" }, identifier: { "addMode-\($0 == .task ? "task" : "anchor")" })
+                .frame(width: 210)
+                .accessibilityIdentifier("addMode")
             Spacer()
             Color.clear.frame(width: ThreadsHit.minimum, height: ThreadsHit.minimum)
         }
@@ -140,12 +139,9 @@ struct AddTaskSheet: View {
     private var importanceSection: some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
             Text("How much does this matter?").threadsType(.label).foregroundStyle(threads.ink2)
-            Picker("How much does this matter?", selection: Binding(get: { form.draft.importance }, set: { form.setImportance($0) })) {
-                Text("Low").tag(Importance.low)
-                Text("Medium").tag(Importance.medium)
-                Text("High").tag(Importance.high)
-            }
-            .pickerStyle(.segmented)
+            PillSegment(options: [Importance.low, .medium, .high],
+                        selection: Binding(get: { form.draft.importance }, set: { form.setImportance($0) }),
+                        title: { $0 == .low ? "Low" : ($0 == .medium ? "Medium" : "High") }, identifier: { "matter-\($0)" }, fills: true)
         }
     }
 
@@ -198,6 +194,7 @@ struct AddTaskSheet: View {
                     }
                 }
             }
+            .menuStyle(.button).buttonStyle(.plain).menuIndicator(.hidden)     // the whole row is the control (on a Mac it is otherwise a small pop-up button)
             .accessibilityIdentifier("categoryRow")
             Divider().overlay(threads.line)
             Menu {
@@ -207,6 +204,7 @@ struct AddTaskSheet: View {
             } label: {
                 optionRow(title: "Repeat") { Text(Self.title(form.draft.repeatKind)) }
             }
+            .menuStyle(.button).buttonStyle(.plain).menuIndicator(.hidden)
             .accessibilityIdentifier("repeatRow")
             Divider().overlay(threads.line)
         }

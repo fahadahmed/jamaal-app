@@ -14,6 +14,8 @@ struct PillSegment<Option: Hashable>: View {
     @Binding var selection: Option
     let title: (Option) -> String
     let identifier: (Option) -> String
+    /// Each option takes an equal share of the width (a full-width control), and the track is as tall as a chip.
+    var fills = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -24,7 +26,7 @@ struct PillSegment<Option: Hashable>: View {
                         .font(.custom(isOn ? "HankenGrotesk-SemiBold" : "HankenGrotesk-Regular", size: 15, relativeTo: .subheadline))
                         .foregroundStyle(isOn ? threads.ink : threads.ink2)
                         .padding(.horizontal, 18)
-                        .frame(minHeight: 38)                                   // grows with the text: a fixed height clipped it at large sizes
+                        .frame(maxWidth: fills ? .infinity : nil, minHeight: fills ? ThreadsHit.minimum : 38)                                   // grows with the text: a fixed height clipped it at large sizes
                         .background { if isOn { Capsule().fill(threads.selected) } }
                         .contentShape(Capsule())
                 }
