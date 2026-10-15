@@ -15,13 +15,12 @@ The plan agreed on 11 Oct 2026: the **first TestFlight build around 18 Oct** wit
 
 ## Switch-on steps once the programme is active
 
-The code is ready (#229); these are the steps that need the account, in order:
-1. In Xcode, set the **paid team** on the app target. The Team ID may differ from the Personal Team's: the Mac group identifier follows `$(TeamIdentifierPrefix)` by itself.
-2. **Add the App Groups capability** to the app (Xcode registers `group.dev.fhdamd.Jamaal`, and the team-prefixed id on the Mac). Add `com.apple.security.application-groups` with `$(APP_GROUP_ID)` to `Jamaal-Mac.entitlements`: it is left out until now because the free team can't sign it. `Jamaal.entitlements` (iOS Release) already lists it.
-2b. **Do the same for the widget extension:** the App Groups capability on the `JamaalWidgets` target (and `com.apple.security.application-groups` with `$(APP_GROUP_ID)` in `JamaalWidgets-Mac.entitlements`), so it can open the shared store. Its own App ID `dev.fhdamd.Jamaal.Widgets` is registered with it.
-3. **Create the iCloud container** `iCloud.dev.fhdamd.Jamaal`, list it in `Jamaal.entitlements`, and **point Debug back at the full entitlements** (iOS and Mac).
-4. **Turn CloudKit on:** `cloudKitDatabase: .private("iCloud.dev.fhdamd.Jamaal")` in `AppEngine.groupConfiguration` (a group store) and the fallback container.
-5. **Check:** a launch creates the store at `<group>/Library/Application Support/Jamaal.store` (on the simulator, under the app group's folder; on the Mac, `~/Library/Group Containers/<id>/Library/Application Support/`) and the old `default.store` is no longer written.
+The paid programme is active (15 Oct 2026): Xcode shows the Individual team `Y395QDPS3G` as paid, the same ID as the free Personal Team, so the project's `DEVELOPMENT_TEAM` and the Mac group identifier needed no change. Progress (#239):
+1. [x] **Paid team on the targets:** nothing to change (same Team ID).
+2. [x] **App Groups:** `com.apple.security.application-groups` with `$(APP_GROUP_ID)` is in `Jamaal.entitlements`, `Jamaal-Mac.entitlements`, `JamaalWidgets.entitlements` and `JamaalWidgets-Mac.entitlements`. **Registered (15 Oct 2026)** by a signed `xcodebuild -allowProvisioningUpdates` build for iOS: provisioning profiles exist for `dev.fhdamd.Jamaal` and `dev.fhdamd.Jamaal.Widgets`, and the signed app and widget both carry `group.dev.fhdamd.Jamaal`. The Mac has not been built signed yet (it would also register this Mac as a development device).
+3. [x] **iCloud container** `iCloud.dev.fhdamd.Jamaal` is listed (with CloudKit and push) in the iOS and Mac entitlements, **Debug uses the full entitlements**, and the signed iOS app carries the container, CloudKit and `aps-environment = development`.
+4. [ ] **Turn CloudKit on** in the code (`cloudKitDatabase: .private("iCloud.dev.fhdamd.Jamaal")`): the next change, after the IDs and the container exist.
+5. [x] **Checked on the iPhone simulator (signed):** the store is `<group>/Library/Application Support/Jamaal.store` and the app's own folder holds no `default.store`. **Still to check** on a real iPhone and the Mac (`~/Library/Group Containers/<id>/Library/Application Support/`). The location rule: `<group>/Library/Application Support/Jamaal.store` (on the Mac, `~/Library/Group Containers/<id>/Library/Application Support/`), and the old `default.store` no longer written.
 
 ## Needs the paid programme
 
