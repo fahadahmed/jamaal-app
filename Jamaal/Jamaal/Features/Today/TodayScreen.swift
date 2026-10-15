@@ -108,9 +108,11 @@ struct TodayScreen: View {
                     if eveningDue && state != .allDone && canShapeThePlan { planTomorrowRow }
                 }
             }
-            // Pinned to the visible width: at accessibility sizes one long word in a title would otherwise widen the whole
-            // column past its margins instead of wrapping.
-            .containerRelativeFrame(.horizontal, alignment: .leading) { width, _ in width - ThreadsSpace.gutter * 2 }
+            // On a phone the content is pinned to the visible width: at accessibility sizes one long word in a title would
+            // otherwise widen the whole column past its margins instead of wrapping. Beside a detail panel (an iPad or a Mac)
+            // it is not: there "the container" is the whole window, not the list column, and the content was laid out at
+            // window width, centred, and clipped by the pane.
+            .modifier(PinnedToViewport(isOn: !usesPanel))
             .padding(.horizontal, ThreadsSpace.gutter)
             .padding(.top, ThreadsSpace.row)
             .padding(.bottom, 120)                                          // clear of the floating tab bar
@@ -747,4 +749,18 @@ struct MinutesTarget: Identifiable {
     let habit: Habit
     let window: HabitTimeWindow
     var id: UUID { window.id }
+}
+
+/// Pins its content to the scroll view's visible width less the side margins, when `isOn`.
+private struct PinnedToViewport: ViewModifier {
+    let isOn: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if isOn {
+            content.containerRelativeFrame(.horizontal, alignment: .leading) { width, _ in width - ThreadsSpace.gutter * 2 }
+        } else {
+            content
+        }
+    }
 }

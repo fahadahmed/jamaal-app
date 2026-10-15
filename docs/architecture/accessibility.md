@@ -15,7 +15,7 @@ Apple's automated audit (`performAccessibilityAudit`) plus looking at the screen
 - **Habits group header** split a word ("Mornin / g") beside a squeezed count. Now the title and count stack at accessibility sizes (`AdaptiveRow`). The same row is used for the Anchors group on Today and the load meter.
 - **Button pairs** ("Look at it" · "Not now", "Plan tomorrow" · "Not today", "Pick for today" · "Not now", "Set it" · "Not now") stack at accessibility sizes (`AdaptiveButtons`) instead of squeezing.
 - **The companion mark** sits above its line, not beside it, at accessibility sizes (`CompanionRow`): a long word ("tomorrow.") beside the mark needed more width than was left and **widened the whole Today column past its margins**.
-- **Today's column is pinned to the visible width**, so one long unbreakable word in a title wraps inside the margins instead of moving them.
+- **Today's column is pinned to the visible width on a phone**, so one long unbreakable word in a title wraps inside the margins instead of moving them. **Not beside a detail panel (iPad, Mac):** there `containerRelativeFrame` measures the whole window, not the list column, and the content was laid out at window width, centred, and clipped by its pane (found on a real iPad, #241; a UI test now checks the load meter stays inside the 440 pt column).
 - **The Habits | Anchors pill** had a fixed height of 38 pt while its text scales; it now grows with the text.
 
 ## The audit, and what it is not

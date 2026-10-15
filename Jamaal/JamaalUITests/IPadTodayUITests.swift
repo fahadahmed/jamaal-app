@@ -35,6 +35,25 @@ final class IPadTodayUITests: XCTestCase {
         XCTAssertTrue(app.buttons["addButton"].exists)
     }
 
+    /// The list column is 440 pt wide beside the detail. Its content has to be laid out inside it: once it was laid out at about
+    /// the window's width, centred, so its left end sat under the sidebar and its right end was cut at the detail pane.
+    @MainActor
+    func testTheListsContentStaysInsideItsColumnInLandscape() throws {
+        for landscape in [true, false] {
+            let app = launch(landscape: landscape)
+            let panel = app.staticTexts["detailPlaceholder"]
+            XCTAssertTrue(panel.waitForExistence(timeout: 10))
+            let meter = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Today's load")).firstMatch
+            XCTAssertTrue(meter.waitForExistence(timeout: 5))
+            let where_ = landscape ? "landscape" : "portrait"
+            XCTAssertLessThanOrEqual(meter.frame.width, 440, "the load meter fits the 440 pt column in \(where_) (it was \(meter.frame.width))")
+            XCTAssertGreaterThan(meter.frame.width, 250, "and is not squeezed in \(where_)")
+            XCTAssertLessThanOrEqual(meter.frame.maxX, panel.frame.minX, "it ends before the detail pane starts in \(where_)")
+            XCTAssertGreaterThanOrEqual(meter.frame.minX, 0, "and does not start off screen in \(where_)")
+            app.terminate()
+        }
+    }
+
     @MainActor
     func testPickingATaskShowsItsDetailBesideTheListNotInASheet() throws {
         let app = launch()
