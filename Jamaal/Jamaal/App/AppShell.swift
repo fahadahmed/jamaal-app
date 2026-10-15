@@ -201,9 +201,14 @@ struct AppShell: View {
             }
         }
         // A change arriving from iCloud on another device is not a local save: it comes as a remote change on the store.
+        // The engine tick (seed, dedup, rollover) also runs once the import goes quiet. Each device seeds the default categories and
+        // the like on first launch, so after the first sync there are two sets until the dedup merges them; the tick otherwise runs
+        // only at launch and when the app becomes active, and a Mac's window is already active when the data arrives.
         .task {
+            let settle = Debouncer(delay: .seconds(3))
             for await _ in NotificationCenter.default.notifications(named: Notification.Name("NSPersistentStoreRemoteChangeNotification")) {
                 WidgetRefresher.shared.requestReload()
+                settle.schedule { _ = try? AppEngine.tick(context: context) }
             }
         }
         .onChange(of: reminders.route) { _, route in
