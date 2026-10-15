@@ -9,12 +9,12 @@ import UIKit
 import ThreadsTokens
 
 /// The system tab bar in the design's colours (the bar itself stays the system's Liquid Glass, so the Duo can move it to the
-/// side): items in `ink3` in Hanken Medium 11, the chosen one in `ink` and semibold, with a white `selected` pill behind it.
+/// side): items in `ink3` in Hanken Medium 11, the chosen one in the accent teal and semibold, with a white `selected` pill behind it.
 /// On iOS 26 the system applies the chosen item's colour and font but ignores the unselected colour and the pill's tint
 /// (checked on 26.4); they are set anyway so a later release that honours them picks them up.
 enum TabBarAppearance {
     static func apply(_ palette: some ThreadsPalette) {
-        let ink = UIColor(palette.ink), ink3 = UIColor(palette.ink3)
+        let ink = UIColor(palette.accent), ink3 = UIColor(palette.ink3)            // the chosen item is the accent teal
         let regular = UIFont(name: "HankenGrotesk-Medium", size: 11) ?? .systemFont(ofSize: 11, weight: .medium)
         let semibold = UIFont(name: "HankenGrotesk-SemiBold", size: 11) ?? .systemFont(ofSize: 11, weight: .semibold)
 

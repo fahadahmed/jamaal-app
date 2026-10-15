@@ -94,19 +94,21 @@ struct AppShell: View {
     /// iPhone and iPad: the system tab view (a floating bar, or the sidebar on an iPad).
     private var tabShell: some View {
         TabView(selection: $selection) {
-            Tab(AppTab.today.title, image: AppTab.today.icon, value: AppTab.today) { TodayScreen() }
+            Tab(AppTab.today.title, image: AppTab.today.icon, value: AppTab.today) { TodayScreen().tint(threads.ink) }
                 .badge(AppNavigation.isRegular(sizeClass) ? todayCount : 0)
-            Tab(AppTab.habits.title, image: AppTab.habits.icon, value: AppTab.habits) { HabitsScreen() }
+            Tab(AppTab.habits.title, image: AppTab.habits.icon, value: AppTab.habits) { HabitsScreen().tint(threads.ink) }
             // At compact width Anchors is a segment of Habits, so it isn't a tab at all (iOS keeps every tab it is
             // given in the phone's tab bar); at regular width it is a sidebar item that the top tab bar leaves out.
             if !AppNavigation.showsAnchorsSegment(sizeClass: sizeClass) {
-                Tab(AppTab.anchors.title, image: AppTab.anchors.icon, value: AppTab.anchors) { AnchorsScreen() }
+                Tab(AppTab.anchors.title, image: AppTab.anchors.icon, value: AppTab.anchors) { AnchorsScreen().tint(threads.ink) }
                     .defaultVisibility(.hidden, for: .tabBar)
             }
-            Tab(AppTab.wellbeing.title, image: AppTab.wellbeing.icon, value: AppTab.wellbeing) { WellbeingScreen() }
-            Tab(AppTab.settings.title, image: AppTab.settings.icon, value: AppTab.settings) { SettingsScreen() }
+            Tab(AppTab.wellbeing.title, image: AppTab.wellbeing.icon, value: AppTab.wellbeing) { WellbeingScreen().tint(threads.ink) }
+            Tab(AppTab.settings.title, image: AppTab.settings.icon, value: AppTab.settings) { SettingsScreen().tint(threads.ink) }
         }
         .tabViewStyle(.sidebarAdaptable)
+        // The selected tab (and the selected sidebar row) is the accent teal; each tab's content keeps the ink tint below.
+        .tint(threads.accent)
         // The sidebar's own furniture (iPad and Mac): the wordmark, the Categories list that filters Today, and Plan tomorrow.
         .tabViewSidebarHeader { SidebarWordmark() }
         .tabViewSidebarFooter {

@@ -38,3 +38,7 @@ The frames draw their own icons as inline SVG on a 24 pt grid (1.75 stroke, roun
 
 The frames draw "How much does this matter?" and the Task | Anchor toggle as full-width pill segments, and Category and Repeat as full-width rows with a chevron. SwiftUI's own segmented picker and `Menu` look the same on an iPhone but become small AppKit controls on a Mac, beside the large Due chips, and a `Menu` with a custom label was not reliably clickable there. The form now uses our own `PillSegment` (`fills: true` gives the three equal segments) for both, and the Category and Repeat menus use the button menu style (`.menuStyle(.button)`, plain button style, no indicator) so the whole row is the control. Other screens still use the system segmented picker (Settings' weekday levels, Appearance, the Anchor and prayer forms, onboarding); change them the same way if they look small on a Mac.
 
+## The selected tab is teal (#263)
+
+The frames draw the selected tab in `ink`. By the owner's decision (15 Oct 2026) it is the accent teal (`#1F6A58` light, `#8FCBB8` dark) instead: the tab view's tint is `accent` (so it also colours the selected iPad sidebar row) and the tab bar appearance sets the chosen item's icon and label to it. Each tab's content keeps the ink tint, so toggles, links and the like are unchanged. Unselected tabs still follow the system colour (see "Tab and sidebar icons").
+
