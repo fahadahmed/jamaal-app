@@ -28,7 +28,7 @@ struct MacSidebar: View {
     var body: some View {
         List(selection: $selection) {
             ForEach(AppNavigation.sidebarTabs(onMac: true)) { tab in
-                Label(tab.title, systemImage: tab.symbol)
+                Label(tab.title, image: tab.icon)
                     .tag(tab)
                     .badge(tab == .today ? todayCount : 0)
                     .accessibilityIdentifier("sidebar-\(tab.rawValue)")

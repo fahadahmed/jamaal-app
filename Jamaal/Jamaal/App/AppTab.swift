@@ -22,14 +22,15 @@ enum AppTab: String, CaseIterable, Hashable, Identifiable {
         }
     }
 
-    /// The SF Symbol Design draws for it.
-    var symbol: String {
+    /// The icon Design draws for it: a template vector asset (24 pt grid, 1.75 stroke, round caps), not an SF Symbol. An SF Symbol is
+    /// heavier, and the system swaps the selected tab's for its solid variant (Habits turned into four filled squares).
+    var icon: String {
         switch self {
-        case .today: "text.alignleft"
-        case .habits: "square.grid.2x2"
-        case .anchors: "clock"
-        case .wellbeing: "waveform.path.ecg"
-        case .settings: "slider.vertical.3"
+        case .today: "TabToday"
+        case .habits: "TabHabits"
+        case .anchors: "TabAnchors"
+        case .wellbeing: "TabWellbeing"
+        case .settings: "TabSettings"
         }
     }
 }

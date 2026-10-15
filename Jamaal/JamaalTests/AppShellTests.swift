@@ -7,6 +7,11 @@ import Foundation
 import SwiftData
 import SwiftUI
 import Testing
+#if canImport(UIKit)
+import UIKit
+#else
+import AppKit
+#endif
 import JamaalCore
 @testable import Jamaal
 
@@ -39,10 +44,15 @@ struct AppShellTests {
         #endif
     }
 
-    @Test func everyTabHasATitleAndASymbol() {
+    @Test func everyTabHasATitleAndTheDesignsIcon() {
         for tab in AppTab.allCases {
             #expect(!tab.title.isEmpty)
-            #expect(!tab.symbol.isEmpty)
+            #expect(!tab.icon.isEmpty)
+            #if canImport(UIKit)
+            #expect(UIImage(named: tab.icon) != nil, "the asset \(tab.icon) exists")
+            #else
+            #expect(NSImage(named: tab.icon) != nil, "the asset \(tab.icon) exists")
+            #endif
         }
         #expect(AppTab.allCases.map(\.title) == ["Today", "Habits", "Anchors", "Wellbeing", "Settings"])
     }
