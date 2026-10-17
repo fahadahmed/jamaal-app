@@ -10,5 +10,6 @@ import WidgetKit
 struct JamaalWidgets: WidgetBundle {
     var body: some Widget {
         NextAnchorWidget()
+        TodayWidget()
     }
 }
