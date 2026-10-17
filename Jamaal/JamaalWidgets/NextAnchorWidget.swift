@@ -19,7 +19,7 @@ struct NextAnchorEntry: TimelineEntry {
 
 /// The fonts are registered once per process: WidgetKit may build the provider more than once, and registering a font that is
 /// already registered is logged by the system each time.
-private enum WidgetFonts {
+enum WidgetFonts {
     static let registered: [ThreadsFonts.Failure] = ThreadsFonts.registerAll()
 }
 
