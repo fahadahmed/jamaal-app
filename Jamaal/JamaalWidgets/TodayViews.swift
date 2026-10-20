@@ -17,8 +17,7 @@ private struct Headline: View {
     var compact = false
 
     var body: some View {
-        (Text(headline.first + " ").font(.custom("FrauncesDisplay-Regular", size: compact ? 20 : 26, relativeTo: .title2)).foregroundColor(threads.ink)
-         + Text(headline.second).font(.custom(ThreadsType.displayItalicFontName, size: compact ? 20 : 26, relativeTo: .title2)).foregroundColor(threads.accent))
+        Text("\(Text(headline.first + " ").font(.custom("FrauncesDisplay-Regular", size: compact ? 20 : 26, relativeTo: .title2)).foregroundStyle(threads.ink))\(Text(headline.second).font(.custom(ThreadsType.displayItalicFontName, size: compact ? 20 : 26, relativeTo: .title2)).foregroundStyle(threads.accent))")
             .lineLimit(3).minimumScaleFactor(0.7)
     }
 }

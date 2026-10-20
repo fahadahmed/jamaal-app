@@ -48,10 +48,10 @@ struct NextAnchorSmallView: View {
     }
 
     /// A clock time the way the device writes it ("15:32", or "3:32 pm").
-    static func clockTime(_ date: Date) -> String { date.formatted(date: .omitted, time: .shortened) }
+    nonisolated static func clockTime(_ date: Date) -> String { date.formatted(date: .omitted, time: .shortened) }
 
     /// The same without "am" or "pm", for the circular Lock Screen widget ("15:32", or "3:32").
-    static func shortClockTime(_ date: Date) -> String {
+    nonisolated static func shortClockTime(_ date: Date) -> String {
         date.formatted(Date.FormatStyle().hour(.defaultDigits(amPM: .omitted)).minute())
     }
 }

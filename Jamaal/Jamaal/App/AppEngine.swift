@@ -9,7 +9,7 @@ import JamaalCore
 
 /// The most recent ended day the rollover has processed, kept **per device** (not synced): another device's
 /// progress says nothing about this one, and every rollover step is idempotent anyway.
-struct LastProcessedStore {
+nonisolated struct LastProcessedStore {
     static let key = "engine.lastProcessedDay"
     let defaults: UserDefaults
 

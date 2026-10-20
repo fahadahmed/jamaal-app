@@ -205,8 +205,7 @@ struct PlanningHeadline: View {
     let headline: PlanningCopy.Headline
 
     var body: some View {
-        (Text(headline.plain + " ").foregroundStyle(threads.ink)
-         + Text(headline.accent).font(.custom(ThreadsType.displayItalicFontName, size: 38, relativeTo: .largeTitle)).foregroundStyle(threads.accent))
+        Text("\(Text(headline.plain + " ").foregroundStyle(threads.ink))\(Text(headline.accent).font(.custom(ThreadsType.displayItalicFontName, size: 38, relativeTo: .largeTitle)).foregroundStyle(threads.accent))")
             .threadsType(.display(.large))
             .fixedSize(horizontal: false, vertical: true)
             .accessibilityAddTraits(.isHeader)

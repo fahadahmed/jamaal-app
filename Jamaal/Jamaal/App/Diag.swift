@@ -6,9 +6,6 @@
 import Foundation
 import os
 import JamaalCore
-#if canImport(UIKit)
-import UIKit
-#endif
 
 /// The app's diagnostics: one call records an event to Apple's unified log (so Console and a sysdiagnose see it) and to a small buffer
 /// of the last events kept in a file on this device. An event is a fixed name with ids, counts and codes, never content
@@ -25,15 +22,19 @@ final class Diag: @unchecked Sendable {
         uniqueKeysWithValues: DiagnosticCategory.allCases.map { ($0, Logger(subsystem: "dev.fhdamd.Jamaal", category: $0.rawValue)) })
 
     private init() {
-        #if DEBUG
-        let keepAFile = !DebugLaunch.inMemory                       // UI tests and the gallery leave no file behind
-        #else
-        let keepAFile = true
-        #endif
-        fileURL = keepAFile ? Self.defaultFile() : nil
+        fileURL = Self.shouldKeepAFile ? Self.defaultFile() : nil
         if let fileURL, let data = try? Data(contentsOf: fileURL), let saved = try? JSONDecoder().decode(DiagnosticLog.self, from: data) {
             log = saved
         }
+    }
+
+    /// UI tests and the gallery leave no file behind.
+    private static var shouldKeepAFile: Bool {
+        #if DEBUG
+        return !DebugLaunch.inMemory
+        #else
+        return true
+        #endif
     }
 
     private static func defaultFile() -> URL? {
@@ -87,14 +88,14 @@ final class Diag: @unchecked Sendable {
 
 extension DiagnosticEnvironment {
     /// This build and device, read from the bundle and the system.
-    static var current: DiagnosticEnvironment {
+    nonisolated static var current: DiagnosticEnvironment {
         let info = Bundle.main.infoDictionary ?? [:]
         let v = ProcessInfo.processInfo.operatingSystemVersion
         #if os(macOS)
         let system = "macOS \(v.majorVersion).\(v.minorVersion).\(v.patchVersion)"
         let key = "hw.model"
         #else
-        let system = "\(UIDevice.current.systemName) \(v.majorVersion).\(v.minorVersion).\(v.patchVersion)"
+        let system = "iOS \(v.majorVersion).\(v.minorVersion).\(v.patchVersion)"                  // the model line says iPad or iPhone
         let key = "hw.machine"
         #endif
         return DiagnosticEnvironment(
@@ -102,7 +103,7 @@ extension DiagnosticEnvironment {
             os: system, device: sysctlString(key) ?? "unknown", channel: channel)
     }
 
-    private static var channel: Channel {
+    nonisolated private static var channel: Channel {
         #if DEBUG
         return .debug
         #else
@@ -110,7 +111,7 @@ extension DiagnosticEnvironment {
         #endif
     }
 
-    private static func sysctlString(_ name: String) -> String? {
+    nonisolated private static func sysctlString(_ name: String) -> String? {
         var size = 0
         guard sysctlbyname(name, nil, &size, nil, 0) == 0, size > 0 else { return nil }
         var buffer = [CChar](repeating: 0, count: size)

@@ -95,8 +95,8 @@ struct PrayerForm: Equatable {
         let chosen = ["fajr", "dhuhr", "asr", "maghrib", "isha"].filter(draft.prayers.contains)
         guard !chosen.isEmpty else { return nil }
         let coming = Set(PrayerEditing.upcomingToday(draft, now: now, boundary: boundary).map(\.prayer))
-        let upcoming = chosen.filter(coming.contains).map(Self.name)
-        let closed = chosen.filter { !coming.contains($0) }.map(Self.name)
+        let upcoming = chosen.filter(coming.contains).map { Self.name($0) }
+        let closed = chosen.filter { !coming.contains($0) }.map { Self.name($0) }
         if closed.isEmpty { return "Today's \(Self.list(upcoming)) will appear." }
         if upcoming.isEmpty { return "Today's \(Self.list(closed)) \(closed.count == 1 ? "has" : "have") already closed, so they won't be added. Tomorrow's will appear." }
         return "Starting now, today's \(Self.list(upcoming)) will appear. \(Self.list(closed)) \(closed.count == 1 ? "has" : "have") already closed, so \(closed.count == 1 ? "it" : "they") won't be added."

@@ -77,10 +77,10 @@ struct TodayScreen: View {
         let content: TodayContent? = overview.map { overview in
             TodayContent(
                 remainingTasks: overview.shown.count, completedTasks: overview.completedToday.count, alsoToday: overview.alsoToday.count,
-                anchors: anchorItems.count, pendingAnchors: anchorItems.filter(Self.isPending).count,
+                anchors: anchorItems.count, pendingAnchors: anchorItems.filter { Self.isPending($0) }.count,
                 habits: todayHabits?.total ?? 0, unfinishedHabits: (todayHabits?.total ?? 0) - (todayHabits?.done ?? 0))
         }
-        let state = content.map(TodayState.of) ?? .normal
+        let state = content.map { TodayState.of($0) } ?? .normal
         let (morningNow, eveningNow) = promptClocks(boundary)
         let morningDue = morningNow.flatMap { try? MorningCard.isDue(now: $0, boundary: boundary, context: context) } ?? false
         let eveningDue = eveningNow.flatMap { try? NightPlanning.eveningPromptDue(now: $0, boundary: boundary, context: context) } ?? false

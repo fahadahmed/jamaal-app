@@ -16,7 +16,7 @@ struct CompanionMark: View {
             .fill(threads.deep)
             .frame(width: size, height: size)
             .overlay {
-                (Text("J").foregroundStyle(threads.onDeep) + Text(".").foregroundStyle(threads.terra))
+                Text("\(Text("J").foregroundStyle(threads.onDeep))\(Text(".").foregroundStyle(threads.terra))")
                     .font(.custom(ThreadsType.displayItalicFontName, size: size * 0.5))
             }
             .accessibilityHidden(true)

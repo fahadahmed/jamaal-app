@@ -114,7 +114,7 @@ enum AnchorsCopy {
 
     /// A prayer rule's line: "Fajr, Dhuhr, Asr, Maghrib, Isha · Leicester · Muslim World League", or "Five daily prayers · …".
     static func prayerLine(_ config: PrayerConfig) -> String {
-        var parts = [config.prayers.count == 5 ? "Five daily prayers" : config.prayers.map(PrayerForm.name).joined(separator: ", ")]
+        var parts = [config.prayers.count == 5 ? "Five daily prayers" : config.prayers.map { PrayerForm.name($0) }.joined(separator: ", ")]
         if let name = config.location?.name { parts.append(name) }
         parts.append(PrayerMethods.title(for: config.method))
         return parts.joined(separator: " · ")
