@@ -49,6 +49,11 @@ struct NextAnchorSmallView: View {
 
     /// A clock time the way the device writes it ("15:32", or "3:32 pm").
     static func clockTime(_ date: Date) -> String { date.formatted(date: .omitted, time: .shortened) }
+
+    /// The same without "am" or "pm", for the circular Lock Screen widget ("15:32", or "3:32").
+    static func shortClockTime(_ date: Date) -> String {
+        date.formatted(Date.FormatStyle().hour(.defaultDigits(amPM: .omitted)).minute())
+    }
 }
 
 /// The window bar: the accent fill, an outline before the window opens, a neutral full bar once it is over unrecorded.
