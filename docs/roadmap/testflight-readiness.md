@@ -38,7 +38,7 @@ The paid programme is active (15 Oct 2026): Xcode shows the Individual team `Y39
 ## Needs your decision
 
 - [ ] **Mac app icon.** The asset set has iOS icons only. On macOS 26 an icon that isn't made with **Icon Composer** (a single `.icon` file for every platform) is shown inside a plain rounded plate, which looks unfinished. Options: make an Icon Composer file from the current art (needs Design to supply layers), or ship a plain Mac icon set for now. This blocks nothing for TestFlight; it matters before the Mac App Store.
-- [ ] **App Store privacy answers.** My reading: "Data Not Collected" (sync stays in the user's own iCloud, location stays on the device, purchases are handled by Apple). Confirm once sync is real, and that no analytics are added.
+- [ ] **App Store privacy answers.** *(This changes if diagnostics reporting ships: see [Observability and debugging](../architecture/observability#what-changes-for-privacy-when-layer-4-ships).)* My reading: "Data Not Collected" (sync stays in the user's own iCloud, location stays on the device, purchases are handled by Apple). Confirm once sync is real, and that no analytics are added.
 - [ ] **Age rating, support URL and privacy-policy URL.** The policy must say what `YourDataScreen` says: what is kept, where, and how to export or delete it.
 - [ ] **Beta App Review notes** for the first external build: how the app-managed trial and the read-only state work (no sign-in, no payment up front).
 
