@@ -104,7 +104,7 @@ struct OnboardingFlow: View {
             if let eyebrow { Text(eyebrow).threadsType(.label).foregroundStyle(threads.ink2) }
             Group {
                 if let accent {
-                    Text(text) + Text("\n") + Text(accent).italic().foregroundStyle(threads.accent)
+                    Text("\(Text(text))\n\(Text(accent).italic().foregroundStyle(threads.accent))")
                 } else { Text(text) }
             }
             .threadsType(.display(.compact)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)

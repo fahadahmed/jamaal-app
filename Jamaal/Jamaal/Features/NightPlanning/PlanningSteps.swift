@@ -490,7 +490,7 @@ struct BuildStep: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(task.title).threadsType(.row).foregroundStyle(threads.ink)
-                            Text([task.effortMinutes.map(TodayCopy.duration), task.dueDate == nil ? "from the backlog" : "important, not urgent"]
+                            Text([task.effortMinutes.map { TodayCopy.duration($0) }, task.dueDate == nil ? "from the backlog" : "important, not urgent"]
                                 .compactMap { $0 }.joined(separator: " · "))
                                 .threadsType(.meta).foregroundStyle(threads.ink2)
                         }

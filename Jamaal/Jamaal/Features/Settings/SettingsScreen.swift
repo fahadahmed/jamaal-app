@@ -73,7 +73,7 @@ struct SettingsScreen: View {
                     Text("Settings").threadsType(.display(.large)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
                     VStack(spacing: 0) {
                         Divider().overlay(threads.line)
-                        row("Capacity and day", settings.first.map(SettingsCopy.capacitySummary) ?? "", .capacity)
+                        row("Capacity and day", settings.first.map { SettingsCopy.capacitySummary($0) } ?? "", .capacity)
                         row("Notifications and times",
                             ReminderCopy.homeValue(switchOn: reminders.remindersOnThisDevice, permission: reminders.permission, device: ReminderCenter.deviceName),
                             .notifications)

@@ -48,7 +48,7 @@ struct DeferSheet: View {
                 VStack(spacing: 0) {
                     Divider().overlay(threads.line)
                     ForEach(form.options, id: \.kind) { option in
-                        optionRow(title: Self.title(option.kind), detail: option.date.map(AddTaskForm.dateTitle) ?? "No date",
+                        optionRow(title: Self.title(option.kind), detail: option.date.map { AddTaskForm.dateTitle($0) } ?? "No date",
                                   isSelected: option.kind == .someday ? form.isSomeday : (form.target == option.date && !pickingDate)) {
                             pickingDate = false
                             if let date = option.date { form.choose(date) } else { form.chooseSomeday() }

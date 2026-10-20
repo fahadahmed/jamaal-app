@@ -75,7 +75,7 @@ struct AnchorRuleDetailScreen: View {
 
     private func summary(_ row: AnchorsOverview.Row?) -> String {
         if let row, let state = AnchorsCopy.state(row.state) { return state }
-        guard let scheduled else { return prayer.map(AnchorsCopy.prayerLine) ?? "" }
+        guard let scheduled else { return prayer.map { AnchorsCopy.prayerLine($0) } ?? "" }
         return AnchorsCopy.scheduleLine(scheduled, next: row?.next, today: today, style: style)
     }
 
