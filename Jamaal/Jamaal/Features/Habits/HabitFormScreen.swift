@@ -315,13 +315,21 @@ struct WindowEditorSheet: View {
     let index: Int
     let canRemove: Bool
 
-    private var window: HabitWindowDraft { form.draft.windows[index] }
+    /// The sheet is still on screen for a moment after "Remove this time" has taken its entry out of the draft, so it must not
+    /// assume the index is still there.
+    private var window: HabitWindowDraft { form.draft.windows.indices.contains(index) ? form.draft.windows[index] : HabitWindowDraft(target: 1) }
+
+    /// Changes this time of day, if it still exists.
+    private func update(_ change: (inout HabitWindowDraft) -> Void) {
+        guard form.draft.windows.indices.contains(index) else { return }
+        change(&form.draft.windows[index])
+    }
     private var isAllDay: Bool { window.startMinute == 0 && window.endMinute == 1439 }
 
     var body: some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.section) {
             Text("Time of day").threadsType(.display(.compact)).foregroundStyle(threads.ink)
-            TextField("Name (Morning, Evening…)", text: Binding(get: { window.label }, set: { form.draft.windows[index].label = $0 }))
+            TextField("Name (Morning, Evening…)", text: Binding(get: { window.label }, set: { value in update { $0.label = value } }))
                 .threadsType(.lede)
                 .padding(.bottom, ThreadsSpace.tight)
                 .overlay(alignment: .bottom) { Divider().overlay(threads.line2) }
@@ -329,24 +337,23 @@ struct WindowEditorSheet: View {
             Toggle("All day", isOn: Binding(
                 get: { isAllDay },
                 set: { on in
-                    form.draft.windows[index].startMinute = on ? 0 : 6 * 60
-                    form.draft.windows[index].endMinute = on ? 1439 : 12 * 60
+                    update { $0.startMinute = on ? 0 : 6 * 60; $0.endMinute = on ? 1439 : 12 * 60 }
                 }))
             if !isAllDay {
                 DatePicker("From", selection: Binding(
                     get: { HabitForm.date(forMinute: window.startMinute) },
-                    set: { form.draft.windows[index].startMinute = HabitForm.minute(of: $0) }), displayedComponents: .hourAndMinute)
+                    set: { value in update { $0.startMinute = HabitForm.minute(of: value) } }), displayedComponents: .hourAndMinute)
                 DatePicker("Until", selection: Binding(
                     get: { HabitForm.date(forMinute: window.endMinute) },
-                    set: { form.draft.windows[index].endMinute = HabitForm.minute(of: $0) }), displayedComponents: .hourAndMinute)
+                    set: { value in update { $0.endMinute = HabitForm.minute(of: value) } }), displayedComponents: .hourAndMinute)
             }
             Toggle("Remind me", isOn: Binding(
                 get: { window.reminderMinute != nil },
-                set: { form.draft.windows[index].reminderMinute = $0 ? (isAllDay ? 9 * 60 : window.startMinute) : nil }))
+                set: { on in update { $0.reminderMinute = on ? (isAllDay ? 9 * 60 : window.startMinute) : nil } }))
             if let reminder = window.reminderMinute {
                 DatePicker("At", selection: Binding(
                     get: { HabitForm.date(forMinute: reminder) },
-                    set: { form.draft.windows[index].reminderMinute = HabitForm.minute(of: $0) }), displayedComponents: .hourAndMinute)
+                    set: { value in update { $0.reminderMinute = HabitForm.minute(of: value) } }), displayedComponents: .hourAndMinute)
                 RemindersOffLine()
             }
             Spacer()

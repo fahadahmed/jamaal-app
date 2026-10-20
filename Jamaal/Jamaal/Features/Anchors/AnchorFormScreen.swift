@@ -317,29 +317,37 @@ struct SlotEditorSheet: View {
     @Binding var form: AnchorForm
     let index: Int
 
-    private var slot: AnchorSlotDraft { form.draft.slots[index] }
+    /// The sheet is still on screen for a moment after "Remove this time" has taken its entry out of the draft, so it must not
+    /// assume the index is still there.
+    private var slot: AnchorSlotDraft { form.draft.slots.indices.contains(index) ? form.draft.slots[index] : AnchorSlotDraft() }
+
+    /// Changes this time, if it still exists.
+    private func update(_ change: (inout AnchorSlotDraft) -> Void) {
+        guard form.draft.slots.indices.contains(index) else { return }
+        change(&form.draft.slots[index])
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.section) {
             Text("A time").threadsType(.display(.compact)).foregroundStyle(threads.ink)
-            TextField("Name (Drop-off, Pick-up…)", text: Binding(get: { slot.label }, set: { form.draft.slots[index].label = $0 }))
+            TextField("Name (Drop-off, Pick-up…)", text: Binding(get: { slot.label }, set: { value in update { $0.label = value } }))
                 .threadsType(.lede).padding(.bottom, ThreadsSpace.tight)
                 .overlay(alignment: .bottom) { Divider().overlay(threads.line2) }
                 .accessibilityIdentifier("slotName")
             if form.draft.repeats.isCalendarBased {
-                Toggle("All day", isOn: Binding(get: { slot.allDay }, set: { form.draft.slots[index].allDay = $0 }))
+                Toggle("All day", isOn: Binding(get: { slot.allDay }, set: { value in update { $0.allDay = value } }))
             }
             if !slot.allDay {
                 DatePicker("Starts", selection: Binding(
                     get: { HabitForm.date(forMinute: slot.startMinute) },
-                    set: { form.draft.slots[index].startMinute = HabitForm.minute(of: $0) }), displayedComponents: .hourAndMinute)
+                    set: { value in update { $0.startMinute = HabitForm.minute(of: value) } }), displayedComponents: .hourAndMinute)
                 HStack {
                     Text("Window").threadsType(.lede).foregroundStyle(threads.ink)
                     Spacer()
                     Text("\(slot.windowMinutes) min").threadsType(.lede).foregroundStyle(threads.ink)
                     StepperPill(title: "window", canDecrement: slot.windowMinutes > 5,
-                                onDecrement: { var s = slot; AnchorForm.stepWindow(&s, by: -1); form.draft.slots[index] = s },
-                                onIncrement: { var s = slot; AnchorForm.stepWindow(&s, by: 1); form.draft.slots[index] = s })
+                                onDecrement: { update { AnchorForm.stepWindow(&$0, by: -1) } },
+                                onIncrement: { update { AnchorForm.stepWindow(&$0, by: 1) } })
                         .scaleEffect(0.85)
                 }
                 Text("How long it stays open for you to do it.").threadsType(.meta).foregroundStyle(threads.ink2)
