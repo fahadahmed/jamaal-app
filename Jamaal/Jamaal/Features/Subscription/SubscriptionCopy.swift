@@ -63,7 +63,13 @@ enum SubscriptionCopy {
     static let paywallTitle = "Keep shaping your days."
     static let paywallBody = "Ticking off, logging habits, marking Anchors and the timer keep working. Adding, editing and Night Planning need a subscription."
     static func subscribeButton(_ plan: SubscriptionPlan) -> String { "Subscribe \(plan.title.lowercased())" }
-    static let noPlans = "Plans aren't available right now. Check your connection and try again."
+    /// Shown instead of the plans when none can be loaded. In a TestFlight beta there are none to load (subscriptions aren't set up
+    /// yet), so it says that rather than blaming the connection.
+    static func noPlans(isBeta: Bool) -> String {
+        isBeta
+            ? "This beta doesn't have subscriptions yet. Everything stays readable and safe, and Export my data always works."
+            : "Plans aren't available right now. Check your connection and try again."
+    }
     static let lockedTitle = "Adding and planning need a subscription"
     static let lockedBody = "Everything already here keeps working for the day."
 }

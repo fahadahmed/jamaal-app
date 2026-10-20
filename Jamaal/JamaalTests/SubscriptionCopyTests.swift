@@ -60,4 +60,15 @@ struct SubscriptionCopyTests {
         #expect(status.line.contains("Full access"))
         #expect(!status.line.contains("Renews"), "there is nothing to renew")
     }
+
+    @Test func noPlansSaysToCheckTheConnectionInAnAppStoreBuild() {
+        #expect(SubscriptionCopy.noPlans(isBeta: false) == "Plans aren't available right now. Check your connection and try again.")
+    }
+
+    @Test func noPlansInABetaSaysPlainlyThereAreNoSubscriptionsYet() {
+        let text = SubscriptionCopy.noPlans(isBeta: true)
+        #expect(text.contains("beta"))
+        #expect(text.contains("Export my data"), "the way out is named")
+        #expect(!text.contains("connection"), "it is not a connection problem, so it doesn't say it is")
+    }
 }
