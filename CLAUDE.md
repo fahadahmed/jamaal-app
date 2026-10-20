@@ -124,6 +124,10 @@ Custom components NOT from ThreadsKit, built in `Jamaal/Components/`: capacity s
 
 Pages are Markdown in `docs/`, published to the wiki by `.github/scripts/sync_wiki.py` (which flattens page names). Draw with **Mermaid** code fences (flowcharts, sequence, state and class diagrams); the repo view and the wiki both render them. Show screens with ordinary relative image paths to `mockups/screens/...` (the design frames) or `docs/images/...` (screenshots of the built app); use an `<img src=... width=...>` tag when a size is needed. The sync copies each referenced image into the wiki and **fails on a missing image or a link to a missing page**; `python3 -m unittest test_sync_wiki` in `.github/scripts` runs the same check over the real docs, and the *Docs check* workflow runs it on docs changes. `docs/architecture/diagrams.md` and `docs/journeys/screen-gallery.md` are the two pages that hold the pictures: update them when a flow or a screen changes.
 
+## Releases
+
+Nothing reaches testers by merging: **a tag does**, through Xcode Cloud (`beta-<version>-<n>` to the public TestFlight group, `v<version>` for the App Store). Before tagging, deploy the CloudKit schema to Production if a model changed (additive only, permanent). Full process and checklist: `docs/roadmap/release-process.md`.
+
 ## Git workflow
 
 All new code or documentation work is tracked through a GitHub issue and lands via a PR — no direct commits to `main`, except trivial fixes (typos, formatting) explicitly requested as a direct commit.

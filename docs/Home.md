@@ -25,7 +25,7 @@ A deterministic **rules engine** (no machine learning) orders the day, checks th
 - **How it decides things:** [Architecture overview](architecture/overview) and the [Rules engine](architecture/rules-engine).
 - **Why things are the way they are:** [ADR 0001: Anchor object type](architecture/decisions/0001-anchor-object-type), [ADR 0002: Reconciling the earlier planning](architecture/decisions/0002-reconcile-master-summary-v2) and [ADR 0003: Widgets in v1, a watch companion in v1.1](architecture/decisions/0003-widgets-in-v1-watch-in-v1-1) (spec: [Widgets and the watch](architecture/widgets-and-watch)).
 - **How it looks:** [ThreadsKit usage](design/threadskit-usage).
-- **What happens when:** [Roadmap](roadmap/phases).
+- **What happens when:** [Roadmap](roadmap/phases); **how a change reaches testers and the App Store:** [Release process](roadmap/release-process).
 
 ## Status
 
