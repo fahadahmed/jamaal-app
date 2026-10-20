@@ -51,4 +51,15 @@ struct SubscriptionCopyTests {
         #expect(SubscriptionCopy.subscribeButton(.yearly) == "Subscribe yearly" && SubscriptionCopy.subscribeButton(.monthly) == "Subscribe monthly")
         #expect(SubscriptionPlan.allCases.map(\.title) == ["Yearly", "Monthly"])
     }
+
+    @Test func noPlansSaysToCheckTheConnectionInAnAppStoreBuild() {
+        #expect(SubscriptionCopy.noPlans(isBeta: false) == "Plans aren't available right now. Check your connection and try again.")
+    }
+
+    @Test func noPlansInABetaSaysPlainlyThereAreNoSubscriptionsYet() {
+        let text = SubscriptionCopy.noPlans(isBeta: true)
+        #expect(text.contains("beta"))
+        #expect(text.contains("Export my data"), "the way out is named")
+        #expect(!text.contains("connection"), "it is not a connection problem, so it doesn't say it is")
+    }
 }
