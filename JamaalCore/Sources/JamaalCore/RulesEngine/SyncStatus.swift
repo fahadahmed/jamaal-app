@@ -99,7 +99,8 @@ public enum SyncStatusCopy {
 
     /// One block of plain text to paste when asking for help. It holds no tasks, habits or titles.
     public static func details(
-        isOn: Bool, account: SyncAccount, activity: SyncActivity, container: String, device: String, now: Date
+        isOn: Bool, account: SyncAccount, activity: SyncActivity, container: String, device: String, now: Date,
+        extra: [String] = []
     ) -> String {
         var lines = [
             "Device: \(device)",
@@ -114,6 +115,6 @@ public enum SyncStatusCopy {
         } else {
             lines.append("Last problem: none")
         }
-        return lines.joined(separator: "\n")
+        return (lines + extra).joined(separator: "\n")
     }
 }

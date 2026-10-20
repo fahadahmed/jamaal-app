@@ -165,6 +165,7 @@ public enum FocusSessions {
         if let window = session.habitWindow {
             HabitSessions.recompute(window, on: CalendarDate(storedDate: session.day), now: now, context: context)
         }
+        persist(context)
         return result
     }
 
@@ -194,6 +195,7 @@ public enum FocusSessions {
         if let window = session.habitWindow {
             HabitSessions.recompute(window, on: CalendarDate(storedDate: session.day), now: now, context: context)
         }
+        persist(context)
     }
 
     // MARK: The settle sheet
@@ -299,10 +301,18 @@ public enum FocusSessions {
         context.insert(session)
         session.habitWindow = window
         HabitSessions.recompute(window, on: day, now: now, context: context)
+        persist(context)
         return session
     }
 
     // MARK: Helpers
+
+    /// Saves now. A finished session and the day's total it changes are two records; leaving them to the automatic save let the
+    /// session reach other devices before the total did, or without it (#279).
+    @MainActor
+    static func persist(_ context: ModelContext) {
+        try? context.save()
+    }
 
     /// Closes a session at `end`: folds in a pause in progress and stores elapsed minus pauses.
     static func close(_ session: WorkSession, at end: Date, as outcome: SessionOutcome) {
