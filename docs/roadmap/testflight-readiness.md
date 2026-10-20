@@ -25,23 +25,39 @@ The paid programme is active (15 Oct 2026): Xcode shows the Individual team `Y39
 4. [x] **CloudKit is on (#243):** the store opens with `cloudKitDatabase: .private("iCloud.dev.fhdamd.Jamaal")` whenever the app is signed with its App Group (`SyncMode`); tests, previews, unsigned builds, CI and in-memory stores stay local, and the debug argument `-JamaalNoCloudKit` turns it off to rule sync out. Checked on a **signed simulator**: the container opened, CloudKit mirroring set up (so the models are CloudKit-compatible) and the only error was "no iCloud account" (the simulator isn't signed in). **Still to check on two real devices** on one Apple ID: a task added on one appears on the other. The development schema is created in the **Development** environment on first use; **deploy it to Production before any TestFlight build**.
 5. [x] **Checked on the iPhone simulator (signed):** the store is `<group>/Library/Application Support/Jamaal.store` and the app's own folder holds no `default.store`. **Still to check** on a real iPhone and the Mac (`~/Library/Group Containers/<id>/Library/Application Support/`). The location rule: `<group>/Library/Application Support/Jamaal.store` (on the Mac, `~/Library/Group Containers/<id>/Library/Application Support/`), and the old `default.store` no longer written.
 
-## Needs the paid programme
+## Where it stands (21 Oct 2026)
 
-- [ ] Enrol, then **point Debug back at the full entitlements** (`Jamaal.entitlements`: push and iCloud) and register the **App IDs** with iCloud/CloudKit, Push and **App Groups** for the app (and, later, the widget extension).
-- [ ] **One change:** the App Group, moving the SwiftData store into it, and the CloudKit container (so no user ever migrates).
-- [ ] **CloudKit:** create the container; run real-device sync between iPhone, iPad and Mac; work through "Welcome back", ST-06 and the G-80 spike. **Before any build outside your own devices, deploy the CloudKit schema from Development to Production** (a TestFlight build uses Production; a schema that was never deployed makes sync fail).
-- [ ] **App Store Connect:** create the app record (one record for iPhone, iPad and Mac with the same bundle id); an internal TestFlight group with you in it.
-- [ ] **Signing and upload:** an archive with the Release configuration, the Apple Distribution certificate (and the Mac App Distribution and installer certificates for the Mac build), then upload. **Each upload needs a higher build number** (decide: bump by hand, or set it from the CI run number).
-- [ ] **Widget extension** (Next Anchor, Today, Lock Screen, Mac), if it fits before the 18th.
-- [ ] **Subscriptions** ($2.99 a month, $24.99 a year, in one subscription group) and sandbox testers: **the next build, not this one.** Keep purchases off, or behind a debug switch, in the first build.
+**Done**
+- [x] **Paid programme, App Group, iCloud container and CloudKit sync**, checked across the iPhone, iPad and Mac: Anchors, a running timer and a habit's minutes all arrive within seconds.
+- [x] **CloudKit schema deployed from Development to Production.** From here on, model changes must be additive and the schema is deployed again before the next tag (see the [release process](release-process)).
+- [x] **App Store Connect app record** (one record for iPhone, iPad and Mac, `dev.fhdamd.Jamaal`).
+- [x] **Widgets:** Next Anchor (small, and the three Lock Screen sizes on iOS) and Today (small, medium, large), on iPhone, iPad and Mac. The widget extension builds for the Mac too.
+- [x] **Mac app icon** (an Icon Composer file for the Mac) and the iOS icons.
+- [x] **Release builds** of the iOS and Mac apps compile (unsigned); signing is done by Xcode Cloud.
+- [x] **Support and privacy pages** (https://jamaal.app/support and /privacy) load.
+- [x] **Xcode Cloud is connected** to the repository (it created a *Default* workflow that builds on every merge; it needs to be turned into the two tag-triggered workflows below).
+- [x] **A beta keeps full access after 14 days** (a TestFlight build never goes read-only, Settings shows *Beta · full access*), and **a beta never starts the trial**, so the App Store version's 14 days begin on each person's first launch of it (#291).
+- [x] **Diagnostics:** an on-device event log and *Share details* (Settings → iCloud sync). Sentry is planned, not built ([Observability and debugging](../architecture/observability)).
 
-## Needs your decision
+**Waiting on you**
+- [ ] **Xcode Cloud workflows:** edit *Default* into **TestFlight beta** (tags starting `beta-`, Archive iOS and macOS, post-action to TestFlight) and create **App Store release** (tags starting `v`). Steps in the [release process](release-process#one-time-setup).
+- [ ] **TestFlight group:** an external group with the public link, the test details, the support and privacy URLs and a contact.
+- [ ] **App Store Connect → App Information and privacy:** the privacy-policy and support URLs, the age rating (expected 4+, don't choose the Kids category), and the **privacy answers: "Data Not Collected"** until Sentry ships (then *Data Not Linked to You: Diagnostics*, see [Observability and debugging](../architecture/observability#what-changes-for-privacy-when-layer-4-ships)).
+- [ ] **A support email address** on `jamaal.app`, for *Share details*; it needs to exist before the first beta.
+- [ ] **Sentry decisions:** the plan and region (EU proposed), and whether the reporting switch is on by default in TestFlight builds.
+- [ ] **VoiceOver pass** before the public link goes out (not needed for an invite-only first beta).
+- [ ] Install the latest build on the **iPad**.
 
-- [ ] **Mac app icon.** The asset set has iOS icons only. On macOS 26 an icon that isn't made with **Icon Composer** (a single `.icon` file for every platform) is shown inside a plain rounded plate, which looks unfinished. Options: make an Icon Composer file from the current art (needs Design to supply layers), or ship a plain Mac icon set for now. This blocks nothing for TestFlight; it matters before the Mac App Store.
-- [ ] **App Store privacy answers.** *(This changes if diagnostics reporting ships: see [Observability and debugging](../architecture/observability#what-changes-for-privacy-when-layer-4-ships).)* My reading: "Data Not Collected" (sync stays in the user's own iCloud, location stays on the device, purchases are handled by Apple). Confirm once sync is real, and that no analytics are added.
-- [ ] **Age rating, support URL and privacy-policy URL.** The policy must say what `YourDataScreen` says: what is kept, where, and how to export or delete it.
+**Mine, once the workflows exist**
+- [ ] Push `beta-1.0-1` on a tested commit and check the run: the scheme is found, the build number comes from Xcode Cloud, the iOS and Mac builds upload.
+- [ ] Install from TestFlight and check, on the **Production** iCloud environment, that Settings reads *Beta · full access* and that sync works across two devices, **before** sharing the link.
 - [ ] **Beta App Review notes** for the first external build: the beta has full access with no sign-in and no payment, and subscriptions aren't on yet (an App Store build uses the app-managed 14-day trial, then read-only).
+- [ ] Sentry (slice 4) once the decisions are made.
+
+**Known and not blocking the first beta**
+- Widgets read the trial as if it were still running, because the subscription answer isn't shared with the extension yet. A beta never reaches read-only, so this only matters for the App Store build (the widgets' *View only* note).
+- The Mac's pill sizes and the other screens that still use the system's segmented pickers (Settings levels, Appearance, Anchor and prayer forms, onboarding) have not had a visual pass on a Mac.
 
 ## Not for the first build
 
-Sounds and animation (not decided), the watch app (v1.1), Live Activity and interactive widgets (v1.1), the App Store listing text and screenshots (the next build).
+Subscriptions ($2.99 a month, $24.99 a year, one subscription group, and sandbox testers): the next build, set up in App Store Connect first. The App Store listing text and screenshots (the next build). Sounds and animation (not decided), the watch app (v1.1), Live Activity and interactive widgets (v1.1).
