@@ -21,8 +21,9 @@ enum SubscriptionCopy {
     // MARK: Settings
 
     /// The Settings home row's value.
-    static func homeValue(_ access: AccessState) -> String {
-        switch access {
+    static func homeValue(_ access: AccessState, isBeta: Bool = false) -> String {
+        if isBeta { return "Beta · full access" }
+        return switch access {
         case .trial(let daysLeft): "Trial · \(daysLeft) \(daysLeft == 1 ? "day" : "days") left"
         case .subscribed: "Subscribed"
         case .readOnly: "Trial ended"
@@ -30,7 +31,8 @@ enum SubscriptionCopy {
     }
 
     /// The Subscription screen: a small label and the plain sentence under it.
-    static func status(_ access: AccessState, trialStart: CalendarDate?, renewsOn: String?) -> (label: String, line: String) {
+    static func status(_ access: AccessState, trialStart: CalendarDate?, renewsOn: String?, isBeta: Bool = false) -> (label: String, line: String) {
+        if isBeta { return ("BETA", "Full access while you test, with no trial to count down. Subscriptions aren't open yet. Thank you for testing.") }
         switch access {
         case .trial(let daysLeft):
             let left = daysLeft == 1 ? "Last day." : "\(daysLeft) days left."

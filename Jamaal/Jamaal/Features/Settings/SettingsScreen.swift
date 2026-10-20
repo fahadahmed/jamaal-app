@@ -80,7 +80,7 @@ struct SettingsScreen: View {
                         row("Categories", "\(categories.filter { !$0.isArchived }.count)", .categories)
                         row("Appearance", AppTheme(rawValue: theme)?.title ?? "System", .appearance)
                         row("Subscription",
-                            SubscriptionCopy.homeValue(store.access(settings: settings.first, boundary: TodayDay.boundary(in: context))), .subscription)
+                            SubscriptionCopy.homeValue(store.access(settings: settings.first, boundary: TodayDay.boundary(in: context)), isBeta: store.isBeta), .subscription)
                         row("iCloud sync", SyncStatusScreen.homeValue, .sync)
                         row("Privacy and your data", "", .yourData)
                     }
