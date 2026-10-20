@@ -85,13 +85,20 @@ public enum AnchorAttendance {
         anchor.resolvedAt = nil
     }
 
-    /// Stores `missed` for every still-pending Anchor whose window has closed, at its window's end.
+    /// How long a window must have been closed before an unmarked Anchor is stored as `missed`.
+    ///
+    /// Another device may have marked it attended, with that change still on its way through iCloud. A device that stored `missed`
+    /// from its own, older copy would then overwrite the "done" everywhere (#277). Until the day has passed the Anchor stays
+    /// `pending` and `displayStatus` reads it as missed, so nothing changes on screen, and "done after all" still works.
+    public static let finalizeGrace: TimeInterval = 24 * 3600
+
+    /// Stores `missed`, at its window's end, for every still-pending Anchor whose window closed at least `finalizeGrace` ago.
     /// Idempotent; returns how many it changed.
     @MainActor
     @discardableResult
-    public static func finalizeClosed(in context: ModelContext, at now: Date) throws -> Int {
+    public static func finalizeClosed(in context: ModelContext, at now: Date, grace: TimeInterval = finalizeGrace) throws -> Int {
         var count = 0
-        for anchor in try context.fetch(FetchDescriptor<Anchor>()) where anchor.status == .pending && anchor.windowEnd <= now {
+        for anchor in try context.fetch(FetchDescriptor<Anchor>()) where anchor.status == .pending && anchor.windowEnd <= now.addingTimeInterval(-grace) {
             anchor.status = .missed
             anchor.resolvedAt = anchor.windowEnd
             count += 1

@@ -104,8 +104,12 @@ struct EngineTickTests {
         rule.createdAt = at(1, 0); c.insert(rule)
         let result = try tick(c, now: at(15, 9), last: d(14))                    // Thu 15, 09:00: the 08:15 window has closed
         #expect(result.anchors.created == 2)                                      // Thu and Fri
-        #expect(result.anchorsFinalised == 1)                                     // Thursday's, never tapped
+        #expect(result.anchorsFinalised == 0)                                     // too soon to store it: another device may have marked it
         let thursday = try #require(try c.fetch(FetchDescriptor<Anchor>()).first { $0.occurrenceDate == d(15).storedDate })
+        #expect(thursday.status == .pending)
+        #expect(AnchorAttendance.displayStatus(of: thursday, at: at(15, 9)) == .missed, "it still reads as missed")
+        let later = try tick(c, now: at(16, 9), last: d(15))                      // a day on
+        #expect(later.anchorsFinalised == 1)
         #expect(thursday.status == .missed)
     }
 

@@ -192,6 +192,13 @@ public enum AnchorGenerator {
 
     // MARK: Sync — writes today and tomorrow
 
+    /// Whether a rule change may still touch this Anchor: pending, and its window hasn't closed. A window that closed unmarked stays
+    /// `pending` for a day before it is stored as missed (`AnchorAttendance.finalizeGrace`), and reads as missed meanwhile, so it
+    /// is left alone exactly as a stored `missed` one is.
+    private static func isStillToCome(_ anchor: Anchor, now: Date) -> Bool {
+        anchor.status == .pending && anchor.windowEnd > now
+    }
+
     /// Brings the stored instances for the next `horizonDays` days (today and tomorrow by default) in
     /// line with the rules, idempotently:
     ///
@@ -218,7 +225,7 @@ public enum AnchorGenerator {
             let existing = rule.anchors ?? []
 
             guard rule.isEnabled, !rule.isArchived else {
-                for anchor in existing where anchor.status == .pending && CalendarDate(storedDate: anchor.occurrenceDate) >= today {
+                for anchor in existing where isStillToCome(anchor, now: now) && CalendarDate(storedDate: anchor.occurrenceDate) >= today {
                     context.delete(anchor)
                     report.removed += 1
                 }
@@ -233,7 +240,7 @@ public enum AnchorGenerator {
 
             for item in desired {
                 if let anchor = byKey[key(item.occurrenceDate, item.slotKey)] {
-                    if anchor.status == .pending, apply(item, to: anchor) { report.updated += 1 }
+                    if isStillToCome(anchor, now: now), apply(item, to: anchor) { report.updated += 1 }
                 } else {
                     let anchor = Anchor(title: item.title)
                     anchor.occurrenceDate = item.occurrenceDate.storedDate
@@ -245,7 +252,7 @@ public enum AnchorGenerator {
                     report.created += 1
                 }
             }
-            for anchor in existing where anchor.status == .pending {
+            for anchor in existing where isStillToCome(anchor, now: now) {
                 let date = CalendarDate(storedDate: anchor.occurrenceDate)
                 if horizon.contains(date), !desiredKeys.contains(key(date, anchor.slotKey)) {
                     context.delete(anchor)

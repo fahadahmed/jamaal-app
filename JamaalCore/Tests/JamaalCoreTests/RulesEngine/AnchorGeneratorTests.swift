@@ -196,6 +196,35 @@ struct AnchorGeneratorTests {
         #expect(try w.anchors().map(\.id) == [kept.id])
     }
 
+    /// A window that has closed unmarked stays `pending` for a day before it is stored as missed (#277), so rule changes must
+    /// leave it alone just as they leave a stored `missed` one.
+    @Test func archivingARuleKeepsTodaysClosedUnmarkedWindowsAndRemovesOnlyWhatIsStillToCome() throws {
+        let w = try AnchorWorld()
+        let rule = schoolRun(w)
+        _ = try sync(w)                                                  // Mon 5th 07:00: the 5th and the 6th
+        let closed = try w.anchors().filter { CalendarDate(storedDate: $0.occurrenceDate) == w.d(5) }
+        #expect(closed.count == 2)
+        rule.isArchived = true
+        _ = try sync(w, hour: 16)                                        // 16:00: both of the 5th's windows have closed
+        let left = try w.anchors()
+        #expect(Set(left.map(\.id)) == Set(closed.map(\.id)), "only the 6th's pending windows go")
+        #expect(left.allSatisfy { $0.status == .pending })
+    }
+
+    @Test func editingARuleDoesNotRewriteAWindowThatHasAlreadyClosed() throws {
+        let w = try AnchorWorld()
+        let rule = schoolRun(w)
+        _ = try sync(w)
+        let drop = try #require(try w.anchors().first { $0.slotKey == "drop" && CalendarDate(storedDate: $0.occurrenceDate) == w.d(5) })
+        let before = (drop.windowStart, drop.windowEnd)
+        rule.configData = w.scheduled(
+            .weekly(weekdays: [1, 2, 3, 4, 5]),
+            slots: [w.slot("drop", "Drop-off", "09:00", minutes: 30), w.slot("pick", "Pick-up", "15:00", minutes: 30)]
+        ).json
+        _ = try sync(w, hour: 10)                                        // the 08:15 window closed at 08:45
+        #expect(drop.windowStart == before.0 && drop.windowEnd == before.1)
+    }
+
     @Test func aRuleThatNeedsAttentionIsLeftAlone() throws {
         let w = try AnchorWorld()
         let rule = schoolRun(w)
