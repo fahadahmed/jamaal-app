@@ -1,6 +1,6 @@
 # Observability and debugging
 
-How we find out what went wrong on a device we can't see, without ever collecting what a person plans or does. Decided 21 Oct 2026. **Status: planned; nothing below is built except the iCloud sync screen's Copy details.**
+How we find out what went wrong on a device we can't see, without ever collecting what a person plans or does. Decided 21 Oct 2026. **Status: layers 1 and 2 are built (#285); layers 3 and 4 are not.**
 
 The need is real: the problems we have chased so far (a missed *done* overwritten, a habit's minutes not reaching another device) were **not crashes**, so Apple's crash reports would never have shown them, and a device we can't hold in our hands can't be debugged by guessing.
 
@@ -50,8 +50,8 @@ Ids are the first four characters of a UUID, enough to compare two devices and n
 
 - **`DiagnosticEvent`** (JamaalCore, pure and tested): a time, a category, a level, a name and typed details. A **ring buffer** keeps the last 200 in memory and, on the device only, a small file, so a launch after a crash still has the events before it.
 - **`Diag`** in the app: one call writes an event to `os.Logger` (so Console and sysdiagnose see it) and to the buffer.
-- **Hooks** at the places that have already caused trouble: the sync events (`SyncMonitor`), the engine tick and its report, focus finish and the minutes it wrote, Anchor finalising, store open and recovery, notification scheduling, widget reloads.
-- **Copy details / Share details** (Settings → iCloud sync, later *Privacy and your data*) adds: app version and build, iOS or macOS version, device model, whether this is a TestFlight build, the sync status, the record counts, and the last 50 events. One tap opens the system share sheet to email it to support.
+- **Hooks** (built) at the places that have already caused trouble: the sync events (`SyncMonitor`), the engine tick and its report, focus finish and the minutes it wrote, Anchor finalising, store open and recovery, notification scheduling, widget reloads.
+- **Copy details / Share details** (Settings → iCloud sync, later *Privacy and your data*) now include: app version and build, iOS or macOS version, device model, whether this is a TestFlight build, the sync status, the record counts, and the last 50 events. One tap opens the system share sheet to email it to support.
 
 ## Layer 4: Sentry (with the switch)
 
@@ -81,8 +81,8 @@ Chosen over the alternatives because it reports **handled errors and breadcrumbs
 
 | # | Slice | Needs | Status |
 |---|---|---|---|
-| 1 | `DiagnosticEvent`, the ring buffer and a test that no title can be logged (JamaalCore) | nothing | planned |
-| 2 | `Diag` and the hooks; version and recent events in Copy details; the share sheet | nothing | planned |
+| 1 | `DiagnosticEvent`, the ring buffer and the report text (JamaalCore). An event is a fixed name with fixed keys and values that can only be a count, a flag, a four-character id or an error's domain and code, so no title can be logged | nothing | **built (#285)** |
+| 2 | `Diag` and the hooks (launch and activity, store open, the engine tick, iCloud setup/import/export, focus begin and finish with the habit's day total, widget reloads); version, build and channel, device and the last 50 events in Copy details; *Share details* | nothing | **built (#285)** |
 | 3 | Apple tools checked on the first TestFlight build (feedback on, Organizer visible) | the first beta | planned |
 | 4 | Sentry: the package, the configuration above, the switch, the manifest, the label, the policy and the in-app text | **a Sentry project and its DSN from the owner** | planned, blocked on that |
 

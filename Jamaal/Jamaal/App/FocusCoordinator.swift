@@ -79,8 +79,12 @@ final class FocusCoordinator {
     private func start(_ target: Target) {
         guard let context, let boundary else { return }
         switch target {
-        case .task(let task): _ = try? FocusSessions.begin(task: task, now: now(), boundary: boundary, context: context)
-        case .habit(let window): _ = try? FocusSessions.begin(habitWindow: window, now: now(), boundary: boundary, context: context)
+        case .task(let task):
+            if (try? FocusSessions.begin(task: task, now: now(), boundary: boundary, context: context)) != nil { Diag.shared.record(.focusBegan) }
+        case .habit(let window):
+            if (try? FocusSessions.begin(habitWindow: window, now: now(), boundary: boundary, context: context)) != nil {
+                Diag.shared.record(.focusBegan, .init(.window, .id(window.id)))
+            }
         }
     }
 
@@ -105,7 +109,18 @@ final class FocusCoordinator {
         let title = session.task?.title ?? session.habitWindow?.habit?.title ?? ""
         isShowingFocus = false
         guard let result = try? FocusSessions.finish(session, as: choice, note: note, now: now(), boundary: boundary, context: context) else { return }
+        recordFinish(session)
         toast = choice == .done && result.completedTask ? Toast(title: title, session: session, result: result, at: now()) : nil
+    }
+
+    /// A finished session and, for a habit, the day's total it wrote: the pair that once reached another device without each other.
+    private func recordFinish(_ session: WorkSession) {
+        var fields: [DiagnosticEvent.Field] = [.init(.minutes, .count(session.actualSeconds / 60))]
+        if let window = session.habitWindow {
+            fields.append(.init(.window, .id(window.id)))
+            fields.append(.init(.entry, .count(HabitMinutes.progress(of: window, on: CalendarDate(storedDate: session.day)).done)))
+        }
+        Diag.shared.record(.focusFinished, fields)
     }
 
     // MARK: The undo toast

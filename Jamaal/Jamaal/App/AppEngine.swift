@@ -78,8 +78,21 @@ enum AppEngine {
     static func tick(
         context: ModelContext, store: LastProcessedStore = LastProcessedStore(), now: Date = .now, timeZone: TimeZone = .current
     ) throws -> EngineTickResult {
-        let result = try EngineTick.run(in: context, now: now, timeZone: timeZone, lastProcessed: store.day)
+        let started = Date()
+        let result: EngineTickResult
+        do {
+            result = try EngineTick.run(in: context, now: now, timeZone: timeZone, lastProcessed: store.day)
+        } catch {
+            Diag.shared.record(.engineTickFailed, level: .error, .init(.errorCode, .error(error)))
+            throw error
+        }
         store.day = result.lastProcessed
+        Diag.shared.record(
+            .engineTick, .init(.seeded, .flag(result.seeded)), .init(.merged, .count(result.dedup.removed)),
+            .init(.generated, .count(result.anchors.created)), .init(.removed, .count(result.anchors.removed)),
+            .init(.finalised, .count(result.anchorsFinalised)), .init(.deferrals, .count(result.rollover.deferrals)),
+            .init(.days, .count(result.rollover.processedDays.count)),
+            .init(.durationMs, .count(Int(Date().timeIntervalSince(started) * 1000))))
         #if DEBUG
         DebugLaunch.completeOnboardingForTests(in: context, now: now)
         DebugLaunch.insertSampleData(into: context, now: now)

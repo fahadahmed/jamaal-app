@@ -55,6 +55,12 @@ struct SyncStatusScreen: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("copySyncDetails")
+                ShareLink(item: detailsText) {
+                    Text("Share details").threadsType(.row).foregroundStyle(threads.ink)
+                        .frame(maxWidth: .infinity, minHeight: 56).overlay(Capsule().strokeBorder(threads.ink, lineWidth: 1)).contentShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("shareSyncDetails")
             }
         }
         .task { await monitor.refreshAccount() }
@@ -71,11 +77,17 @@ struct SyncStatusScreen: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func copy() {
-        let text = SyncStatusCopy.details(
+    /// What Copy and Share send: the sync state, this build, the habit-minutes records and the last events. No titles, notes or places.
+    private var detailsText: String {
+        SyncStatusCopy.details(
             isOn: monitor.isOn, account: monitor.account, activity: monitor.activity,
             container: SyncMode.containerID, device: ReminderCenter.deviceName, now: .now,
-            extra: SyncDiagnostics.timedHabitLines(in: context, today: TodayDay.boundary(in: context).logicalDate(at: .now)))
+            extra: SyncDiagnostics.timedHabitLines(in: context, today: TodayDay.boundary(in: context).logicalDate(at: .now))
+                + Diag.shared.reportLines())
+    }
+
+    private func copy() {
+        let text = detailsText
         #if canImport(UIKit)
         UIPasteboard.general.string = text
         #else

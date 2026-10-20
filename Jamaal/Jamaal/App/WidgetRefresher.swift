@@ -5,6 +5,7 @@
 
 import Foundation
 import WidgetKit
+import JamaalCore
 
 /// Tells the widgets the data changed. A widget plans its own updates (an Anchor opening or closing, the planning time, the day's
 /// end), so it knows nothing about a task ticked, onboarding finished or a change arriving from iCloud unless the app says so.
@@ -23,12 +24,16 @@ final class WidgetRefresher {
 
     /// Reloads after things have been quiet for the delay.
     func requestReload() {
-        debouncer.schedule { [reload] in reload() }
+        debouncer.schedule { [reload] in
+            Diag.shared.record(.widgetsReloaded)
+            reload()
+        }
     }
 
     /// Reloads now (the app is coming forward or leaving it), folding in anything pending.
     func reloadNow() {
         debouncer.cancel()
+        Diag.shared.record(.widgetsReloaded)
         reload()
     }
 

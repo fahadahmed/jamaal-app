@@ -6,6 +6,7 @@
 import SwiftData
 import ThreadsTokens
 import UserNotifications
+import JamaalCore
 
 /// Start-up work that must happen once per process. SwiftUI may build the `App` value more than once per launch, and each
 /// build used to register the fonts again (the system logs "already registered" every time) and open another model
@@ -18,7 +19,15 @@ enum AppBootstrap {
     @MainActor
     static let firstContainer: ModelContainer? = {
         SyncMonitor.shared.start()                                   // listening before the store opens, so setup isn't missed
-        return try? AppEngine.makeContainer()
+        Diag.shared.record(.appLaunched)
+        do {
+            let container = try AppEngine.makeContainer()
+            Diag.shared.record(.storeOpened, .init(.syncOn, .flag(SyncMonitor.shared.isOn)))
+            return container
+        } catch {
+            Diag.shared.record(.storeOpenFailed, level: .error, .init(.errorCode, .error(error)))
+            return nil
+        }
     }()
 
     /// The one notification delegate: if each `App` value made its own, the one the system calls back could be a different

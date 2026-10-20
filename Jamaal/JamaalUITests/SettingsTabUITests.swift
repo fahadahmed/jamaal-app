@@ -200,6 +200,7 @@ final class SettingsTabUITests: XCTestCase {
         XCTAssertTrue(headline.waitForExistence(timeout: 5))
         XCTAssertEqual(headline.label, "Off on this device. It keeps its own copy.")
         XCTAssertTrue(app.buttons["copySyncDetails"].exists)
+        XCTAssertTrue(app.buttons["shareSyncDetails"].exists)
     }
 }
 
