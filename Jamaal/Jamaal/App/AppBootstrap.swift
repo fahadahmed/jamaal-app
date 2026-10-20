@@ -16,7 +16,10 @@ enum AppBootstrap {
 
     /// The first model container, or nil when the store won't open (the recovery screen takes over from there).
     @MainActor
-    static let firstContainer: ModelContainer? = try? AppEngine.makeContainer()
+    static let firstContainer: ModelContainer? = {
+        SyncMonitor.shared.start()                                   // listening before the store opens, so setup isn't missed
+        return try? AppEngine.makeContainer()
+    }()
 
     /// The one notification delegate: if each `App` value made its own, the one the system calls back could be a different
     /// object from the one the view tree gave its route handler to, and a tapped notification would go nowhere.

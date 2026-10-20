@@ -188,6 +188,19 @@ final class SettingsTabUITests: XCTestCase {
         XCTAssertTrue(personal.waitForExistence(timeout: 5))
         XCTAssertGreaterThan(personal.frame.minY, family.frame.minY)
     }
+
+    @MainActor
+    func testICloudSyncSaysItIsOffWhenTheStoreIsInMemoryAndOffersTheDetails() throws {
+        let app = launch()
+        let row = app.buttons["settings-sync"]
+        reveal(row, in: app)
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        row.tap()
+        let headline = app.staticTexts["syncHeadline"]
+        XCTAssertTrue(headline.waitForExistence(timeout: 5))
+        XCTAssertEqual(headline.label, "Off on this device. It keeps its own copy.")
+        XCTAssertTrue(app.buttons["copySyncDetails"].exists)
+    }
 }
 
 private extension XCUIElement {
