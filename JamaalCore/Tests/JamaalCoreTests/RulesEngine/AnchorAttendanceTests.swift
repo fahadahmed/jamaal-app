@@ -116,17 +116,36 @@ struct AnchorAttendanceTests {
 
     // MARK: Closing windows
 
-    @Test func finalisingStoresMissedForClosedPendingAnchorsAtTheirWindowEnd() throws {
+    @Test func finalisingStoresMissedOnlyOnceAWindowHasBeenClosedForADay() throws {
         let w = try AnchorWorld()
-        let closedPending = make(w)
+        let closedPending = make(w)                                                // window 10:00 to 11:00 on the 5th
         let stillOpen = w.anchor("Open", from: w.at(5, 13), minutes: 60)
         let skipped = make(w, status: .skipped)
-        let count = try AnchorAttendance.finalizeClosed(in: w.context, at: w.at(5, 12))
-        #expect(count == 1)                                                // only the closed, still-pending one
+        #expect(try AnchorAttendance.finalizeClosed(in: w.context, at: w.at(5, 12)) == 0)    // an hour on: too soon
+        #expect(closedPending.status == .pending)
+        #expect(AnchorAttendance.displayStatus(of: closedPending, at: w.at(5, 12)) == .missed, "it still reads as missed")
+        #expect(try AnchorAttendance.finalizeClosed(in: w.context, at: w.at(6, 10, 59)) == 0)  // a minute short of a day
+        let count = try AnchorAttendance.finalizeClosed(in: w.context, at: w.at(6, 11))
+        #expect(count == 1)                                                        // the 10:00 one; the 13:00 one closed at 14:00
         #expect(closedPending.status == .missed)
         #expect(closedPending.resolvedAt == w.at(5, 11))
-        #expect(stillOpen.status == .pending)
         #expect(skipped.status == .skipped)
-        #expect(try AnchorAttendance.finalizeClosed(in: w.context, at: w.at(5, 12)) == 0)       // idempotent
+        #expect(stillOpen.status == .pending)
+        #expect(try AnchorAttendance.finalizeClosed(in: w.context, at: w.at(6, 11)) == 0)       // idempotent
+        #expect(try AnchorAttendance.finalizeClosed(in: w.context, at: w.at(6, 14)) == 1)       // and now the later one
+        #expect(stillOpen.status == .missed)
+    }
+
+    /// The bug (#277): a device that hadn't yet received another device's "attended" stored missed over it. Within the day it
+    /// takes for changes to travel, a pending copy is left alone, so there is nothing to overwrite.
+    @Test func aStaleDevicesPendingCopyIsNotStoredAsMissedWhileOtherDevicesChangesCouldStillBeOnTheirWay() throws {
+        let w = try AnchorWorld()
+        let fajr = make(w)
+        _ = try AnchorAttendance.finalizeClosed(in: w.context, at: w.at(5, 20))               // this device's tick, hours later
+        #expect(fajr.status == .pending)
+        // The other device's "attended" arrives afterwards and is not contradicted.
+        fajr.status = .attended
+        #expect(try AnchorAttendance.finalizeClosed(in: w.context, at: w.at(7, 9)) == 0)
+        #expect(fajr.status == .attended)
     }
 }
