@@ -27,9 +27,9 @@ public enum EngineTick {
     @MainActor
     @discardableResult
     public static func run(
-        in context: ModelContext, now: Date, timeZone: TimeZone = .current, lastProcessed: CalendarDate?
+        in context: ModelContext, now: Date, timeZone: TimeZone = .current, lastProcessed: CalendarDate?, startsTrial: Bool = true
     ) throws -> EngineTickResult {
-        let seeded = try Seeding.ensureSeeded(in: context, now: now)
+        let seeded = try Seeding.ensureSeeded(in: context, now: now, startsTrial: startsTrial)
         let dedup = try Dedup.run(in: context, now: now)
 
         let settings = try context.fetch(FetchDescriptor<UserSettings>())

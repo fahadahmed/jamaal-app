@@ -76,12 +76,13 @@ enum AppEngine {
     @MainActor
     @discardableResult
     static func tick(
-        context: ModelContext, store: LastProcessedStore = LastProcessedStore(), now: Date = .now, timeZone: TimeZone = .current
+        context: ModelContext, store: LastProcessedStore = LastProcessedStore(), now: Date = .now, timeZone: TimeZone = .current,
+        startsTrial: Bool = DiagnosticEnvironment.current.channel != .testFlight
     ) throws -> EngineTickResult {
         let started = Date()
         let result: EngineTickResult
         do {
-            result = try EngineTick.run(in: context, now: now, timeZone: timeZone, lastProcessed: store.day)
+            result = try EngineTick.run(in: context, now: now, timeZone: timeZone, lastProcessed: store.day, startsTrial: startsTrial)
         } catch {
             Diag.shared.record(.engineTickFailed, level: .error, .init(.errorCode, .error(error)))
             throw error

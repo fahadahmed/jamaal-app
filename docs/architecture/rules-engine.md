@@ -462,6 +462,8 @@ Not yet done: visibility priority so Add stays visible longest when space is tig
 
 **Trial dates.** The trial start is the **earlier of** StoreKit's original-download date and `firstLaunchAt`, so a reinstall or second device never restarts it. The trial is **14 logical days, day 1 being the start day**, and ends at the rollover after the 14th day; "days left" counts logical days.
 
+**A TestFlight beta never starts the trial (#291).** A beta shares the production iCloud container with the App Store release and `firstLaunchAt` syncs, so a date set during the beta would have used up a tester's 14 days before the release. `Seeding.ensureSeeded(startsTrial:)` therefore leaves `firstLaunchAt` `nil` in a TestFlight build (full access is given by `Storefront.isBeta` instead), and the **first launch of a build that does start the trial claims it, once**, for any settings row without one; a date already set is never moved, and `Dedup` keeps the earliest across devices. So a beta tester's 14 days begin the day they first open the App Store version.
+
 **What read-only locks** is a gate on *user actions*, not a data state:
 
 - **Always allowed (living the day):** complete and un-complete tasks; every kind of habit logging (check, stepper, slip, *Held*, minutes by hand, correcting the last 14 days); Anchors attended, not today, someone else, or marked done after all; **Begin, pause, finish and stop** focus sessions, tick a note's checklist, pick a session back up; every undo; notification and appearance preferences; data export and delete.

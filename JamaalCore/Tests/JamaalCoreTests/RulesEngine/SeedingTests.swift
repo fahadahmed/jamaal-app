@@ -60,10 +60,13 @@ struct SeedingTests {
         let settings = UserSettings()
         settings.mediumDayMinutes = 240
         context.insert(settings)
-        _ = try Seeding.ensureSeeded(in: context, now: now)
+        _ = try Seeding.ensureSeeded(in: context, now: now, startsTrial: false)
         #expect(try context.fetchCount(FetchDescriptor<UserSettings>()) == 1)
         #expect(settings.mediumDayMinutes == 240)
-        #expect(settings.firstLaunchAt == nil)  // not the first launch of this row
+        #expect(settings.firstLaunchAt == nil)  // a beta doesn't start the trial on an existing row either
+        _ = try Seeding.ensureSeeded(in: context, now: now)
+        #expect(settings.mediumDayMinutes == 240, "only the trial start is ever filled in")
+        #expect(settings.firstLaunchAt == now, "a build that starts the trial claims it, once")
     }
 
     @Test func userCreatedCategoriesDoNotBlockSeeding() throws {
@@ -71,5 +74,47 @@ struct SeedingTests {
         context.insert(TaskCategory(name: "Errands"))
         _ = try Seeding.ensureSeeded(in: context, now: now)
         #expect(try context.fetchCount(FetchDescriptor<TaskCategory>()) == 4)
+    }
+
+    // MARK: The trial's start (#291)
+
+    /// A TestFlight beta shares the production iCloud container with the App Store release, and `firstLaunchAt` syncs. If a beta
+    /// build set it, a tester's 14-day trial would already be over on the release's first launch.
+    @Test func aBetaBuildSeedsSettingsWithoutStartingTheTrial() throws {
+        let context = try makeContext()
+        _ = try Seeding.ensureSeeded(in: context, now: now, startsTrial: false)
+        let settings = try #require(try context.fetch(FetchDescriptor<UserSettings>()).first)
+        #expect(settings.firstLaunchAt == nil)
+        #expect(try context.fetchCount(FetchDescriptor<TaskCategory>()) == 3, "everything else is seeded as usual")
+    }
+
+    @Test func aBetaBuildNeverStartsItOnLaterLaunchesEither() throws {
+        let context = try makeContext()
+        _ = try Seeding.ensureSeeded(in: context, now: now, startsTrial: false)
+        _ = try Seeding.ensureSeeded(in: context, now: now.addingTimeInterval(86_400 * 20), startsTrial: false)
+        #expect(try context.fetch(FetchDescriptor<UserSettings>()).first?.firstLaunchAt == nil)
+    }
+
+    @Test func theFirstLaunchOfARealBuildAfterABetaStartsTheTrialOnceThatDay() throws {
+        let context = try makeContext()
+        _ = try Seeding.ensureSeeded(in: context, now: now, startsTrial: false)                       // weeks of beta
+        let release = now.addingTimeInterval(86_400 * 30)
+        _ = try Seeding.ensureSeeded(in: context, now: release, startsTrial: true)                    // the App Store build
+        #expect(try context.fetch(FetchDescriptor<UserSettings>()).first?.firstLaunchAt == release)
+        _ = try Seeding.ensureSeeded(in: context, now: release.addingTimeInterval(86_400 * 3), startsTrial: true)
+        #expect(try context.fetch(FetchDescriptor<UserSettings>()).first?.firstLaunchAt == release, "set once")
+    }
+
+    @Test func aRealBuildNeverMovesATrialStartThatIsAlreadySet() throws {
+        let context = try makeContext()
+        _ = try Seeding.ensureSeeded(in: context, now: now)
+        _ = try Seeding.ensureSeeded(in: context, now: now.addingTimeInterval(86_400 * 9), startsTrial: true)
+        #expect(try context.fetch(FetchDescriptor<UserSettings>()).first?.firstLaunchAt == now)
+    }
+
+    @Test func theEngineTickPassesItThrough() throws {
+        let context = try makeContext()
+        _ = try EngineTick.run(in: context, now: now, timeZone: TimeZone(identifier: "UTC")!, lastProcessed: nil, startsTrial: false)
+        #expect(try context.fetch(FetchDescriptor<UserSettings>()).first?.firstLaunchAt == nil)
     }
 }
