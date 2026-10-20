@@ -55,13 +55,22 @@ struct NextAnchorProvider: TimelineProvider {
 struct NextAnchorWidget: Widget {
     let kind = "NextAnchor"
 
+    /// The Lock Screen sizes are iOS only: macOS has no accessory families.
+    private static var families: [WidgetFamily] {
+        #if os(iOS)
+        [.systemSmall, .accessoryInline, .accessoryCircular, .accessoryRectangular]
+        #else
+        [.systemSmall]
+        #endif
+    }
+
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: NextAnchorProvider()) { entry in
             NextAnchorEntryView(entry: entry)
         }
         .configurationDisplayName("Next Anchor")
         .description("The Anchor your day is moving around next.")
-        .supportedFamilies([.systemSmall, .accessoryInline, .accessoryCircular, .accessoryRectangular])
+        .supportedFamilies(Self.families)
     }
 }
 
@@ -71,6 +80,7 @@ struct NextAnchorEntryView: View {
 
     var body: some View {
         switch family {
+        #if os(iOS)
         case .accessoryInline:
             NextAnchorInlineView(display: entry.lockDisplay).widgetURL(JamaalLink.today.url)
                 .containerBackground(for: .widget) { Color.clear }
@@ -80,6 +90,7 @@ struct NextAnchorEntryView: View {
         case .accessoryRectangular:
             NextAnchorRectangularView(display: entry.lockDisplay).widgetURL(JamaalLink.today.url)
                 .containerBackground(for: .widget) { Color.clear }
+        #endif
         default:
             NextAnchorSmallView(display: entry.display)
                 .environment(\.threads, JamaalPalette())

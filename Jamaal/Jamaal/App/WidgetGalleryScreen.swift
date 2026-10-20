@@ -76,6 +76,7 @@ struct WidgetGalleryScreen: View {
         .preferredColorScheme(scheme)
     }
 
+    #if os(iOS)
     /// `-JamaalWidgetGalleryLock` shows the Next Anchor Lock Screen widgets on a dark wallpaper, tinted white as the Lock Screen does.
     private static let lockSamples: [(String, [WidgetSnapshot.AnchorWindow], WidgetSnapshot.AnchorWindow?)] = [
         ("Open", [window("Dhuhr", rule: "Salah", phase: .open, progress: 0.12, from: -0.3, to: 2), window("Asr", rule: "Salah", phase: .upcoming, progress: 0, from: 2.1, to: 4)], nil),
@@ -109,11 +110,16 @@ struct WidgetGalleryScreen: View {
         .preferredColorScheme(.dark)
     }
 
+    #endif
+
     var body: some View {
         let args = ProcessInfo.processInfo.arguments
-        if args.contains("-JamaalWidgetGalleryLock") { lockGallery }
-        else if args.contains("-JamaalWidgetGalleryToday") { todayGallery }
+        #if os(iOS)
+        if args.contains("-JamaalWidgetGalleryLock") { lockGallery } else if args.contains("-JamaalWidgetGalleryToday") { todayGallery }
         else { anchorGallery }
+        #else
+        if args.contains("-JamaalWidgetGalleryToday") { todayGallery } else { anchorGallery }
+        #endif
     }
 
     private var anchorGallery: some View {

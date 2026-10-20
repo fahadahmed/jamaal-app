@@ -3,6 +3,7 @@
 //  JamaalWidgets
 //
 
+#if os(iOS)
 import SwiftUI
 import WidgetKit
 import JamaalCore
@@ -90,3 +91,4 @@ private struct LockBar: View {
         .accessibilityHidden(true)
     }
 }
+#endif
