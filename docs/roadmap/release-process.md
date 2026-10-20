@@ -35,14 +35,22 @@ Because testers include people from the website, TestFlight is opened with a **p
 
 ## Xcode Cloud workflows
 
-Two workflows, each starting on a tag (the tag's name *starts with* `beta-` or `v`; they can't both match one tag).
+Two workflows, each started by a tag (the names are chosen so one tag can never start both).
 
-| Workflow | Starts on | Does | Ends in |
-|---|---|---|---|
-| **TestFlight** | tag starts with `beta-` | Runs the JamaalCore and app unit tests; archives **iOS** and **macOS** | Uploads and adds the build to the external TestFlight group |
-| **App Store** | tag starts with `v` | The same tests and archives | Uploads to App Store Connect, no group; you submit it by hand |
+| | **TestFlight beta** | **App Store release** |
+|---|---|---|
+| Starts on | Tag changes: name **starts with** `beta-` | Tag changes: name **starts with** `v` |
+| Environment | Xcode **latest release** (27.x), macOS latest release | the same |
+| Scheme | `Jamaal` | `Jamaal` |
+| Actions | **Archive – iOS** and **Archive – macOS**, each with *Deployment Preparation* = **TestFlight and App Store** | the same |
+| Post-actions | **TestFlight External Testing** to the public group (and **Internal Testing** to you, so you see it first) | **Internal Testing** only; you submit from App Store Connect |
+| Tests | none | none |
 
-Signing is cloud-managed, so no distribution certificate lives on your Mac. The iPhone, iPad and Mac come from one App Store Connect record (`dev.fhdamd.Jamaal`).
+**Tests are not run here.** The unit tests and the UI tests run on every pull request in GitHub Actions, and a tag is only ever put on a commit whose checks were green, so running them again would only slow and cost a build. (If that changes, add a *Test* action with `JamaalTests`; the UI tests are too slow and too flaky to gate a release on.)
+
+Signing is cloud-managed, so no distribution certificate lives on your Mac. The iPhone, iPad and Mac come from one App Store Connect record (`dev.fhdamd.Jamaal`). The repository and ThreadsKit are public, so no extra repository access is needed.
+
+**The scheme must be shared.** Xcode Cloud only lists *shared* schemes. This repo does not track one on purpose (a tracked shared scheme stops Xcode generating the automatic `Jamaal` scheme the GitHub CI uses, which broke CI once), and the local one has personal debug launch arguments. If `Jamaal` isn't offered when the workflow is made, the fix is to track a **clean** `Jamaal.xcscheme` (build, archive and the unit-test target, no launch arguments) and keep using it for both CI and Xcode Cloud; that needs everyone with a local `Jamaal.xcscheme` to move it aside before pulling. Decide when it comes up; don't add it ahead of need.
 
 **What testers are told:** the repo's `TestFlight/WhatToTest.en-US.txt` is shown as "What to Test" (Xcode Cloud reads that file). Update it in the PR that makes the build worth testing, in plain words, so a tag is never held up for it.
 
@@ -73,11 +81,11 @@ A build from your Mac (Xcode or `xcodebuild`) uses the **Development** iCloud en
 
 Branch from the release tag, fix and test it through the normal issue and PR, merge to `main`, then tag a patch (`v1.0.1`, and a `beta-1.0.1-1` first if it is risky). A fix that touches the data model needs the schema step above.
 
-## One-time setup (not done yet)
+## One-time setup
 
-1. **App Store Connect:** create the app record (iOS and macOS, bundle id `dev.fhdamd.Jamaal`) *(you)*.
-2. **Xcode Cloud:** in Xcode, Report navigator → Cloud → connect the GitHub repository and allow access *(you; needs your Apple and GitHub sign-in)*.
-3. **Workflows:** create the two above *(the settings can be made together; the sign-in steps are yours)*.
-4. **TestFlight group:** an external group with the public link on, plus the test details and URLs above *(you)*.
-5. **Repository:** `ci_scripts/` (reserved) gets a post-clone script only if the build needs one; add `TestFlight/WhatToTest.en-US.txt`; add the schema question to the PR template *(this PR adds the template)*.
-6. **First run:** push a `beta-` tag on a commit you've tested, then confirm the build number, the TestFlight upload and the Mac build all work. Fix anything before the website link goes out.
+1. **App Store Connect:** the app record (iOS and macOS, bundle id `dev.fhdamd.Jamaal`). *Done (21 Oct 2026).*
+2. **Connect Xcode Cloud (you):** in Xcode, open the project, **Report navigator** (⌘9) → **Cloud** tab → **Get Started** (or *Create Workflow*). Choose the **Jamaal** product, sign in to GitHub when asked and allow the Xcode Cloud app access to `fahadahmed/jamaal-app` only.
+3. **Create the two workflows** with the table above. In the workflow editor: *Environment* (Xcode and macOS versions), *Start Conditions* (delete the default branch condition and add **Tag Changes**), *Actions* (+ **Archive**, once for iOS and once for macOS, scheme `Jamaal`), *Post-Actions* (+ **TestFlight Internal Testing** and **External Testing**, picking the groups).
+4. **TestFlight (you):** an external group with the public link on, plus the test details, the support and privacy URLs, and a contact (see the checklist above).
+5. **First run:** push `beta-1.0-1` on a commit you've tested, then confirm the build number, the TestFlight upload and the Mac build all work, and that the scheme was found. Fix anything before the website link goes out.
+6. **Repository:** `TestFlight/WhatToTest.en-US.txt` and the pull-request template are in; `ci_scripts/` stays empty unless a build needs a script.
