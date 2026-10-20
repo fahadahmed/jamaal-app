@@ -136,6 +136,32 @@ struct WidgetSnapshotTests {
         #expect(try make(w, now: w.at(15, 10)).nextAnchor == nil)
     }
 
+    // MARK: Tomorrow's first Anchor (for "Fajr tomorrow, 05:12")
+
+    @Test func tomorrowsFirstPendingAnchorIsCarriedSoTheLockScreenCanSayWhatIsNext() throws {
+        let w = try TaskWorld()
+        anchor(w, "Isha", rule: "Salah", from: w.at(15, 20), to: w.at(15, 23), status: .attended)
+        anchor(w, "Dhuhr", rule: "Salah", from: w.at(16, 12), to: w.at(16, 15), day: 16)
+        anchor(w, "Fajr", rule: "Salah", from: w.at(16, 5), to: w.at(16, 6), day: 16)
+        let s = try make(w, now: w.at(15, 22))
+        #expect(s.nextAnchor == nil)
+        #expect(s.tomorrowAnchor?.name == "Fajr")
+        #expect(s.tomorrowAnchor?.phase == .upcoming)
+        #expect(s.tomorrowAnchor?.start == w.at(16, 5))
+    }
+
+    @Test func noAnchorTomorrowMeansNone() throws {
+        let w = try TaskWorld()
+        anchor(w, "Fajr", from: w.at(15, 5), to: w.at(15, 6), status: .attended)
+        #expect(try make(w, now: w.at(15, 10)).tomorrowAnchor == nil)
+    }
+
+    @Test func anAnchorTomorrowThatIsAlreadySkippedIsNotOffered() throws {
+        let w = try TaskWorld()
+        anchor(w, "Fajr", from: w.at(16, 5), to: w.at(16, 6), status: .skipped, day: 16)
+        #expect(try make(w, now: w.at(15, 10)).tomorrowAnchor == nil)
+    }
+
     // MARK: Planning, access and the day
 
     @Test func planningIsDueFromTheEveningTimeAndOfferedOnlyWhenNotReadOnly() throws {

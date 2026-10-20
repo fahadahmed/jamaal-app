@@ -15,6 +15,11 @@ struct NextAnchorEntry: TimelineEntry {
     let snapshot: WidgetSnapshot?
 
     var display: NextAnchorDisplay { snapshot?.nextAnchorDisplay ?? .noneLeft }
+
+    /// The Lock Screen's words. With no snapshot it says nothing is left, calmly.
+    var lockDisplay: LockScreenAnchorDisplay {
+        (snapshot ?? WidgetSnapshot.empty(at: date)).lockScreenAnchorDisplay(time: NextAnchorSmallView.clockTime, shortTime: NextAnchorSmallView.shortClockTime)
+    }
 }
 
 /// The fonts are registered once per process: WidgetKit may build the provider more than once, and registering a font that is
@@ -50,23 +55,47 @@ struct NextAnchorProvider: TimelineProvider {
 struct NextAnchorWidget: Widget {
     let kind = "NextAnchor"
 
+    /// The Lock Screen sizes are iOS only: macOS has no accessory families.
+    private static var families: [WidgetFamily] {
+        #if os(iOS)
+        [.systemSmall, .accessoryInline, .accessoryCircular, .accessoryRectangular]
+        #else
+        [.systemSmall]
+        #endif
+    }
+
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: NextAnchorProvider()) { entry in
             NextAnchorEntryView(entry: entry)
         }
         .configurationDisplayName("Next Anchor")
         .description("The Anchor your day is moving around next.")
-        .supportedFamilies([.systemSmall])
+        .supportedFamilies(Self.families)
     }
 }
 
 struct NextAnchorEntryView: View {
+    @Environment(\.widgetFamily) private var family
     let entry: NextAnchorEntry
 
     var body: some View {
-        NextAnchorSmallView(display: entry.display)
-            .environment(\.threads, JamaalPalette())
-            .widgetURL(JamaalLink.today.url)
-            .containerBackground(for: .widget) { JamaalPalette().app }
+        switch family {
+        #if os(iOS)
+        case .accessoryInline:
+            NextAnchorInlineView(display: entry.lockDisplay).widgetURL(JamaalLink.today.url)
+                .containerBackground(for: .widget) { Color.clear }
+        case .accessoryCircular:
+            NextAnchorCircularView(display: entry.lockDisplay).widgetURL(JamaalLink.today.url)
+                .containerBackground(for: .widget) { Color.clear }
+        case .accessoryRectangular:
+            NextAnchorRectangularView(display: entry.lockDisplay).widgetURL(JamaalLink.today.url)
+                .containerBackground(for: .widget) { Color.clear }
+        #endif
+        default:
+            NextAnchorSmallView(display: entry.display)
+                .environment(\.threads, JamaalPalette())
+                .widgetURL(JamaalLink.today.url)
+                .containerBackground(for: .widget) { JamaalPalette().app }
+        }
     }
 }

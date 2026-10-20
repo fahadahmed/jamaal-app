@@ -76,8 +76,50 @@ struct WidgetGalleryScreen: View {
         .preferredColorScheme(scheme)
     }
 
+    #if os(iOS)
+    /// `-JamaalWidgetGalleryLock` shows the Next Anchor Lock Screen widgets on a dark wallpaper, tinted white as the Lock Screen does.
+    private static let lockSamples: [(String, [WidgetSnapshot.AnchorWindow], WidgetSnapshot.AnchorWindow?)] = [
+        ("Open", [window("Dhuhr", rule: "Salah", phase: .open, progress: 0.12, from: -0.3, to: 2), window("Asr", rule: "Salah", phase: .upcoming, progress: 0, from: 2.1, to: 4)], nil),
+        ("Upcoming", [window("School run", rule: nil, phase: .upcoming, progress: 0, from: 1, to: 2)], nil),
+        ("Closing soon", [window("Asr", rule: "Salah", phase: .closingSoon, progress: 0.85, from: -2, to: 0.34)], nil),
+        ("None left", [], window("Fajr", rule: "Salah", phase: .upcoming, progress: 0, from: 9, to: 10)),
+        ("Needs attention", [window("Bin night", rule: nil, phase: .needsAttention, progress: 1, from: -3, to: -1)], nil),
+    ]
+
+    private var lockGallery: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                ForEach(Array(Self.lockSamples.enumerated()), id: \.offset) { _, sample in
+                    let snap = WidgetSnapshot(generatedAt: Self.start, day: "2026-10-17", isReadOnly: false, tasksLeft: 0, tasksDone: 0, tasks: [], moreTasks: 0,
+                                              capacity: .init(plannedMinutes: 0, budgetMinutes: 180, level: "medium", state: .light), anchors: sample.1,
+                                              planningAt: Self.start, planningDue: false, dayEndsAt: Self.start.addingTimeInterval(7200), tomorrowAnchor: sample.2)
+                    let d = snap.lockScreenAnchorDisplay(time: NextAnchorSmallView.clockTime, shortTime: NextAnchorSmallView.shortClockTime)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(sample.0).font(.caption2).foregroundStyle(.white.opacity(0.6))
+                        NextAnchorInlineView(display: d).font(.system(size: 14, weight: .medium))
+                        HStack(spacing: 12) {
+                            NextAnchorCircularView(display: d).frame(width: 72, height: 72)
+                            NextAnchorRectangularView(display: d).frame(width: 160, height: 72)
+                        }
+                    }
+                }
+            }.padding(20).foregroundStyle(.white)
+        }
+        .frame(maxWidth: .infinity)
+        .background(LinearGradient(colors: [Color(red: 0.1, green: 0.22, blue: 0.3), Color(red: 0.02, green: 0.08, blue: 0.12)], startPoint: .top, endPoint: .bottom))
+        .preferredColorScheme(.dark)
+    }
+
+    #endif
+
     var body: some View {
-        if ProcessInfo.processInfo.arguments.contains("-JamaalWidgetGalleryToday") { todayGallery } else { anchorGallery }
+        let args = ProcessInfo.processInfo.arguments
+        #if os(iOS)
+        if args.contains("-JamaalWidgetGalleryLock") { lockGallery } else if args.contains("-JamaalWidgetGalleryToday") { todayGallery }
+        else { anchorGallery }
+        #else
+        if args.contains("-JamaalWidgetGalleryToday") { todayGallery } else { anchorGallery }
+        #endif
     }
 
     private var anchorGallery: some View {

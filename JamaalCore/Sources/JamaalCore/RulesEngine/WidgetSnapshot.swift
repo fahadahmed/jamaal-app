@@ -72,15 +72,27 @@ public struct WidgetSnapshot: Codable, Equatable, Sendable {
     public var planningDue: Bool
     /// When the logical day rolls over.
     public var dayEndsAt: Date
+    /// The first Anchor still to come after the day rolls over, so a Lock Screen widget can say "Fajr tomorrow, 05:12" when nothing
+    /// is left today. Nil when there is none (or an older snapshot didn't carry it).
+    public var tomorrowAnchor: AnchorWindow?
 
     public init(
         generatedAt: Date, day: String, isReadOnly: Bool, tasksLeft: Int, tasksDone: Int, tasks: [TaskLine], moreTasks: Int,
-        capacity: Capacity, anchors: [AnchorWindow], planningAt: Date, planningDue: Bool, dayEndsAt: Date
+        capacity: Capacity, anchors: [AnchorWindow], planningAt: Date, planningDue: Bool, dayEndsAt: Date, tomorrowAnchor: AnchorWindow? = nil
     ) {
+        self.tomorrowAnchor = tomorrowAnchor
         self.generatedAt = generatedAt; self.day = day; self.isReadOnly = isReadOnly
         self.tasksLeft = tasksLeft; self.tasksDone = tasksDone; self.tasks = tasks; self.moreTasks = moreTasks
         self.capacity = capacity; self.anchors = anchors
         self.planningAt = planningAt; self.planningDue = planningDue; self.dayEndsAt = dayEndsAt
+    }
+
+    /// A quiet day with nothing in it, for a widget that can't read the store yet (before the app has run once).
+    public static func empty(at date: Date) -> WidgetSnapshot {
+        WidgetSnapshot(
+            generatedAt: date, day: "", isReadOnly: false, tasksLeft: 0, tasksDone: 0, tasks: [], moreTasks: 0,
+            capacity: Capacity(plannedMinutes: 0, budgetMinutes: 0, level: "medium", state: .light), anchors: [],
+            planningAt: date.addingTimeInterval(86_400), planningDue: false, dayEndsAt: date.addingTimeInterval(86_400))
     }
 
     /// Nothing planned and nothing done: Today's blank day.
@@ -115,6 +127,7 @@ extension WidgetSnapshot {
         let planningDate = settings.planningMinute < settings.rolloverMinute ? overview.today.addingDays(1) : overview.today
         let planningAt = boundary.instant(of: planningDate, atMinute: settings.planningMinute)
 
+        let dayEndsAt = boundary.startInstant(of: overview.today.addingDays(1))
         return WidgetSnapshot(
             generatedAt: now, day: overview.today.isoString, isReadOnly: access == .readOnly,
             tasksLeft: overview.shown.count, tasksDone: overview.completedToday.count,
@@ -124,8 +137,22 @@ extension WidgetSnapshot {
                 level: overview.level.rawValue, state: overview.state),
             anchors: Array(anchors),
             planningAt: planningAt, planningDue: now >= planningAt,
-            dayEndsAt: boundary.startInstant(of: overview.today.addingDays(1))
+            dayEndsAt: dayEndsAt,
+            tomorrowAnchor: try tomorrowAnchor(in: context, after: dayEndsAt)
         )
+    }
+
+    /// The earliest Anchor that starts after the day rolls over and hasn't been dealt with.
+    @MainActor
+    private static func tomorrowAnchor(in context: ModelContext, after dayEnd: Date) throws -> AnchorWindow? {
+        let next = try context.fetch(FetchDescriptor<Anchor>())
+            .filter { $0.windowStart >= dayEnd && $0.status == .pending }
+            .min { ($0.windowStart, $0.title, $0.id.uuidString) < ($1.windowStart, $1.title, $1.id.uuidString) }
+        guard let next else { return nil }
+        let ruleTitle = next.rule.map(\.title).flatMap { $0.isEmpty ? nil : $0 }
+        return AnchorWindow(
+            id: next.id, name: next.title.isEmpty ? (ruleTitle ?? "") : next.title, ruleTitle: ruleTitle,
+            phase: .upcoming, start: next.windowStart, end: next.windowEnd, progress: 0)
     }
 
     @MainActor
