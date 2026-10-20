@@ -22,7 +22,7 @@ struct SettingsScreen: View {
     /// At regular width the picked section's screen is shown beside the list instead of pushed.
     @State private var selected: Destination?
 
-    enum Destination: Hashable { case capacity, notifications, categories, appearance, subscription, yourData }
+    enum Destination: Hashable { case capacity, notifications, categories, appearance, subscription, sync, yourData }
 
     var body: some View {
         let _ = categories.map { [$0.name, $0.isArchived ? "1" : "0"] }
@@ -43,6 +43,7 @@ struct SettingsScreen: View {
         case .categories: CategoriesScreen()
         case .subscription: SubscriptionScreen()
         case .appearance: AppearanceScreen()
+        case .sync: SyncStatusScreen()
         case .yourData: YourDataScreen()
         }
     }
@@ -80,6 +81,7 @@ struct SettingsScreen: View {
                         row("Appearance", AppTheme(rawValue: theme)?.title ?? "System", .appearance)
                         row("Subscription",
                             SubscriptionCopy.homeValue(store.access(settings: settings.first, boundary: TodayDay.boundary(in: context))), .subscription)
+                        row("iCloud sync", SyncStatusScreen.homeValue, .sync)
                         row("Privacy and your data", "", .yourData)
                     }
                 }
