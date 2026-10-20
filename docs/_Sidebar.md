@@ -2,6 +2,7 @@
 
 - [Overview](architecture/overview)
 - [Diagrams](architecture/diagrams)
+- [Observability and debugging](architecture/observability)
 - [Rules Engine](architecture/rules-engine)
 - [ADR 0001: Anchor object type](architecture/decisions/0001-anchor-object-type)
 - [ADR 0002: Reconcile planning chat v2](architecture/decisions/0002-reconcile-master-summary-v2)
