@@ -98,6 +98,20 @@ struct AppShellTests {
         #expect(try context.fetchCount(FetchDescriptor<UserSettings>()) == 1)
     }
 
+    /// #291: a beta build must not start the trial, and the release's first launch after the beta must.
+    @Test func aBetaTickLeavesTheTrialUnstartedAndTheNextRealOneStartsIt() throws {
+        let context = ModelContext(try AppEngine.makeContainer(inMemory: true))
+        let timeZone = TimeZone(identifier: "UTC")!
+        let beta = Date(timeIntervalSince1970: 1_792_000_000)
+        let release = beta.addingTimeInterval(86_400 * 30)
+
+        _ = try AppEngine.tick(context: context, store: store(), now: beta, timeZone: timeZone, startsTrial: false)
+        #expect(try context.fetch(FetchDescriptor<UserSettings>()).first?.firstLaunchAt == nil)
+
+        _ = try AppEngine.tick(context: context, store: store(), now: release, timeZone: timeZone, startsTrial: true)
+        #expect(try context.fetch(FetchDescriptor<UserSettings>()).first?.firstLaunchAt == release)
+    }
+
     @Test func theStoreOpensWithCloudKitOffUntilTheContainerExists() throws {
         let container = try AppEngine.makeContainer(inMemory: true)
         #expect(container.configurations.count == 1)

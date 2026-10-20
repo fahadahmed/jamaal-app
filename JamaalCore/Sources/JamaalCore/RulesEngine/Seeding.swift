@@ -18,22 +18,31 @@ public enum Seeding {
     /// Creates whatever of the seed data is missing.
     ///
     /// - Settings: one row if none exists, with `firstLaunchAt` set to `now`. An existing row is
-    ///   never touched, so `firstLaunchAt` is set once.
+    ///   never touched, so `firstLaunchAt` is set once. **Only a build that starts the trial** (`startsTrial`)
+    ///   sets it: a TestFlight beta shares the production iCloud container with the App Store release, so a
+    ///   date set during the beta would have used up a tester's 14 days before the release. A row left
+    ///   without one gets it on the first launch of a build that does start the trial.
     /// - Categories: each default is created only if no category with that `presetKey` exists,
     ///   archived or renamed ones included, so a user's changes are never undone.
     ///
     /// - Returns: `true` if anything was created.
     @MainActor
     @discardableResult
-    public static func ensureSeeded(in context: ModelContext, now: Date) throws -> Bool {
+    public static func ensureSeeded(in context: ModelContext, now: Date, startsTrial: Bool = true) throws -> Bool {
         var created = false
+        var claimed = false
 
         if try context.fetchCount(FetchDescriptor<UserSettings>()) == 0 {
             let settings = UserSettings()
-            settings.firstLaunchAt = now
+            settings.firstLaunchAt = startsTrial ? now : nil
             settings.createdAt = now
             context.insert(settings)
             created = true
+        } else if startsTrial {
+            for settings in try context.fetch(FetchDescriptor<UserSettings>()) where settings.firstLaunchAt == nil {
+                settings.firstLaunchAt = now
+                claimed = true
+            }
         }
 
         let existing = Set(try context.fetch(FetchDescriptor<TaskCategory>()).compactMap(\.presetKey))
@@ -47,7 +56,7 @@ public enum Seeding {
             created = true
         }
 
-        if created { try context.save() }
+        if created || claimed { try context.save() }
         return created
     }
 }
