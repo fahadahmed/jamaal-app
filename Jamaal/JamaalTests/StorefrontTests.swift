@@ -47,6 +47,22 @@ struct StorefrontTests {
         #expect(store.access(settings: s, boundary: boundary, now: at(15)) == .readOnly)
     }
 
+    /// A TestFlight beta can't sell a subscription yet, so a tester must not be locked out of planning when the trial ends.
+    @Test func aBetaBuildKeepsFullAccessDuringAndLongAfterTheTrial() async {
+        let store = Storefront(client: FakeStoreClient(), defaults: defaults(), accessOverride: nil, isBeta: true)
+        await store.refresh()
+        let s = settings(firstLaunch: at(1))
+        #expect(store.access(settings: s, boundary: boundary, now: at(1)) == .subscribed, "no trial countdown either")
+        #expect(store.access(settings: s, boundary: boundary, now: at(15)) == .subscribed)
+        #expect(store.access(settings: s, boundary: boundary, now: at(29)) == .subscribed)
+    }
+
+    @Test func anAppStoreBuildStillGoesReadOnlyWhenTheTrialEnds() async {
+        let store = Storefront(client: FakeStoreClient(), defaults: defaults(), accessOverride: nil, isBeta: false)
+        await store.refresh()
+        #expect(store.access(settings: settings(firstLaunch: at(1)), boundary: boundary, now: at(15)) == .readOnly)
+    }
+
     @Test func theStoresOriginalDownloadNeverRestartsTheTrial() async {
         let store = Storefront(client: FakeStoreClient(originalDownload: at(1)), defaults: defaults(), accessOverride: nil)
         await store.refresh()

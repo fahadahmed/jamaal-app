@@ -51,4 +51,13 @@ struct SubscriptionCopyTests {
         #expect(SubscriptionCopy.subscribeButton(.yearly) == "Subscribe yearly" && SubscriptionCopy.subscribeButton(.monthly) == "Subscribe monthly")
         #expect(SubscriptionPlan.allCases.map(\.title) == ["Yearly", "Monthly"])
     }
+
+    @Test func aBetaBuildSaysItIsFullAccessForTesters() {
+        #expect(SubscriptionCopy.homeValue(.subscribed, isBeta: true) == "Beta · full access")
+        #expect(SubscriptionCopy.homeValue(.subscribed, isBeta: false) == "Subscribed")
+        let status = SubscriptionCopy.status(.subscribed, trialStart: nil, renewsOn: nil, isBeta: true)
+        #expect(status.label == "BETA")
+        #expect(status.line.contains("Full access"))
+        #expect(!status.line.contains("Renews"), "there is nothing to renew")
+    }
 }

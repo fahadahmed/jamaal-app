@@ -22,7 +22,7 @@ struct SubscriptionScreen: View {
         let access = store.access(settings: rows.first, boundary: boundary)
         let start = store.trialStart(settings: rows.first, boundary: boundary)
         let renews = store.renewsOn.map { $0.formatted(.dateTime.day().month(.wide).locale(.current)) }
-        let status = SubscriptionCopy.status(access, trialStart: start, renewsOn: renews)
+        let status = SubscriptionCopy.status(access, trialStart: start, renewsOn: renews, isBeta: store.isBeta)
         SettingsPage(title: "Subscription") {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 VStack(alignment: .leading, spacing: ThreadsSpace.tight) {

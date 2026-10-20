@@ -63,8 +63,8 @@ A short checklist; the first two have no undo.
 3. **Version.** A new version string needs bumping in the project; a repeat beta of the same version doesn't.
 4. **Checks green** on the merged commit, and the PR template's schema question answered.
 5. **`WhatToTest` updated.**
-6. **Purchases.** The first betas keep subscriptions off (everyone is on the 14-day trial); the flag and the plan are in [TestFlight readiness](testflight-readiness).
-7. **Beta App Review (first build of each version).** An external group needs Apple's beta review, usually about a day: it needs the test notes (how the app-managed trial and read-only work, no sign-in, no payment), the support URL (https://jamaal.app/support), the privacy URL (https://jamaal.app/privacy) and a contact. Later builds of the same version are usually quick to pass. Don't tag something you can't afford to wait a day for.
+6. **Purchases.** Subscriptions are not set up for the first betas, so a **TestFlight build keeps full access with no trial and never goes read-only** (Settings shows *Beta · full access*); an App Store build keeps the 14-day trial and the read-only rules. The app tells them apart by the build's receipt (`sandboxReceipt`), which is also why the trial and paywall can only be seen in a real TestFlight build. The plan for turning subscriptions on is in [TestFlight readiness](testflight-readiness).
+7. **Beta App Review (first build of each version).** An external group needs Apple's beta review, usually about a day: it needs the test notes (the beta has full access with no sign-in and no payment, and subscriptions aren't switched on yet), the support URL (https://jamaal.app/support), the privacy URL (https://jamaal.app/privacy) and a contact. Later builds of the same version are usually quick to pass. Don't tag something you can't afford to wait a day for.
 
 ## After the tag
 

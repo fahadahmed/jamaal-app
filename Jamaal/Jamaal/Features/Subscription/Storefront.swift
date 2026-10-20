@@ -20,6 +20,10 @@ final class Storefront {
     private(set) var isWorking = false
     var message: String?
 
+    /// A TestFlight beta: there is nothing to subscribe to yet, so a tester keeps full access after the trial instead of going
+    /// read-only with no way out. An App Store build is never a beta.
+    let isBeta: Bool
+
     private let client: any StoreClient
     private let defaults: UserDefaults
     private var started = false
@@ -31,7 +35,11 @@ final class Storefront {
     private enum Keys { static let lastKnown = "entitlementLastKnown", renews = "entitlementRenewsOn", paywallShownOn = "paywallShownOn", trialBannerDismissedOn = "trialBannerDismissedOn" }
 
     #if DEBUG
-    init(client: (any StoreClient)? = nil, defaults: UserDefaults? = nil, accessOverride: DebugLaunch.AccessOverride? = DebugLaunch.access) {
+    init(
+        client: (any StoreClient)? = nil, defaults: UserDefaults? = nil, accessOverride: DebugLaunch.AccessOverride? = DebugLaunch.access,
+        isBeta: Bool = DiagnosticEnvironment.current.channel == .testFlight
+    ) {
+        self.isBeta = isBeta
         self.accessOverride = accessOverride
         self.client = client ?? Storefront.debugClient() ?? SystemStoreClient()
         let store = defaults ?? Storefront.standardDefaults
@@ -40,7 +48,8 @@ final class Storefront {
         renewsOn = store.object(forKey: Keys.renews) as? Date
     }
     #else
-    init(client: (any StoreClient)? = nil, defaults: UserDefaults? = nil) {
+    init(client: (any StoreClient)? = nil, defaults: UserDefaults? = nil, isBeta: Bool = DiagnosticEnvironment.current.channel == .testFlight) {
+        self.isBeta = isBeta
         self.client = client ?? SystemStoreClient()
         let store = defaults ?? Storefront.standardDefaults
         self.defaults = store
@@ -127,6 +136,7 @@ final class Storefront {
             }
         }
         #endif
+        if isBeta { return .subscribed }                                  // full access: nothing to buy in a beta yet
         return Trial.state(today: boundary.logicalDate(at: now), start: trialStart(settings: settings, boundary: boundary), hasEntitlement: entitlementActive)
     }
 
