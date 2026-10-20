@@ -47,6 +47,7 @@ public enum HabitMinutes {
         window.sessions?.removeAll { $0.id == session.id }                          // the window's list is stale until a save
         context.delete(session)
         HabitSessions.recompute(window, on: day, now: now, context: context)
+        FocusSessions.persist(context)
         return true
     }
 

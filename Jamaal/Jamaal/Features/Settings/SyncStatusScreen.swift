@@ -3,6 +3,7 @@
 //  Jamaal
 //
 
+import SwiftData
 import SwiftUI
 import ThreadsTokens
 import JamaalCore
@@ -17,6 +18,7 @@ import AppKit
 /// asking for help (it holds no tasks, habits or titles).
 struct SyncStatusScreen: View {
     @Environment(\.threads) private var threads
+    @Environment(\.modelContext) private var context
     private let monitor = SyncMonitor.shared
     @State private var copied = false
 
@@ -72,7 +74,8 @@ struct SyncStatusScreen: View {
     private func copy() {
         let text = SyncStatusCopy.details(
             isOn: monitor.isOn, account: monitor.account, activity: monitor.activity,
-            container: SyncMode.containerID, device: ReminderCenter.deviceName, now: .now)
+            container: SyncMode.containerID, device: ReminderCenter.deviceName, now: .now,
+            extra: SyncDiagnostics.timedHabitLines(in: context, today: TodayDay.boundary(in: context).logicalDate(at: .now)))
         #if canImport(UIKit)
         UIPasteboard.general.string = text
         #else
