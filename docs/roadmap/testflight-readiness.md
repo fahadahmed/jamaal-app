@@ -1,5 +1,8 @@
 # TestFlight readiness
 
+> How builds are made and sent from here on (Xcode Cloud, tag-driven) is in [Release process](release-process).
+
+
 The plan agreed on 11 Oct 2026: the **first TestFlight build around 18 Oct** with what is solid (the App Group, the store move and CloudKit sync on real devices, the widget extension if it fits), and **purchases and the App Store listing in the next build**. The paid Apple Developer Programme is expected around **14 Oct**. This page is the checklist for that build; tick things off as they land.
 
 ## Ready now (no programme needed)

@@ -30,6 +30,7 @@
 
 - [Phases](roadmap/phases)
 - [TestFlight readiness](roadmap/testflight-readiness)
+- [Release process](roadmap/release-process)
 
 ### Design
 
