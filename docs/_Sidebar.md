@@ -40,6 +40,7 @@
 - [Design v4 handoff](design/README)
 - [Design v4 reconciliation](design/v4-reconciliation)
 - [Brief: widgets and the watch](design/widgets-and-watch-brief)
+- [Brief: the TestFlight emails](design/testflight-emails-brief)
 - [Widgets and watch reconciliation](design/widgets-and-watch-reconciliation)
 
 ---
