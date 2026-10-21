@@ -90,4 +90,4 @@ Chosen over the alternatives because it reports **handled errors and breadcrumbs
 
 1. The Sentry plan and its **region** (EU proposed). The free plan has a monthly cap on errors, which is plenty for a beta.
 2. Whether the switch is **on by default in TestFlight builds** (proposed) or asked once at the end of onboarding.
-3. Who receives *Share diagnostics*: a support address on `jamaal.app` (needs to exist before the first beta).
+3. ~~Who receives *Share diagnostics*~~: **decided 21 Oct 2026: support@jamaal.app.** *Settings → iCloud sync → Email support* opens a message to it with the details filled in (trimmed to a sensible length, with no titles, notes or places); *Share details* and *Copy details* stay for other apps.
