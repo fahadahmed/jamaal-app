@@ -66,11 +66,22 @@ enum WellbeingCopy {
     /// The rows under the read; a row appears only when there is something behind it.
     static func rows(_ snapshot: WellbeingSnapshot) -> [Row] {
         var rows: [Row] = []
-        if snapshot.tasksToFinish > 0 { rows.append(Row(title: "Tasks done", value: "\(snapshot.tasksDone) of \(snapshot.tasksToFinish)", id: "tasks")) }
+        if snapshot.tasksToFinish > 0 {
+            rows.append(Row(title: "Tasks done", value: "\(snapshot.tasksDone)", id: "tasks"))
+            // The second figure is not "tasks missed": a task left for tomorrow is counted again on each day it carries over.
+            let carried = snapshot.tasksToFinish - snapshot.tasksDone
+            if carried > 0 { rows.append(Row(title: "Carried forward or dropped", value: "\(carried)", id: "carried")) }
+        }
         if snapshot.anchorsDecided > 0 { rows.append(Row(title: "Anchors attended", value: "\(snapshot.anchorsAttended) of \(snapshot.anchorsDecided)", id: "anchors")) }
         if let habits = snapshot.parts.first(where: { $0.kind == .habits }) { rows.append(Row(title: "Habits", value: Self.habits(habits.value), id: "habits")) }
         rows.append(Row(title: "Heavy days", value: "\(snapshot.heavyDays) of \(snapshot.activeDays)", id: "heavy"))
         return rows
+    }
+
+    /// Under the rows, when some tasks were carried: how the two figures are counted. Plain, and never "missed".
+    static func tasksNote(_ snapshot: WellbeingSnapshot) -> String? {
+        guard snapshot.tasksToFinish > snapshot.tasksDone else { return nil }
+        return "A task left for tomorrow is counted again each day it carries over, so this can be more than the number of tasks you had. Today counts once the day ends."
     }
 
     // MARK: Gathering data

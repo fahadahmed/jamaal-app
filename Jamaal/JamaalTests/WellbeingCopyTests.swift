@@ -64,8 +64,8 @@ struct WellbeingCopyTests {
 
     @Test func theRowsAppearOnlyWhenThereIsSomethingBehindThem() {
         let all = WellbeingCopy.rows(snapshot(habits: 80))
-        #expect(all.map(\.title) == ["Tasks done", "Anchors attended", "Habits", "Heavy days"])
-        #expect(all.map(\.value) == ["41 of 48", "63 of 68", "Most days", "2 of 14"])
+        #expect(all.map(\.title) == ["Tasks done", "Carried forward or dropped", "Anchors attended", "Habits", "Heavy days"])
+        #expect(all.map(\.value) == ["41", "7", "63 of 68", "Most days", "2 of 14"])
         let bare = WellbeingCopy.rows(snapshot(done: 0, toFinish: 0, attended: 0, decided: 0))
         #expect(bare.map(\.title) == ["Heavy days"])
     }
@@ -97,5 +97,31 @@ struct WellbeingCopyTests {
         #expect(WellbeingCopy.outcome(.weekdayLowered(6)) == "Saturdays are low days now.")
         #expect(WellbeingCopy.outcome(.normalDayChanged(165)) == "Your normal day is now 2h 45m.")
         #expect(WellbeingCopy.outcome(.nothing) == nil)
+    }
+
+    // The row used to read "8 of 28 tasks". The 28 counts a task again for every day it is carried forward, so it could be far more
+    // than the tasks there were, and it read as if most had been missed. Two plain figures say what is counted.
+
+    @Test func tasksAreReportedAsTwoFiguresNotAFractionOfAnInflatedTotal() {
+        let rows = WellbeingCopy.rows(snapshot(done: 8, toFinish: 28))
+        #expect(rows.first { $0.id == "tasks" }?.value == "8")
+        let carried = rows.first { $0.id == "carried" }
+        #expect(carried?.title == "Carried forward or dropped")
+        #expect(carried?.value == "20")
+    }
+
+    @Test func whenEverythingWasFinishedThereIsNothingCarriedToShow() {
+        let rows = WellbeingCopy.rows(snapshot(done: 12, toFinish: 12))
+        #expect(rows.contains { $0.id == "tasks" && $0.value == "12" })
+        #expect(!rows.contains { $0.id == "carried" })
+        #expect(WellbeingCopy.tasksNote(snapshot(done: 12, toFinish: 12)) == nil)
+    }
+
+    @Test func theNoteExplainsThatACarriedTaskCountsAgainEachDay() throws {
+        let note = try #require(WellbeingCopy.tasksNote(snapshot(done: 8, toFinish: 28)))
+        #expect(note.contains("each day"))
+        #expect(note.contains("carries over") || note.contains("carried"))
+        #expect(note.contains("Today"), "and that today isn't in yet")
+        #expect(!note.contains("missed"), "it never calls them missed")
     }
 }
