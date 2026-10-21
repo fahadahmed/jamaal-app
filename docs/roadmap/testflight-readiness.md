@@ -41,12 +41,22 @@ The paid programme is active (15 Oct 2026): Xcode shows the Individual team `Y39
 
 **Waiting on you**
 - [ ] **Xcode Cloud workflows:** edit *Default* into **TestFlight beta** (tags starting `beta-`, Archive iOS and macOS, post-action to TestFlight) and create **App Store release** (tags starting `v`). Steps in the [release process](release-process#one-time-setup).
-- [ ] **TestFlight group:** an external group with the public link, the test details, the support and privacy URLs and a contact.
+- [x] **TestFlight external group** *Jamaal Public Users* with the public link and the test details saved; build 2 (made with *App Store Connect* distribution) is **waiting for Beta App Review**.
 - [ ] **App Store Connect → App Information and privacy:** the privacy-policy and support URLs, the age rating (expected 4+, don't choose the Kids category), and the **privacy answers: "Data Not Collected"** until Sentry ships (then *Data Not Linked to You: Diagnostics*, see [Observability and debugging](../architecture/observability#what-changes-for-privacy-when-layer-4-ships)).
 - [ ] **A support email address** on `jamaal.app`, for *Share details*; it needs to exist before the first beta.
 - [ ] **Sentry decisions:** the plan and region (EU proposed), and whether the reporting switch is on by default in TestFlight builds.
 - [ ] **VoiceOver pass** before the public link goes out (not needed for an invite-only first beta).
 - [ ] Install the latest build on the **iPad**.
+
+**After the first TestFlight install (check each, on two devices if you can, since a TestFlight build syncs through the Production iCloud, separate from the Development one your own builds use)**
+- [ ] **Settings → Subscription** says *Beta · full access*; no trial banner or paywall appears on Today.
+- [ ] **Settings → iCloud sync → Share details** says the build is *TestFlight*, shows the version and build, and sync is on with no problem listed.
+- [ ] **Sync:** add a task, mark an Anchor done, and finish a habit timer on one device; the others show the same within about 20 seconds (and the habit's day total matches).
+- [ ] **Widgets:** add Next Anchor (small and the Lock Screen sizes) and Today (small, medium, large); each shows today's data and opens the app.
+- [ ] **Notifications:** the permission prompt appears when asked, and the evening Night Planning reminder arrives at the chosen time.
+- [ ] **Prayer times:** the place search and the times work (this uses the location permission).
+- [ ] **Night Planning**, a **focus session** and **Export my data** each work end to end.
+- [ ] Nothing in **Share details** contains a title, a note or a place.
 
 **Mine, once the workflows exist**
 - [ ] Push `beta-1.0-1` on a tested commit and check the run: the scheme is found, the build number comes from Xcode Cloud, the iOS and Mac builds upload.

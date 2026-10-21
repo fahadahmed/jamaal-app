@@ -42,7 +42,7 @@ Two workflows, each started by a tag (the names are chosen so one tag can never 
 | Starts on | Tag changes: name **starts with** `beta-` | Tag changes: name **starts with** `v` |
 | Environment | Xcode **latest release** (27.x), macOS latest release | the same |
 | Scheme | `Jamaal` | `Jamaal` |
-| Actions | **Archive – iOS** and **Archive – macOS**, each with *Deployment Preparation* = **TestFlight and App Store** | the same |
+| Actions | **Archive – iOS** and **Archive – macOS**, each with *Distribution Preparation* = **App Store Connect** | the same |
 | Post-actions | **TestFlight External Testing** to the public group (and **Internal Testing** to you, so you see it first) | **Internal Testing** only; you submit from App Store Connect |
 | Tests | none | none |
 
@@ -80,6 +80,15 @@ A build from your Mac (Xcode or `xcodebuild`) uses the **Development** iCloud en
 ## Hotfixes
 
 Branch from the release tag, fix and test it through the normal issue and PR, merge to `main`, then tag a patch (`v1.0.1`, and a `beta-1.0.1-1` first if it is risky). A fix that touches the data model needs the schema step above.
+
+## What setting this up taught us (21 Oct 2026)
+
+- **Distribution Preparation: choose *App Store Connect*, not *TestFlight (Internal Testing Only)*.** The choices are exclusive (there is no "both"), and a build made with the internal-only option can **never** be added to an external group or the public link. It cannot be changed afterwards: you need a new build. App Store Connect does not publish anything by itself; the build is uploaded and you decide where it goes.
+- **An internal tester's invite email may not arrive** (it did not, even after *Resend Invite*), and until it is accepted the tester stays *Invited* and TestFlight shows only the redeem-code screen. Don't build the plan on it: the **external group with a public link** worked without any email, and it is what website testers use.
+- **The external group needs the Test Information saved first** (the beta description, a feedback email, contact details and the review notes), and the first build of each version waits for **Beta App Review** (about a day).
+- **Each new build needs adding to the external group** unless the workflow has the *TestFlight External Testing* post-action for it.
+- **Xcode Cloud numbers the builds itself** (the first run was build 1) and posts each archive on the commit in GitHub, with its warnings count, so GitHub shows whether a tag's build worked.
+- **Keep an eye on the Start Conditions.** *Branch Changes* builds and uploads on every merge to `main`; the plan is *Tag Changes* starting `beta-`.
 
 ## One-time setup
 
