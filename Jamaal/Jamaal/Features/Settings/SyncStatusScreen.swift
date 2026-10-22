@@ -19,6 +19,7 @@ import AppKit
 struct SyncStatusScreen: View {
     @Environment(\.threads) private var threads
     @Environment(\.modelContext) private var context
+    @Environment(\.openURL) private var openURL
     private let monitor = SyncMonitor.shared
     @State private var copied = false
 
@@ -61,6 +62,16 @@ struct SyncStatusScreen: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("shareSyncDetails")
+                Button {
+                    if let url = SupportMail.url(details: detailsText) { openURL(url) }
+                } label: {
+                    Text("Email support").threadsType(.row).foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, minHeight: 56).background(Capsule().fill(threads.terra)).contentShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("emailSupport")
+                Text("Opens a message to \(SupportMail.address) with the details above filled in, with no titles, notes or places. You write above them and press send.")
+                    .threadsType(.body).foregroundStyle(threads.ink2)
             }
         }
         .task { await monitor.refreshAccount() }

@@ -42,8 +42,7 @@ The paid programme is active (15 Oct 2026): Xcode shows the Individual team `Y39
 **Waiting on you**
 - [ ] **Xcode Cloud workflows:** edit *Default* into **TestFlight beta** (tags starting `beta-`, Archive iOS and macOS, post-action to TestFlight) and create **App Store release** (tags starting `v`). Steps in the [release process](release-process#one-time-setup).
 - [x] **TestFlight external group** *Jamaal Public Users* with the public link and the test details saved; build 2 (made with *App Store Connect* distribution) is **waiting for Beta App Review**.
-- [ ] **App Store Connect → App Information and privacy:** the privacy-policy and support URLs, the age rating (expected 4+, don't choose the Kids category), and the **privacy answers: "Data Not Collected"** until Sentry ships (then *Data Not Linked to You: Diagnostics*, see [Observability and debugging](../architecture/observability#what-changes-for-privacy-when-layer-4-ships)).
-- [ ] **A support email address** on `jamaal.app`, for *Share details*; it needs to exist before the first beta.
+- [x] **Support address, age rating and the URLs (21 Oct 2026):** support is **support@jamaal.app** (a mailbox you read), the age rating is **4+** (not the Kids category), and the privacy-policy and support URLs are entered. **Still to enter in App Store Connect:** the **privacy answers**, which stay **"Data Not Collected"** until Sentry ships (then *Data Not Linked to You: Diagnostics*, see [Observability and debugging](../architecture/observability#what-changes-for-privacy-when-layer-4-ships)).
 - [ ] **Sentry decisions:** the plan and region (EU proposed), and whether the reporting switch is on by default in TestFlight builds.
 - [ ] **VoiceOver pass** before the public link goes out (not needed for an invite-only first beta).
 - [ ] Install the latest build on the **iPad**.
