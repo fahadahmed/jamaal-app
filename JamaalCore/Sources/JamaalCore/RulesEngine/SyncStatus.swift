@@ -89,6 +89,23 @@ public enum SyncStatusCopy {
         }
     }
 
+    /// One plain line for a recorded error, by its CloudKit code, so a tester isn't left with "CKErrorDomain 2". Nil for one we have no
+    /// advice for. "types=" in the text means iCloud refused one of our record types, which is on the developer's side.
+    public static func hint(forError error: String?, kind: SyncActivity.Kind) -> String? {
+        guard let error, let match = error.firstMatch(of: /CKErrorDomain (\d+)/), let code = Int(match.1) else { return nil }
+        switch code {
+        case 3, 4: return "No connection to iCloud right now. It will try again by itself."
+        case 6, 7, 23: return "iCloud is busy. It will try again by itself."
+        case 9: return "Sign in to iCloud in Settings, and it will catch up."
+        case 25: return "Your iCloud storage is full, so changes can't be saved. Free some space and it will catch up."
+        case 2:
+            return error.contains("types=")
+                ? "iCloud refused some changes. That is something on my side, not something you did. Please use Email support so I can fix it."
+                : "iCloud took some changes and refused others. Closing and reopening Jamaal often clears it; if it stays, please use Email support."
+        default: return nil
+        }
+    }
+
     public static func kindText(_ kind: SyncActivity.Kind) -> String {
         switch kind {
         case .setup: "setting up"

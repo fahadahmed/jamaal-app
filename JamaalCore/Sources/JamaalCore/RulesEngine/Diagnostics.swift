@@ -64,6 +64,33 @@ public struct DiagnosticValue: Codable, Equatable, Sendable {
         let ns = error as NSError
         return .init("\(ns.domain) \(ns.code)")
     }
+
+    /// The 14 CloudKit record types the schema makes (SwiftData prefixes each model with `CD_`). Only these names are ever kept from
+    /// an error message, so a message that holds a title can't leak one.
+    public static let knownRecordTypes: Set<String> = [
+        "CD_TaskItem", "CD_TaskCategory", "CD_DeferralRecord", "CD_WorkSession", "CD_Habit", "CD_HabitGroup", "CD_HabitTimeWindow",
+        "CD_HabitEntry", "CD_AnchorRule", "CD_Anchor", "CD_UserSettings", "CD_DayPlan", "CD_NightPlanningSession", "CD_NudgeLog",
+    ]
+
+    /// Like `error`, and for a partial failure (iCloud took some records and refused others) also each refused record's error code with
+    /// how many, and which of our record types were refused: "CKErrorDomain 2 items=12x2,15x1 types=CD_Habit". Messages are dropped.
+    public static func detailedError(_ error: Error) -> DiagnosticValue {
+        let ns = error as NSError
+        var text = "\(ns.domain) \(ns.code)"
+        guard let items = ns.userInfo["CKPartialErrors"] as? [AnyHashable: Error], !items.isEmpty else { return .init(text) }
+        var counts: [Int: Int] = [:]
+        var types = Set<String>()
+        for item in items.values {
+            let e = item as NSError
+            counts[e.code, default: 0] += 1
+            for word in e.localizedDescription.split(whereSeparator: { !($0.isLetter || $0.isNumber || $0 == "_") }) where knownRecordTypes.contains(String(word)) {
+                types.insert(String(word))
+            }
+        }
+        text += " items=" + counts.keys.sorted().map { "\($0)x\(counts[$0]!)" }.joined(separator: ",")
+        if !types.isEmpty { text += " types=" + types.sorted().joined(separator: ",") }
+        return .init(text)
+    }
 }
 
 public struct DiagnosticEvent: Codable, Equatable, Sendable {

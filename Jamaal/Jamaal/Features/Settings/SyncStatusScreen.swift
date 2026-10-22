@@ -41,6 +41,9 @@ struct SyncStatusScreen: View {
                                 Text("Last problem").threadsType(.lede).foregroundStyle(threads.ink)
                                 Text("\(error) (\(SyncStatusCopy.kindText(kind)), \(SyncStatusCopy.when(activity.lastErrorAt, now: now)))")
                                     .threadsType(.body).foregroundStyle(threads.ink2)
+                                if let hint = SyncStatusCopy.hint(forError: error, kind: kind) {
+                                    Text(hint).threadsType(.body).foregroundStyle(threads.ink).accessibilityIdentifier("syncProblemHint")
+                                }
                             }
                             .frame(maxWidth: .infinity, alignment: .leading).padding(.vertical, ThreadsSpace.row)
                             .overlay(alignment: .bottom) { Divider().overlay(threads.line) }
