@@ -118,6 +118,9 @@ struct WellbeingScreen: View {
                     Divider().overlay(threads.line)
                 }
             }
+            if let note = WellbeingCopy.tasksNote(snapshot) {
+                Text(note).threadsType(.body).foregroundStyle(threads.ink2).accessibilityIdentifier("wellbeingTasksNote")
+            }
             Text("LAST \(snapshot.activeDays) ACTIVE DAYS").threadsType(.label).foregroundStyle(threads.ink2)
         }
         .accessibilityElement(children: .contain)
