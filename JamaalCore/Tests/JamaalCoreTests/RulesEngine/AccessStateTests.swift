@@ -12,7 +12,9 @@ struct AccessStateTests {
 
     @Test func theTrialStartsOnTheEarlierOfTheDownloadDateAndFirstLaunch() {
         #expect(Trial.start(originalDownload: d(1), firstLaunch: d(5)) == d(1))
-        #expect(Trial.start(originalDownload: d(5), firstLaunch: d(1)) == d(1))     // a reinstall never restarts it
+        // StoreKit's original download wins over the synced date: a date set by a TestFlight build (which shares the production iCloud
+        // with the release) can't cut a tester's trial short (#310).
+        #expect(Trial.start(originalDownload: d(5), firstLaunch: d(1)) == d(5))     // a reinstall never restarts it
         #expect(Trial.start(originalDownload: nil, firstLaunch: d(5)) == d(5))
         #expect(Trial.start(originalDownload: d(5), firstLaunch: nil) == d(5))
         #expect(Trial.start(originalDownload: nil, firstLaunch: nil) == nil)

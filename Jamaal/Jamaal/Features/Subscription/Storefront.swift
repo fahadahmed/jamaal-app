@@ -21,8 +21,9 @@ final class Storefront {
     var message: String?
 
     /// A TestFlight beta: there is nothing to subscribe to yet, so a tester keeps full access after the trial instead of going
-    /// read-only with no way out. An App Store build is never a beta.
-    let isBeta: Bool
+    /// read-only with no way out. An App Store build is never a beta. It starts as a guess (`BuildChannel`) and is corrected once
+    /// StoreKit says where the app is running, which matters on the Mac, where the receipt can't tell the two apart.
+    private(set) var isBeta: Bool
 
     private let client: any StoreClient
     private let defaults: UserDefaults
@@ -37,7 +38,7 @@ final class Storefront {
     #if DEBUG
     init(
         client: (any StoreClient)? = nil, defaults: UserDefaults? = nil, accessOverride: DebugLaunch.AccessOverride? = DebugLaunch.access,
-        isBeta: Bool = DiagnosticEnvironment.current.channel == .testFlight
+        isBeta: Bool = BuildChannel.current == .testFlight
     ) {
         self.isBeta = isBeta
         self.accessOverride = accessOverride
@@ -48,7 +49,7 @@ final class Storefront {
         renewsOn = store.object(forKey: Keys.renews) as? Date
     }
     #else
-    init(client: (any StoreClient)? = nil, defaults: UserDefaults? = nil, isBeta: Bool = DiagnosticEnvironment.current.channel == .testFlight) {
+    init(client: (any StoreClient)? = nil, defaults: UserDefaults? = nil, isBeta: Bool = BuildChannel.current == .testFlight) {
         self.isBeta = isBeta
         self.client = client ?? SystemStoreClient()
         let store = defaults ?? Storefront.standardDefaults
@@ -88,6 +89,10 @@ final class Storefront {
     func refresh() async {
         offers = await client.offers()
         originalDownload = await client.originalDownload()
+        if let environment = await client.environment() {
+            BuildChannel.record(environment)
+            isBeta = environment == .sandbox
+        }
         let confirmed = await client.entitlement()
         entitlementActive = EntitlementCache.isActive(confirmed: confirmed?.isActive, lastKnown: defaults.object(forKey: Keys.lastKnown) as? Bool)
         if let confirmed {

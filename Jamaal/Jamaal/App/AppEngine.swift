@@ -77,7 +77,7 @@ enum AppEngine {
     @discardableResult
     static func tick(
         context: ModelContext, store: LastProcessedStore = LastProcessedStore(), now: Date = .now, timeZone: TimeZone = .current,
-        startsTrial: Bool = DiagnosticEnvironment.current.channel != .testFlight
+        startsTrial: Bool = BuildChannel.current != .testFlight
     ) throws -> EngineTickResult {
         let started = Date()
         let result: EngineTickResult
