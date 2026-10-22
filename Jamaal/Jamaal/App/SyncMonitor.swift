@@ -54,13 +54,11 @@ final class SyncMonitor {
             if end != nil {                                          // an event still in progress isn't worth a line
                 let name: DiagnosticName = switch kind { case .setup: .syncSetup; case .import: .syncImport; case .export: .syncExport }
                 var fields: [DiagnosticEvent.Field] = [.init(.ok, .flag(ok))]
-                if let error = event.error { fields.append(.init(.errorCode, .error(error))) }
+                if let error = event.error { fields.append(.init(.errorCode, .detailedError(error))) }
                 Diag.shared.record(name, level: ok ? .info : .error, fields)
             }
-            let text = event.error.map { error -> String in
-                let ns = error as NSError
-                return "\(error.localizedDescription) (\(ns.domain) \(ns.code))"
-            }
+            // The message, then the domain and code and, for a partial failure, which of our record types iCloud refused.
+            let text = event.error.map { "\($0.localizedDescription) (\(DiagnosticValue.detailedError($0).text))" }
             MainActor.assumeIsolated { self?.record(kind, endedAt: end, succeeded: ok, error: text) }
         }
         Task { await refreshAccount() }
