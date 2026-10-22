@@ -37,10 +37,16 @@ protocol StoreClient {
     /// What the store confirms now; `nil` when it can't be reached (the last answer then stands).
     func entitlement() async -> StoreEntitlement?
     func originalDownload() async -> Date?
+    /// Where StoreKit says this app is running (a TestFlight build is `sandbox`); `nil` when it can't be reached.
+    func environment() async -> StoreEnvironment?
     func purchase(_ plan: SubscriptionPlan) async -> PurchaseOutcome
     func restore() async -> Bool
     /// Emits whenever a transaction changes (a purchase on another device, a renewal, a refund).
     func changes() -> AsyncStream<Void>
+}
+
+extension StoreClient {
+    func environment() async -> StoreEnvironment? { nil }
 }
 
 @MainActor
@@ -70,6 +76,16 @@ struct SystemStoreClient: StoreClient {
     func originalDownload() async -> Date? {
         guard let result = try? await AppTransaction.shared, case .verified(let app) = result else { return nil }
         return app.originalPurchaseDate
+    }
+
+    func environment() async -> StoreEnvironment? {
+        guard let result = try? await AppTransaction.shared, case .verified(let app) = result else { return nil }
+        switch app.environment {
+        case .production: return .production
+        case .sandbox: return .sandbox
+        case .xcode: return .xcode
+        default: return nil
+        }
     }
 
     func purchase(_ plan: SubscriptionPlan) async -> PurchaseOutcome {

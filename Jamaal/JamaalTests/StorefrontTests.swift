@@ -19,6 +19,19 @@ private struct OfflineStore: StoreClient {
     func changes() -> AsyncStream<Void> { AsyncStream { _ in } }
 }
 
+/// A store that reports which environment the app is running in.
+@MainActor
+private struct EnvironmentStore: StoreClient {
+    let environmentValue: StoreEnvironment?
+    func offers() async -> [StoreOffer] { [] }
+    func entitlement() async -> StoreEntitlement? { nil }
+    func originalDownload() async -> Date? { nil }
+    func environment() async -> StoreEnvironment? { environmentValue }
+    func purchase(_ plan: SubscriptionPlan) async -> PurchaseOutcome { .failed }
+    func restore() async -> Bool { false }
+    func changes() -> AsyncStream<Void> { AsyncStream { _ in } }
+}
+
 @MainActor
 struct StorefrontTests {
 
@@ -137,5 +150,30 @@ struct StorefrontTests {
         store.dismissTrialBanner(on: day)
         let again = Storefront(client: FakeStoreClient(), defaults: d, accessOverride: nil)
         #expect(again.paywallShownOn() == day && again.trialBannerDismissedOn() == day)
+    }
+
+    // MARK: Which build this is (#310)
+
+    @Test func aSandboxEnvironmentMakesItABetaEvenIfTheReceiptSaidOtherwise() async {
+        let store = Storefront(client: EnvironmentStore(environmentValue: .sandbox), defaults: defaults(), accessOverride: nil, isBeta: false)
+        await store.refresh()
+        #expect(store.isBeta, "the Mac TestFlight build, whose receipt looks like the App Store's")
+        #expect(store.access(settings: settings(firstLaunch: at(1)), boundary: boundary, now: at(29)) == .subscribed)
+    }
+
+    @Test func aProductionEnvironmentMakesItARealBuildAgain() async {
+        let store = Storefront(client: EnvironmentStore(environmentValue: .production), defaults: defaults(), accessOverride: nil, isBeta: true)
+        await store.refresh()
+        #expect(!store.isBeta)
+        #expect(store.access(settings: settings(firstLaunch: at(1)), boundary: boundary, now: at(29)) == .readOnly)
+    }
+
+    @Test func aStoreThatCantSayLeavesWhatItAssumedAlone() async {
+        let beta = Storefront(client: EnvironmentStore(environmentValue: nil), defaults: defaults(), accessOverride: nil, isBeta: true)
+        await beta.refresh()
+        #expect(beta.isBeta)
+        let real = Storefront(client: EnvironmentStore(environmentValue: nil), defaults: defaults(), accessOverride: nil, isBeta: false)
+        await real.refresh()
+        #expect(!real.isBeta)
     }
 }

@@ -28,15 +28,12 @@ public enum Trial {
     /// The trial days on which a quiet reminder is sent: two before the end, and the first read-only day.
     public static let reminderDays = [12, 14, 15]
 
-    /// The earlier of StoreKit's original-download date and the synced `firstLaunchAt`, so a reinstall
-    /// or a second device never restarts the trial.
+    /// StoreKit's original-download date when it is known, else the synced `firstLaunchAt`. The download date is per Apple ID and
+    /// survives a reinstall or a second device, so the trial never restarts. It wins over the synced date because that one can be
+    /// set too early by a TestFlight build (a beta shares the production iCloud with the release); it is only the fallback for
+    /// when StoreKit can't be reached.
     public static func start(originalDownload: CalendarDate?, firstLaunch: CalendarDate?) -> CalendarDate? {
-        switch (originalDownload, firstLaunch) {
-        case (let a?, let b?): min(a, b)
-        case (let a?, nil): a
-        case (nil, let b?): b
-        case (nil, nil): nil
-        }
+        originalDownload ?? firstLaunch
     }
 
     /// 1 on the start day. A start in the future (a clock set back) is day 1, never negative.

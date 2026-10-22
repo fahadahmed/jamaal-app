@@ -103,13 +103,7 @@ extension DiagnosticEnvironment {
             os: system, device: sysctlString(key) ?? "unknown", channel: channel)
     }
 
-    nonisolated private static var channel: Channel {
-        #if DEBUG
-        return .debug
-        #else
-        return Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt" ? .testFlight : .appStore
-        #endif
-    }
+    nonisolated private static var channel: Channel { BuildChannel.current.diagnosticChannel }
 
     nonisolated private static func sysctlString(_ name: String) -> String? {
         var size = 0
