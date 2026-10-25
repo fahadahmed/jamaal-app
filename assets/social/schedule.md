@@ -13,13 +13,13 @@ Dates marked **TBC** were not recorded and need confirming. Update this file in 
 | 3 | Founder post | Carousel, 3 slides | Sat 17 Oct | built (confirm posted) | `why-i-built-jamaal` |
 | 4 | Several clients. One day. | Carousel, 7 slides | Wed 28 Oct | built | `planning-across-clients` |
 | 5 | What's an Anchor? | Carousel, 7 slides | Fri 30 Oct | built | `whats-an-anchor` |
-| 6 | The beta announcement | Carousel, 4 slides | Mon 26 Oct | built, needs wording update (see below) | `join-the-jamaal-beta` |
+| 6 | The beta announcement | Carousel, 4 slides | Mon 26 Oct | drafted (Buffer, `2026-10-25-beta-carousel/`), wording updated | `join-the-jamaal-beta` |
 | 7 | Four things, gently paced | Reel (animated Today screen) | Tue 3 Nov | planned | `how-jamaal-knows-what-fits-today` |
 | 8 | Devices carousel | Carousel | Sun 1 Nov | planned | `one-list-on-iphone-ipad-and-mac` |
 | 9 | Habits measured in weeks | Carousel | Thu 5 Nov | planned | `habits-measured-in-weeks` |
 | 10 | Why things keep slipping | Carousel | Sat 7 Nov | planned | `why-things-keep-slipping` |
 
-Carousel 6 still says "The beta is coming" on slide 1 and "Join the waitlist" on slide 4. The beta is open, so change these to "The beta is open" and "Join the beta · link in bio".
+Carousel 6 was rebuilt on 25 Oct with "The beta is open" on slide 1 and "Join the beta · link in bio" on slide 4.
 
 ## Stories (1080x1920)
 
