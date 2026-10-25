@@ -49,7 +49,12 @@ final class Diag: @unchecked Sendable {
     }
 
     func record(_ name: DiagnosticName, level: DiagnosticLevel = .info, _ fields: [DiagnosticEvent.Field]) {
-        let event = DiagnosticEvent(at: .now, name: name, level: level, fields: fields)
+        record(DiagnosticEvent(at: .now, name: name, level: level, fields: fields))
+    }
+
+    /// An event built elsewhere (a system report keeps the time it happened, not the time it was read).
+    func record(_ event: DiagnosticEvent) {
+        let level = event.level
         let line = event.line()
         let logger = Self.loggers[event.category] ?? Logger(subsystem: "dev.fhdamd.Jamaal", category: "app")
         switch level {

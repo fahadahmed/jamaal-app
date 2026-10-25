@@ -28,6 +28,9 @@ struct TodayScreen: View {
     @State private var listWidth: CGFloat = 0
     @State private var now: Date = .now
     @State private var alsoTodayOpen = false
+    /// The last run ended without the app leaving the screen (docs/architecture/observability.md): a one-time, gentle card.
+    @State private var showsExitNotice = false
+    @Environment(\.openURL) private var openURL
     @State private var choosing: AnchorInstance?
     @State private var isAdding = false
     @State private var droppingTask: TaskItem?
@@ -91,6 +94,7 @@ struct TodayScreen: View {
                 if let overview {
                     header(overview, filter: filter, state: state, unplanned: morningDue)
                     if let banner = topBanner(eveningDue: eveningDue, clock: eveningNow ?? now, boundary: boundary) { bannerView(banner, boundary: boundary) }
+                    else if showsExitNotice { exitNoticeCard }
                     CapacityMeter(
                         plannedMinutes: overview.plannedMinutes, budgetMinutes: overview.budgetMinutes,
                         state: overview.state, loadScore: overview.loadScore, wholeDay: filter != nil
@@ -149,6 +153,7 @@ struct TodayScreen: View {
             }
         }
         .onAppear {
+            showsExitNotice = RunLifecycle.noticeIsShown()
             #if DEBUG
             if DebugLaunch.openAdd { isAdding = true }
             if let step = DebugLaunch.planStep, let flow = try? PlanningFlow(context: context, mode: .evening) {
@@ -481,6 +486,34 @@ struct TodayScreen: View {
         .overlay(RoundedRectangle(cornerRadius: ThreadsRadius.card).strokeBorder(threads.line2, lineWidth: 1))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("remindersBanner")
+    }
+
+    /// The last run ended without the app leaving the screen. It never says "crashed" (a force-quit or a flat battery looks the same);
+    /// *Send a note* opens a mail to support with the details already in it, and nothing is sent without that tap.
+    private var exitNoticeCard: some View {
+        VStack(alignment: .leading, spacing: ThreadsSpace.row) {
+            CompanionRow {
+                Text(ExitNoticeCopy.text).threadsType(.lede).foregroundStyle(threads.ink)
+            }
+            AdaptiveButtons {
+                Button {
+                    if let url = SupportMail.url(details: Diag.shared.reportLines().joined(separator: "\n")) { openURL(url) }
+                    RunLifecycle.noticeAnswered(); showsExitNotice = false
+                } label: {
+                    Text(ExitNoticeCopy.send).threadsType(.row).foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, minHeight: 52).background(Capsule().fill(threads.terra)).contentShape(Capsule())
+                }
+                .accessibilityIdentifier("exitNoticeSend")
+                PillButton(title: ExitNoticeCopy.notNow, fills: true) { RunLifecycle.noticeAnswered(); showsExitNotice = false }
+                    .accessibilityIdentifier("exitNoticeNotNow")
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(ThreadsSpace.row)
+        .background(RoundedRectangle(cornerRadius: ThreadsRadius.card).fill(threads.card))
+        .overlay(RoundedRectangle(cornerRadius: ThreadsRadius.card).strokeBorder(threads.line2, lineWidth: 1))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("exitNotice")
     }
 
     /// TD-07: no plan was confirmed for today. Pick for today opens the shortened flow; Not now puts it away.
