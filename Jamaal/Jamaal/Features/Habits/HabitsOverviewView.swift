@@ -46,7 +46,7 @@ struct HabitsOverviewView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 HStack(alignment: .center) {
-                    Text("Habits").threadsType(.display(.large)).foregroundStyle(threads.ink)
+                    Text("Habits").pageTitle().foregroundStyle(threads.ink)
                         .accessibilityAddTraits(.isHeader)
                     Spacer()
                     if showsAddButton {

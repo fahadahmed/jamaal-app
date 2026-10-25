@@ -31,7 +31,7 @@ struct WellbeingScreen: View {
         let nudge = try? Wellbeing.currentNudge(patterns: patterns, now: now, boundary: boundary, nudgesEnabled: suggestionCards, context: context)
         ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
-                Text("Wellbeing").threadsType(.display(.large)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
+                Text("Wellbeing").pageTitle().foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
                 if let snapshot {
                     switch snapshot.state {
                     case .gathering(let days, let needed): gathering(days, needed)

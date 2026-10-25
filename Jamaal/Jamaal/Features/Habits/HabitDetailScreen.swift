@@ -55,7 +55,7 @@ struct HabitDetailScreen: View {
                     Text(HabitsCopy.eyebrow(
                         kind: habit.habitKind, target: windows.first?.target ?? 1,
                         weekly: habit.targetPerWeek)).threadsType(.label).foregroundStyle(threads.ink2)
-                    Text(habit.title).threadsType(.display(.large)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
+                    Text(habit.title).pageTitle().foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
                 }
                 if let pause = HabitPauses.active(habit, on: today) { pausedNote(pause) }
                 ForEach(windows, id: \.id) { window in windowSection(window, context: hc) }

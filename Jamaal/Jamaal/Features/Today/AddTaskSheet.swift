@@ -44,6 +44,8 @@ struct AddTaskSheet: View {
         _oneOff = State(initialValue: draft)
     }
 
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    private var isShort: Bool { verticalSizeClass == .compact }
     private var categories: [TaskCategory] { allCategories.filter { !$0.isArchived } }
 
     var body: some View {
@@ -77,7 +79,7 @@ struct AddTaskSheet: View {
             Button(action: mode == .task ? submit : saveOneOff) {
                 Text(mode == .task ? form.buttonTitle : oneOff.buttonTitle.replacingOccurrences(of: "Add for", with: "Add Anchor for"))
                     .threadsType(.row).foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, minHeight: 56)
+                    .frame(maxWidth: .infinity, minHeight: isShort ? 44 : 56)
                     .background(Capsule().fill(threads.terra))
             }
             .buttonStyle(.plain)
@@ -88,7 +90,7 @@ struct AddTaskSheet: View {
             .background(threads.app)                                  // solid, so chips never show through it
             .accessibilityIdentifier("addTaskButton")
         }
-        .onAppear { titleFocused = true }
+        .onAppear { titleFocused = !isShort }          // sideways, the keyboard would cover the whole form (#315)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
     }

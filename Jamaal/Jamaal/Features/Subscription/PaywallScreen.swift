@@ -16,9 +16,11 @@ struct PaywallScreen: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(Storefront.self) private var store
     @State private var selected: SubscriptionPlan = .yearly
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     var body: some View {
         let access = store.access(in: context)
+        FillingScrollView {
         VStack(alignment: .leading, spacing: ThreadsSpace.section) {
             VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
                 Text(SubscriptionCopy.paywallEyebrow(access)).threadsType(.label).foregroundStyle(threads.ink2)
@@ -47,7 +49,8 @@ struct PaywallScreen: View {
             }
             .threadsType(.row).foregroundStyle(threads.ink).buttonStyle(.plain)
         }
-        .padding(.horizontal, ThreadsSpace.gutter).padding(.top, 72).padding(.bottom, ThreadsSpace.section)
+        .padding(.horizontal, ThreadsSpace.gutter).padding(.top, verticalSizeClass == .compact ? 24 : 72).padding(.bottom, ThreadsSpace.section)
+        }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(threads.app.ignoresSafeArea())
         .task { await store.refresh() }

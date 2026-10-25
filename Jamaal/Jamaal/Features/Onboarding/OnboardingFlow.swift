@@ -40,6 +40,7 @@ struct OnboardingFlow: View {
     @State private var habitID = "quran"
     @State private var habitName = ""
 
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     private let icloudAvailable = FileManager.default.ubiquityIdentityToken != nil
 
     init(startAt step: OnboardingStep = .meet) { _step = State(initialValue: step) }
@@ -53,11 +54,13 @@ struct OnboardingFlow: View {
         NavigationStack {
             ZStack {
                 (step == .ready ? threads.deep : threads.app).ignoresSafeArea()
-                content
-                    .padding(.horizontal, ThreadsSpace.gutter)
-                    .padding(.top, 72).padding(.bottom, ThreadsSpace.section)
-                    .id(step)
-                    .transition(.opacity)
+                FillingScrollView {
+                    content
+                        .padding(.horizontal, ThreadsSpace.gutter)
+                        .padding(.top, verticalSizeClass == .compact ? 64 : 72).padding(.bottom, ThreadsSpace.section)
+                }
+                .id(step)
+                .transition(.opacity)
             }
             .overlay(alignment: .topLeading) { if Onboarding.previous(before: step, icloudAvailable: icloudAvailable) != nil { back } }
             .navigationDestination(item: $addingAnchor) { choice in anchorForm(choice) }

@@ -30,6 +30,8 @@ struct DeferSheet: View {
         _form = State(initialValue: DeferForm(preview: preview, today: today, firstWeekdayISO: calendarFirst == 1 ? 7 : calendarFirst - 1))
     }
 
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
@@ -89,7 +91,7 @@ struct DeferSheet: View {
         .safeAreaInset(edge: .bottom) {
             Button(action: move) {
                 Text(form.moveTitle).threadsType(.row).foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, minHeight: 56).background(Capsule().fill(threads.terra))
+                    .frame(maxWidth: .infinity, minHeight: verticalSizeClass == .compact ? 44 : 56).background(Capsule().fill(threads.terra))
             }
             .buttonStyle(.plain)
             .padding(.horizontal, ThreadsSpace.gutter).padding(.vertical, ThreadsSpace.tight)

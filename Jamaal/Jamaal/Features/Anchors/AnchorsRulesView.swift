@@ -42,7 +42,7 @@ struct AnchorsRulesView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 HStack(alignment: .center) {
-                    Text("Anchors").threadsType(.display(.large)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
+                    Text("Anchors").pageTitle().foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
                     Spacer()
                     if showsAddButton {
                         AddCircleButton(label: "Add an Anchor rule", identifier: "addAnchorRule") { if requireAccess(.createAnchorRule) { adding = true } }

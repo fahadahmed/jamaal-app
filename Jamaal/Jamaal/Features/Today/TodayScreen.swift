@@ -24,6 +24,8 @@ struct TodayScreen: View {
     @Query private var habitEntries: [HabitEntry]
     @Query private var habits: [Habit]
     @Query private var sessions: [WorkSession]
+    /// The list column's usable width (its frame less the side safe areas), measured outside the scroll view so it follows a rotation.
+    @State private var listWidth: CGFloat = 0
     @State private var now: Date = .now
     @State private var alsoTodayOpen = false
     @State private var choosing: AnchorInstance?
@@ -112,12 +114,13 @@ struct TodayScreen: View {
             // otherwise widen the whole column past its margins instead of wrapping. Beside a detail panel (an iPad or a Mac)
             // it is not: there "the container" is the whole window, not the list column, and the content was laid out at
             // window width, centred, and clipped by the pane.
-            .modifier(PinnedToViewport(isOn: !usesPanel))
+            .modifier(PinnedToViewport(isOn: !usesPanel, width: listWidth))
             .padding(.horizontal, ThreadsSpace.gutter)
             .padding(.top, ThreadsSpace.row)
             .padding(.bottom, 120)                                          // clear of the floating tab bar
         }
         .scrollIndicators(.hidden)
+        .frame(maxWidth: .infinity)
         #if os(macOS)
         .modifier(MacListKeys(
             focused: $listFocused, navigable: navigableTasks(overview, filter: filter),
@@ -133,6 +136,7 @@ struct TodayScreen: View {
         .inlineNavigationTitle()
         .clearNavigationBarBackground()
         let listColumn = NavigationStack { list }
+            .onGeometryChange(for: CGFloat.self) { $0.size.width - $0.safeAreaInsets.leading - $0.safeAreaInsets.trailing } action: { listWidth = $0 }
         return Group {
             if usesPanel {
                 HStack(spacing: 0) {
@@ -751,14 +755,18 @@ struct MinutesTarget: Identifiable {
     var id: UUID { window.id }
 }
 
-/// Pins its content to the scroll view's visible width less the side margins, when `isOn`.
+/// Pins its content to the list's usable width less the side margins, when `isOn`, so one long word at an accessibility size wraps
+/// instead of widening the column. The width is measured by the caller (outside the scroll view), not taken from
+/// `containerRelativeFrame`, which kept the *portrait* width after the phone was rotated to landscape and left Today as a narrow
+/// column in the middle of the screen (#315). Until it has been measured the content is not pinned.
 private struct PinnedToViewport: ViewModifier {
     let isOn: Bool
+    let width: CGFloat
 
     @ViewBuilder
     func body(content: Content) -> some View {
-        if isOn {
-            content.containerRelativeFrame(.horizontal, alignment: .leading) { width, _ in width - ThreadsSpace.gutter * 2 }
+        if isOn && width > 0 {
+            content.frame(width: max(0, width - ThreadsSpace.gutter * 2), alignment: .leading)
         } else {
             content
         }
