@@ -170,4 +170,34 @@ struct OnboardingTests {
         let other = NightPlanningSession(); other.forDate = d(20).storedDate; context.insert(other)
         #expect(try Onboarding.tonightCardVisible(settings: settings, now: at(15, 11), boundary: boundary, context: context))
     }
+
+    // MARK: Where the "today feels" slider starts (#326)
+
+    @Test func theTodayFeelsSliderStartsAtMediumWhereTheDefaultWouldBeLow() {
+        // Saturday and Sunday default to Low, which hides a task that isn't urgent and important, and finishing the step stores
+        // whatever the slider shows. The first day should show the task the person is about to add.
+        #expect(Onboarding.startingLevel(forDefault: .low) == .medium)
+    }
+
+    @Test func aMediumOrHighDefaultIsKept() {
+        #expect(Onboarding.startingLevel(forDefault: .medium) == .medium)
+        #expect(Onboarding.startingLevel(forDefault: .high) == .high)
+    }
+
+    @Test func anUnreadableDefaultStartsAtMedium() {
+        #expect(Onboarding.startingLevel(forDefault: CapacityLevel(stored: "nonsense")) == .medium)
+    }
+
+    @Test func aLevelPickedOnTheSliderIsWhatIsStoredForToday() throws {
+        let c = ModelContext(try JamaalSchema.makeContainer(inMemory: true))
+        let settings = UserSettings()
+        c.insert(settings)
+        let utc = TimeZone(identifier: "UTC")!
+        let saturday = DayBoundary(rolloverMinute: 0, timeZone: utc).instant(of: CalendarDate(year: 2026, month: 10, day: 10)!, atMinute: 600)
+        try Onboarding.saveNormalDay(minutes: 180, dayEnd: 1080, level: .low, settings: settings, in: c, now: saturday, timeZone: utc)
+        #expect(try TodayDay.overview(in: c, now: saturday, timeZone: utc).level == .low)        // their own choice stays
+        try Onboarding.saveNormalDay(minutes: 180, dayEnd: 1080, level: .medium, settings: settings, in: c, now: saturday, timeZone: utc)
+        #expect(try TodayDay.overview(in: c, now: saturday, timeZone: utc).level == .medium)
+    }
 }
+
