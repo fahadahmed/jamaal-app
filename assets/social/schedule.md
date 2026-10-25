@@ -25,7 +25,7 @@ Carousel 6 was rebuilt on 25 Oct with "The beta is open" on slide 1 and "Join th
 
 | # | Story | Date | Status | Link sticker |
 |---|-------|------|--------|--------------|
-| 1 | The beta is open | Sun 25 Oct | built (`2026-10-25-beta-open/`), not yet drafted | yes, added by hand |
+| 1 | The beta is open | Sun 25 Oct | drafted (Buffer, `2026-10-25-beta-open/`) | yes, added by hand |
 | 2 | What's an Anchor? (one frame teaser for the article) | TBC | planned | yes, article link |
 | 3 | What to try first (tasks, one Anchor, Night Planning tonight) | TBC | planned | optional |
 | 4 | Feedback ask: "tell me what feels wrong" | TBC | planned | optional (reply or DM) |
