@@ -13,6 +13,8 @@ import JamaalCore
 enum DebugLaunch {
     static var inMemory: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalInMemory") }
     static var openAdd: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenAdd") }
+    /// Shows the "didn't close properly" card on Today.
+    static var exitNotice: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalExitNotice") }
     /// `-JamaalOpenTask` opens the sample clinic task's detail; with `-JamaalOpenDefer` its defer sheet opens too.
     static var openTask: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenTask") }
     static var openDefer: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenDefer") }

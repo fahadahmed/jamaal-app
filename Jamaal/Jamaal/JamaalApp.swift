@@ -6,6 +6,9 @@
 //
 
 import JamaalCore
+#if canImport(AppKit)
+import AppKit
+#endif
 import SwiftData
 import SwiftUI
 import UserNotifications
@@ -27,6 +30,17 @@ struct JamaalApp: App {
         assert(failures.isEmpty, "Fonts failed to register: \(failures)")
 
         _ = AppBootstrap.notificationDelegate                       // the system's delegate, set once
+        #if DEBUG
+        let tracksRuns = !DebugLaunch.inMemory                      // UI tests and the gallery leave nothing behind
+        #else
+        let tracksRuns = true
+        #endif
+        if tracksRuns {
+            RunLifecycle.launched()
+            #if canImport(MetricKit)
+            MetricKitReceiver.shared.start()
+            #endif
+        }
         #if canImport(UIKit)
         TabBarAppearance.apply(JamaalPalette())
         #endif
@@ -52,7 +66,8 @@ struct JamaalApp: App {
                             #endif
                         }
                         .onChange(of: scenePhase) { _, phase in
-                            if phase == .active { Diag.shared.record(.appActive); tick(container) }
+                            if phase == .active { Diag.shared.record(.appActive); RunLifecycle.becameActive(); tick(container) }
+                            else { RunLifecycle.leftTheScreen() }
                             if phase == .background { Diag.shared.save() }
                             if phase != .inactive { WidgetRefresher.shared.reloadNow() }       // coming forward or leaving it
                         }
@@ -65,6 +80,9 @@ struct JamaalApp: App {
             }
             .environment(\.threads, JamaalPalette())
             .preferredColorScheme(AppTheme(rawValue: theme)?.scheme)
+            #if os(macOS)
+            .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in RunLifecycle.leftTheScreen() }
+            #endif
             #if os(macOS)
             .frame(minWidth: MacWindow.minWidth, minHeight: MacWindow.minHeight)
             #endif

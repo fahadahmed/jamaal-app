@@ -6,7 +6,7 @@ import Foundation
 // without ever carrying what a person planned.
 
 public enum DiagnosticCategory: String, Codable, CaseIterable, Sendable {
-    case app, sync, engine, focus, anchors, habits, widgets, store, notifications, purchases
+    case app, sync, engine, focus, anchors, habits, widgets, store, notifications, purchases, system
 }
 
 public enum DiagnosticLevel: String, Codable, Sendable {
@@ -17,6 +17,7 @@ public enum DiagnosticLevel: String, Codable, Sendable {
 public enum DiagnosticName: String, Codable, CaseIterable, Sendable {
     case appLaunched = "app.launched"
     case appActive = "app.active"
+    case appUnexpectedExit = "app.unexpectedExit"
     case syncSetup = "sync.setup"
     case syncImport = "sync.import"
     case syncExport = "sync.export"
@@ -28,16 +29,22 @@ public enum DiagnosticName: String, Codable, CaseIterable, Sendable {
     case storeOpened = "store.opened"
     case storeOpenFailed = "store.openFailed"
     case widgetsReloaded = "widgets.reloaded"
+    case systemCrash = "system.crash"
+    case systemHang = "system.hang"
+    case systemCPUException = "system.cpuException"
+    case systemDiskWrite = "system.diskWrite"
+    case systemDaily = "system.daily"
 
     public var category: DiagnosticCategory {
         switch self {
-        case .appLaunched, .appActive: .app
+        case .appLaunched, .appActive, .appUnexpectedExit: .app
         case .syncSetup, .syncImport, .syncExport: .sync
         case .engineTick, .engineTickFailed: .engine
         case .focusBegan, .focusFinished: .focus
         case .anchorsFinalised: .anchors
         case .storeOpened, .storeOpenFailed: .store
         case .widgetsReloaded: .widgets
+        case .systemCrash, .systemHang, .systemCPUException, .systemDiskWrite, .systemDaily: .system
         }
     }
 }
@@ -48,6 +55,8 @@ public enum DiagnosticKey: String, Codable, CaseIterable, Sendable {
     case ok, errorCode
     case window, entry, minutes
     case inMemory, syncOn
+    case exceptionType, exceptionCode, signal, build
+    case exitsNormal, exitsAbnormal, exitsMemory, exitsWatchdog
 }
 
 /// What a field can hold. There is no initialiser that takes text: only these, so content can't get in.
