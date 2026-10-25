@@ -375,7 +375,7 @@ struct OnboardingFlow: View {
         dayEnd = settings.dayEndMinute
         planning = settings.planningMinute
         morning = settings.morningMinute
-        level = settings.defaultLevel(forISOWeekday: today.isoWeekday)
+        level = Onboarding.startingLevel(forDefault: settings.defaultLevel(forISOWeekday: today.isoWeekday))
     }
 
     private func run(_ work: () throws -> Void) -> Bool {

@@ -58,6 +58,18 @@ public enum Onboarding {
 
     // MARK: Your normal day (OB-04)
 
+    /// Where the *And today feels* slider starts: the weekday's default, but never Low. Saturday and Sunday default to Low, which
+    /// shows only urgent-and-important tasks, and finishing the step stores whatever the slider shows as today's level, so a person
+    /// who finished at the weekend had their first task tucked under *Also today* without choosing anything (#326). Moving the
+    /// slider to Low is still their choice.
+    public static func startingLevel(forDefault level: CapacityLevel) -> CapacityLevel {
+        switch level {
+        case .low: .medium
+        case .high: .high
+        default: .medium
+        }
+    }
+
     /// The normal day, when the working day ends, and how today feels. Nothing is written if any part is refused: the
     /// working day keeps its start and needs two hours; today's level touches only today's plan, never the weekday defaults.
     @MainActor
