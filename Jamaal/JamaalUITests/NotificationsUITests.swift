@@ -13,7 +13,7 @@ final class NotificationsUITests: XCTestCase {
     @MainActor
     private func launch(_ permission: String, extra: [String] = [], tab: String? = "Settings") -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-JamaalInMemory", "-JamaalFakeNotifications", permission] + extra
+        app.launchArguments = ["-JamaalInMemory", "-JamaalFakeNotifications", permission, "-JamaalDayStartMinute", "0"] + extra
         app.launch()
         if let tab {
             let button = app.tabBars.buttons[tab]

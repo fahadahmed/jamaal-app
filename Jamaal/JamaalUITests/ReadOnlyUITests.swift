@@ -14,7 +14,7 @@ final class ReadOnlyUITests: XCTestCase {
     @MainActor
     private func launchReadOnly(_ extra: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalAccess", "readOnly"] + extra
+        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalDayStartMinute", "0", "-JamaalAccess", "readOnly"] + extra
         app.launch()
         let notNow = app.buttons["notNow"]
         XCTAssertTrue(notNow.waitForExistence(timeout: 10))
@@ -182,7 +182,7 @@ final class ReadOnlyUITests: XCTestCase {
     @MainActor
     func testDuringTheTrialNothingIsLocked() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalAccess", "trial:9"]
+        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalDayStartMinute", "0", "-JamaalAccess", "trial:9"]
         app.launch()
         XCTAssertTrue(app.buttons["addButton"].waitForExistence(timeout: 10))
         app.buttons["addButton"].tap()
