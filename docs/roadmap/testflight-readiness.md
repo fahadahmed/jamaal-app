@@ -25,6 +25,19 @@ The paid programme is active (15 Oct 2026): Xcode shows the Individual team `Y39
 4. [x] **CloudKit is on (#243):** the store opens with `cloudKitDatabase: .private("iCloud.dev.fhdamd.Jamaal")` whenever the app is signed with its App Group (`SyncMode`); tests, previews, unsigned builds, CI and in-memory stores stay local, and the debug argument `-JamaalNoCloudKit` turns it off to rule sync out. Checked on a **signed simulator**: the container opened, CloudKit mirroring set up (so the models are CloudKit-compatible) and the only error was "no iCloud account" (the simulator isn't signed in). **Still to check on two real devices** on one Apple ID: a task added on one appears on the other. The development schema is created in the **Development** environment on first use; **deploy it to Production before any TestFlight build**.
 5. [x] **Checked on the iPhone simulator (signed):** the store is `<group>/Library/Application Support/Jamaal.store` and the app's own folder holds no `default.store`. **Still to check** on a real iPhone and the Mac (`~/Library/Group Containers/<id>/Library/Application Support/`). The location rule: `<group>/Library/Application Support/Jamaal.store` (on the Mac, `~/Library/Group Containers/<id>/Library/Application Support/`), and the old `default.store` no longer written.
 
+## The beta is open (25 Oct 2026)
+
+- **Build 4** (tag `beta-1.0-4`) is live in the public group *Jamaal Public Users*, with the public link.
+- **15 early testers** were added to the external group (Apple emails each an invitation) and everyone on the list was sent the **Resend email** with the public link, through a Broadcast to an Audience (unsubscribe handled by Resend; replies go to support@jamaal.app).
+- **Live on jamaal.app:** the privacy page (updated for TestFlight, location, and Email support), the journal's five new articles and the earlier two, and the sending domain verified in Resend.
+
+**The first week**
+- **Each day:** the testers' status, sessions and crashes in App Store Connect (TestFlight), the TestFlight feedback and screenshots, and `support@jamaal.app`. Reply to a tester who writes the same day.
+- **What to read in a Share details report:** the *App* line says *TestFlight*, *Last problem* says none (or a hint), the *Records* counts look sane, and no line holds a title.
+- **Triage:** a crash or a lost-data report first, then a sync problem (check the Production schema lists all 14 `CD_` types), then something confusing, then a request.
+- **Before a new build:** merge, let CI go green, then tag `beta-1.0-N` on that commit (see the [release process](release-process), including the fallback when a tag is missed).
+- **After the first week:** decide the Sentry questions, do the VoiceOver pass, and raise the tester limit if it is going well.
+
 ## Where it stands (21 Oct 2026)
 
 **Done**

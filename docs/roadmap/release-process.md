@@ -89,6 +89,7 @@ Branch from the release tag, fix and test it through the normal issue and PR, me
 - **Each new build needs adding to the external group** unless the workflow has the *TestFlight External Testing* post-action for it.
 - **Xcode Cloud numbers the builds itself** (the first run was build 1) and posts each archive on the commit in GitHub, with its warnings count, so GitHub shows whether a tag's build worked.
 - **Keep an eye on the Start Conditions.** *Branch Changes* builds and uploads on every merge to `main`; the plan is *Tag Changes* starting `beta-`.
+- **A tag push can be missed.** `beta-1.0-4` produced no build at all on its first push (no run in the Cloud tab, nothing on GitHub for ten minutes), although the same kind of push had started `beta-1.0-3` within 25 seconds and Apple reported no incident. **Fix: delete the tag and push it again on the same commit** (`git push origin :refs/tags/<tag>`, then re-create and push it); the build started 14 seconds later. Check `main` hasn't moved first, and do it only while nobody has used the tag. If you'd rather not touch the tag, **Start Build** in the Cloud tab on the `main` branch builds the same commit. Check by looking at the Cloud tab, or at the *xcode-cloud* check runs on the tagged commit in GitHub, within two minutes of the push.
 
 ## One-time setup
 
