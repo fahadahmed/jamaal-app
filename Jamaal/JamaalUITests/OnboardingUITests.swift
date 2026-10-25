@@ -13,7 +13,7 @@ final class OnboardingUITests: XCTestCase {
     @MainActor
     private func launch(_ extra: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-JamaalInMemory", "-JamaalOnboarding", "-JamaalFakeNotifications", "notAsked", "-JamaalFakePlaces"] + extra
+        app.launchArguments = ["-JamaalInMemory", "-JamaalOnboarding", "-JamaalFakeNotifications", "notAsked", "-JamaalFakePlaces", "-JamaalWeekdayLevel", "medium"] + extra
         app.launch()
         return app
     }

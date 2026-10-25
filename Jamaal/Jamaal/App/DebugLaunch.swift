@@ -107,11 +107,22 @@ enum DebugLaunch {
         return min(1439, max(0, minute))
     }
 
+    /// `-JamaalWeekdayLevel medium` makes every weekday start on that level. Saturday and Sunday default to Low, which hides a task that
+    /// isn't urgent and important under "Also today", so a UI test that expects to see its task there fails at the weekend (#324).
+    static var weekdayLevel: CapacityLevel? { weekdayLevel(in: ProcessInfo.processInfo.arguments) }
+
+    static func weekdayLevel(in arguments: [String]) -> CapacityLevel? {
+        guard let i = arguments.firstIndex(of: "-JamaalWeekdayLevel"), i + 1 < arguments.count else { return nil }
+        let level = CapacityLevel(stored: arguments[i + 1])
+        return level.isUnknown ? nil : level
+    }
+
     /// Applies the launch arguments that change a setting. Called after the tick has seeded the settings.
     @MainActor
     static func applySettingsOverrides(in context: ModelContext) {
-        guard let minute = dayStartMinute, let settings = try? context.fetch(FetchDescriptor<UserSettings>()).first else { return }
-        settings.dayStartMinute = minute
+        guard let settings = try? context.fetch(FetchDescriptor<UserSettings>()).first else { return }
+        if let minute = dayStartMinute { settings.dayStartMinute = minute }
+        if let level = weekdayLevel { for weekday in 1...7 { settings.setDefaultLevel(level, forISOWeekday: weekday) } }
     }
 
     @MainActor
