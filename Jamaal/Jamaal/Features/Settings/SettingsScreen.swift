@@ -70,7 +70,7 @@ struct SettingsScreen: View {
     private var list: some View {
             ScrollView {
                 VStack(alignment: .leading, spacing: ThreadsSpace.section) {
-                    Text("Settings").threadsType(.display(.large)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
+                    Text("Settings").pageTitle().foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
                     VStack(spacing: 0) {
                         Divider().overlay(threads.line)
                         row("Capacity and day", settings.first.map { SettingsCopy.capacitySummary($0) } ?? "", .capacity)
@@ -137,7 +137,7 @@ struct SettingsPage<Content: View>: View {
         ScrollView {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
-                    Text(title).threadsType(.display(.large)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
+                    Text(title).pageTitle().foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
                     if let subtitle { Text(subtitle).threadsType(.lede).foregroundStyle(threads.ink2) }
                 }
                 content()

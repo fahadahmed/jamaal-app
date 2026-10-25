@@ -19,6 +19,9 @@ struct NightPlanningScreen: View {
     @State private var revision = 0
     @State private var summary: ClosingSummary?
     @State private var firstAnchor: String?
+    /// A phone held sideways is about 390 points tall: the header and the footer shrink to one row each so the step has room (#315).
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    private var isShort: Bool { verticalSizeClass == .compact }
 
     var body: some View {
         ZStack {
@@ -33,7 +36,7 @@ struct NightPlanningScreen: View {
                     ScrollView {
                         content
                             .padding(.horizontal, ThreadsSpace.gutter)
-                            .padding(.top, ThreadsSpace.section)
+                            .padding(.top, isShort ? ThreadsSpace.row : ThreadsSpace.section)
                             .padding(.bottom, ThreadsSpace.section)
                     }
                     .scrollIndicators(.hidden)
@@ -105,7 +108,32 @@ struct NightPlanningScreen: View {
 
     // MARK: Chrome
 
-    private var header: some View {
+    @ViewBuilder private var header: some View {
+        if isShort { shortHeader } else { tallHeader }
+    }
+
+    /// Landscape: back, the step's name over its progress, and close, on one row.
+    private var shortHeader: some View {
+        HStack(spacing: ThreadsSpace.row) {
+            if !flow.isFirstStep { roundButton("chevron.left", label: "Back", size: 40) { flow.back(); revision += 1 } }
+            VStack(spacing: 6) {
+                Text(PlanningCopy.eyebrow(position: flow.position, count: flow.stepCount, step: flow.step, mode: flow.mode))
+                    .threadsType(.label).foregroundStyle(threads.ink2)
+                HStack(spacing: 6) {
+                    ForEach(1...flow.stepCount, id: \.self) { index in
+                        Capsule().fill(index <= flow.position ? threads.deep : threads.line).frame(height: 4)
+                    }
+                }
+                .accessibilityHidden(true)
+            }
+            .frame(maxWidth: .infinity)
+            roundButton("xmark", label: "Close", size: 40) { dismiss() }
+        }
+        .padding(.horizontal, ThreadsSpace.gutter)
+        .padding(.top, ThreadsSpace.hair)
+    }
+
+    private var tallHeader: some View {
         VStack(spacing: ThreadsSpace.row) {
             ZStack {
                 Text(PlanningCopy.eyebrow(position: flow.position, count: flow.stepCount, step: flow.step, mode: flow.mode))
@@ -129,10 +157,10 @@ struct NightPlanningScreen: View {
         .padding(.top, ThreadsSpace.tight)
     }
 
-    private func roundButton(_ symbol: String, label: String, action: @escaping () -> Void) -> some View {
+    private func roundButton(_ symbol: String, label: String, size: CGFloat = 48, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: symbol).font(.body.weight(.semibold)).foregroundStyle(threads.ink)
-                .frame(width: 48, height: 48)
+                .frame(width: size, height: size)
                 .glassEffect(.regular.interactive(), in: Circle())
                 .contentShape(Circle())
         }
@@ -140,7 +168,35 @@ struct NightPlanningScreen: View {
         .accessibilityLabel(label)
     }
 
-    private var footer: some View {
+    @ViewBuilder private var footer: some View {
+        if isShort { shortFooter } else { tallFooter }
+    }
+
+    /// Landscape: Skip beside Continue, on one row.
+    private var shortFooter: some View {
+        HStack(spacing: ThreadsSpace.row) {
+            Button(PlanningCopy.skipTitle(flow.mode)) { flow.skip(); dismiss() }
+                .threadsType(.row).foregroundStyle(threads.ink).buttonStyle(.plain)
+                .frame(minHeight: ThreadsHit.minimum)
+                .accessibilityIdentifier("planSkip")
+            Button(action: advance) {
+                HStack(spacing: 8) {
+                    Text("Continue").threadsType(.row)
+                    Image(systemName: "arrow.right")
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .background(Capsule().fill(threads.terra))
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("planContinue")
+        }
+        .padding(.horizontal, ThreadsSpace.gutter)
+        .padding(.vertical, ThreadsSpace.hair)
+        .background(threads.app)
+    }
+
+    private var tallFooter: some View {
         VStack(spacing: ThreadsSpace.tight) {
             Button(action: advance) {
                 HStack(spacing: 8) {

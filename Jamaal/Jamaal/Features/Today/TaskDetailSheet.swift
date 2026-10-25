@@ -28,6 +28,8 @@ struct TaskDetailSheet: View {
     private var boundary: DayBoundary { TodayDay.boundary(in: context) }
     private var today: CalendarDate { boundary.logicalDate(at: .now) }
 
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ScrollView {
@@ -168,8 +170,8 @@ struct TaskDetailSheet: View {
 
     private var actions: some View {
         Group {
-            if embedded {
-                // One row: Begin takes the room, the rest hug their titles.
+            if embedded || verticalSizeClass == .compact {
+                // One row (also on a phone held sideways, where two rows would take a third of the height): Begin takes the room, the rest hug their titles.
                 HStack(spacing: ThreadsSpace.tight) {
                     if !task.isCompleted { beginButton.frame(minWidth: 130) }
                     markDoneButton

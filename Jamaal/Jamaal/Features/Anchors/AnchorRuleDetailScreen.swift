@@ -46,7 +46,7 @@ struct AnchorRuleDetailScreen: View {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
                     Text(AnchorsCopy.typeTitle(rule.source).uppercased()).threadsType(.label).foregroundStyle(threads.ink2)
-                    Text(rule.title).threadsType(.display(.large)).foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
+                    Text(rule.title).pageTitle().foregroundStyle(threads.ink).accessibilityAddTraits(.isHeader)
                     Text(summary(row)).threadsType(.lede).foregroundStyle(threads.ink2).accessibilityIdentifier("ruleSummary")
                 }
                 if let breaks { exceptions(breaks) }

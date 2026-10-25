@@ -24,14 +24,18 @@ struct SectionLabel: View {
 /// The display headline: a plain first line and an italic accent second line ("Four things, / gently paced.").
 struct DisplayHeadline: View {
     @Environment(\.threads) private var threads
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     let first: String
     let second: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(first).threadsType(.display(.large)).foregroundStyle(threads.ink)
+        // Held sideways the two lines become one, so the headline does not take the whole height (#315).
+        let layout = verticalSizeClass == .compact ? AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+                                                  : AnyLayout(VStackLayout(alignment: .leading, spacing: 0))
+        layout {
+            Text(first).pageTitle().foregroundStyle(threads.ink)
             Text(second)
-                .font(.custom(ThreadsType.displayItalicFontName, size: 38, relativeTo: .largeTitle))
+                .font(.custom(ThreadsType.displayItalicFontName, size: verticalSizeClass == .compact ? 26 : 38, relativeTo: .largeTitle))
                 .foregroundStyle(threads.accent)
         }
         .accessibilityElement(children: .combine)
