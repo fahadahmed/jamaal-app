@@ -13,7 +13,7 @@ final class NightPlanningUITests: XCTestCase {
     @MainActor
     private func launch() -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData"]
+        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalDayStartMinute", "0"]   // Night Planning plans this morning between midnight and the day start; 0 makes the flow the same at every hour (#296)
         app.launch()
         return app
     }
@@ -117,7 +117,7 @@ final class NightPlanningUITests: XCTestCase {
     @MainActor
     func testAnEmptyDayStillPlansTomorrowWithoutAFuss() throws {
         let app = XCUIApplication()
-        app.launchArguments = ["-JamaalInMemory"]
+        app.launchArguments = ["-JamaalInMemory", "-JamaalDayStartMinute", "0"]
         app.launch()
         open(app)
         cont(app)                                              // nothing to carry: straight to Build

@@ -94,6 +94,24 @@ enum DebugLaunch {
     }
     static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
 
+    /// `-JamaalDayStartMinute N` (0 to 1439) sets the working day's start for this launch. Between midnight and that time of day Night
+    /// Planning plans *this* morning and reviews yesterday, so a test that opens it at 02:00 sees a different flow (no Carry step) from one
+    /// at 14:00. A UI test passes 0 so the flow is the same at every hour; CI's clock is UTC, so without it a pull request could fail
+    /// its checks for no reason (#296).
+    static var dayStartMinute: Int? { dayStartMinute(in: ProcessInfo.processInfo.arguments) }
+
+    static func dayStartMinute(in arguments: [String]) -> Int? {
+        guard let i = arguments.firstIndex(of: "-JamaalDayStartMinute"), i + 1 < arguments.count, let minute = Int(arguments[i + 1]) else { return nil }
+        return min(1439, max(0, minute))
+    }
+
+    /// Applies the launch arguments that change a setting. Called after the tick has seeded the settings.
+    @MainActor
+    static func applySettingsOverrides(in context: ModelContext) {
+        guard let minute = dayStartMinute, let settings = try? context.fetch(FetchDescriptor<UserSettings>()).first else { return }
+        settings.dayStartMinute = minute
+    }
+
     @MainActor
     static func insertSampleData(into context: ModelContext, now: Date = .now) {
         guard sampleData, ((try? context.fetchCount(FetchDescriptor<TaskItem>())) ?? 0) == 0 else { return }

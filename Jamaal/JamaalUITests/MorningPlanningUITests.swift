@@ -14,7 +14,7 @@ final class MorningPlanningUITests: XCTestCase {
     @MainActor
     private func launch(_ extra: [String]) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData"] + extra
+        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalDayStartMinute", "0"] + extra
         app.launch()
         return app
     }

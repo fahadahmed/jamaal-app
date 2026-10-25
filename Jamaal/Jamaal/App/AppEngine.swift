@@ -95,6 +95,7 @@ enum AppEngine {
             .init(.days, .count(result.rollover.processedDays.count)),
             .init(.durationMs, .count(Int(Date().timeIntervalSince(started) * 1000))))
         #if DEBUG
+        DebugLaunch.applySettingsOverrides(in: context)
         DebugLaunch.completeOnboardingForTests(in: context, now: now)
         DebugLaunch.insertSampleData(into: context, now: now)
         DebugLaunch.insertSampleAnchorRules(into: context, now: now)
