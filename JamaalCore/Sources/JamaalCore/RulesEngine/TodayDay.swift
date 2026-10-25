@@ -25,7 +25,7 @@ public enum TodayDay {
         let settings = try settingsRow(in: context)
         let boundary = DayBoundary(rolloverMinute: settings.rolloverMinute, timeZone: timeZone)
         let today = boundary.logicalDate(at: now)
-        let level = try level(for: today, settings: settings, in: context)
+        let level = try level(for: today, settings: settings, timeZone: timeZone, in: context)
 
         let list = TodayTasks.list(try context.fetch(FetchDescriptor<TaskItem>()), today: today, level: level, boundary: boundary)
         let counted = list.shown + list.completedToday
@@ -63,14 +63,21 @@ public enum TodayDay {
 
     /// The level a day uses: its `DayPlan.capacity` if one was set, else the weekday default.
     @MainActor
-    public static func level(on day: CalendarDate, in context: ModelContext) throws -> CapacityLevel {
-        try level(for: day, settings: try settingsRow(in: context), in: context)
+    public static func level(on day: CalendarDate, in context: ModelContext, timeZone: TimeZone = .current) throws -> CapacityLevel {
+        try level(for: day, settings: try settingsRow(in: context), timeZone: timeZone, in: context)
     }
 
     @MainActor
-    private static func level(for day: CalendarDate, settings: UserSettings, in context: ModelContext) throws -> CapacityLevel {
+    private static func level(for day: CalendarDate, settings: UserSettings, timeZone: TimeZone, in context: ModelContext) throws -> CapacityLevel {
         if let plan = try dayPlan(for: day, in: context), !plan.capacityLevel.isUnknown { return plan.capacityLevel }
-        return settings.defaultLevel(forISOWeekday: day.isoWeekday)
+        let level = settings.defaultLevel(forISOWeekday: day.isoWeekday)
+        // The day onboarding finishes is at least Medium. A weekend starts on Low, which hides a task that isn't urgent and important,
+        // and the last onboarding screen has just said "today has one task". A level the person set (above) or a default of High wins.
+        if level == .low, let done = settings.onboardingCompletedAt,
+           DayBoundary(rolloverMinute: settings.rolloverMinute, timeZone: timeZone).logicalDate(at: done) == day {
+            return .medium
+        }
+        return level
     }
 
     @MainActor
