@@ -3,19 +3,21 @@
 Working file for planning and publishing. Status values: `published`, `built` (images made, not posted), `drafted` (draft in Buffer), `planned`.
 Dates marked **TBC** were not recorded and need confirming. Update this file in the same PR as each post.
 
+**Cadence: one feed post every 2 days to build hype**, from Mon 26 Oct. Each post goes out the same day as its article. Stories fill the days in between. Posts 4 to 6 are assumed not yet posted; if one is already on Instagram, drop it and move the later posts up.
+
 ## Feed posts, carousels and reels
 
 | # | Post | Format | Date | Status | Linked article |
 |---|------|--------|------|--------|----------------|
 | 2 | How much it matters (Low / Medium / High) | Carousel 1080x1350 | Thu 15 Oct | published | none |
 | 3 | Founder post | Carousel, 3 slides | Sat 17 Oct | built (confirm posted) | `why-i-built-jamaal` |
-| 4 | Several clients. One day. | Carousel, 7 slides | TBC | built | `planning-across-clients` |
-| 5 | What's an Anchor? | Carousel, 7 slides | TBC (was planned 30 Oct) | built | `whats-an-anchor` |
-| 6 | The beta announcement | Carousel, 4 slides | TBC | built, needs wording update (see below) | `join-the-jamaal-beta` |
-| 7 | Four things, gently paced | Reel (animated Today screen) | Mon 2 Nov | planned | `how-jamaal-knows-what-fits-today` |
-| 8 | Devices carousel | Carousel | TBC | planned | `one-list-on-iphone-ipad-and-mac` |
-| 9 | Habits measured in weeks | Carousel | TBC | planned | `habits-measured-in-weeks` |
-| 10 | Why things keep slipping | Carousel | TBC | planned | `why-things-keep-slipping` |
+| 4 | Several clients. One day. | Carousel, 7 slides | Wed 28 Oct | built | `planning-across-clients` |
+| 5 | What's an Anchor? | Carousel, 7 slides | Fri 30 Oct | built | `whats-an-anchor` |
+| 6 | The beta announcement | Carousel, 4 slides | Mon 26 Oct | built, needs wording update (see below) | `join-the-jamaal-beta` |
+| 7 | Four things, gently paced | Reel (animated Today screen) | Tue 3 Nov | planned | `how-jamaal-knows-what-fits-today` |
+| 8 | Devices carousel | Carousel | Sun 1 Nov | planned | `one-list-on-iphone-ipad-and-mac` |
+| 9 | Habits measured in weeks | Carousel | Thu 5 Nov | planned | `habits-measured-in-weeks` |
+| 10 | Why things keep slipping | Carousel | Sat 7 Nov | planned | `why-things-keep-slipping` |
 
 Carousel 6 still says "The beta is coming" on slide 1 and "Join the waitlist" on slide 4. The beta is open, so change these to "The beta is open" and "Join the beta · link in bio".
 
@@ -27,7 +29,7 @@ Carousel 6 still says "The beta is coming" on slide 1 and "Join the waitlist" on
 | 2 | What's an Anchor? (one frame teaser for the article) | TBC | planned | yes, article link |
 | 3 | What to try first (tasks, one Anchor, Night Planning tonight) | TBC | planned | optional |
 | 4 | Feedback ask: "tell me what feels wrong" | TBC | planned | optional (reply or DM) |
-| 5 | Reel teaser for 2 Nov | Sun 1 Nov | planned | no |
+| 5 | Reel teaser for 3 Nov | Mon 2 Nov | planned | no |
 
 ## Journal articles (website)
 
@@ -35,11 +37,11 @@ Carousel 6 still says "The beta is coming" on slide 1 and "Join the waitlist" on
 |---------|------|--------|
 | `planning-across-clients` | 22 Oct | published |
 | `whats-an-anchor` | 22 Oct | published |
-| `join-the-jamaal-beta` | 28 Oct (placeholder) | written, needs public-link wording and minimum OS versions |
-| `how-jamaal-knows-what-fits-today` | 3 Nov (placeholder) | written |
-| `habits-measured-in-weeks` | 17 Nov (placeholder) | written |
-| `why-things-keep-slipping` | 24 Nov (placeholder) | written |
-| `one-list-on-iphone-ipad-and-mac` | 1 Dec (placeholder) | written |
+| `join-the-jamaal-beta` | 26 Oct (with post 6) | written, needs public-link wording and minimum OS versions |
+| `how-jamaal-knows-what-fits-today` | 3 Nov (with post 7) | written |
+| `habits-measured-in-weeks` | 5 Nov (with post 9) | written |
+| `why-things-keep-slipping` | 7 Nov (with post 10) | written |
+| `one-list-on-iphone-ipad-and-mac` | 1 Nov (with post 8) | written |
 
 ## Story rules
 
