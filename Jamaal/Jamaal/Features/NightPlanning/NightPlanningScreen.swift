@@ -19,6 +19,13 @@ struct NightPlanningScreen: View {
     @State private var revision = 0
     @State private var summary: ClosingSummary?
     @State private var firstAnchor: String?
+    /// The width of the wide canvas and where it starts, in the window's coordinates (see `railRegionWidth`).
+    @State private var canvasWidth: CGFloat = 0
+    /// The whole screen's width inside the safe area, to decide between the wide canvas and the single column (`PaneLayout`).
+    @State private var screenWidth: CGFloat = 0
+    private var twoPanes: Bool { PaneLayout.usesTwoPanes(isRegularWidth: AppNavigation.isRegular(sizeClass), availableWidth: screenWidth) }
+    @State private var canvasOriginX: CGFloat = 0
+    @Environment(FoldMonitor.self) private var fold: FoldMonitor?
     /// A phone held sideways is about 390 points tall: the header and the footer shrink to one row each so the step has room (#315).
     @Environment(\.verticalSizeClass) private var verticalSizeClass
     private var isShort: Bool { verticalSizeClass == .compact }
@@ -28,7 +35,7 @@ struct NightPlanningScreen: View {
             (flow.step == .close && flow.mode == .evening ? threads.deep : threads.app).ignoresSafeArea()
             if flow.step == .close, let summary {
                 CloseStep(flow: flow, summary: summary, firstAnchor: firstAnchor) { dismiss() }
-            } else if AppNavigation.isRegular(sizeClass) {
+            } else if twoPanes {
                 wideCanvas
             } else {
                 VStack(spacing: 0) {
@@ -44,6 +51,9 @@ struct NightPlanningScreen: View {
                 }
             }
         }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { screenWidth = $0 }
+        // Regular width that is too narrow for two panes (a Duo held fully open in portrait) draws the steps as it does on a phone too.
+        .environment(\.horizontalSizeClass, twoPanes ? sizeClass : .compact)
     }
 
     // MARK: The wide canvas (NP-07)
@@ -54,11 +64,14 @@ struct NightPlanningScreen: View {
             HStack(spacing: 0) {
                 Spacer(minLength: 0)
                 PlanningRail(flow: flow, revision: revision, onGo: { flow.go(to: $0); revision += 1 }, onSkip: { flow.skip(); dismiss() })
-                    .frame(width: 340)
+                    .frame(maxWidth: 340)
             }
+            // A margin on the left, so the rail never touches the edge. It was a fixed 340 pt inside two fifths of the window, which is
+            // narrower than that (347 pt) on half of an iPhone Duo's inner display: the rail overflowed and was clipped (#329).
+            .padding(.leading, ThreadsSpace.gutter)
             .padding(.vertical, ThreadsSpace.section)
             .padding(.trailing, 32)
-            .containerRelativeFrame(.horizontal, count: 5, span: 2, spacing: 0)
+            .frame(width: railRegionWidth)
             Divider().overlay(threads.line)
             VStack(spacing: 0) {
                 ScrollView {
@@ -77,6 +90,16 @@ struct NightPlanningScreen: View {
                 roundButton("xmark", label: "Close") { dismiss() }.padding(.top, ThreadsSpace.tight).padding(.trailing, ThreadsSpace.gutter)
             }
         }
+        .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { canvasWidth = $0.width; canvasOriginX = $0.minX }
+    }
+
+    /// How wide the rail's region is: up to the crease when a foldable iPhone is held half open (the rail on one half, the step on the other),
+    /// otherwise two fifths of the canvas as before (measured, so it follows a rotation).
+    private var railRegionWidth: CGFloat {
+        let fallback = canvasWidth > 0 ? canvasWidth * 0.4 : 400
+        guard let crease = fold?.creaseX else { return fallback }
+        let width = FoldLayout.listWidth(creaseX: crease, listOriginX: canvasOriginX, fallback: 0)
+        return width > 0 ? width : fallback
     }
 
     /// Continue (hugging its title) and the keyboard hint: ⌘↵ does the same.

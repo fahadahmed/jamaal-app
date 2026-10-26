@@ -61,4 +61,40 @@ struct FoldLayoutTests {
         #expect(FoldLayout.listWidth(creaseX: 200, listOriginX: 0, fallback: 440) == 440)     // under the 300 pt a list needs
         #expect(FoldLayout.listWidth(creaseX: 900, listOriginX: 0, fallback: 440) == 440)     // over the 640 pt a list may take
     }
+
+    // MARK: A crease across the display (tabletop), #329
+
+    /// What the simulator reported turned to portrait, half open like a laptop: a 669 x 951 pt window with an active region at y 455-495.
+    private let portrait = CGSize(width: 669, height: 951)
+    private func across(_ minY: CGFloat, _ maxY: CGFloat, x: ClosedRange<CGFloat> = 0...669, active: Bool = true) -> FoldLayout.Region {
+        .init(minX: x.lowerBound, maxX: x.upperBound, minY: minY, maxY: maxY, isActive: active)
+    }
+
+    @Test func anActiveRegionRunningTheWholeWidthIsAHorizontalCreaseInItsMiddle() {
+        #expect(FoldLayout.horizontalCrease(in: [across(455, 495)], viewSize: portrait) == 475)
+    }
+
+    @Test func aVerticalRegionIsNotAHorizontalCreaseAndTheOtherWayRound() {
+        #expect(FoldLayout.horizontalCrease(in: [region(455, 495)], viewSize: view) == nil)
+        #expect(FoldLayout.crease(in: [across(455, 495)], viewSize: portrait) == nil)
+    }
+
+    @Test func anInactiveOrShortOrEdgeHorizontalRegionIsIgnored() {
+        #expect(FoldLayout.horizontalCrease(in: [across(455, 495, active: false)], viewSize: portrait) == nil)
+        #expect(FoldLayout.horizontalCrease(in: [across(455, 495, x: 0...200)], viewSize: portrait) == nil)
+        #expect(FoldLayout.horizontalCrease(in: [across(20, 60)], viewSize: portrait) == nil)
+        #expect(FoldLayout.horizontalCrease(in: [across(900, 940)], viewSize: portrait) == nil)
+    }
+
+    @Test func theTopPaneRunsFromWhereTheScreenStartsToTheCrease() {
+        #expect(FoldLayout.topPaneHeight(creaseY: 475, originY: 0, availableHeight: 951) == 475)
+        #expect(FoldLayout.topPaneHeight(creaseY: 475, originY: 24, availableHeight: 927) == 451)
+    }
+
+    @Test func aTopPaneThatWouldBeTooSmallOrTooLargeIsNotUsed() {
+        #expect(FoldLayout.topPaneHeight(creaseY: 100, originY: 0, availableHeight: 951) == nil)
+        #expect(FoldLayout.topPaneHeight(creaseY: 900, originY: 0, availableHeight: 951) == nil)
+        #expect(FoldLayout.topPaneHeight(creaseY: nil, originY: 0, availableHeight: 951) == nil)
+    }
 }
+

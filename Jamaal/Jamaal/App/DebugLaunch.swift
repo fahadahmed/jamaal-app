@@ -15,7 +15,7 @@ enum DebugLaunch {
     static var inMemory: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalInMemory") }
     static var openAdd: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenAdd") }
     /// `-JamaalWidthClass compact|regular` forces the horizontal size class the app's own layout reads, and puts a small control in the
-    /// top-left corner (`debugToggleWidthClass`) that switches it while the app runs. That stands in for folding or unfolding an iPhone
+    /// left edge (`debugToggleWidthClass`) that switches it while the app runs. That stands in for folding or unfolding an iPhone
     /// Duo, so a test can check that nothing is lost on the way (#329). `-JamaalSizeHUD` shows the size classes and the window size.
     static var forcedWidthClass: UserInterfaceSizeClass? { forcedWidthClass(in: ProcessInfo.processInfo.arguments) }
     static var sizeHUD: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSizeHUD") }

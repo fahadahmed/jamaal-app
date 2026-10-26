@@ -35,6 +35,29 @@ public enum FoldLayout {
         return nil
     }
 
+    /// The y position of a horizontal crease: the same rules turned a quarter, for a foldable held half open like a laptop (tabletop), where
+    /// the fold runs across the display and splits top from bottom.
+    public static func horizontalCrease(in regions: [Region], viewSize: CGSize) -> CGFloat? {
+        for region in regions where region.isActive {
+            let width = region.maxX - region.minX
+            let height = region.maxY - region.minY
+            let middle = (region.minY + region.maxY) / 2
+            guard width >= viewSize.width * 0.9,
+                  height <= viewSize.height * 0.25,
+                  (viewSize.height * 0.2...viewSize.height * 0.8).contains(middle) else { continue }
+            return middle
+        }
+        return nil
+    }
+
+    /// How tall the top pane is when a horizontal crease divides the screen: from where the screen starts to the crease. Nil with no crease,
+    /// or when that would leave less than a quarter or more than three quarters of the screen.
+    public static func topPaneHeight(creaseY: CGFloat?, originY: CGFloat, availableHeight: CGFloat) -> CGFloat? {
+        guard let creaseY else { return nil }
+        let height = creaseY - originY
+        return (availableHeight * 0.25...availableHeight * 0.75).contains(height) ? height : nil
+    }
+
     /// How wide the list column is: it runs from where it starts to the crease, so the list fills its half of the display and the
     /// details pane starts at the crease. With no crease, or a width outside `listWidthRange`, it keeps `fallback`.
     public static func listWidth(creaseX: CGFloat?, listOriginX: CGFloat, fallback: CGFloat) -> CGFloat {

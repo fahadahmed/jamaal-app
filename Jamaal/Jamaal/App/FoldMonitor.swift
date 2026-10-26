@@ -19,11 +19,14 @@ import os
 final class FoldMonitor {
     /// The x position of a vertical crease, in the window's coordinates.
     private(set) var creaseX: CGFloat?
+    /// The y position of a horizontal crease (held half open like a laptop, "tabletop"), in the window's coordinates.
+    private(set) var creaseY: CGFloat?
     /// What the system reported, for the debug overlay.
     private(set) var summary = ""
 
-    func update(creaseX: CGFloat?, summary: String) {
+    func update(creaseX: CGFloat?, creaseY: CGFloat?, summary: String) {
         if self.creaseX != creaseX { self.creaseX = creaseX }
+        if self.creaseY != creaseY { self.creaseY = creaseY }
         if self.summary != summary { self.summary = summary }
     }
 }
@@ -72,15 +75,16 @@ struct FoldReader: UIViewRepresentable {
                 FoldLayout.Region(minX: $0.frame.minX, maxX: $0.frame.maxX, minY: $0.frame.minY, maxY: $0.frame.maxY, isActive: $0.isActive)
             }
             let crease = FoldLayout.crease(in: regions, viewSize: bounds.size)
+            let across = FoldLayout.horizontalCrease(in: regions, viewSize: bounds.size)
             let describe = found.map {
                 "division \($0.isActive ? "active" : "inactive") x\(Int($0.frame.minX))-\(Int($0.frame.maxX)) y\(Int($0.frame.minY))-\(Int($0.frame.maxY))"
             }
             let summary = "view \(Int(bounds.width))x\(Int(bounds.height)) " + (describe.isEmpty ? "no regions" : describe.joined(separator: " | "))
-                + (crease.map { " -> crease \(Int($0))" } ?? " -> no crease")
+                + (crease.map { " -> crease x\(Int($0))" } ?? (across.map { " -> crease y\(Int($0))" } ?? " -> no crease"))
             guard summary != last else { return }
             last = summary
             Logger(subsystem: "dev.fhdamd.Jamaal", category: "app").notice("fold \(summary, privacy: .public)")
-            monitor.update(creaseX: crease, summary: summary)
+            monitor.update(creaseX: crease, creaseY: across, summary: summary)
         }
     }
 }

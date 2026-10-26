@@ -36,8 +36,23 @@ struct TodayScreen: View {
     @Environment(FoldMonitor.self) private var fold: FoldMonitor?
     /// Where the two-column layout starts, in the window's coordinates, to turn the crease's x into a column width.
     @State private var columnsOriginX: CGFloat = 0
+    /// This screen's width inside the safe area: two columns need room (`PaneLayout`), so regular width alone does not decide.
+    @State private var screenWidth: CGFloat = 0
     @State private var choosing: AnchorInstance?
     @State private var isAdding = false
+    /// The half-written task that follows a fold (see `AddTaskSheet.Carry`); cleared when Add closes.
+    @State private var addCarry: AddTaskSheet.Carry?
+    /// What the two sheets (task detail, Add) show. They mirror `openTask` and `isAdding` while the layout is one column and are empty
+    /// while it is two, and are set from `syncSheets()`, never through the binding. A sheet that is bound straight to `openTask` gets a
+    /// `nil` written back by SwiftUI whenever it is dismissed, including when the width widens and the panel takes over, and that `nil`
+    /// closed the task the panel was about to show (#329). The setter below sees the dismissal of a sheet that is still showing (the person
+    /// swiped it away) differently from the dismissal of one that was already emptied.
+    @State private var sheetTask: TaskItem?
+    @State private var sheetAdding = false
+    private func syncSheets() {
+        sheetTask = usesPanel ? nil : openTask
+        sheetAdding = !usesPanel && isAdding
+    }
     @State private var droppingTask: TaskItem?
     #if os(macOS)
     @SwiftUI.FocusState private var listFocused: Bool
@@ -167,6 +182,7 @@ struct TodayScreen: View {
                 listColumn
             }
         }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { screenWidth = $0 }
         .onAppear {
             showsExitNotice = RunLifecycle.noticeIsShown()
             #if DEBUG
@@ -180,13 +196,20 @@ struct TodayScreen: View {
         }
         .sheet(isPresented: $showingPlans) { PaywallScreen() }
         .sheet(item: $addingMinutes) { AddMinutesSheet(habit: $0.habit, window: $0.window, day: TodayDay.boundary(in: context).logicalDate(at: now)) }
-        .sheet(item: Binding(get: { usesPanel ? nil : openTask }, set: { openTask = $0 })) { task in
+        // A binding that hides the sheet at regular width must not write that nil back: it would close the task the panel is showing.
+        .sheet(item: Binding(get: { sheetTask }, set: { new in
+            if new == nil, sheetTask != nil { openTask = nil }                       // swiped away
+            sheetTask = new
+        })) { task in
             TaskDetailSheet(task: task)
         }
         .fullScreenCoverOrSheet(item: $planning, macSize: .canvas) { flow in NightPlanningScreen(flow: flow) }
         // At regular width Add is the panel beside the list; at compact width it is a sheet.
-        .sheet(isPresented: Binding(get: { !usesPanel && isAdding }, set: { isAdding = $0 })) {
-            AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now))
+        .sheet(isPresented: Binding(get: { sheetAdding }, set: { new in
+            if !new, sheetAdding { isAdding = false }                                  // swiped away
+            sheetAdding = new
+        })) {
+            AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now), carry: $addCarry)
         }
         .onChange(of: isAdding) { _, adding in if adding && usesPanel { openTask = nil } }
         .confirmationDialog(
@@ -203,7 +226,9 @@ struct TodayScreen: View {
             commands.newTaskRequested = false
             if requireAccess(.createTask) { isAdding = true }
         }
-        .onChange(of: usesPanel) { _, panel in if !panel { isAdding = false } }        // wide to narrow: don't leave a half-written add behind a sheet
+        .onChange(of: isAdding) { _, adding in if !adding { addCarry = nil }; syncSheets() }
+        .onChange(of: openTask?.id) { syncSheets() }
+        .onChange(of: usesPanel) { syncSheets() }          // closed (added, cancelled or swiped away): the draft goes
         .background(threads.app)
         .confirmationDialog(
             choosing?.title ?? "", isPresented: Binding(get: { choosing != nil }, set: { if !$0 { choosing = nil } }), titleVisibility: .visible
@@ -248,14 +273,14 @@ struct TodayScreen: View {
         return width > 0 ? width : nil
     }
 
-    private var usesPanel: Bool { AppNavigation.showsDetailPanel(sizeClass: sizeClass) }
+    private var usesPanel: Bool { AppNavigation.showsDetailPanel(sizeClass: sizeClass, availableWidth: screenWidth) }
 
     /// The task's detail beside the list on iPad and Mac; with nothing selected, a quiet line says what to do.
     @ViewBuilder private var detailPanel: some View {
         NavigationStack {
           Group {
             if isAdding {
-                AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now), embedded: true, onClose: { isAdding = false }).id("add")
+                AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now), embedded: true, onClose: { isAdding = false }, carry: $addCarry).id("add")
             } else if let task = openTask {
                 TaskDetailSheet(task: task, embedded: true, onClose: { openTask = nil }).id(task.id)
             } else {
