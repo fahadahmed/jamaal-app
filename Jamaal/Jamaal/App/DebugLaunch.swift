@@ -6,6 +6,7 @@
 #if DEBUG
 import Foundation
 import SwiftData
+import SwiftUI
 import JamaalCore
 
 /// Launch arguments for UI tests and previews, in debug builds only: `-JamaalInMemory` keeps the store out of
@@ -13,6 +14,23 @@ import JamaalCore
 enum DebugLaunch {
     static var inMemory: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalInMemory") }
     static var openAdd: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenAdd") }
+    /// `-JamaalWidthClass compact|regular` forces the horizontal size class the app's own layout reads, and puts a small control in the
+    /// left edge (`debugToggleWidthClass`) that switches it while the app runs. That stands in for folding or unfolding an iPhone
+    /// Duo, so a test can check that nothing is lost on the way (#329). `-JamaalSizeHUD` shows the size classes and the window size.
+    static var forcedWidthClass: UserInterfaceSizeClass? { forcedWidthClass(in: ProcessInfo.processInfo.arguments) }
+    static var sizeHUD: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSizeHUD") }
+
+    static func forcedWidthClass(in arguments: [String]) -> UserInterfaceSizeClass? {
+        guard let i = arguments.firstIndex(of: "-JamaalWidthClass"), i + 1 < arguments.count else { return nil }
+        switch arguments[i + 1] {
+        case "compact": return .compact
+        case "regular": return .regular
+        default: return nil
+        }
+    }
+
+    static func toggled(_ current: UserInterfaceSizeClass?) -> UserInterfaceSizeClass { current == .regular ? .compact : .regular }
+
     /// Shows the "didn't close properly" card on Today.
     static var exitNotice: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalExitNotice") }
     /// `-JamaalOpenTask` opens the sample clinic task's detail; with `-JamaalOpenDefer` its defer sheet opens too.

@@ -4,6 +4,7 @@
 //
 
 import JamaalCore
+import SwiftUI
 import Testing
 @testable import Jamaal
 
@@ -39,4 +40,24 @@ struct DebugLaunchTests {
         #expect(DebugLaunch.weekdayLevel(in: ["-JamaalWeekdayLevel"]) == nil)
         #expect(DebugLaunch.weekdayLevel(in: ["-JamaalWeekdayLevel", "tuesday"]) == nil)
     }
+
+    // MARK: Forcing the width class, to stand in for a fold (#329)
+
+    @Test func theWidthClassIsReadFromItsArgument() {
+        #expect(DebugLaunch.forcedWidthClass(in: ["-JamaalWidthClass", "compact"]) == .compact)
+        #expect(DebugLaunch.forcedWidthClass(in: ["-JamaalInMemory", "-JamaalWidthClass", "regular"]) == .regular)
+    }
+
+    @Test func noArgumentOrAnUnknownClassLeavesTheSystemOneAlone() {
+        #expect(DebugLaunch.forcedWidthClass(in: ["-JamaalInMemory"]) == nil)
+        #expect(DebugLaunch.forcedWidthClass(in: ["-JamaalWidthClass"]) == nil)
+        #expect(DebugLaunch.forcedWidthClass(in: ["-JamaalWidthClass", "wide"]) == nil)
+    }
+
+    @Test func theOtherClassIsTheOneAFoldSwitchesTo() {
+        #expect(DebugLaunch.toggled(.compact) == .regular)
+        #expect(DebugLaunch.toggled(.regular) == .compact)
+        #expect(DebugLaunch.toggled(nil) == .regular)
+    }
 }
+

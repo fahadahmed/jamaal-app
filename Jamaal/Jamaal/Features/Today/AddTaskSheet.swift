@@ -18,7 +18,18 @@ struct AddTaskSheet: View {
     @Query(sort: \TaskCategory.sortOrder) private var allCategories: [TaskCategory]
 
     @State private var form: AddTaskForm
-    private enum Mode { case task, anchor }
+    enum Mode { case task, anchor }
+
+    /// A half-written task, held by the screen that presents this one, so it follows the person between presentations: the panel beside
+    /// the list and the sheet are different views, and folding or unfolding an iPhone Duo swaps one for the other mid-sentence (#329).
+    struct Carry {
+        var form: AddTaskForm
+        var mode: Mode
+        var oneOff: OneOffAnchorDraft
+    }
+    private var carry: Binding<Carry?>?
+    /// Every field of the draft as text: any change to the draft changes it, which is what writes the draft back to `carry`.
+    private var snapshot: String { "\(form)|\(mode)|\(oneOff)" }
     @State private var mode: Mode = .task
     @State private var oneOff: OneOffAnchorDraft
     @State private var oneOffMessage: String?
@@ -33,15 +44,21 @@ struct AddTaskSheet: View {
     private func close() { embedded ? onClose() : dismiss() }
 
     /// `dueDate` pre-fills the date: tomorrow, when adding from Night Planning's Build step.
-    init(today: CalendarDate, dueDate: CalendarDate? = nil, embedded: Bool = false, onClose: @escaping () -> Void = {}) {
+    init(today: CalendarDate, dueDate: CalendarDate? = nil, embedded: Bool = false, onClose: @escaping () -> Void = {}, carry: Binding<Carry?>? = nil) {
         self.embedded = embedded
         self.onClose = onClose
+        self.carry = carry
         let calendarFirst = Calendar.current.firstWeekday                       // 1 = Sunday
         _form = State(initialValue: AddTaskForm(today: today, firstWeekdayISO: calendarFirst == 1 ? 7 : calendarFirst - 1, dueDate: dueDate))
         let parts = Calendar.current.dateComponents([.hour, .minute], from: .now)
         var draft = OneOffAnchorDraft(today: today, nowMinute: (parts.hour ?? 9) * 60 + (parts.minute ?? 0))
         if let dueDate { draft.day = dueDate }
         _oneOff = State(initialValue: draft)
+        if let saved = carry?.wrappedValue {                                      // picked up where the other presentation left off
+            _form = State(initialValue: saved.form)
+            _mode = State(initialValue: saved.mode)
+            _oneOff = State(initialValue: saved.oneOff)
+        }
     }
 
     @Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -90,6 +107,7 @@ struct AddTaskSheet: View {
             .background(threads.app)                                  // solid, so chips never show through it
             .accessibilityIdentifier("addTaskButton")
         }
+        .onChange(of: snapshot) { carry?.wrappedValue = Carry(form: form, mode: mode, oneOff: oneOff) }
         .onAppear { titleFocused = !isShort }          // sideways, the keyboard would cover the whole form (#315)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)

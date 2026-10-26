@@ -15,19 +15,37 @@ struct FocusScreen: View {
     @Environment(FocusCoordinator.self) private var coordinator
     let session: WorkSession
     @State private var finishing = false
+    /// Where a foldable iPhone's crease is, if there is one (#329); optional so a screen built without it still works.
+    @Environment(FoldMonitor.self) private var fold: FoldMonitor?
+    /// This screen's frame in the window's coordinates, to turn the crease's y into the height of the top pane.
+    @State private var screenFrame: CGRect = .zero
 
     private var task: TaskItem? { session.task }
     private var title: String { task?.title ?? session.habitWindow?.habit?.title ?? "" }
     private var isPaused: Bool { session.pausedAt != nil }
 
+    /// Held half open like a laptop (tabletop), the display above the crease is the timer and the half below holds the controls.
+    private var tabletopHeight: CGFloat? {
+        FoldLayout.topPaneHeight(creaseY: fold?.creaseY, originY: screenFrame.minY, availableHeight: screenFrame.height)
+    }
+
     var body: some View {
+        Group {
+            if let top = tabletopHeight { tabletop(topHeight: top) } else { standard }
+        }
+        .background(threads.app)
+        .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { screenFrame = $0 }
+        .sheet(isPresented: $finishing) { FinishSheet(session: session) }
+    }
+
+    private var standard: some View {
         VStack(alignment: .leading, spacing: 0) {
             topBar
             ScrollView {
                 VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                     Text(title).threadsType(.display(.regular)).foregroundStyle(threads.ink)
                         .accessibilityAddTraits(.isHeader)
-                    timer
+                    timer(onDeep: false)
                     Divider().overlay(threads.line)
                     checklist
                 }
@@ -36,23 +54,55 @@ struct FocusScreen: View {
             }
             controls
         }
-        .background(threads.app)
-        .sheet(isPresented: $finishing) { FinishSheet(session: session) }
+    }
+
+    /// FS-02 tabletop (Duo-tabletop-FS-02): the teal half above the crease shows what is in focus, the paper half below it has the
+    /// note's checklist and the controls, so nothing the hand needs sits on the fold. Nothing is added to what the screen already does.
+    private func tabletop(topHeight: CGFloat) -> some View {
+        VStack(spacing: 0) {
+            VStack(spacing: ThreadsSpace.row) {
+                Text(kicker).threadsType(.label).foregroundStyle(threads.onDeep.opacity(0.7))
+                Text(title).threadsType(.display(.compact)).foregroundStyle(threads.onDeep)
+                    .multilineTextAlignment(.center).accessibilityAddTraits(.isHeader)
+                timer(onDeep: true)
+            }
+            .padding(.horizontal, ThreadsSpace.gutter)
+            .padding(.bottom, 28)                                   // clear of the crease's margin
+            .frame(maxWidth: .infinity)
+            .frame(height: topHeight)
+            .background(alignment: .top) { threads.deep.ignoresSafeArea(edges: [.top, .horizontal]) }
+            .overlay(alignment: .topLeading) { backButton.padding(.leading, ThreadsSpace.row).padding(.top, ThreadsSpace.tight) }
+            ScrollView {
+                checklist
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, ThreadsSpace.gutter)
+                    .padding(.top, 28)                              // clear of the crease's margin
+            }
+            controls
+        }
+    }
+
+    private var kicker: String {
+        "IN FOCUS" + (task?.category.map { $0.name.isEmpty ? "" : " · " + $0.name.uppercased() } ?? "")
     }
 
     // MARK: Pieces
 
+    private var backButton: some View {
+        Button { coordinator.isShowingFocus = false } label: {
+            Image(systemName: "chevron.down").frame(width: 48, height: 48)
+                .foregroundStyle(threads.ink)
+                .glassEffect(.regular.interactive(), in: Circle())
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Back to Today")
+    }
+
     private var topBar: some View {
         ZStack {
             HStack {
-                Button { coordinator.isShowingFocus = false } label: {
-                    Image(systemName: "chevron.down").frame(width: 48, height: 48)
-                        .foregroundStyle(threads.ink)
-                        .glassEffect(.regular.interactive(), in: Circle())
-                        .contentShape(Circle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("Back to Today")
+                backButton
                 Spacer()
             }
             if let category = task?.category, !category.name.isEmpty {
@@ -66,15 +116,20 @@ struct FocusScreen: View {
         .padding(.top, ThreadsSpace.tight)
     }
 
-    private var timer: some View {
-        TimelineView(.periodic(from: .now, by: 1)) { context in
-            HStack(alignment: .lastTextBaseline, spacing: ThreadsSpace.row) {
+    /// The elapsed time against the estimate; `onDeep` draws it for the teal panel of the tabletop layout.
+    private func timer(onDeep: Bool) -> some View {
+        let strong = onDeep ? threads.onDeep : threads.ink
+        let quiet = onDeep ? threads.onDeep.opacity(0.7) : threads.ink2
+        return TimelineView(.periodic(from: .now, by: 1)) { context in
+            // On the teal panel the estimate sits under the numeral, centred, as Duo-tabletop-FS-02 draws it; elsewhere it follows it.
+            let layout = onDeep ? AnyLayout(VStackLayout(spacing: ThreadsSpace.tight)) : AnyLayout(HStackLayout(alignment: .lastTextBaseline, spacing: ThreadsSpace.row))
+            layout {
                 ThreadsNumeral(FocusCopy.clock(FocusSessions.elapsedSeconds(of: session, at: context.date)), size: .large)
-                    .foregroundStyle(isPaused ? threads.ink3 : threads.ink)
+                    .foregroundStyle(isPaused ? (onDeep ? threads.onDeep.opacity(0.5) : threads.ink3) : strong)
                 if isPaused {
-                    Text("Paused").threadsType(.label).foregroundStyle(threads.ink2)
+                    Text("Paused").threadsType(.label).foregroundStyle(quiet)
                 } else if let estimate = FocusCopy.ofEstimate(session.estimateMinutes) {
-                    Text(estimate).threadsType(.body).foregroundStyle(threads.ink2)
+                    Text(estimate).threadsType(.body).foregroundStyle(quiet)
                 }
             }
         }

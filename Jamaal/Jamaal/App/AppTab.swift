@@ -3,6 +3,7 @@
 //  Jamaal
 //
 
+import JamaalCore
 import SwiftUI
 
 /// The app's destinations. Today, Habits, Wellbeing and Settings are the tab bar; Anchors is a segment of
@@ -46,8 +47,20 @@ enum AppNavigation {
         onMac ? [.today, .habits, .anchors, .wellbeing] : [.today, .habits, .anchors, .wellbeing, .settings]
     }
 
-    /// At regular width the task detail sits beside the list as a panel; at compact width it is a bottom sheet.
-    static func showsDetailPanel(sizeClass: UserInterfaceSizeClass?) -> Bool { isRegular(sizeClass) }
+    /// At regular width the task detail sits beside the list as a panel; at compact width it is a bottom sheet. Regular width that is
+    /// narrow (an iPhone Duo held fully open in portrait, 669 pt) is one column with the detail in a sheet, as drawn (`PaneLayout`).
+    static func showsDetailPanel(sizeClass: UserInterfaceSizeClass?, availableWidth: CGFloat = 0) -> Bool {
+        PaneLayout.usesTwoPanes(isRegularWidth: isRegular(sizeClass), availableWidth: availableWidth)
+    }
+
+    /// An iPhone, including an iPhone Duo's inner display, which is regular width but still has a bottom tab bar of four.
+    static var isPhone: Bool {
+        #if os(iOS)
+        UIDevice.current.userInterfaceIdiom == .phone
+        #else
+        false
+        #endif
+    }
 
     /// Regular width: an iPad (or a wide window on one), and always a Mac, whose windows are a desktop's and carry no size class.
     static func isRegular(_ sizeClass: UserInterfaceSizeClass?) -> Bool {
@@ -58,8 +71,9 @@ enum AppNavigation {
         #endif
     }
 
-    /// The Habits | Anchors segment is for the phone layout; at regular width Anchors is its own item.
+    /// The Habits | Anchors segment is for the phone layout, whatever its width: the floating tab bar has four tabs, never Anchors. At
+    /// regular width on an iPad or a Mac, Anchors is its own item in the sidebar.
     static func showsAnchorsSegment(sizeClass: UserInterfaceSizeClass?) -> Bool {
-        !isRegular(sizeClass)
+        !isRegular(sizeClass) || isPhone
     }
 }

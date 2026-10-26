@@ -22,6 +22,13 @@ struct AppShell: View {
     @State private var showingPaywall = false
     @State private var gate = AccessGate()
     @State private var clock = Date.now
+    /// The shell's width inside the safe area. Regular width that is too narrow for two panes (an iPhone Duo held fully open in portrait,
+    /// 669 pt) is laid out as compact by every screen inside, so Settings, Anchors, Today and the rest each draw one column (`PaneLayout`).
+    /// It is set on each tab's content, not on the tab view, so the bar itself keeps the style the system gives it.
+    @State private var shellWidth: CGFloat = 0
+    private var layoutSizeClass: UserInterfaceSizeClass? {
+        sizeClass == .regular && shellWidth > 0 && !PaneLayout.usesTwoPanes(isRegularWidth: true, availableWidth: shellWidth) ? .compact : sizeClass
+    }
     @Query(sort: \UserSettings.createdAt) private var settingsRows: [UserSettings]
     @State private var coordinator = FocusCoordinator()
     @State private var todayFilter = TodayFilterState()
@@ -94,19 +101,21 @@ struct AppShell: View {
     /// iPhone and iPad: the system tab view (a floating bar, or the sidebar on an iPad).
     private var tabShell: some View {
         TabView(selection: $selection) {
-            Tab(AppTab.today.title, image: AppTab.today.icon, value: AppTab.today) { TodayScreen().tint(threads.ink) }
-                .badge(AppNavigation.isRegular(sizeClass) ? todayCount : 0)
-            Tab(AppTab.habits.title, image: AppTab.habits.icon, value: AppTab.habits) { HabitsScreen().tint(threads.ink) }
-            // At compact width Anchors is a segment of Habits, so it isn't a tab at all (iOS keeps every tab it is
-            // given in the phone's tab bar); at regular width it is a sidebar item that the top tab bar leaves out.
-            if !AppNavigation.showsAnchorsSegment(sizeClass: sizeClass) {
-                Tab(AppTab.anchors.title, image: AppTab.anchors.icon, value: AppTab.anchors) { AnchorsScreen().tint(threads.ink) }
+            Tab(AppTab.today.title, image: AppTab.today.icon, value: AppTab.today) { TodayScreen().tint(threads.ink).environment(\.horizontalSizeClass, layoutSizeClass) }
+                .badge(AppNavigation.showsAnchorsSegment(sizeClass: sizeClass) ? 0 : todayCount)      // the sidebar's count, not a phone's bar
+            Tab(AppTab.habits.title, image: AppTab.habits.icon, value: AppTab.habits) { HabitsScreen().tint(threads.ink).environment(\.horizontalSizeClass, layoutSizeClass) }
+            // On a phone Anchors is a segment of Habits and not a tab at all (iOS keeps every tab it is given in a phone's tab bar). On an
+            // iPad it is always a tab the top bar leaves out and the sidebar lists, at every window size: adding and removing a tab as the
+            // window crossed the compact line rebuilt every screen and lost what was open (an open task, an Add, Night Planning; #329).
+            if !AppNavigation.isPhone {
+                Tab(AppTab.anchors.title, image: AppTab.anchors.icon, value: AppTab.anchors) { AnchorsScreen().tint(threads.ink).environment(\.horizontalSizeClass, layoutSizeClass) }
                     .defaultVisibility(.hidden, for: .tabBar)
             }
-            Tab(AppTab.wellbeing.title, image: AppTab.wellbeing.icon, value: AppTab.wellbeing) { WellbeingScreen().tint(threads.ink) }
-            Tab(AppTab.settings.title, image: AppTab.settings.icon, value: AppTab.settings) { SettingsScreen().tint(threads.ink) }
+            Tab(AppTab.wellbeing.title, image: AppTab.wellbeing.icon, value: AppTab.wellbeing) { WellbeingScreen().tint(threads.ink).environment(\.horizontalSizeClass, layoutSizeClass) }
+            Tab(AppTab.settings.title, image: AppTab.settings.icon, value: AppTab.settings) { SettingsScreen().tint(threads.ink).environment(\.horizontalSizeClass, layoutSizeClass) }
         }
         .tabViewStyle(.sidebarAdaptable)
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { shellWidth = $0 }
         // The selected tab (and the selected sidebar row) is the accent teal; each tab's content keeps the ink tint below.
         .tint(threads.accent)
         // The sidebar's own furniture (iPad and Mac): the wordmark, the Categories list that filters Today, and Plan tomorrow.

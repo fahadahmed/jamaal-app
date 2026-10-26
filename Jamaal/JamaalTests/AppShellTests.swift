@@ -33,14 +33,25 @@ struct AppShellTests {
         #expect(AppNavigation.sidebarTabs(onMac: true) == [.today, .habits, .anchors, .wellbeing])
     }
 
-    @Test func theHabitsAnchorsSegmentShowsOnlyAtCompactWidth() {
-        #expect(!AppNavigation.showsAnchorsSegment(sizeClass: .regular))
+    @Test func theHabitsAnchorsSegmentShowsAtCompactWidthAndOnAnyPhone() {
         #if os(macOS)
+        #expect(!AppNavigation.showsAnchorsSegment(sizeClass: .regular))
         #expect(!AppNavigation.showsAnchorsSegment(sizeClass: .compact))              // a Mac has no size classes: always the wide layout
         #expect(!AppNavigation.showsAnchorsSegment(sizeClass: nil))
         #else
         #expect(AppNavigation.showsAnchorsSegment(sizeClass: .compact))
         #expect(AppNavigation.showsAnchorsSegment(sizeClass: nil))                    // unknown: the phone layout
+        // A phone's tab bar has four tabs whatever its width: an iPhone Duo's inner display is regular width and still a phone.
+        #expect(AppNavigation.showsAnchorsSegment(sizeClass: .regular) == AppNavigation.isPhone)
+        #endif
+    }
+
+    @Test func theDetailPanelNeedsRegularWidthAndRoomForTwoPanes() {
+        #if !os(macOS)
+        #expect(AppNavigation.showsDetailPanel(sizeClass: .regular, availableWidth: 867))
+        #expect(!AppNavigation.showsDetailPanel(sizeClass: .regular, availableWidth: 669))     // a Duo held fully open in portrait
+        #expect(AppNavigation.showsDetailPanel(sizeClass: .regular))                           // not measured yet: the size class decides
+        #expect(!AppNavigation.showsDetailPanel(sizeClass: .compact, availableWidth: 1000))
         #endif
     }
 

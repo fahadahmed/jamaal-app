@@ -98,7 +98,21 @@ What this means for Jamaal:
 7. **Right-to-left**: side controls stay on the same side in RTL languages, which suits an Arabic-name app with Islamic-practice presets.
 8. **Any size**: Split View multitasking means the app can appear at many sizes; use layout margins and safe areas, never fixed widths.
 
-**API and OS availability.** The Duo-specific SwiftUI APIs (`ArrangementView`, `ReservedRegion`) are marked iOS 27.1 and beta at the time of writing, while the app's minimum is iOS 26. Standard system components adapt on their own; anything Duo-specific is gated behind an availability check, so the deployment target is unaffected. Preview and test with Device Hub in Xcode.
+**API and OS availability (checked against the iOS 27.1 SDK, 26 Oct 2026).** The Duo APIs are in **UIKit**, not SwiftUI, and are iOS 27.1 and later; the app's minimum stays iOS 26, so anything that uses them is behind `#available(iOS 27.1, *)`. There is no SwiftUI `ArrangementView` or `ReservedRegion`. What exists: `UIView.reservedRegions(kind:options:)`, which returns the regions the system reserves (a frame in the view's coordinates, margins for interactive content on each side, and whether it is active), of kind `.occlusion` or `.division`; and `UIArrangementViewController` with `UISplitArrangement`, which places two child view controllers as primary and secondary. The simulator is the **iPhone Duo** device type, which needs the iOS 27.1 runtime. Its poses are set in **Device Hub** (there is no `simctl` control), and each display can be captured with `xcrun simctl io <device> screenshot --display <uuid>`.
+
+**What the Duo reports** (simulator, 26 Oct 2026). The outer display is 466 × 678 pt with the side controls taking 84 pt on the right and 34 pt at the bottom, so the app gets 382 × 644 (compact width, regular height). The inner display is 951 × 669 landscape or 669 × 951 portrait (regular width and height, and still a phone). The crease is a **division** region, inactive when the display is flat and **active when half open**: `x 455-495` the full height when the fold is vertical (landscape), `y 455-495` the full width when it is horizontal (portrait, "tabletop"), with 20 pt margins each side.
+
+**What is built** (#329):
+
+| Display and pose | What the app does |
+| --- | --- |
+| Outer, closed | One column, system tab bar and toolbar in side pills; Today fills the width up to them |
+| Inner, flat, landscape | Today's list and its details side by side (two panes need at least 700 pt: `PaneLayout`) |
+| Inner, flat, portrait | **One column**, four tabs with Anchors inside Habits, as drawn in `Duo-inner-portrait.png` (669 pt is too narrow for two panes) |
+| Inner, half open, vertical crease | The list runs to the crease and the details pane starts at it (`FoldLayout`); Night Planning's rail and step split there too |
+| Inner, half open, horizontal crease (tabletop) | The focus timer splits at the crease: the teal panel above with what is in focus, the paper half below with the checklist and Pause and Finish (`Duo-tabletop-FS-02.png`). The mockup's "Next" row and "Switch task" are not built: they would be new functions |
+
+**Nothing resets when the display changes.** The open task, an Add in progress (its draft follows the person between the panel and the sheet) and Night Planning survive a fold. Two causes of loss were fixed: SwiftUI writes `nil` through a sheet's binding whenever the sheet is dismissed, which closed the task the panel was about to show, so each sheet now has its own state set from outside the binding; and an iPad's tab set changed as its window crossed the compact line, which rebuilt every screen. Debug builds can force the width class (`-JamaalWidthClass`, with a control on the left edge) and show the sizes, insets and regions (`-JamaalSizeHUD`).
 
 ## Trial and subscription
 
