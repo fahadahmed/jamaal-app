@@ -32,6 +32,10 @@ struct TodayScreen: View {
     /// The last run ended without the app leaving the screen (docs/architecture/observability.md): a one-time, gentle card.
     @State private var showsExitNotice = false
     @Environment(\.openURL) private var openURL
+    /// Where a foldable iPhone's crease is, if there is one (#329); optional so a screen built without it (a preview) still works.
+    @Environment(FoldMonitor.self) private var fold: FoldMonitor?
+    /// Where the two-column layout starts, in the window's coordinates, to turn the crease's x into a column width.
+    @State private var columnsOriginX: CGFloat = 0
     @State private var choosing: AnchorInstance?
     @State private var isAdding = false
     @State private var droppingTask: TaskItem?
@@ -149,10 +153,16 @@ struct TodayScreen: View {
         return Group {
             if usesPanel {
                 HStack(spacing: 0) {
-                    listColumn.frame(minWidth: 340, idealWidth: 440, maxWidth: 440)
+                    if let width = creaseListWidth {
+                        // Held half open, the list fills its half of the display and the details pane starts at the crease.
+                        listColumn.frame(width: width)
+                    } else {
+                        listColumn.frame(minWidth: 340, idealWidth: 440, maxWidth: 440)
+                    }
                     Divider().overlay(threads.line)
                     detailPanel
                 }
+                .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minX } action: { columnsOriginX = $0 }
             } else {
                 listColumn
             }
@@ -230,6 +240,13 @@ struct TodayScreen: View {
     }
 
     // MARK: The detail panel (regular width)
+
+    /// The list column's width when a crease divides the display, so the two panes meet at it; nil otherwise.
+    private var creaseListWidth: CGFloat? {
+        guard let crease = fold?.creaseX else { return nil }
+        let width = FoldLayout.listWidth(creaseX: crease, listOriginX: columnsOriginX, fallback: 0)
+        return width > 0 ? width : nil
+    }
 
     private var usesPanel: Bool { AppNavigation.showsDetailPanel(sizeClass: sizeClass) }
 
