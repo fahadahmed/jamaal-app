@@ -29,13 +29,17 @@ struct TaskDetailSheet: View {
     private var today: CalendarDate { boundary.logicalDate(at: .now) }
 
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    /// The pane's own width. The note sits beside a 200 pt table only in a pane wide enough for both (an iPad's); in half of an iPhone
+    /// Duo's inner display the two stack, as they do on a phone.
+    @State private var paneWidth: CGFloat = 0
+    private var sideBySide: Bool { embedded && paneWidth >= 560 }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                     heading
-                    if embedded {
+                    if sideBySide {
                         // The panel is wide: the note beside the facts, as drawn for iPad.
                         HStack(alignment: .top, spacing: ThreadsSpace.section) {
                             note.frame(maxWidth: .infinity, alignment: .leading)
@@ -51,6 +55,7 @@ struct TaskDetailSheet: View {
             }
             actions
         }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { paneWidth = $0 }
         .background(threads.app)
         .toolbar { if embedded { ToolbarItem(placement: .jamaalTrailing) { moreMenu } } }
         .presentationDetents([.large])
@@ -171,25 +176,34 @@ struct TaskDetailSheet: View {
     private var actions: some View {
         Group {
             if embedded || verticalSizeClass == .compact {
-                // One row (also on a phone held sideways, where two rows would take a third of the height): Begin takes the room, the rest hug their titles.
-                HStack(spacing: ThreadsSpace.tight) {
-                    if !task.isCompleted { beginButton.frame(minWidth: 130) }
-                    markDoneButton
-                    if !task.isCompleted { deferButton; dropButton }
-                }
-            } else {
-                VStack(spacing: ThreadsSpace.tight) {
-                    if !task.isCompleted { beginButton }
+                // One row (also on a phone held sideways, where two rows would take a third of the height): Begin takes the room, the rest
+                // hug their titles. In a narrow pane (half of an iPhone Duo's inner display) the row would be wider than the pane and
+                // widen everything above it, so it stacks instead (#329).
+                ViewThatFits(in: .horizontal) {
                     HStack(spacing: ThreadsSpace.tight) {
+                        if !task.isCompleted { beginButton.frame(minWidth: 130) }
                         markDoneButton
                         if !task.isCompleted { deferButton; dropButton }
                     }
+                    stackedActions
                 }
+            } else {
+                stackedActions
             }
         }
         .padding(.horizontal, ThreadsSpace.gutter)
         .padding(.vertical, ThreadsSpace.tight)
         .background(threads.app)
+    }
+
+    private var stackedActions: some View {
+        VStack(spacing: ThreadsSpace.tight) {
+            if !task.isCompleted { beginButton }
+            HStack(spacing: ThreadsSpace.tight) {
+                markDoneButton
+                if !task.isCompleted { deferButton; dropButton }
+            }
+        }
     }
 
     private var beginButton: some View {

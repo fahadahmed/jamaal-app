@@ -24,7 +24,8 @@ struct TodayScreen: View {
     @Query private var habitEntries: [HabitEntry]
     @Query private var habits: [Habit]
     @Query private var sessions: [WorkSession]
-    /// The list column's usable width (its frame less the side safe areas), measured outside the scroll view so it follows a rotation.
+    /// The list column's usable width, measured outside the scroll view so it follows a rotation. A geometry proxy's size is already the
+    /// size inside the safe area (a Duo's side bar takes 84 pt of 466), so the insets are not taken off again (#329).
     @State private var listWidth: CGFloat = 0
     @State private var now: Date = .now
     @State private var alsoTodayOpen = false
@@ -124,6 +125,10 @@ struct TodayScreen: View {
             .padding(.bottom, 120)                                          // clear of the floating tab bar
         }
         .scrollIndicators(.hidden)
+        // In the two-column layout the list is the left column, but the system hands it the window's side-bar inset too (84 pt on an
+        // iPhone Duo's inner display, where the controls sit on the right), which left a wide empty band before the divider. Only the
+        // details pane, at the right edge, should keep that inset (#329).
+        .ignoresSafeArea(.container, edges: usesPanel ? .trailing : [])
         .frame(maxWidth: .infinity)
         #if os(macOS)
         .modifier(MacListKeys(
@@ -140,7 +145,7 @@ struct TodayScreen: View {
         .inlineNavigationTitle()
         .clearNavigationBarBackground()
         let listColumn = NavigationStack { list }
-            .onGeometryChange(for: CGFloat.self) { $0.size.width - $0.safeAreaInsets.leading - $0.safeAreaInsets.trailing } action: { listWidth = $0 }
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { listWidth = $0 }
         return Group {
             if usesPanel {
                 HStack(spacing: 0) {
