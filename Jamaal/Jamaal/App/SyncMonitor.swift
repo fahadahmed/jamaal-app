@@ -56,6 +56,15 @@ final class SyncMonitor {
                 var fields: [DiagnosticEvent.Field] = [.init(.ok, .flag(ok))]
                 if let error = event.error { fields.append(.init(.errorCode, .detailedError(error))) }
                 Diag.shared.record(name, level: ok ? .info : .error, fields)
+                if kind == .setup, !ok {
+                    // A setup that fails says little by itself (a Mac stopped syncing and the report could not say why, #331): ask what
+                    // the account's state is and log it, one word, as its own event.
+                    Task { @MainActor [weak self] in
+                        guard let self else { return }
+                        await self.refreshAccount()
+                        Diag.shared.record(.syncAccount, level: .notice, [.init(.account, .account(self.account))])
+                    }
+                }
             }
             // The message, then the domain and code and, for a partial failure, which of our record types iCloud refused.
             let text = event.error.map { "\($0.localizedDescription) (\(DiagnosticValue.detailedError($0).text))" }
@@ -80,6 +89,7 @@ final class SyncMonitor {
             case .available: account = .available
             case .noAccount: account = .noAccount
             case .restricted: account = .restricted
+            case .temporarilyUnavailable: account = .temporarilyUnavailable
             default: account = .unknown
             }
         } catch {
