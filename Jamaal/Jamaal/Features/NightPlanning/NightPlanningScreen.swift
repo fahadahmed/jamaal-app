@@ -32,7 +32,9 @@ struct NightPlanningScreen: View {
 
     var body: some View {
         ZStack {
-            (flow.step == .close && flow.mode == .evening ? threads.deep : threads.app).ignoresSafeArea()
+            // The teal ground belongs to the closing screen, which needs the day's summary. A flow that is at the close step without one
+            // (opened some other way than pressing Continue on Load) shows the Load step, and its dark ink on teal could not be read.
+            (flow.step == .close && flow.mode == .evening && summary != nil ? threads.deep : threads.app).ignoresSafeArea()
             if flow.step == .close, let summary {
                 CloseStep(flow: flow, summary: summary, firstAnchor: firstAnchor) { dismiss() }
             } else if twoPanes {
