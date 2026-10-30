@@ -57,7 +57,7 @@ public enum DiagnosticKey: String, Codable, CaseIterable, Sendable {
     case window, entry, minutes
     case inMemory, syncOn
     case exceptionType, exceptionCode, signal, build
-    case account
+    case account, foreground
     case exitsNormal, exitsAbnormal, exitsMemory, exitsWatchdog
 }
 

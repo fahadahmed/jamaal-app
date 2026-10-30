@@ -158,5 +158,49 @@ struct SystemDiagnosticTests {
         let day = DailyHealth(at: launchTime, normalExits: -4, abnormalExits: 2, memoryExits: 0, watchdogExits: 0)
         #expect(day.normalExits == 0)
     }
+
+    // MARK: A launch the system made in the background is not a run on screen (#333)
+
+    @Test func aBackgroundLaunchIsNotMarkedOnScreen() {
+        let result = RunTracker.launch(previous: nil, build: "9", now: launchTime, inForeground: false)
+        #expect(result.record.wasActive == false)
+        #expect(result.endedUnexpectedly == false)
+    }
+
+    @Test func aForegroundLaunchIsStillMarkedOnScreen() {
+        // A crash while the app is still starting up is caught.
+        #expect(RunTracker.launch(previous: nil, build: "9", now: launchTime, inForeground: true).record.wasActive)
+    }
+
+    @Test func theLogOfTheReportDoesNotReportAnUnexpectedExit() {
+        // Foreground run, left cleanly; the system launches the app in the background and later ends the process; the next real launch.
+        var record = RunTracker.launch(previous: nil, build: "9", now: launchTime, inForeground: true).record
+        record = RunTracker.leftTheScreen(record)                                                  // 13:57, to the background
+        let background = RunTracker.launch(previous: record, build: "9", now: launchTime.addingTimeInterval(2_500), inForeground: false)
+        #expect(background.endedUnexpectedly == false)
+        let next = RunTracker.launch(previous: background.record, build: "9", now: launchTime.addingTimeInterval(8_000), inForeground: true)
+        #expect(next.endedUnexpectedly == false)                                                    // 16:06: was a false alarm
+    }
+
+    @Test func aRealUnexpectedEndIsStillReportedAfterABackgroundLaunchInBetween() {
+        // On screen, then ended without leaving it; a background launch; then a foreground launch: the earlier end was real.
+        let onScreen = RunTracker.launch(previous: nil, build: "9", now: launchTime, inForeground: true).record
+        let background = RunTracker.launch(previous: onScreen, build: "9", now: launchTime.addingTimeInterval(60), inForeground: false)
+        #expect(background.endedUnexpectedly)
+    }
+
+    @Test func comingToTheScreenAfterABackgroundLaunchMarksTheRunOnScreen() {
+        let background = RunTracker.launch(previous: nil, build: "9", now: launchTime, inForeground: false).record
+        let active = RunTracker.becameActive(background, now: launchTime.addingTimeInterval(30))
+        #expect(active.wasActive)
+        #expect(RunTracker.launch(previous: active, build: "9", now: launchTime.addingTimeInterval(90), inForeground: true).endedUnexpectedly)
+    }
+
+    @Test func theLaunchEventSaysWhetherItWasInTheForeground() {
+        #expect(DiagnosticKey.foreground.rawValue == "foreground")
+        let event = RunTracker.launchedEvent(inForeground: false, at: launchTime)
+        #expect(event.name == .appLaunched)
+        #expect(event.line(timeZone: utc) == "2026-09-22 18:00:00 app.launched foreground=false")
+    }
 }
 

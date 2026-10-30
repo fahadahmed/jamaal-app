@@ -5,6 +5,9 @@
 
 import Foundation
 import JamaalCore
+#if os(iOS)
+import UIKit
+#endif
 #if canImport(MetricKit)
 import MetricKit
 #endif
@@ -12,6 +15,19 @@ import MetricKit
 /// How the last run ended, remembered on this device (docs/architecture/observability.md, layer 3). At launch it says whether the
 /// run before it was still on screen when it ended; that is logged as `app.unexpectedExit`, and (in a TestFlight or App Store build)
 /// it raises the one-time card on Today. Debug builds log it but never show the card: stopping the app in Xcode looks the same.
+/// How this launch started. A background launch is the system starting the app silently (an iCloud change, a widget refresh): it never
+/// comes to the screen, so it must not count as a run on screen (#333).
+enum AppLaunch {
+    @MainActor
+    static let inForeground: Bool = {
+        #if os(iOS)
+        UIApplication.shared.applicationState != .background
+        #else
+        true
+        #endif
+    }()
+}
+
 enum RunLifecycle {
     private static let recordKey = "runRecord"
     private static let noticeKey = "exitNotice"
@@ -19,9 +35,10 @@ enum RunLifecycle {
 
     private static var build: String { (Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? "?" }
 
+    @MainActor
     static func launched(now: Date = .now) {
         let previous = load(RunRecord.self, key: recordKey)
-        let launch = RunTracker.launch(previous: previous, build: build, now: now)
+        let launch = RunTracker.launch(previous: previous, build: build, now: now, inForeground: AppLaunch.inForeground)
         save(launch.record, key: recordKey)
         guard launch.endedUnexpectedly, let previousBuild = launch.previousBuild else { return }
         Diag.shared.record(RunTracker.unexpectedExitEvent(previousBuild: previousBuild, at: now))

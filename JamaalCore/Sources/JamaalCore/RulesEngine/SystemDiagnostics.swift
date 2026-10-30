@@ -71,11 +71,18 @@ public enum RunTracker {
     }
 
     /// A launch: the run before it ended unexpectedly if it was still active **and was the same build** (installing an update closes
-    /// the old build while it is open, which is not a problem).
-    public static func launch(previous: RunRecord?, build: String, now: Date) -> Launch {
+    /// the old build while it is open, which is not a problem). `inForeground` is false when the system started the app in the
+    /// background (an iCloud change, a widget refresh) and it has not come to the screen: that run is **not** marked on screen, because
+    /// nothing would ever clear the mark (the scene phase never changes) and the next launch would report a crash that did not happen (#333).
+    public static func launch(previous: RunRecord?, build: String, now: Date, inForeground: Bool = true) -> Launch {
         let unexpected = previous.map { $0.wasActive && $0.build == build } ?? false
-        return Launch(record: RunRecord(wasActive: true, build: build, since: now), endedUnexpectedly: unexpected,
+        return Launch(record: RunRecord(wasActive: inForeground, build: build, since: now), endedUnexpectedly: unexpected,
                       previousBuild: unexpected ? previous?.build : nil)
+    }
+
+    /// `app.launched`, with whether the launch was in the foreground, so a report says which kind it was.
+    public static func launchedEvent(inForeground: Bool, at: Date) -> DiagnosticEvent {
+        DiagnosticEvent(at: at, name: .appLaunched, fields: [.init(.foreground, .flag(inForeground))])
     }
 
     public static func leftTheScreen(_ record: RunRecord) -> RunRecord {

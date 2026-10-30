@@ -60,7 +60,7 @@ The aim: find out about problems and trends in 1.0 with Apple's tools and our ow
 | Signal | Source | Where it shows |
 |---|---|---|
 | Crash, hang, CPU exception, disk-write exception | MetricKit diagnostics, delivered to the app about once a day | A `system.*` line in the on-device log and `os.Logger`, so it appears in Share details beside the events that led up to it |
-| "Didn't close properly last time" | A *running* flag set at launch and cleared on a clean exit | `app.unexpectedExit`, logged at the next launch, and a one-time card on Today offering *Send a note* |
+| "Didn't close properly last time" | A *running* flag set when the app comes to the screen and cleared when it leaves or quits cleanly. A launch the system made in the background (an iCloud change, a widget refresh) is **not** marked, because nothing would clear the mark and the next launch would report a crash that did not happen (#333); `app.launched` says `foreground=true` or `false` | `app.unexpectedExit`, logged at the next launch, and a one-time card on Today offering *Send a note* |
 | Handled errors (sync refused, engine tick failed, store open failed) | Already logged (layer 1) | Share details and the sync status screen |
 | Daily health of one device: how many times the app ended normally, abnormally, for memory or to the watchdog (iPhone and iPad only; launch and hang time are histograms and are left out for now) | MetricKit metrics | One `system.daily` line a day in the log, only when there was something to count |
 | Rates across every user who shares analytics | Xcode Organizer and App Store Connect (crash rate by version, hangs, launch, memory, disk writes, terminations) | Apple's dashboards, with dSYMs uploaded by Xcode Cloud |

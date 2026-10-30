@@ -19,7 +19,7 @@ enum AppBootstrap {
     @MainActor
     static let firstContainer: ModelContainer? = {
         SyncMonitor.shared.start()                                   // listening before the store opens, so setup isn't missed
-        Diag.shared.record(.appLaunched)
+        Diag.shared.record(RunTracker.launchedEvent(inForeground: AppLaunch.inForeground, at: .now))
         do {
             let container = try AppEngine.makeContainer()
             Diag.shared.record(.storeOpened, .init(.syncOn, .flag(SyncMonitor.shared.isOn)))
