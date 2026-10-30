@@ -124,7 +124,8 @@ struct FocusScreen: View {
             // On the teal panel the estimate sits under the numeral, centred, as Duo-tabletop-FS-02 draws it; elsewhere it follows it.
             let layout = onDeep ? AnyLayout(VStackLayout(spacing: ThreadsSpace.tight)) : AnyLayout(HStackLayout(alignment: .lastTextBaseline, spacing: ThreadsSpace.row))
             layout {
-                ThreadsNumeral(FocusCopy.clock(FocusSessions.elapsedSeconds(of: session, at: context.date)), size: .large)
+                let clock = FocusCopy.clock(FocusSessions.elapsedSeconds(of: session, at: context.date))
+                Group { if onDeep { HeroNumeral(clock) } else { ThreadsNumeral(clock, size: .large) } }
                     .foregroundStyle(isPaused ? (onDeep ? threads.onDeep.opacity(0.5) : threads.ink3) : strong)
                 if isPaused {
                     Text("Paused").threadsType(.label).foregroundStyle(quiet)
