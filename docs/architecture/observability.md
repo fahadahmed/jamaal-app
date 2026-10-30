@@ -50,7 +50,7 @@ Ids are the first four characters of a UUID, enough to compare two devices and n
 
 - **`DiagnosticEvent`** (JamaalCore, pure and tested): a time, a category, a level, a name and typed details. A **ring buffer** keeps the last 200 in memory and, on the device only, a small file, so a launch after a crash still has the events before it.
 - **`Diag`** in the app: one call writes an event to `os.Logger` (so Console and sysdiagnose see it) and to the buffer.
-- **Hooks** (built) at the places that have already caused trouble: the sync events (`SyncMonitor`), the engine tick and its report, focus finish and the minutes it wrote, Anchor finalising, store open and recovery, notification scheduling, widget reloads.
+- **Hooks** (built) at the places that have already caused trouble: the sync events (`SyncMonitor`; after a failed setup it also logs `sync.account`, the iCloud account's state as one word from a fixed list: available, noAccount, restricted, temporarilyUnavailable or unknown), the engine tick and its report, focus finish and the minutes it wrote, Anchor finalising, store open and recovery, notification scheduling, widget reloads.
 - **Copy details / Share details** (Settings → iCloud sync, later *Privacy and your data*) now include: app version and build, iOS or macOS version, device model, whether this is a TestFlight build, the sync status, the record counts, and the last 50 events. One tap opens the system share sheet to email it to support.
 
 ## Layer 3: Apple, with MetricKit (decided 25 Oct 2026)

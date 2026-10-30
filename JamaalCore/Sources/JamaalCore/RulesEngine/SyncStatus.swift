@@ -46,6 +46,8 @@ public struct SyncActivity: Codable, Equatable, Sendable {
 /// Whether this device can reach an iCloud account, as the system reports it.
 public enum SyncAccount: Equatable, Sendable {
     case available, noAccount, restricted
+    /// The system has an account but can't use it right now (signing in, an update, no network to check).
+    case temporarilyUnavailable
     /// Not asked yet, or the system couldn't say.
     case unknown
 }
@@ -58,6 +60,7 @@ public enum SyncStatusCopy {
         switch account {
         case .noAccount: return "Sign in to iCloud in Settings to sync."
         case .restricted: return "iCloud is restricted on this device."
+        case .temporarilyUnavailable: return "iCloud is temporarily unavailable on this device."
         case .available, .unknown: break
         }
         if let errorAt = activity.lastErrorAt, activity.lastError != nil, errorAt >= (activity.lastSuccessAt ?? .distantPast) {
@@ -85,6 +88,7 @@ public enum SyncStatusCopy {
         case .available: "signed in"
         case .noAccount: "not signed in"
         case .restricted: "restricted"
+        case .temporarilyUnavailable: "temporarily unavailable"
         case .unknown: "unknown"
         }
     }
@@ -92,6 +96,11 @@ public enum SyncStatusCopy {
     /// One plain line for a recorded error, by its CloudKit code, so a tester isn't left with "CKErrorDomain 2". Nil for one we have no
     /// advice for. "types=" in the text means iCloud refused one of our record types, which is on the developer's side.
     public static func hint(forError error: String?, kind: SyncActivity.Kind) -> String? {
+        // Core Data could not start CloudKit mirroring at all (seen on a Mac that then never synced). Not in Apple's public header; it is
+        // what Core Data raises when iCloud is not usable on the device, so the advice is to check iCloud, then reopen (#331).
+        if let error, kind == .setup, error.contains("NSCocoaErrorDomain 134400") {
+            return "Jamaal couldn't start iCloud sync on this device. Check that you're signed in to iCloud in Settings and that Jamaal is allowed to use it, then quit and reopen Jamaal. If it still doesn't sync, please use Email support."
+        }
         guard let error, let match = error.firstMatch(of: /CKErrorDomain (\d+)/), let code = Int(match.1) else { return nil }
         switch code {
         case 3, 4: return "No connection to iCloud right now. It will try again by itself."

@@ -21,6 +21,7 @@ public enum DiagnosticName: String, Codable, CaseIterable, Sendable {
     case syncSetup = "sync.setup"
     case syncImport = "sync.import"
     case syncExport = "sync.export"
+    case syncAccount = "sync.account"
     case engineTick = "engine.tick"
     case engineTickFailed = "engine.tickFailed"
     case focusBegan = "focus.began"
@@ -38,7 +39,7 @@ public enum DiagnosticName: String, Codable, CaseIterable, Sendable {
     public var category: DiagnosticCategory {
         switch self {
         case .appLaunched, .appActive, .appUnexpectedExit: .app
-        case .syncSetup, .syncImport, .syncExport: .sync
+        case .syncSetup, .syncImport, .syncExport, .syncAccount: .sync
         case .engineTick, .engineTickFailed: .engine
         case .focusBegan, .focusFinished: .focus
         case .anchorsFinalised: .anchors
@@ -56,6 +57,7 @@ public enum DiagnosticKey: String, Codable, CaseIterable, Sendable {
     case window, entry, minutes
     case inMemory, syncOn
     case exceptionType, exceptionCode, signal, build
+    case account
     case exitsNormal, exitsAbnormal, exitsMemory, exitsWatchdog
 }
 
@@ -68,6 +70,18 @@ public struct DiagnosticValue: Codable, Equatable, Sendable {
     public static func flag(_ b: Bool) -> DiagnosticValue { .init(b ? "true" : "false") }
     /// The first four characters of a UUID: enough to match two devices, not enough to identify anything.
     public static func id(_ uuid: UUID) -> DiagnosticValue { .init(String(uuid.uuidString.prefix(4))) }
+    /// The iCloud account's state, one word from a fixed list: it says what could be wrong (no account, restricted, temporarily
+    /// unavailable) and nothing about whose account it is.
+    public static func account(_ account: SyncAccount) -> DiagnosticValue {
+        switch account {
+        case .available: .init("available")
+        case .noAccount: .init("noAccount")
+        case .restricted: .init("restricted")
+        case .temporarilyUnavailable: .init("temporarilyUnavailable")
+        case .unknown: .init("unknown")
+        }
+    }
+
     /// An error's domain and code. Its message is dropped: it can hold anything.
     public static func error(_ error: Error) -> DiagnosticValue {
         let ns = error as NSError
