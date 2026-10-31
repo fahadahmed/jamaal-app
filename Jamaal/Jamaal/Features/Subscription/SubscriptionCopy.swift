@@ -70,6 +70,21 @@ enum SubscriptionCopy {
             ? "This beta doesn't have subscriptions yet. Everything stays readable and safe, and Export my data always works."
             : "Plans aren't available right now. Check your connection and try again."
     }
+    /// What the store requires beside a subscription's price: the amount and period, that it renews by itself, and how to stop it.
+    static func renewalTerms(_ offer: StoreOffer) -> String {
+        let period = offer.plan == .yearly ? "year" : "month"
+        return "\(offer.plan.title) is \(offer.displayPrice) a \(period), charged to your Apple Account when you confirm. It renews automatically each \(period) "
+            + "unless you cancel at least 24 hours before the period ends. You can manage or cancel it at any time in your Apple Account settings."
+    }
+    static let termsOfUseTitle = "Terms of Use"
+    static let privacyPolicyTitle = "Privacy Policy"
+
     static let lockedTitle = "Adding and planning need a subscription"
     static let lockedBody = "Everything already here keeps working for the day."
+}
+
+/// The two documents a subscription screen must link to: Apple's standard licence agreement (the Terms of Use) and our privacy policy.
+enum SubscriptionLinks {
+    static let termsOfUse = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
+    static let privacyPolicy = URL(string: "https://jamaal.app/privacy")!
 }

@@ -32,6 +32,16 @@ struct PaywallScreen: View {
             } else {
                 VStack(spacing: ThreadsSpace.row) { ForEach(store.offers) { offer in planCard(offer) } }
             }
+            if let offer = store.offers.first(where: { $0.plan == selected }) {
+                VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
+                    Text(SubscriptionCopy.renewalTerms(offer)).threadsType(.meta).foregroundStyle(threads.ink2).accessibilityIdentifier("renewalTerms")
+                    HStack(spacing: ThreadsSpace.section) {
+                        Link(SubscriptionCopy.termsOfUseTitle, destination: SubscriptionLinks.termsOfUse).accessibilityIdentifier("termsOfUse")
+                        Link(SubscriptionCopy.privacyPolicyTitle, destination: SubscriptionLinks.privacyPolicy).accessibilityIdentifier("privacyPolicy")
+                    }
+                    .threadsType(.meta).foregroundStyle(threads.ink).underline()
+                }
+            }
             if let message = store.message {
                 Text(message).threadsType(.body).foregroundStyle(threads.terra).accessibilityIdentifier("paywallMessage")
             }
