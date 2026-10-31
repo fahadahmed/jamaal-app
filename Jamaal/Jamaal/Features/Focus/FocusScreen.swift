@@ -39,8 +39,8 @@ struct FocusScreen: View {
                         .navigationBarBackButtonHidden()
                         .inlineNavigationTitle()
                         .clearNavigationBarBackground()
-                        .toolbar { ToolbarItem(placement: .topBarLeading) { systemBackButton } }
-                        .toolbarColorScheme(.dark, for: .navigationBar)
+                        .toolbar { ToolbarItem(placement: .jamaalLeading) { systemBackButton } }
+                        .darkNavigationBar()
                 }
             } else { standard }
         }
