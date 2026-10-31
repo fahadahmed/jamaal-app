@@ -320,6 +320,8 @@ struct TaskDetailSheet: View {
 struct CheckSquare: View {
     @Environment(\.threads) private var threads
     let isDone: Bool
+    /// How far the middle of a line of text sits above its baseline (half the height of its capitals), at the default text size.
+    @ScaledMetric(relativeTo: .body) private var textMiddle: CGFloat = 6
 
     var body: some View {
         RoundedRectangle(cornerRadius: 7)
@@ -329,6 +331,9 @@ struct CheckSquare: View {
                 if isDone { Image(systemName: "checkmark").font(.system(size: 13, weight: .bold)).foregroundStyle(threads.onAccent) }
             }
             .frame(width: 26, height: 26)
+            // A shape has no baseline, so a row aligned on the first text baseline put the box's bottom edge there and the box sat above its
+            // text. The box's baseline is now where the middle of the first line is, so the two are centred on each other (#342).
+            .alignmentGuide(.firstTextBaseline) { $0[VerticalAlignment.center] + textMiddle }
             .accessibilityHidden(true)
     }
 }
