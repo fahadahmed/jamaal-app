@@ -51,7 +51,11 @@ struct SettingsScreen: View {
     /// Regular width: the sections on the left, the picked one's screen beside them.
     private var widePanes: some View {
         HStack(spacing: 0) {
-            list.frame(minWidth: 320, idealWidth: 380, maxWidth: 380)
+            if let width = creaseListWidth {
+                list.frame(width: width)                                    // half open: the list fills its half, the pane starts at the crease
+            } else {
+                list.frame(minWidth: 320, idealWidth: 380, maxWidth: 380)
+            }
             Divider()
             Group {
                 if let selected {
@@ -65,6 +69,16 @@ struct SettingsScreen: View {
             .accessibilityIdentifier("settingsPane")
         }
         .background(threads.app.ignoresSafeArea())
+        .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minX } action: { columnsOriginX = $0 }
+    }
+
+    /// Where a foldable iPhone's crease is, if there is one (#329), and where these two panes start, to turn it into the list's width.
+    @Environment(FoldMonitor.self) private var fold: FoldMonitor?
+    @State private var columnsOriginX: CGFloat = 0
+    private var creaseListWidth: CGFloat? {
+        guard let crease = fold?.creaseX else { return nil }
+        let width = FoldLayout.listWidth(creaseX: crease, listOriginX: columnsOriginX, fallback: 0)
+        return width > 0 ? width : nil
     }
 
     private var list: some View {
