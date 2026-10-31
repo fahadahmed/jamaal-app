@@ -11,7 +11,11 @@ import JamaalCore
 /// The score over recent days as one quiet line: no axes, no colours that judge. Days without a reading leave a gap.
 struct Sparkline: View {
     @Environment(\.threads) private var threads
+    @Environment(\.colorScheme) private var colorScheme
     let points: [SparkPoint]
+
+    /// The deep teal reads on the light page, but on the dark one it is blue on blue, so Dark mode draws the line in the light ink.
+    private var line: Color { colorScheme == .dark ? threads.ink : threads.deep }
 
     var body: some View {
         Chart {
@@ -19,7 +23,7 @@ struct Sparkline: View {
                 if let score = point.score {
                     LineMark(x: .value("Day", index), y: .value("Score", score))
                         .interpolationMethod(.catmullRom)
-                        .foregroundStyle(threads.deep)
+                        .foregroundStyle(line)
                         .lineStyle(StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
                 }
             }
