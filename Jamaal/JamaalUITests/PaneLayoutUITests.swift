@@ -40,5 +40,34 @@ final class PaneLayoutUITests: XCTestCase {
         XCTAssertTrue(app.buttons["settings-capacity"].waitForExistence(timeout: 10), "the list is there")
         XCTAssertFalse(app.staticTexts["Pick a setting to see it here."].exists, "with no empty pane beside it")
     }
-}
 
+    override func tearDown() { XCUIDevice.shared.orientation = .portrait }
+
+    /// A phone held wide (an iPhone Duo's inner display, landscape): regular width and at least 700 pt, so the Habits | Anchors segment
+    /// keeps its switch above the list and the picked item opens beside it.
+    @MainActor
+    private func launchWide(_ extra: [String]) -> XCUIApplication {
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let app = XCUIApplication()
+        app.launchArguments = ["-JamaalInMemory", "-JamaalDayStartMinute", "0", "-JamaalWidthClass", "regular", "-JamaalTab", "habits"] + extra
+        app.launch()
+        return app
+    }
+
+    @MainActor
+    func testAnchorsInAWideWindowOpenARuleBesideTheList() {
+        let app = launchWide(["-JamaalAnchorRules"])
+        XCTAssertTrue(app.buttons["segment-anchors"].waitForExistence(timeout: 10), "the switch stays above the list")
+        XCTAssertTrue(app.staticTexts["Pick an Anchor rule to see it here."].exists, "an empty pane beside the rules")
+        app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'School run'")).firstMatch.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["anchorPane"].waitForExistence(timeout: 5), "the rule opens in the pane")
+        XCTAssertTrue(app.buttons["segment-anchors"].exists, "and the list with its switch is still there")
+    }
+
+    @MainActor
+    func testHabitsInAWideWindowHaveAPaneBesideTheList() {
+        let app = launchWide(["-JamaalSampleData"])
+        XCTAssertTrue(app.buttons["segment-habits"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Pick a habit to see it here."].exists)
+    }
+}

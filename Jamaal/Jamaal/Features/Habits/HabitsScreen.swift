@@ -19,6 +19,9 @@ struct HabitsScreen: View {
     @State private var addingHabit = false
     @State private var addingAnchor = false
     @State private var selectedHabit: Habit?
+    @State private var selectedRule: AnchorRule?
+    @Environment(FoldMonitor.self) private var fold: FoldMonitor?
+    @State private var columnsOriginX: CGFloat = 0
     @State private var segment: Segment = {
         #if DEBUG
         return DebugLaunch.anchorRules ? .anchors : .habits
@@ -30,7 +33,64 @@ struct HabitsScreen: View {
     private var compact: Bool { AppNavigation.showsAnchorsSegment(sizeClass: sizeClass) }
 
     var body: some View {
-        if compact { compactBody } else { widePanes }
+        if compact && AppNavigation.isRegular(sizeClass) { segmentPanes } else if compact { compactBody } else { widePanes }
+    }
+
+    /// An iPhone held wide (an iPhone Duo's inner display, landscape or half open): the Habits | Anchors switch stays above the list, and
+    /// the picked habit or Anchor rule opens beside it instead of pushing (the shell reports regular width only from 700 pt, `PaneLayout`).
+    private var segmentPanes: some View {
+        HStack(spacing: 0) {
+            VStack(spacing: 0) {
+                switchRow
+                if segment == .anchors {
+                    AnchorsRulesView(adding: $addingAnchor, showsAddButton: false, selected: selectedRule) { selectedRule = $0 }
+                } else {
+                    HabitsOverviewView(addingHabit: $addingHabit, showsAddButton: false, selected: selectedHabit) { selectedHabit = $0 }
+                }
+            }
+            .frame(width: creaseListWidth ?? 380)                           // half open: the list fills its half and the pane starts at the crease
+            Divider()
+            Group {
+                if segment == .anchors {
+                    if let rule = selectedRule, !rule.isArchived {
+                        AnchorRuleDetailScreen(rule: rule, embedded: true, onClose: { selectedRule = nil }).id(rule.id)
+                    } else {
+                        PanePlaceholder(text: "Pick an Anchor rule to see it here.", identifier: "anchorPlaceholder")
+                    }
+                } else if let habit = selectedHabit, !habit.isArchived {
+                    HabitDetailScreen(habit: habit, embedded: true, onClose: { selectedHabit = nil }).id(habit.id)
+                } else {
+                    PanePlaceholder(text: "Pick a habit to see it here.", identifier: "habitPlaceholder")
+                }
+            }
+            .frame(minWidth: 320, maxWidth: .infinity)
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier(segment == .anchors ? "anchorPane" : "habitPane")
+        }
+        .background(threads.app.ignoresSafeArea())
+        .onGeometryChange(for: CGFloat.self) { $0.frame(in: .global).minX } action: { columnsOriginX = $0 }
+    }
+
+    private var creaseListWidth: CGFloat? {
+        guard let crease = fold?.creaseX else { return nil }
+        let width = FoldLayout.listWidth(creaseX: crease, listOriginX: columnsOriginX, fallback: 0)
+        return width > 0 ? width : nil
+    }
+
+    /// AN-01 / HB-01: the switch and Add share a row; the title is below them.
+    private var switchRow: some View {
+        HStack(alignment: .center) {
+            PillSegment(options: Segment.allCases, selection: $segment, title: { $0.rawValue }, identifier: { "segment-\($0.rawValue.lowercased())" })
+            Spacer()
+            if segment == .anchors {
+                AddCircleButton(label: "Add an Anchor rule", identifier: "addAnchorRule") { if requireAccess(.createAnchorRule) { addingAnchor = true } }
+            } else {
+                AddCircleButton(label: "Add a habit", identifier: "addHabit") { if requireAccess(.createHabit) { addingHabit = true } }
+            }
+        }
+        .padding(.horizontal, ThreadsSpace.gutter)
+        .padding(.top, ThreadsSpace.tight)
+        .zIndex(1)                                                        // so the button's shadow isn't cut off by the list below
     }
 
     /// Regular width (iPad, Mac): the habits on the left, the picked habit's detail beside them (iPad-HB-02).
@@ -56,21 +116,7 @@ struct HabitsScreen: View {
     private var compactBody: some View {
         NavigationStack {
           VStack(spacing: 0) {
-            if compact {
-                // AN-01 / HB-01: the switch and Add share a row; the title is below them.
-                HStack(alignment: .center) {
-                    PillSegment(options: Segment.allCases, selection: $segment, title: { $0.rawValue }, identifier: { "segment-\($0.rawValue.lowercased())" })
-                    Spacer()
-                    if segment == .anchors {
-                        AddCircleButton(label: "Add an Anchor rule", identifier: "addAnchorRule") { if requireAccess(.createAnchorRule) { addingAnchor = true } }
-                    } else {
-                        AddCircleButton(label: "Add a habit", identifier: "addHabit") { if requireAccess(.createHabit) { addingHabit = true } }
-                    }
-                }
-                .padding(.horizontal, ThreadsSpace.gutter)
-                .padding(.top, ThreadsSpace.tight)
-                .zIndex(1)                                                // so the button's shadow isn't cut off by the list below
-            }
+            if compact { switchRow }
             if compact, segment == .anchors {
                 AnchorsRulesView(adding: $addingAnchor, showsAddButton: false)
             } else {
