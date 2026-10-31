@@ -73,6 +73,24 @@ A short checklist; the first two have no undo.
 - A TestFlight build **expires after 90 days**, so a long gap needs a fresh beta.
 - Share the public link once the first build is approved. It can take up to 10,000 testers, and you can pause or close it.
 
+## Subscriptions: setting them up in App Store Connect
+
+The app side is built (StoreKit client, paywall, Settings → Subscription; #344). Nothing is charged until these steps are done by the account holder, and **TestFlight builds stay at full access** whatever is set up here: the real purchase can be tried in the simulator against `Jamaal/StoreKit/Jamaal.storekit` (Xcode: *Product → Scheme → Edit Scheme → Run → Options → StoreKit Configuration*), and with a sandbox tester on a build installed from Xcode. (The menu names below are App Store Connect's at the time of writing and may move.)
+
+1. **Agreements.** *Business* (Agreements, Tax and Banking): the **Paid Apps** agreement must be *Active*, with a bank account and tax forms. Subscriptions don't load in any environment before this.
+2. **A subscription group.** The app's page → *Monetization → Subscriptions* → create a group named **Jamaal**. Both plans go in one group, so a person can only hold one at a time and can switch between them.
+3. **Two subscriptions in the group.** The *Product ID* can't be changed afterwards and must be exactly what the app asks the store for:
+
+   | Reference name | Product ID | Duration | Price (USD) | Display name | Description |
+   | --- | --- | --- | --- | --- | --- |
+   | Jamaal Yearly | `dev.fhdamd.jamaal.yearly` | 1 year | 24.99 | Yearly | Add, edit and plan with Jamaal for a year. |
+   | Jamaal Monthly | `dev.fhdamd.jamaal.monthly` | 1 month | 2.99 | Monthly | Add, edit and plan with Jamaal, month by month. |
+
+   No introductory offer: the 14-day trial is the app's own and needs no card. Other countries' prices can follow the US price (Apple fills them in).
+4. **Review material for each.** A screenshot of the paywall (`docs/images/subscription-paywall.png`, taken in the iPhone simulator with `-JamaalInMemory -JamaalAccess readOnly`; retake it from the final build) and a note for the reviewer: *the app is free to download; a 14-day trial runs inside the app with no payment details; afterwards adding and planning need a subscription, while ticking off, habit logging, Anchors and the timer keep working.* The paywall states the price, the period, the automatic renewal and how to cancel, and links Apple's standard Terms of Use and the privacy policy (`https://jamaal.app/privacy`), as guideline 3.1.2 asks.
+5. **Attach them to the first App Store version.** A new subscription is reviewed together with an app version: on the version's page, add both under *In-App Purchases and Subscriptions* before *Submit for Review*.
+6. **Sandbox testers.** *Users and Access → Sandbox* → add a tester with an email that isn't an Apple Account. On a device, sign in under *Settings → Developer → Sandbox Apple Account*. Sandbox renewals are accelerated (a month renews in minutes), which is how renewal, cancellation and *Restore purchases* are watched.
+
 ## Local builds are separate
 
 A build from your Mac (Xcode or `xcodebuild`) uses the **Development** iCloud environment, so what you do on your devices is never in TestFlight, and a TestFlight tester's data is never on yours. That is expected: say so to testers if it comes up. Keep testing each PR on your devices before merging, as now.

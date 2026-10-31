@@ -59,6 +59,20 @@ final class SubscriptionUITests: XCTestCase {
         XCTAssertEqual(app.buttons["subscribe"].label, "Subscribe monthly")
     }
 
+    /// App Review (3.1.2): the price and period, the automatic renewal and how to cancel, beside links to the terms and the privacy policy.
+    @MainActor
+    func testThePaywallStatesTheRenewalTermsOfTheChosenPlanAndLinksTheLegalPages() throws {
+        let app = launch("readOnly")
+        XCTAssertTrue(app.buttons["notNow"].waitForExistence(timeout: 10))
+        let terms = app.staticTexts["renewalTerms"]
+        XCTAssertTrue(terms.waitForExistence(timeout: 5), "the wording is there")
+        XCTAssertTrue(terms.label.contains("$24.99 a year") && terms.label.contains("renews automatically"), terms.label)
+        app.buttons["plan-monthly"].tap()
+        XCTAssertTrue(terms.label.contains("$2.99 a month"), "and follows the plan chosen: \(terms.label)")
+        XCTAssertTrue(app.descendants(matching: .any)["termsOfUse"].exists, "the Terms of Use are linked")
+        XCTAssertTrue(app.descendants(matching: .any)["privacyPolicy"].exists, "and so is the Privacy Policy")
+    }
+
     @MainActor
     func testSubscribingLiftsTheLocksAndTheBannerGoes() throws {
         let app = launch("readOnly")
@@ -107,6 +121,7 @@ final class SubscriptionUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["subscriptionLabel"].label, "FREE TRIAL")
         XCTAssertTrue(app.staticTexts["subscriptionLine"].label.hasPrefix("9 days left."))
         XCTAssertTrue(app.buttons["seePlans"].exists && app.buttons["restorePurchases"].exists && app.buttons["manageSubscription"].exists)
+        XCTAssertTrue(app.buttons["termsOfUse"].exists && app.buttons["privacyPolicy"].exists, "the legal pages are one tap away")
     }
 
     @MainActor

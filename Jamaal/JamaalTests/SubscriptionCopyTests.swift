@@ -3,6 +3,7 @@
 //  JamaalTests
 //
 
+import Foundation
 import Testing
 import JamaalCore
 @testable import Jamaal
@@ -70,5 +71,23 @@ struct SubscriptionCopyTests {
         #expect(text.contains("beta"))
         #expect(text.contains("Export my data"), "the way out is named")
         #expect(!text.contains("connection"), "it is not a connection problem, so it doesn't say it is")
+    }
+
+    // MARK: What App Review requires on a subscription screen (guideline 3.1.2)
+
+    @Test func theRenewalTermsNameThePriceThePeriodAutoRenewalAndCancelling() {
+        let yearly = SubscriptionCopy.renewalTerms(StoreOffer(plan: .yearly, displayPrice: "$24.99", perMonth: "$2.08 a month"))
+        #expect(yearly.contains("$24.99 a year"))
+        #expect(yearly.contains("renews automatically each year"))
+        #expect(yearly.contains("at least 24 hours before"))
+        #expect(yearly.contains("Apple Account"))
+        let monthly = SubscriptionCopy.renewalTerms(StoreOffer(plan: .monthly, displayPrice: "$2.99", perMonth: nil))
+        #expect(monthly.contains("$2.99 a month"))
+        #expect(monthly.contains("renews automatically each month"))
+    }
+
+    @Test func theTermsAreApplesStandardAgreementAndThePrivacyPolicyIsOurs() {
+        #expect(SubscriptionLinks.termsOfUse.absoluteString == "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
+        #expect(SubscriptionLinks.privacyPolicy.absoluteString == "https://jamaal.app/privacy")
     }
 }
