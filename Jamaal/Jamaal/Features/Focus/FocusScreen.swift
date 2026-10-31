@@ -31,7 +31,18 @@ struct FocusScreen: View {
 
     var body: some View {
         Group {
-            if let top = tabletopHeight { tabletop(topHeight: top) } else { standard }
+            if let top = tabletopHeight {
+                // The back button is a real toolbar item here, so the system draws and places it (glass, 44 pt, clear of the status
+                // bar and the Duo's side pills); the bar is transparent and its scheme is dark so the control reads on the teal.
+                NavigationStack {
+                    tabletop(topHeight: top)
+                        .navigationBarBackButtonHidden()
+                        .inlineNavigationTitle()
+                        .clearNavigationBarBackground()
+                        .toolbar { ToolbarItem(placement: .jamaalLeading) { systemBackButton } }
+                        .darkNavigationBar()
+                }
+            } else { standard }
         }
         .background(threads.app)
         .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { screenFrame = $0 }
@@ -71,7 +82,6 @@ struct FocusScreen: View {
             .frame(maxWidth: .infinity)
             .frame(height: topHeight)
             .background(alignment: .top) { threads.deep.ignoresSafeArea(edges: [.top, .horizontal]) }
-            .overlay(alignment: .topLeading) { backButton.padding(.leading, ThreadsSpace.row).padding(.top, ThreadsSpace.tight) }
             ScrollView {
                 checklist
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -88,9 +98,15 @@ struct FocusScreen: View {
 
     // MARK: Pieces
 
-    private var backButton: some View {
+    /// The tabletop layout's back button, inside a navigation bar: the system supplies the glass and the size.
+    private var systemBackButton: some View {
+        Button { coordinator.isShowingFocus = false } label: { Image(systemName: "chevron.down") }
+            .accessibilityLabel("Back to Today")
+    }
+
+    private func backButton() -> some View {
         Button { coordinator.isShowingFocus = false } label: {
-            Image(systemName: "chevron.down").frame(width: 48, height: 48)
+            Image(systemName: "chevron.down").font(.body.weight(.semibold)).frame(width: 48, height: 48)
                 .foregroundStyle(threads.ink)
                 .glassEffect(.regular.interactive(), in: Circle())
                 .contentShape(Circle())
@@ -102,7 +118,7 @@ struct FocusScreen: View {
     private var topBar: some View {
         ZStack {
             HStack {
-                backButton
+                backButton()
                 Spacer()
             }
             if let category = task?.category, !category.name.isEmpty {
@@ -124,7 +140,8 @@ struct FocusScreen: View {
             // On the teal panel the estimate sits under the numeral, centred, as Duo-tabletop-FS-02 draws it; elsewhere it follows it.
             let layout = onDeep ? AnyLayout(VStackLayout(spacing: ThreadsSpace.tight)) : AnyLayout(HStackLayout(alignment: .lastTextBaseline, spacing: ThreadsSpace.row))
             layout {
-                ThreadsNumeral(FocusCopy.clock(FocusSessions.elapsedSeconds(of: session, at: context.date)), size: .large)
+                let clock = FocusCopy.clock(FocusSessions.elapsedSeconds(of: session, at: context.date))
+                Group { if onDeep { HeroNumeral(clock) } else { ThreadsNumeral(clock, size: .large) } }
                     .foregroundStyle(isPaused ? (onDeep ? threads.onDeep.opacity(0.5) : threads.ink3) : strong)
                 if isPaused {
                     Text("Paused").threadsType(.label).foregroundStyle(quiet)

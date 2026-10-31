@@ -84,6 +84,16 @@ extension View {
         #endif
     }
 
+    /// A dark navigation bar, so its controls read on a deep teal ground (iOS only).
+    @ViewBuilder
+    func darkNavigationBar() -> some View {
+        #if os(iOS)
+        toolbarColorScheme(.dark, for: .navigationBar)
+        #else
+        self
+        #endif
+    }
+
     /// A small inline title in a form's navigation bar (macOS titles its sheets differently).
     @ViewBuilder
     func inlineNavigationTitle() -> some View {
