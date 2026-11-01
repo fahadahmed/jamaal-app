@@ -99,6 +99,45 @@ final class MacSettingsFormsUITests: XCTestCase {
         XCTAssertTrue(archived.waitForExistence(timeout: 10), "and it is under Archived")
     }
 
+    // MARK: Notifications and Appearance (#368)
+
+    @MainActor
+    func testTheMorningListTimeShowsOnlyWhileItsSwitchIsOn() throws {
+        let app = launch()
+        _ = openSettings(app)
+        _ = goTo("Notifications", titled: "Notifications and times", in: app)
+        XCTAssertTrue(element("remindersSwitch", in: app).waitForExistence(timeout: 10), "this device's reminders switch")
+        XCTAssertTrue(element("planningTime", in: app).exists, "the evening planning time")
+        let morning = element("morningSwitch", in: app)
+        XCTAssertTrue(morning.exists)
+        let wasOn = element("morningTime", in: app).exists
+        morning.click()
+        XCTAssertEqual(element("morningTime", in: app).waitForExistence(timeout: 5), !wasOn, "the morning time follows its switch")
+        morning.click()                                                          // put it back
+        XCTAssertEqual(element("morningTime", in: app).waitForExistence(timeout: 5), wasOn)
+    }
+
+    @MainActor
+    func testTheThemeIsASegmentedChoiceAndTheSuggestionCardsAreASwitch() throws {
+        let app = launch()
+        _ = openSettings(app)
+        _ = goTo("Appearance", titled: "Appearance", in: app)
+        let theme = element("themePicker", in: app)
+        XCTAssertTrue(theme.waitForExistence(timeout: 10))
+        for name in ["System", "Light", "Dark"] { XCTAssertTrue(theme.radioButtons[name].exists, "the theme has \(name)") }
+        theme.radioButtons["Light"].click()
+        XCTAssertEqual(theme.radioButtons["Light"].value as? Int, 1, "Light is chosen")
+        theme.radioButtons["System"].click()                                     // put it back
+        XCTAssertEqual(theme.radioButtons["System"].value as? Int, 1)
+        let cards = element("suggestionCards", in: app)
+        XCTAssertTrue(cards.exists)
+        let before = "\(cards.value ?? "")"
+        cards.click()
+        XCTAssertNotEqual("\(cards.value ?? "")", before, "the switch changes (was \(before))")
+        cards.click()                                                            // put it back
+        XCTAssertEqual("\(cards.value ?? "")", before)
+    }
+
     // MARK: A look at them
 
     /// Saves a picture of each pane with the test results, so the forms can be looked at (it asserts nothing).
@@ -111,5 +150,11 @@ final class MacSettingsFormsUITests: XCTestCase {
         let categories = goTo("Categories", titled: "Categories", in: app)
         sleep(1)
         let cats = XCTAttachment(screenshot: categories.screenshot()); cats.name = "categories"; cats.lifetime = .keepAlways; add(cats)
+        let notifications = goTo("Notifications", titled: "Notifications and times", in: app)
+        sleep(1)
+        let notes = XCTAttachment(screenshot: notifications.screenshot()); notes.name = "notifications"; notes.lifetime = .keepAlways; add(notes)
+        let appearance = goTo("Appearance", titled: "Appearance", in: app)
+        sleep(1)
+        let look = XCTAttachment(screenshot: appearance.screenshot()); look.name = "appearance"; look.lifetime = .keepAlways; add(look)
     }
 }

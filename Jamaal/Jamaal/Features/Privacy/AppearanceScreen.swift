@@ -14,6 +14,14 @@ struct AppearanceScreen: View {
     @AppStorage(AppPreferences.Keys.suggestionCards, store: AppPreferences.defaults) private var suggestionCards = true
 
     var body: some View {
+        #if os(macOS)
+        macForm
+        #else
+        phoneBody
+        #endif
+    }
+
+    private var phoneBody: some View {
         SettingsPage(title: "Appearance") {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
@@ -51,3 +59,31 @@ struct AppearanceScreen: View {
         }
     }
 }
+
+#if os(macOS)
+// MARK: The Mac form (#368)
+
+/// The same settings as the iPhone page, as a grouped Mac form: the theme as a segmented picker, and a system switch for the suggestion cards.
+extension AppearanceScreen {
+    fileprivate var macForm: some View {
+        Form {
+            Section {
+                Picker(selection: $theme) {
+                    ForEach(AppTheme.allCases) { item in Text(item.title).tag(item.rawValue) }
+                } label: { MacRowLabel("Theme") }
+                .pickerStyle(.segmented).accessibilityIdentifier("themePicker")
+                LabeledContent {
+                    Button("Open System Settings") { reminders.openSystemSettings() }.accessibilityIdentifier("textSize")
+                } label: { MacRowLabel("Text size", note: "Follows \(ReminderCenter.deviceName) Settings") }
+            }
+            Section {
+                Toggle(isOn: $suggestionCards) {
+                    MacRowLabel("Suggestion cards", note: "From Jamaal on Today and Wellbeing")
+                }
+                .toggleStyle(.switch).accessibilityIdentifier("suggestionCards")
+            }
+        }
+        .macSettingsForm()
+    }
+}
+#endif

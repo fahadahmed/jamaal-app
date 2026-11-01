@@ -32,9 +32,20 @@ Screenshots from the Mac UI tests (Dark appearance). The window is 620 pt wide; 
 - **Categories:** the name is edited in place (Return saves; a refused name, blank or a duplicate, goes back); the dot opens a menu of the five colours; Archive is on the row; rows reorder by dragging or from the right-click menu; Add category sits under the list; Archived is a disclosure group with Restore.
 - Same access rules as before: a locked action shows the calm locked sheet.
 
+## As built (slice 3, #368)
+
+Light appearance this time.
+
+<img src="../images/mac-settings-notifications.png" width="460" alt="Notifications and times: a system switch for this Mac's reminders, field time pickers for the evening planning and the morning list, with a switch beside the morning time">
+
+<img src="../images/mac-settings-appearance.png" width="460" alt="Appearance: a segmented System, Light, Dark picker, the text size row with Open System Settings, and a system switch for suggestion cards">
+
+- **Notifications and times:** a system switch for this Mac's reminders (it asks for permission when first turned on); the evening planning and morning times are field time pickers, with the morning time shown only while its switch is on; the warning card (when reminders can't arrive) is a section with a prominent button.
+- **Appearance:** the theme is a segmented System / Light / Dark picker; Text size opens System Settings; suggestion cards is a system switch.
+
 ## Slices
 
 1. The window, ⌘,, routing, last pane restored, access rules, panes show today's screens (#366).
 2. Capacity and day, and Categories as Mac forms (#367): done.
-3. Notifications and Appearance (#368).
+3. Notifications and Appearance (#368): done.
 4. Subscription, iCloud sync and Privacy and your data (#369).

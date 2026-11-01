@@ -24,6 +24,16 @@ struct NotificationsScreen: View {
     var body: some View {
         // Re-read the card's lines when a rule or habit changes.
         let _ = (rules.map { [$0.title, $0.configData, $0.isArchived ? "1" : "0"] }, habits.map { [$0.title, $0.isArchived ? "1" : "0"] })
+        #if os(macOS)
+        macForm
+            .task { await reminders.refresh() }
+            .onChange(of: scenePhase) { _, phase in if phase == .active { Task { await reminders.refresh() } } }
+        #else
+        phoneBody
+        #endif
+    }
+
+    private var phoneBody: some View {
         SettingsPage(title: "Notifications and times") {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 if reminders.isBlocked { warningCard }
@@ -126,6 +136,79 @@ struct NotificationsScreen: View {
         }
     }
 }
+
+#if os(macOS)
+// MARK: The Mac form (#368)
+
+/// The same settings as the iPhone page, as a grouped Mac form with system switches and field time pickers.
+extension NotificationsScreen {
+    @ViewBuilder fileprivate var macForm: some View {
+        Form {
+            if reminders.isBlocked {
+                Section { macWarning }
+            }
+            Section {
+                Toggle(isOn: Binding(get: { reminders.remindersOnThisDevice }, set: { setSwitch($0) })) {
+                    MacRowLabel("Send reminders on this \(device)", note: "Only this device")
+                }
+                .toggleStyle(.switch).accessibilityIdentifier("remindersSwitch")
+            }
+            if let settings = rows.first {
+                Section {
+                    macTimePicker("Evening planning", settings.planningMinute, id: "planningTime") { settings.planningMinute = $0 }
+                    LabeledContent {
+                        HStack(spacing: ThreadsSpace.row) {
+                            if reminders.morningEnabled {
+                                DatePicker("Morning list", selection: Binding(
+                                    get: { HabitForm.date(forMinute: settings.morningMinute) },
+                                    set: { settings.morningMinute = HabitForm.minute(of: $0); reminders.scheduleReplan(in: context) }),
+                                           displayedComponents: .hourAndMinute)
+                                    .labelsHidden().accessibilityIdentifier("morningTime")
+                            }
+                            Toggle("Morning list", isOn: Binding(
+                                get: { reminders.morningEnabled },
+                                set: { reminders.morningEnabled = $0; reminders.scheduleReplan(in: context) }))
+                                .labelsHidden().toggleStyle(.switch).accessibilityIdentifier("morningSwitch")
+                        }
+                    } label: { MacRowLabel("Morning list") }
+                    MacRowLabel("Habit reminders", note: ReminderCopy.habitRow(blocked: reminders.isBlocked))
+                } header: { MacSectionHeader("Times") } footer: {
+                    Text(ReminderCopy.footer).threadsType(.meta).foregroundStyle(threads.ink2)
+                }
+            }
+            #if DEBUG
+            Section { Text("scheduled \(reminders.scheduledCount)").threadsType(.meta).foregroundStyle(threads.ink3).accessibilityIdentifier("debugScheduled") }
+            #endif
+        }
+        .macSettingsForm()
+    }
+
+    private var macWarning: some View {
+        let lines = (try? ReminderStatus.undelivered(in: context, morningEnabled: reminders.morningEnabled)) ?? []
+        return VStack(alignment: .leading, spacing: ThreadsSpace.row) {
+            Text(ReminderCopy.warningTitle(permission: reminders.permission, device: device)).threadsType(.body).foregroundStyle(threads.ink)
+            VStack(alignment: .leading, spacing: ThreadsSpace.hair) {
+                ForEach(lines, id: \.self) { line in Text("· \(line)").threadsType(.meta).foregroundStyle(threads.ink2) }
+            }
+            .accessibilityElement(children: .contain).accessibilityIdentifier("undelivered")
+            Button(ReminderCopy.warningButton(reminders.permission, device: device)) {
+                if reminders.permission == .notAsked { Task { await reminders.requestPermission(); reminders.scheduleReplan(in: context) } }
+                else { reminders.openSystemSettings() }
+            }
+            .buttonStyle(.borderedProminent).accessibilityIdentifier("warningButton")
+        }
+        .accessibilityElement(children: .contain).accessibilityIdentifier("warningCard")
+    }
+
+    private func macTimePicker(_ title: String, _ minute: Int, id: String, set: @escaping (Int) -> Void) -> some View {
+        DatePicker(selection: Binding(get: { HabitForm.date(forMinute: minute) }, set: { set(HabitForm.minute(of: $0)); reminders.scheduleReplan(in: context) }),
+                   displayedComponents: .hourAndMinute) {
+            Text(title).threadsType(.body).foregroundStyle(threads.ink)
+        }
+        .accessibilityIdentifier(id)
+    }
+}
+#endif
 
 /// The one quiet line under a reminder that is set but can't arrive (docs G-77), with the way to fix it.
 struct RemindersOffLine: View {
