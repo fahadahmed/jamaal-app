@@ -31,8 +31,14 @@ enum SubscriptionCopy {
     }
 
     /// The Subscription screen: a small label and the plain sentence under it.
-    static func status(_ access: AccessState, trialStart: CalendarDate?, renewsOn: String?, isBeta: Bool = false) -> (label: String, line: String) {
-        if isBeta { return ("BETA", "Full access while you test, with no trial to count down. Subscriptions aren't open yet. Thank you for testing.") }
+    static func status(_ access: AccessState, trialStart: CalendarDate?, renewsOn: String?, isBeta: Bool = false,
+                       purchaseTesting: Bool = false, hasSubscription: Bool = false) -> (label: String, line: String) {
+        if isBeta && purchaseTesting {
+            let tail = " Full access stays on either way."
+            if hasSubscription { return ("BETA · PURCHASE TESTING", "A sandbox subscription is active" + (renewsOn.map { " and renews on \($0)." } ?? ".") + tail) }
+            return ("BETA · PURCHASE TESTING", "Buying here uses the App Store sandbox, so nothing is charged." + tail)
+        }
+        if isBeta { return ("BETA", "Full access while you test, with no trial to count down. Switch on test purchases below to try buying with the App Store sandbox. Thank you for testing.") }
         switch access {
         case .trial(let daysLeft):
             let left = daysLeft == 1 ? "Last day." : "\(daysLeft) days left."
@@ -65,8 +71,11 @@ enum SubscriptionCopy {
     static func subscribeButton(_ plan: SubscriptionPlan) -> String { "Subscribe \(plan.title.lowercased())" }
     /// Shown instead of the plans when none can be loaded. In a TestFlight beta there are none to load (subscriptions aren't set up
     /// yet), so it says that rather than blaming the connection.
-    static func noPlans(isBeta: Bool) -> String {
-        isBeta
+    static func noPlans(isBeta: Bool, purchaseTesting: Bool = false) -> String {
+        if isBeta && purchaseTesting {
+            return "The store returned no plans. The two subscriptions need to be set up in App Store Connect, and show Ready to Submit, before they can be bought here."
+        }
+        return isBeta
             ? "This beta doesn't have subscriptions yet. Everything stays readable and safe, and Export my data always works."
             : "Plans aren't available right now. Check your connection and try again."
     }

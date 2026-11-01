@@ -25,6 +25,12 @@ final class Storefront {
     /// StoreKit says where the app is running, which matters on the Mac, where the receipt can't tell the two apart.
     private(set) var isBeta: Bool
 
+    /// A tester's opt-in, on this device only, to trying a purchase in the App Store sandbox (#348). Off for everyone until they switch it on.
+    /// It changes nothing about access: a beta stays full access (no trial is started and nothing locks) whether it is on or off.
+    var purchaseTesting: Bool { didSet { defaults.set(purchaseTesting, forKey: Keys.purchaseTesting) } }
+    /// The switch only means something in a beta.
+    var canTestPurchases: Bool { isBeta && purchaseTesting }
+
     private let client: any StoreClient
     private let defaults: UserDefaults
     private var started = false
@@ -33,18 +39,19 @@ final class Storefront {
     private let accessOverride: DebugLaunch.AccessOverride?
     #endif
 
-    private enum Keys { static let lastKnown = "entitlementLastKnown", renews = "entitlementRenewsOn", paywallShownOn = "paywallShownOn", trialBannerDismissedOn = "trialBannerDismissedOn" }
+    private enum Keys { static let lastKnown = "entitlementLastKnown", renews = "entitlementRenewsOn", paywallShownOn = "paywallShownOn", purchaseTesting = "betaPurchaseTesting", trialBannerDismissedOn = "trialBannerDismissedOn" }
 
     #if DEBUG
     init(
         client: (any StoreClient)? = nil, defaults: UserDefaults? = nil, accessOverride: DebugLaunch.AccessOverride? = DebugLaunch.access,
-        isBeta: Bool = BuildChannel.current == .testFlight
+        isBeta: Bool = BuildChannel.current == .testFlight || DebugLaunch.beta
     ) {
         self.isBeta = isBeta
         self.accessOverride = accessOverride
         self.client = client ?? Storefront.debugClient() ?? SystemStoreClient()
         let store = defaults ?? Storefront.standardDefaults
         self.defaults = store
+        purchaseTesting = store.bool(forKey: Keys.purchaseTesting)
         entitlementActive = EntitlementCache.isActive(confirmed: nil, lastKnown: store.object(forKey: Keys.lastKnown) as? Bool)
         renewsOn = store.object(forKey: Keys.renews) as? Date
     }
@@ -54,6 +61,7 @@ final class Storefront {
         self.client = client ?? SystemStoreClient()
         let store = defaults ?? Storefront.standardDefaults
         self.defaults = store
+        purchaseTesting = store.bool(forKey: Keys.purchaseTesting)
         entitlementActive = EntitlementCache.isActive(confirmed: nil, lastKnown: store.object(forKey: Keys.lastKnown) as? Bool)
         renewsOn = store.object(forKey: Keys.renews) as? Date
     }

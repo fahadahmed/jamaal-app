@@ -18,6 +18,8 @@ enum DebugLaunch {
     /// left edge (`debugToggleWidthClass`) that switches it while the app runs. That stands in for folding or unfolding an iPhone
     /// Duo, so a test can check that nothing is lost on the way (#329). `-JamaalSizeHUD` shows the size classes and the window size.
     static var forcedWidthClass: UserInterfaceSizeClass? { forcedWidthClass(in: ProcessInfo.processInfo.arguments) }
+    /// `-JamaalBeta` makes the storefront behave as in a TestFlight beta, so the beta-only Subscription screen can be driven in a test (#348).
+    static var beta: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalBeta") }
     static var sizeHUD: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSizeHUD") }
 
     static func forcedWidthClass(in arguments: [String]) -> UserInterfaceSizeClass? {

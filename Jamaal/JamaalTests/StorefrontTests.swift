@@ -70,6 +70,36 @@ struct StorefrontTests {
         #expect(store.access(settings: s, boundary: boundary, now: at(29)) == .subscribed)
     }
 
+    /// A beta can opt in, on one device, to trying a purchase in the sandbox (#348). Access stays full, so the trial is not claimed and
+    /// nothing locks, whichever way the switch and the subscription are.
+    @Test func purchaseTestingIsOffByDefaultAndRememberedOnThisDevice() {
+        let d = defaults()
+        let store = Storefront(client: FakeStoreClient(), defaults: d, accessOverride: nil, isBeta: true)
+        #expect(!store.purchaseTesting && !store.canTestPurchases)
+        store.purchaseTesting = true
+        #expect(store.canTestPurchases)
+        #expect(Storefront(client: FakeStoreClient(), defaults: d, accessOverride: nil, isBeta: true).purchaseTesting, "it is still on after a relaunch")
+    }
+
+    @Test func theSwitchDoesNothingOutsideABeta() {
+        let d = defaults()
+        let store = Storefront(client: FakeStoreClient(), defaults: d, accessOverride: nil, isBeta: false)
+        store.purchaseTesting = true
+        #expect(!store.canTestPurchases)
+    }
+
+    @Test func buyingInABetaWithTestingOnShowsTheSubscriptionAndStillGivesFullAccess() async {
+        let store = Storefront(client: FakeStoreClient(), defaults: defaults(), accessOverride: nil, isBeta: true)
+        store.purchaseTesting = true
+        await store.refresh()
+        let s = settings(firstLaunch: at(1))
+        #expect(!store.entitlementActive)
+        #expect(store.access(settings: s, boundary: boundary, now: at(29)) == .subscribed, "full access without a subscription")
+        await store.purchase(.monthly)
+        #expect(store.entitlementActive, "the purchase is recorded")
+        #expect(store.access(settings: s, boundary: boundary, now: at(29)) == .subscribed)
+    }
+
     @Test func anAppStoreBuildStillGoesReadOnlyWhenTheTrialEnds() async {
         let store = Storefront(client: FakeStoreClient(), defaults: defaults(), accessOverride: nil, isBeta: false)
         await store.refresh()

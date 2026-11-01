@@ -28,7 +28,7 @@ struct PaywallScreen: View {
                 Text(SubscriptionCopy.paywallBody).threadsType(.lede).foregroundStyle(threads.ink2).padding(.top, ThreadsSpace.tight)
             }
             if store.offers.isEmpty {
-                Text(SubscriptionCopy.noPlans(isBeta: DiagnosticEnvironment.current.channel == .testFlight)).threadsType(.body).foregroundStyle(threads.ink2).accessibilityIdentifier("noPlans")
+                Text(SubscriptionCopy.noPlans(isBeta: DiagnosticEnvironment.current.channel == .testFlight, purchaseTesting: store.canTestPurchases)).threadsType(.body).foregroundStyle(threads.ink2).accessibilityIdentifier("noPlans")
             } else {
                 VStack(spacing: ThreadsSpace.row) { ForEach(store.offers) { offer in planCard(offer) } }
             }

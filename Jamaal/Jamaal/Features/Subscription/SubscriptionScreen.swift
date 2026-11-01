@@ -22,14 +22,24 @@ struct SubscriptionScreen: View {
         let access = store.access(settings: rows.first, boundary: boundary)
         let start = store.trialStart(settings: rows.first, boundary: boundary)
         let renews = store.renewsOn.map { $0.formatted(.dateTime.day().month(.wide).locale(.current)) }
-        let status = SubscriptionCopy.status(access, trialStart: start, renewsOn: renews, isBeta: store.isBeta)
+        let status = SubscriptionCopy.status(access, trialStart: start, renewsOn: renews, isBeta: store.isBeta,
+                                             purchaseTesting: store.canTestPurchases, hasSubscription: store.entitlementActive)
         SettingsPage(title: "Subscription") {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
                     Text(status.label).threadsType(.label).foregroundStyle(threads.ink2).accessibilityIdentifier("subscriptionLabel")
                     Text(status.line).threadsType(.lede).foregroundStyle(threads.ink).accessibilityIdentifier("subscriptionLine")
                 }
-                if access != .subscribed {
+                if store.isBeta {
+                    Toggle(isOn: Binding(get: { store.purchaseTesting }, set: { store.purchaseTesting = $0 })) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Test purchases").threadsType(.lede).foregroundStyle(threads.ink)
+                            Text("Beta only, on this device. Nothing is charged.").threadsType(.meta).foregroundStyle(threads.ink2)
+                        }
+                    }
+                    .tint(threads.accent).frame(minHeight: 60).accessibilityIdentifier("betaPurchaseTesting")
+                }
+                if access != .subscribed || (store.canTestPurchases && !store.entitlementActive) {
                     Button { showingPlans = true } label: {
                         Text("See plans").threadsType(.row).foregroundStyle(.white)
                             .frame(maxWidth: .infinity, minHeight: 56).background(Capsule().fill(threads.terra)).contentShape(Capsule())
