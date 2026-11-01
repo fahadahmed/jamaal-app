@@ -76,7 +76,7 @@ final class SubscriptionUITests: XCTestCase {
     /// A TestFlight beta keeps full access and hides purchasing, until the tester switches test purchases on (#348).
     @MainActor
     func testABetaCanSwitchOnPurchaseTestingAndBuyInTheSandbox() throws {
-        let app = launch("trial:9", extra: ["-JamaalBeta"])
+        let app = launch(nil, extra: ["-JamaalBeta"])        // no access override: a real beta decides by itself
         openSubscription(app)
         XCTAssertEqual(app.staticTexts["subscriptionLabel"].label, "BETA")
         XCTAssertFalse(app.buttons["seePlans"].exists, "no plans while the switch is off")

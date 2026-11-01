@@ -61,7 +61,7 @@ struct SubscriptionScreen: View {
             }
         }
         .task { await store.refresh() }
-        .sheet(isPresented: $showingPlans) { PaywallScreen() }
+        .sheetSized(isPresented: $showingPlans) { PaywallScreen() }
     }
 
     private func row(_ title: String, trailing: String? = nil, id: String, action: @escaping () -> Void) -> some View {
