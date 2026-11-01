@@ -56,6 +56,17 @@ extension View {
         #endif
     }
 
+    /// An ordinary sheet on iOS, and on macOS one of the given size: a plain sheet is only as big as its content's ideal size, and the
+    /// screens that go in one are scroll views with none, so they open as a small box (#363).
+    @ViewBuilder
+    func sheetSized<Content: View>(isPresented: Binding<Bool>, macSize: MacSheetSize = .page, @ViewBuilder content: @escaping () -> Content) -> some View {
+        #if os(macOS)
+        sheet(isPresented: isPresented) { content().macSheetFrame(macSize) }
+        #else
+        sheet(isPresented: isPresented, content: content)
+        #endif
+    }
+
     #if os(macOS)
     /// Smallest and ideal size for a Mac sheet; it opens at the ideal size and can be dragged no smaller than the minimum.
     fileprivate func macSheetFrame(_ size: MacSheetSize) -> some View {

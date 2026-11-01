@@ -194,7 +194,7 @@ struct TodayScreen: View {
             if DebugLaunch.openTask { openTask = tasks.first { $0.title == "Call the clinic back" } }
             #endif
         }
-        .sheet(isPresented: $showingPlans) { PaywallScreen() }
+        .sheetSized(isPresented: $showingPlans) { PaywallScreen() }
         .sheet(item: $addingMinutes) { AddMinutesSheet(habit: $0.habit, window: $0.window, day: TodayDay.boundary(in: context).logicalDate(at: now)) }
         // A binding that hides the sheet at regular width must not write that nil back: it would close the task the panel is showing.
         .sheet(item: Binding(get: { sheetTask }, set: { new in
