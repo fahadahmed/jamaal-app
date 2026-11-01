@@ -18,8 +18,11 @@ nonisolated enum BuildChannel: Equatable {
 
     private static let cacheKey = "storeEnvironment"
 
-    nonisolated static func resolve(isDebug: Bool, cachedEnvironment: String?, receiptName: String?, isMac: Bool) -> BuildChannel {
+    nonisolated static func resolve(isDebug: Bool, cachedEnvironment: String?, receiptName: String?, isMac: Bool, distribution: String? = nil) -> BuildChannel {
         if isDebug { return .debug }
+        // App Review runs apps in the sandbox, like TestFlight, so StoreKit can't tell a build sent for review from a beta (#346). A build made
+        // from a `v<version>` tag is marked in its Info.plist by `ci_scripts/ci_post_clone.sh`, and that wins.
+        if distribution == "appStore" { return .appStore }
         if let cachedEnvironment, let environment = StoreEnvironment(rawValue: cachedEnvironment) { return environment.channel }
         if receiptName == "sandboxReceipt" { return .testFlight }
         return isMac ? .testFlight : .appStore
@@ -39,7 +42,8 @@ nonisolated enum BuildChannel: Equatable {
         #endif
         return resolve(
             isDebug: isDebug, cachedEnvironment: UserDefaults.standard.string(forKey: cacheKey),
-            receiptName: Bundle.main.appStoreReceiptURL?.lastPathComponent, isMac: isMac)
+            receiptName: Bundle.main.appStoreReceiptURL?.lastPathComponent, isMac: isMac,
+            distribution: Bundle.main.object(forInfoDictionaryKey: "JamaalDistribution") as? String)
     }
 
     /// Keeps StoreKit's answer on this device, so the next launch, and an offline one, already knows.

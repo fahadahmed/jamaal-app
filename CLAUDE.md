@@ -29,7 +29,7 @@ jamaal-app/
 │   ├── roadmap/phases.md
 │   └── design/threadskit-usage.md
 ├── .github/workflows/ (ci.yml, sync-wiki.yml)
-└── ci_scripts/            # reserved for Xcode Cloud, empty for now
+└── ci_scripts/            # Xcode Cloud: ci_post_clone.sh marks a `v<version>` build as an App Store build (#346)
 ```
 
 No `.xcworkspace` — JamaalCore is a Swift Package (added as a local package dependency directly into `Jamaal.xcodeproj`), not a separate `.xcodeproj`, so no workspace is needed. ThreadsKit lives in its own repo, added as a **remote** Swift Package dependency (pinned "Up to Next Major Version" from 2.0.0).

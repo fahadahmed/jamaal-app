@@ -46,6 +46,8 @@ Two workflows, each started by a tag (the names are chosen so one tag can never 
 | Post-actions | **TestFlight External Testing** to the public group (and **Internal Testing** to you, so you see it first) | **Internal Testing** only; you submit from App Store Connect |
 | Tests | none | none |
 
+**The App Store release build is marked at build time (#346).** App Review runs apps in the **sandbox**, as TestFlight does, and the app reads the sandbox as "a beta" (full access, no trial, no paywall, no plans). A reviewer would see a beta with no subscriptions, so `ci_scripts/ci_post_clone.sh` sets `JamaalDistribution = appStore` in `Info.plist` for a build made from a `v<version>` tag (Xcode Cloud's `CI_TAG`), and `BuildChannel` then treats it as the App Store whatever StoreKit says. `beta-*` tags and local builds are not marked. Two consequences: **submit to App Review only a build from a `v` tag** (a `beta-` build would show the reviewer the beta), and **a `v` build you install from TestFlight behaves like the App Store**: its first launch starts the 14-day trial and the paywall shows, with no beta full access.
+
 **Tests are not run here.** The unit tests and the UI tests run on every pull request in GitHub Actions, and a tag is only ever put on a commit whose checks were green, so running them again would only slow and cost a build. (If that changes, add a *Test* action with `JamaalTests`; the UI tests are too slow and too flaky to gate a release on.)
 
 Signing is cloud-managed, so no distribution certificate lives on your Mac. The iPhone, iPad and Mac come from one App Store Connect record (`dev.fhdamd.Jamaal`). The repository and ThreadsKit are public, so no extra repository access is needed.
@@ -116,4 +118,4 @@ Branch from the release tag, fix and test it through the normal issue and PR, me
 3. **Create the two workflows** with the table above. In the workflow editor: *Environment* (Xcode and macOS versions), *Start Conditions* (delete the default branch condition and add **Tag Changes**), *Actions* (+ **Archive**, once for iOS and once for macOS, scheme `Jamaal`), *Post-Actions* (+ **TestFlight Internal Testing** and **External Testing**, picking the groups).
 4. **TestFlight (you):** an external group with the public link on, plus the test details, the support and privacy URLs, and a contact (see the checklist above).
 5. **First run:** push `beta-1.0-1` on a commit you've tested, then confirm the build number, the TestFlight upload and the Mac build all work, and that the scheme was found. Fix anything before the website link goes out.
-6. **Repository:** `TestFlight/WhatToTest.en-US.txt` and the pull-request template are in; `ci_scripts/` stays empty unless a build needs a script.
+6. **Repository:** `TestFlight/WhatToTest.en-US.txt` and the pull-request template are in; `ci_scripts/` holds only `ci_post_clone.sh` (the App Store marker, #346) unless a build needs a script.
