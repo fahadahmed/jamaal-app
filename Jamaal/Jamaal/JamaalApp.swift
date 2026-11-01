@@ -22,7 +22,6 @@ struct JamaalApp: App {
     @AppStorage(AppPreferences.Keys.theme, store: AppPreferences.defaults) private var theme = AppTheme.system.rawValue
     @State private var reminders = ReminderCenter()
     @State private var storefront = Storefront()
-    @State private var settingsRouter = SettingsRouter()
     private var notificationDelegate: NotificationDelegate { AppBootstrap.notificationDelegate }
 
     init() {
@@ -57,7 +56,6 @@ struct JamaalApp: App {
                         .modelContainer(container)
                         .environment(reminders)
                         .environment(storefront)
-                        .environment(settingsRouter)
                         .task { await storefront.start() }
                         .onAppear {
                             reminders.storefront = storefront
@@ -101,7 +99,6 @@ struct JamaalApp: App {
                     .modelContainer(container)
                     .environment(reminders)
                     .environment(storefront)
-                    .environment(settingsRouter)
                     .environment(\.threads, JamaalPalette())
                     .preferredColorScheme(AppTheme(rawValue: theme)?.scheme)
             }

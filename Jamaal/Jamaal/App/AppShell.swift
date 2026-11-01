@@ -23,7 +23,6 @@ struct AppShell: View {
     @State private var gate = AccessGate()
     #if os(macOS)
     @Environment(\.openSettings) private var openSettings
-    @Environment(SettingsRouter.self) private var settingsRouter
     #endif
     @State private var clock = Date.now
     /// The shell's width inside the safe area. Regular width that is too narrow for two panes (an iPhone Duo held fully open in portrait,
@@ -97,7 +96,7 @@ struct AppShell: View {
     private func show(_ tab: AppTab, pane: SettingsPane? = nil) {
         #if os(macOS)
         if tab == .settings {
-            if let pane { settingsRouter.show(pane) }
+            if let pane { SettingsRouter.shared.show(pane) }
             openSettings()
             return
         }

@@ -62,6 +62,19 @@ enum SettingsPane: String, CaseIterable, Identifiable, Hashable {
 @MainActor
 @Observable
 final class SettingsRouter {
+    /// The one the app uses: the main window and the Settings window read it directly. (Passing it down through `.environment` on the
+    /// main window left the Mac app with no window at all, so it is not an environment value.)
+    static let shared: SettingsRouter = {
+        #if DEBUG
+        // UI tests and the gallery leave nothing behind, and start at the first pane.
+        if DebugLaunch.inMemory, let suite = UserDefaults(suiteName: "JamaalInMemorySettingsPane") {
+            suite.removePersistentDomain(forName: "JamaalInMemorySettingsPane")
+            return SettingsRouter(defaults: suite)
+        }
+        #endif
+        return SettingsRouter()
+    }()
+
     var pane: SettingsPane { didSet { defaults.set(pane.rawValue, forKey: SettingsPane.storageKey) } }
     private let defaults: UserDefaults
 

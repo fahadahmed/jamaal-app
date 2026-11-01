@@ -16,7 +16,7 @@ struct MacSettingsWindow: View {
     @Environment(\.threads) private var threads
     @Environment(\.modelContext) private var context
     @Environment(Storefront.self) private var store
-    @Environment(SettingsRouter.self) private var router
+    @State private var router = SettingsRouter.shared
     @Query(sort: \UserSettings.createdAt) private var settingsRows: [UserSettings]
     @State private var gate = AccessGate()
     @State private var showingPaywall = false
