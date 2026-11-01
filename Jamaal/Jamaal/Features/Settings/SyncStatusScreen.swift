@@ -26,6 +26,14 @@ struct SyncStatusScreen: View {
     var body: some View {
         let now = Date.now
         let activity = monitor.activity
+        page(now: now, activity: activity)
+        .task { await monitor.refreshAccount() }
+    }
+
+    @ViewBuilder private func page(now: Date, activity: SyncActivity) -> some View {
+        #if os(macOS)
+        macForm(now: now, activity: activity)
+        #else
         SettingsPage(title: "iCloud sync") {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 Text(SyncStatusCopy.headline(isOn: monitor.isOn, account: monitor.account, activity: activity, now: now))
@@ -77,7 +85,7 @@ struct SyncStatusScreen: View {
                     .threadsType(.body).foregroundStyle(threads.ink2)
             }
         }
-        .task { await monitor.refreshAccount() }
+        #endif
     }
 
     private func line(_ title: String, _ value: String) -> some View {
@@ -118,3 +126,60 @@ struct SyncStatusScreen: View {
 private extension String {
     var capitalizedFirst: String { prefix(1).uppercased() + dropFirst() }
 }
+
+#if os(macOS)
+// MARK: The Mac form (#369)
+
+/// The same information as the iPhone page, as a grouped Mac form: the headline, the account and last sent and received, the last problem
+/// with its hint, and Copy, Share and Email support.
+extension SyncStatusScreen {
+    fileprivate func macForm(now: Date, activity: SyncActivity) -> some View {
+        Form {
+            Section {
+                Text(SyncStatusCopy.headline(isOn: monitor.isOn, account: monitor.account, activity: activity, now: now))
+                    .threadsType(.body).foregroundStyle(threads.ink).fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("syncHeadline")
+            }
+            if monitor.isOn {
+                Section {
+                    macValue("iCloud account", SyncStatusCopy.accountText(monitor.account).capitalizedFirst)
+                    macValue("Last received", SyncStatusCopy.when(activity.lastImportAt, now: now).capitalizedFirst)
+                    macValue("Last sent", SyncStatusCopy.when(activity.lastExportAt, now: now).capitalizedFirst)
+                    if let error = activity.lastError, let kind = activity.lastErrorKind {
+                        VStack(alignment: .leading, spacing: ThreadsSpace.hair) {
+                            Text("Last problem").threadsType(.body).foregroundStyle(threads.ink)
+                            Text("\(error) (\(SyncStatusCopy.kindText(kind)), \(SyncStatusCopy.when(activity.lastErrorAt, now: now)))")
+                                .threadsType(.meta).foregroundStyle(threads.ink2).fixedSize(horizontal: false, vertical: true)
+                            if let hint = SyncStatusCopy.hint(forError: error, kind: kind) {
+                                Text(hint).threadsType(.meta).foregroundStyle(threads.ink).fixedSize(horizontal: false, vertical: true)
+                                    .accessibilityIdentifier("syncProblemHint")
+                            }
+                        }
+                        .accessibilityElement(children: .combine)
+                    }
+                } footer: {
+                    Text("Changes can take a minute to travel. Open Jamaal on both devices and give it a moment.")
+                        .threadsType(.meta).foregroundStyle(threads.ink2)
+                }
+            }
+            Section {
+                LabeledContent {
+                    HStack {
+                        Button(copied ? "Copied" : "Copy details", action: copy).accessibilityIdentifier("copySyncDetails")
+                        ShareLink(item: detailsText) { Text("Share details") }.accessibilityIdentifier("shareSyncDetails")
+                        Button("Email support") { if let url = SupportMail.url(details: detailsText) { openURL(url) } }
+                            .buttonStyle(.borderedProminent).accessibilityIdentifier("emailSupport")
+                    }
+                } label: { MacRowLabel("Get help", note: "Opens a message to \(SupportMail.address) with the details filled in: no titles, notes or places.") }
+            }
+        }
+        .macSettingsForm()
+    }
+
+    private func macValue(_ title: String, _ value: String) -> some View {
+        LabeledContent {
+            Text(value).threadsType(.body).foregroundStyle(threads.ink2)
+        } label: { Text(title).threadsType(.body).foregroundStyle(threads.ink) }
+    }
+}
+#endif
