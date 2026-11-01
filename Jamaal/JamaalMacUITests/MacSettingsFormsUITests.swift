@@ -12,9 +12,9 @@ final class MacSettingsFormsUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
 
     @MainActor
-    private func launch() -> XCUIApplication {
+    private func launch(_ extra: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalDayStartMinute", "0"]
+        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalDayStartMinute", "0"] + extra
         app.launch()
         app.activate()
         XCTAssertTrue(app.windows.firstMatch.waitForExistence(timeout: 20))
@@ -138,6 +138,43 @@ final class MacSettingsFormsUITests: XCTestCase {
         XCTAssertEqual("\(cards.value ?? "")", before)
     }
 
+    // MARK: Subscription, iCloud sync and Privacy and your data (#369)
+
+    @MainActor
+    func testTheSubscriptionPaneHasItsStatusItsPlansAndItsLinks() throws {
+        let app = launch(["-JamaalAccess", "trial:9"])
+        _ = openSettings(app)
+        _ = goTo("Subscription", titled: "Subscription", in: app)
+        XCTAssertTrue(element("subscriptionLabel", in: app).waitForExistence(timeout: 10))
+        XCTAssertEqual((element("subscriptionLabel", in: app).value as? String) ?? element("subscriptionLabel", in: app).label, "FREE TRIAL")
+        for id in ["subscriptionLine", "seePlans", "restorePurchases", "manageSubscription", "termsOfUse", "privacyPolicy"] {
+            XCTAssertTrue(element(id, in: app).exists, id)
+        }
+    }
+
+    @MainActor
+    func testTheICloudPaneShowsItsStatusAndTheWaysToGetHelp() throws {
+        let app = launch()
+        _ = openSettings(app)
+        _ = goTo("iCloud", titled: "iCloud sync", in: app)
+        XCTAssertTrue(element("syncHeadline", in: app).waitForExistence(timeout: 10))
+        for id in ["copySyncDetails", "shareSyncDetails", "emailSupport"] { XCTAssertTrue(element(id, in: app).exists, id) }
+    }
+
+    @MainActor
+    func testThePrivacyPaneOffersExportAndDeletesOnlyBehindAConfirmation() throws {
+        let app = launch()
+        _ = openSettings(app)
+        let window = goTo("Privacy", titled: "Privacy and your data", in: app)
+        XCTAssertTrue(element("privacyStatement", in: app).waitForExistence(timeout: 10))
+        XCTAssertTrue(element("exportData", in: app).exists)
+        element("deleteData", in: app).click()
+        let sheet = window.sheets.firstMatch.exists ? window.sheets.firstMatch : app.sheets.firstMatch
+        XCTAssertTrue(sheet.waitForExistence(timeout: 5), "the first confirmation appears")
+        sheet.buttons["Cancel"].click()                                           // nothing is deleted
+        XCTAssertTrue(element("privacyStatement", in: app).waitForExistence(timeout: 5), "and the pane is as it was")
+    }
+
     // MARK: A look at them
 
     /// Saves a picture of each pane with the test results, so the forms can be looked at (it asserts nothing).
@@ -156,5 +193,10 @@ final class MacSettingsFormsUITests: XCTestCase {
         let appearance = goTo("Appearance", titled: "Appearance", in: app)
         sleep(1)
         let look = XCTAttachment(screenshot: appearance.screenshot()); look.name = "appearance"; look.lifetime = .keepAlways; add(look)
+        for (button, title, name) in [("Subscription", "Subscription", "subscription"), ("iCloud", "iCloud sync", "icloud"), ("Privacy", "Privacy and your data", "privacy")] {
+            let pane = goTo(button, titled: title, in: app)
+            sleep(1)
+            let picture = XCTAttachment(screenshot: pane.screenshot()); picture.name = name; picture.lifetime = .keepAlways; add(picture)
+        }
     }
 }

@@ -27,12 +27,14 @@ final class MacSubscriptionUITests: XCTestCase {
         app.descendants(matching: .any).matching(identifier: id).firstMatch
     }
 
+    /// ⌘, opens the Settings window (#366); the Subscription pane is one of its toolbar buttons.
     @MainActor
     private func openSubscription(_ app: XCUIApplication) {
-        app.typeKey(",", modifierFlags: .command)                                  // Settings, from the app menu's shortcut
-        let row = element("settings-subscription", in: app)
-        XCTAssertTrue(row.waitForExistence(timeout: 15))
-        row.click()
+        app.typeKey(",", modifierFlags: .command)
+        XCTAssertTrue(app.windows["Capacity and day"].waitForExistence(timeout: 15), "the Settings window opens")
+        let inToolbar = app.toolbars.buttons["Subscription"]
+        (inToolbar.exists ? inToolbar : app.buttons["Subscription"]).click()
+        XCTAssertTrue(app.windows["Subscription"].waitForExistence(timeout: 10), "on the Subscription pane")
     }
 
     /// The plans need room: both plans, the renewal wording and its links, the button, Restore and Not now, without scrolling.
@@ -46,8 +48,11 @@ final class MacSubscriptionUITests: XCTestCase {
         let sheet = app.sheets.firstMatch
         XCTAssertTrue(sheet.exists)
         XCTAssertGreaterThanOrEqual(sheet.frame.height, 560, "the sheet opens at the page height, not a small box")
-        XCTAssertTrue(app.windows.firstMatch.frame.contains(subscribe.frame), "and the Subscribe button is inside the window")
-        XCTAssertTrue(element("notNow", in: app).isHittable, "with Not now reachable")
+        XCTAssertTrue(sheet.frame.contains(subscribe.frame), "and the Subscribe button is inside the sheet, with no scrolling (button \(subscribe.frame), sheet \(sheet.frame))")
+        let picture = XCTAttachment(screenshot: app.windows["Subscription"].screenshot()); picture.name = "plans-sheet"; picture.lifetime = .keepAlways; add(picture)
+        let notNow = element("notNow", in: app)
+        XCTAssertTrue(notNow.isHittable, "with Not now reachable")
+        XCTAssertTrue(sheet.frame.contains(notNow.frame), "and inside the sheet too, under Subscribe (Not now \(notNow.frame), sheet \(sheet.frame))")
     }
 
     @MainActor

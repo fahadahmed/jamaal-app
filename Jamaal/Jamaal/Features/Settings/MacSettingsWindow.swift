@@ -32,7 +32,7 @@ struct MacSettingsWindow: View {
                     .tag(pane)
             }
         }
-        .frame(width: 620, height: 560)
+        .frame(width: 620, height: 640)                     // tall enough for the plans sheet, which opens in this window
         .background(threads.app)
         .accessibilityIdentifier("macSettingsWindow")
         // The same trial and read-only rules as the main window: Settings is not a way round them.

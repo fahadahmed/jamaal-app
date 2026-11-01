@@ -31,6 +31,33 @@ struct YourDataScreen: View {
     struct ExportedFile: Identifiable { let url: URL; var id: URL { url } }
 
     var body: some View {
+        page
+        #if canImport(UIKit)
+        .sheet(item: $exported) { file in ActivityView(url: file.url).presentationDetents([.medium, .large]) }
+        #endif
+        #if os(macOS)
+        .fileExporter(isPresented: $isSaving, document: exportFile, contentType: .json, defaultFilename: PrivacyCopy.fileName(.now)) { result in
+            switch result {
+            case .success: message = PrivacyCopy.saved(records: savingRecords)
+            case .failure(let error):
+                if (error as? CocoaError)?.code != .userCancelled { message = "That couldn't be saved. Try again." }
+            }
+        }
+        #endif
+        .alert(PrivacyCopy.firstTitle, isPresented: $firstConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Continue", role: .destructive) { DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { secondConfirmation = true } }
+        } message: { Text(PrivacyCopy.firstMessage) }
+        .alert(PrivacyCopy.secondTitle, isPresented: $secondConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete everything", role: .destructive) { deleteEverything() }
+        } message: { Text(PrivacyCopy.secondMessage) }
+    }
+
+    @ViewBuilder private var page: some View {
+        #if os(macOS)
+        macForm
+        #else
         SettingsPage(title: "Your data") {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 Text(PrivacyCopy.statement).threadsType(.lede).foregroundStyle(threads.ink).accessibilityIdentifier("privacyStatement")
@@ -54,26 +81,7 @@ struct YourDataScreen: View {
                 }
             }
         }
-        #if canImport(UIKit)
-        .sheet(item: $exported) { file in ActivityView(url: file.url).presentationDetents([.medium, .large]) }
         #endif
-        #if os(macOS)
-        .fileExporter(isPresented: $isSaving, document: exportFile, contentType: .json, defaultFilename: PrivacyCopy.fileName(.now)) { result in
-            switch result {
-            case .success: message = PrivacyCopy.saved(records: savingRecords)
-            case .failure(let error):
-                if (error as? CocoaError)?.code != .userCancelled { message = "That couldn't be saved. Try again." }
-            }
-        }
-        #endif
-        .alert(PrivacyCopy.firstTitle, isPresented: $firstConfirmation) {
-            Button("Cancel", role: .cancel) {}
-            Button("Continue", role: .destructive) { DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { secondConfirmation = true } }
-        } message: { Text(PrivacyCopy.firstMessage) }
-        .alert(PrivacyCopy.secondTitle, isPresented: $secondConfirmation) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete everything", role: .destructive) { deleteEverything() }
-        } message: { Text(PrivacyCopy.secondMessage) }
     }
 
     private func export() {
@@ -116,5 +124,35 @@ private struct ActivityView: UIViewControllerRepresentable {
     let url: URL
     func makeUIViewController(context: Context) -> UIActivityViewController { UIActivityViewController(activityItems: [url], applicationActivities: nil) }
     func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
+}
+#endif
+
+#if os(macOS)
+// MARK: The Mac form (#369)
+
+/// The same page as the iPhone, as a grouped Mac form: what is kept, Export my data (always available), and Delete my data behind its two confirmations.
+extension YourDataScreen {
+    fileprivate var macForm: some View {
+        Form {
+            Section {
+                Text(PrivacyCopy.statement).threadsType(.body).foregroundStyle(threads.ink).fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("privacyStatement")
+            }
+            Section {
+                LabeledContent {
+                    Button("Export my data…", action: export).accessibilityIdentifier("exportData")
+                } label: { MacRowLabel("Export my data") }
+                Text(message ?? PrivacyCopy.exportNote).threadsType(.meta).foregroundStyle(threads.ink2).fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("exportMessage")
+            }
+            Section {
+                LabeledContent {
+                    Button("Delete my data…", role: .destructive) { firstConfirmation = true }.tint(threads.alert).accessibilityIdentifier("deleteData")
+                } label: { MacRowLabel("Delete my data") }
+                Text(PrivacyCopy.deleteNote).threadsType(.meta).foregroundStyle(threads.ink2).fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .macSettingsForm()
+    }
 }
 #endif

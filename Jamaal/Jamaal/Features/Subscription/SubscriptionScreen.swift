@@ -24,6 +24,15 @@ struct SubscriptionScreen: View {
         let renews = store.renewsOn.map { $0.formatted(.dateTime.day().month(.wide).locale(.current)) }
         let status = SubscriptionCopy.status(access, trialStart: start, renewsOn: renews, isBeta: store.isBeta,
                                              purchaseTesting: store.canTestPurchases, hasSubscription: store.entitlementActive)
+        page(access: access, status: status)
+        .task { await store.refresh() }
+        .sheetSized(isPresented: $showingPlans) { PaywallScreen() }
+    }
+
+    @ViewBuilder private func page(access: AccessState, status: (label: String, line: String)) -> some View {
+        #if os(macOS)
+        macForm(access: access, status: status)
+        #else
         SettingsPage(title: "Subscription") {
             VStack(alignment: .leading, spacing: ThreadsSpace.section) {
                 VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
@@ -60,8 +69,7 @@ struct SubscriptionScreen: View {
                 }
             }
         }
-        .task { await store.refresh() }
-        .sheetSized(isPresented: $showingPlans) { PaywallScreen() }
+        #endif
     }
 
     private func row(_ title: String, trailing: String? = nil, id: String, action: @escaping () -> Void) -> some View {
@@ -77,3 +85,58 @@ struct SubscriptionScreen: View {
         .overlay(alignment: .bottom) { Divider().overlay(threads.line) }
     }
 }
+
+#if os(macOS)
+// MARK: The Mac form (#369)
+
+/// The same settings as the iPhone page, as a grouped Mac form: where things stand, the plans, and the App Store's own links.
+extension SubscriptionScreen {
+    fileprivate func macForm(access: AccessState, status: (label: String, line: String)) -> some View {
+        Form {
+            Section {
+                VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
+                    Text(status.label).threadsType(.label).foregroundStyle(threads.ink2).accessibilityIdentifier("subscriptionLabel")
+                    Text(status.line).threadsType(.body).foregroundStyle(threads.ink).fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("subscriptionLine")
+                }
+                if access != .subscribed || (store.canTestPurchases && !store.entitlementActive) {
+                    Button("See plans") { showingPlans = true }.buttonStyle(.borderedProminent).accessibilityIdentifier("seePlans")
+                }
+            }
+            if store.isBeta {
+                Section {
+                    Toggle(isOn: Binding(get: { store.purchaseTesting }, set: { store.purchaseTesting = $0 })) {
+                        MacRowLabel("Test purchases", note: "Beta only, on this device. Nothing is charged.")
+                    }
+                    .toggleStyle(.switch).accessibilityIdentifier("betaPurchaseTesting")
+                }
+            }
+            Section {
+                macLink("Restore purchases", id: "restorePurchases") { Task { await store.restore() } }
+                macLink("Manage in the App Store", external: true, id: "manageSubscription") {
+                    if let url = URL(string: "https://apps.apple.com/account/subscriptions") { openURL(url) }
+                }
+                macLink(SubscriptionCopy.termsOfUseTitle, external: true, id: "termsOfUse") { openURL(SubscriptionLinks.termsOfUse) }
+                macLink(SubscriptionCopy.privacyPolicyTitle, external: true, id: "privacyPolicy") { openURL(SubscriptionLinks.privacyPolicy) }
+            }
+            if let message = store.message {
+                Section { MacFormNote(message, isError: true).accessibilityIdentifier("subscriptionMessage") }
+            }
+        }
+        .macSettingsForm()
+    }
+
+    /// A row that is one button across the whole row: its title, and an arrow at the right when it leaves the app.
+    private func macLink(_ title: String, external: Bool = false, id: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Text(title).threadsType(.body).foregroundStyle(threads.ink)
+                Spacer()
+                if external { Image(systemName: "arrow.up.right").font(.footnote).foregroundStyle(threads.ink3) }
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain).accessibilityIdentifier(id)
+    }
+}
+#endif

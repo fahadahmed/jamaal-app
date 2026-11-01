@@ -43,9 +43,23 @@ Light appearance this time.
 - **Notifications and times:** a system switch for this Mac's reminders (it asks for permission when first turned on); the evening planning and morning times are field time pickers, with the morning time shown only while its switch is on; the warning card (when reminders can't arrive) is a section with a prominent button.
 - **Appearance:** the theme is a segmented System / Light / Dark picker; Text size opens System Settings; suggestion cards is a system switch.
 
+## As built (slice 4, #369)
+
+<img src="../images/mac-settings-subscription.png" width="460" alt="Subscription: the trial status with See plans, then Restore purchases, Manage in the App Store, Terms of Use and Privacy Policy as plain rows">
+
+<img src="../images/mac-settings-icloud.png" width="460" alt="iCloud sync: the status line, then Copy details, Share details and Email support">
+
+<img src="../images/mac-settings-privacy.png" width="460" alt="Privacy and your data: what is kept, Export my data, and Delete my data in the alert colour">
+
+- **Subscription:** the status (and Test purchases, in a beta) at the top, **See plans** opening the plans sheet, then Restore, Manage in the App Store, the Terms of Use and the Privacy Policy as one-button rows. The plans sheet opens in the Settings window, so the window is 640 pt tall inside its toolbar and the Mac paywall has less top padding: both plans, the renewal wording, Subscribe, Restore and Not now fit the sheet without scrolling.
+- **iCloud sync:** the headline, then (when sync is on) the account and last received and sent with the last problem and its hint, and Copy details, Share details and Email support.
+- **Privacy and your data:** the statement, Export my data (a save panel) and Delete my data (the alert colour, behind its two confirmations).
+
+All four slices are built: the Settings window is complete.
+
 ## Slices
 
 1. The window, ⌘,, routing, last pane restored, access rules, panes show today's screens (#366).
 2. Capacity and day, and Categories as Mac forms (#367): done.
 3. Notifications and Appearance (#368): done.
-4. Subscription, iCloud sync and Privacy and your data (#369).
+4. Subscription, iCloud sync and Privacy and your data (#369): done.

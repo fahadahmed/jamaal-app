@@ -59,12 +59,21 @@ struct PaywallScreen: View {
             }
             .threadsType(.row).foregroundStyle(threads.ink).buttonStyle(.plain)
         }
-        .padding(.horizontal, ThreadsSpace.gutter).padding(.top, verticalSizeClass == .compact ? 24 : 72).padding(.bottom, ThreadsSpace.section)
+        .padding(.horizontal, ThreadsSpace.gutter).padding(.top, topPadding).padding(.bottom, ThreadsSpace.section)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(threads.app.ignoresSafeArea())
         .task { await store.refresh() }
         .interactiveDismissDisabled(store.isWorking)
+    }
+
+    /// An iPhone leaves room for the status bar and a sheet's grabber; a Mac sheet has neither, and its height is short (#369).
+    private var topPadding: CGFloat {
+        #if os(macOS)
+        28
+        #else
+        verticalSizeClass == .compact ? 24 : 72
+        #endif
     }
 
     private func planCard(_ offer: StoreOffer) -> some View {
