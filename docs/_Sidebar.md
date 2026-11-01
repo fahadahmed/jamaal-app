@@ -39,6 +39,7 @@
 - [Claude Design brief](design/claude-design-brief)
 - [Design v4 handoff](design/README)
 - [Design v4 reconciliation](design/v4-reconciliation)
+- [Mac Settings window](design/mac-settings-window)
 - [Brief: widgets and the watch](design/widgets-and-watch-brief)
 - [Brief: the TestFlight email](design/testflight-emails-brief)
 - [Widgets and watch reconciliation](design/widgets-and-watch-reconciliation)

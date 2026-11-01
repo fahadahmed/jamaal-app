@@ -22,7 +22,8 @@ struct SettingsScreen: View {
     /// At regular width the picked section's screen is shown beside the list instead of pushed.
     @State private var selected: Destination?
 
-    enum Destination: Hashable { case capacity, notifications, categories, appearance, subscription, sync, yourData }
+    /// The sections, shared with the Mac Settings window's panes.
+    typealias Destination = SettingsPane
 
     var body: some View {
         let _ = categories.map { [$0.name, $0.isArchived ? "1" : "0"] }

@@ -82,11 +82,12 @@ final class MacShellUITests: XCTestCase {
     }
 
     @MainActor
-    func testCommandCommaOpensSettingsInTheMainWindow() throws {
+    func testCommandCommaOpensTheSettingsWindow() throws {
         let app = launch()
         XCTAssertTrue(element("addButton", in: app).waitForExistence(timeout: 15))
         app.typeKey(",", modifierFlags: .command)
-        XCTAssertTrue(element("settings-capacity", in: app).waitForExistence(timeout: 8), "⌘, shows Settings")
+        XCTAssertTrue(element("macSettingsWindow", in: app).waitForExistence(timeout: 8), "⌘, opens the Settings window")
+        XCTAssertFalse(element("settings-capacity", in: app).exists, "and the main window has no Settings list of its own")
     }
 
     @MainActor

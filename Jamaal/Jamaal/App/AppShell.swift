@@ -21,6 +21,10 @@ struct AppShell: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var showingPaywall = false
     @State private var gate = AccessGate()
+    #if os(macOS)
+    @Environment(\.openSettings) private var openSettings
+    @Environment(SettingsRouter.self) private var settingsRouter
+    #endif
     @State private var clock = Date.now
     /// The shell's width inside the safe area. Regular width that is too narrow for two panes (an iPhone Duo held fully open in portrait,
     /// 669 pt) is laid out as compact by every screen inside, so Settings, Anchors, Today and the rest each draw one column (`PaneLayout`).
@@ -89,6 +93,18 @@ struct AppShell: View {
 
     private var liveSession: WorkSession? { liveSessions.min { $0.startedAt < $1.startedAt } }
 
+    /// Goes to a section. On a Mac Settings is its own window, opened at the pane asked for (or the one it was left at).
+    private func show(_ tab: AppTab, pane: SettingsPane? = nil) {
+        #if os(macOS)
+        if tab == .settings {
+            if let pane { settingsRouter.show(pane) }
+            openSettings()
+            return
+        }
+        #endif
+        selection = (tab == .anchors && AppNavigation.showsAnchorsSegment(sizeClass: sizeClass)) ? .habits : tab
+    }
+
     @ViewBuilder private var shell: some View {
         #if os(macOS)
         macShell
@@ -145,7 +161,7 @@ struct AppShell: View {
             case .habits: HabitsScreen()
             case .anchors: AnchorsScreen()
             case .wellbeing: WellbeingScreen()
-            case .settings: SettingsScreen()
+            case .settings: Color.clear              // never selected on a Mac: Settings is its own window (#366)
             }
         }
     }
@@ -159,7 +175,7 @@ struct AppShell: View {
         .focusedSceneValue(\.jamaalActions, JamaalCommandActions(
             newTask: { selection = .today; commandCenter.requestNewTask() },
             planTomorrow: planTomorrow,
-            go: { tab in selection = (tab == .anchors && AppNavigation.showsAnchorsSegment(sizeClass: sizeClass)) ? .habits : tab }))
+            go: { tab in show(tab) }))
         // The chip (or, for five seconds after Done, its Undo toast) sits above the tab bar on every tab. A Mac has no tab
         // bar: its chip is in the sidebar, and only the Undo toast comes up from the bottom of the window.
         .focusAccessory(isEnabled: windowChipShown || coordinator.toast != nil) {
@@ -196,7 +212,7 @@ struct AppShell: View {
             showingPaywall = true
         }
         .onChange(of: scenePhase) { _, phase in if phase == .active { clock = .now } }
-        .environment(\.openTab) { selection = $0 }
+        .environment(\.openTab) { show($0) }
         .onAppear {
             coordinator.context = context
             #if DEBUG
@@ -225,7 +241,7 @@ struct AppShell: View {
         .onChange(of: reminders.route) { _, route in
             switch route {
             case .planning, .today, .task: selection = .today
-            case .subscription: selection = .settings
+            case .subscription: show(.settings, pane: .subscription)
             case nil: break
             }
         }
