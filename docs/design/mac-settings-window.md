@@ -20,9 +20,21 @@ On the Mac, ⌘, used to switch the main window to the iPhone-style Settings lis
 
 iPhone, iPad and Duo keep the Settings list and pushed pages exactly as they are.
 
+## As built (slice 2, #367)
+
+Screenshots from the Mac UI tests (Dark appearance). The window is 620 pt wide; the form scrolls inside it.
+
+<img src="../images/mac-settings-capacity-and-day.png" width="460" alt="Capacity and day: a grouped form with the normal day as a system stepper and a segmented Low, Medium, High picker for each weekday">
+
+<img src="../images/mac-settings-categories.png" width="460" alt="Categories: each category is a coloured dot, its name as an editable field and Archive; Add category sits under the list">
+
+- **Capacity and day:** the normal day is a system stepper; each weekday is a segmented Low / Medium / High picker (the weekday is its label, written once); the working day is two field date pickers; the rollover is a menu.
+- **Categories:** the name is edited in place (Return saves; a refused name, blank or a duplicate, goes back); the dot opens a menu of the five colours; Archive is on the row; rows reorder by dragging or from the right-click menu; Add category sits under the list; Archived is a disclosure group with Restore.
+- Same access rules as before: a locked action shows the calm locked sheet.
+
 ## Slices
 
 1. The window, ⌘,, routing, last pane restored, access rules, panes show today's screens (#366).
-2. Capacity and day, and Categories as Mac forms (#367).
+2. Capacity and day, and Categories as Mac forms (#367): done.
 3. Notifications and Appearance (#368).
 4. Subscription, iCloud sync and Privacy and your data (#369).

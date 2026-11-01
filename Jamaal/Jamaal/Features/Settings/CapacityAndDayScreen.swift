@@ -20,10 +20,15 @@ struct CapacityAndDayScreen: View {
     private var boundary: DayBoundary { TodayDay.boundary(in: context) }
 
     var body: some View {
+        #if os(macOS)
+        macForm
+            .task(id: rows.first?.mediumDayMinutes) { refreshSuggestion() }
+        #else
         SettingsPage(title: "Capacity and day") {
             if let settings = rows.first { content(settings) }
         }
         .task(id: rows.first?.mediumDayMinutes) { refreshSuggestion() }
+        #endif
     }
 
     @ViewBuilder
@@ -195,3 +200,96 @@ struct CapacityAndDayScreen: View {
         if let suggestion { try? DaySettings.logShown(suggestion, in: context, now: .now) }
     }
 }
+
+#if os(macOS)
+// MARK: The Mac form (#367)
+
+/// The same settings as the iPhone page, as a grouped Mac form with the system's controls at their regular size: a stepper for the normal
+/// day, a segmented picker for each weekday, field date pickers for the working day, and a menu for the rollover.
+extension CapacityAndDayScreen {
+    @ViewBuilder fileprivate var macForm: some View {
+        if let settings = rows.first {
+            Form {
+                Section { normalDayRows(settings) } header: { MacSectionHeader("Normal day") }
+                Section {
+                    ForEach(1...7, id: \.self) { day in
+                        Picker(selection: levelBinding(settings, day)) {
+                            Text("Low").tag(CapacityLevel.low)
+                            Text("Medium").tag(CapacityLevel.medium)
+                            Text("High").tag(CapacityLevel.high)
+                        } label: { Text(SettingsCopy.weekdays[day - 1]).threadsType(.body).foregroundStyle(threads.ink) }
+                        .pickerStyle(.segmented)
+                        .accessibilityIdentifier("level-\(day)")
+                    }
+                } header: { MacSectionHeader("Usual level by weekday") }
+                Section {
+                    timePicker("Starts", settings.dayStartMinute, id: "dayStart") { setDay(settings, start: $0, end: settings.dayEndMinute) }
+                    timePicker("Ends", settings.dayEndMinute, id: "dayEnd") { setDay(settings, start: settings.dayStartMinute, end: $0) }
+                    if let planning = DaySettings.planningBeforeDayEnd(settings) {
+                        MacFormNote(SettingsCopy.planningNote(planningMinute: planning)).accessibilityIdentifier("planningNote")
+                    }
+                } header: { MacSectionHeader("Working day") }
+                Section { rolloverRow(settings) } header: { MacSectionHeader("Advanced") }
+                if let message {
+                    Section { MacFormNote(message, isError: true).accessibilityIdentifier("settingsMessage") }
+                }
+            }
+            .macSettingsForm()
+        } else {
+            Color.clear
+        }
+    }
+
+    @ViewBuilder private func normalDayRows(_ settings: UserSettings) -> some View {
+        LabeledContent {
+            HStack(spacing: ThreadsSpace.tight) {
+                Text(TodayCopy.duration(settings.mediumDayMinutes)).threadsType(.body).foregroundStyle(threads.ink).monospacedDigit()
+                    .accessibilityIdentifier("normalDay")
+                Stepper("Normal day", value: Binding(
+                    get: { settings.mediumDayMinutes },
+                    set: { new in run { try DaySettings.setNormalDay(new, on: settings) } }),
+                        in: DaySettings.normalDayRange, step: DaySettings.normalDayStep)
+                    .labelsHidden().accessibilityIdentifier("normalDayStepper")
+            }
+        } label: { MacRowLabel("Normal day", note: "Task time on a medium day") }
+        if let suggestion {
+            LabeledContent {
+                HStack {
+                    Button("Not now") { decline(suggestion) }.accessibilityIdentifier("declineSuggestion")
+                    Button("Set \(TodayCopy.duration(suggestion))") { accept(suggestion, settings) }
+                        .buttonStyle(.borderedProminent).accessibilityIdentifier("setSuggestion")
+                }
+            } label: { MacFormNote(SettingsCopy.suggestion(suggestion)) }
+        }
+        MacFormNote(SettingsCopy.levels(mediumDayMinutes: settings.mediumDayMinutes)).accessibilityIdentifier("levels")
+    }
+
+    private func levelBinding(_ settings: UserSettings, _ day: Int) -> Binding<CapacityLevel> {
+        Binding(get: { settings.defaultLevel(forISOWeekday: day) },
+                set: { if requireAccess(.changeDaySettings) { settings.setDefaultLevel($0, forISOWeekday: day) } })
+    }
+
+    private func timePicker(_ title: String, _ minute: Int, id: String, set: @escaping (Int) -> Void) -> some View {
+        DatePicker(selection: Binding(get: { HabitForm.date(forMinute: minute) }, set: { set(HabitForm.minute(of: $0)) }),
+                   displayedComponents: .hourAndMinute) {
+            Text(title).threadsType(.body).foregroundStyle(threads.ink)
+        }
+        .accessibilityIdentifier(id)
+    }
+
+    private func rolloverRow(_ settings: UserSettings) -> some View {
+        let now = SettingsCopy.minuteOfDay(.now, timeZone: boundary.timeZone)
+        let availability = DaySettings.rolloverAvailability(settings, nowMinute: now)
+        let options = SettingsCopy.rolloverOptions(availability)
+        let enabled: Bool = { if case .upTo = availability { true } else { false } }()
+        return Picker(selection: Binding(get: { settings.rolloverMinute }, set: { setRollover(settings, $0, now: now) })) {
+            ForEach(options.filter { $0.enabled || $0.minute == settings.rolloverMinute }, id: \.minute) { option in
+                Text(PlanningCopy.clock(option.minute)).tag(option.minute)
+            }
+        } label: { MacRowLabel("A new day starts at", note: SettingsCopy.rolloverNote(availability)) }
+        .pickerStyle(.menu)
+        .disabled(!enabled)
+        .accessibilityIdentifier("rollover")
+    }
+}
+#endif
