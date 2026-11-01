@@ -65,6 +65,7 @@
 		EC072FD93066637B000ED989 /* JamaalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamaalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC0B00000000000000000001 /* JamaalMacUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamaalMacUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC0C00000000000000000001 /* JamaalWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = JamaalWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		ECD06FB430960A8200E89244 /* Jamaal.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; name = Jamaal.storekit; path = StoreKit/Jamaal.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -165,6 +166,7 @@
 		EC072FB530666379000ED989 = {
 			isa = PBXGroup;
 			children = (
+				ECD06FB430960A8200E89244 /* Jamaal.storekit */,
 				EC072FC03066637A000ED989 /* Jamaal */,
 				EC072FD23066637B000ED989 /* JamaalTests */,
 				EC072FDC3066637B000ED989 /* JamaalUITests */,

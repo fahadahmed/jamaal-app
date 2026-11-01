@@ -3,7 +3,9 @@
 Working file for planning and publishing. Status values: `published`, `built` (images made, not posted), `drafted` (draft in Buffer), `planned`.
 Dates marked **TBC** were not recorded and need confirming. Update this file in the same PR as each post.
 
-**Cadence: one feed post every 2 days to build hype**, from Mon 26 Oct. Each post goes out the same day as its article. Stories fill the days in between. Posts 4 to 6 are assumed not yet posted; if one is already on Instagram, drop it and move the later posts up.
+**Cadence: one feed post every 2 days to build hype.** Stories fill the days in between. Re-based on Sun 1 Nov after checking Buffer: only post 6 (the beta carousel) and Story 1 went out in the week of 25 Oct, so posts 4 and 5 are overdue and the rest move up. **The dates marked (proposed) are a suggestion and need confirming.** Posts 7, 9 and 10 stay on their article dates.
+
+Last checked against Buffer: Sun 1 Nov. Nothing is drafted or scheduled in Buffer right now.
 
 ## Feed posts, carousels and reels
 
@@ -11,11 +13,11 @@ Dates marked **TBC** were not recorded and need confirming. Update this file in 
 |---|------|--------|------|--------|----------------|
 | 2 | How much it matters (Low / Medium / High) | Carousel 1080x1350 | Thu 15 Oct | published | none |
 | 3 | Founder post | Carousel, 3 slides | Sat 17 Oct | built (confirm posted) | `why-i-built-jamaal` |
-| 4 | Several clients. One day. | Carousel, 7 slides | Wed 28 Oct | built | `planning-across-clients` |
-| 5 | What's an Anchor? | Carousel, 7 slides | Fri 30 Oct | built | `whats-an-anchor` |
-| 6 | The beta announcement | Carousel, 4 slides | Mon 26 Oct | drafted (Buffer, `2026-10-25-beta-carousel/`), wording updated | `join-the-jamaal-beta` |
-| 7 | Four things, gently paced | Reel (animated Today screen) | Tue 3 Nov | planned | `how-jamaal-knows-what-fits-today` |
-| 8 | Devices carousel | Carousel | Sun 1 Nov | planned | `one-list-on-iphone-ipad-and-mac` |
+| 4 | Several clients. One day. | Carousel, 7 slides | Sun 1 Nov (proposed; was Wed 28 Oct) | built, overdue, not in Buffer yet | `planning-across-clients` |
+| 5 | What's an Anchor? | Carousel, 7 slides | Mon 9 Nov (proposed; was Fri 30 Oct) | built, overdue, not in Buffer yet | `whats-an-anchor` |
+| 6 | The beta announcement | Carousel, 4 slides, 1080x1350 | Sun 25 Oct, 7:09 pm | published (Buffer, `2026-10-25-beta-carousel/`), wording updated | `join-the-jamaal-beta` |
+| 7 | Four things, gently paced | Reel (animated Today screen) | Tue 3 Nov | planned, reel not built yet | `how-jamaal-knows-what-fits-today` |
+| 8 | Devices carousel | Carousel | Wed 11 Nov (proposed; was Sun 1 Nov) | planned, not built | `one-list-on-iphone-ipad-and-mac` |
 | 9 | Habits measured in weeks | Carousel | Thu 5 Nov | planned | `habits-measured-in-weeks` |
 | 10 | Why things keep slipping | Carousel | Sat 7 Nov | planned | `why-things-keep-slipping` |
 
@@ -25,10 +27,10 @@ Carousel 6 was rebuilt on 25 Oct with "The beta is open" on slide 1 and "Join th
 
 | # | Story | Date | Status | Link sticker |
 |---|-------|------|--------|--------------|
-| 1 | The beta is open | Sun 25 Oct | drafted (Buffer, `2026-10-25-beta-open/`) | yes, added by hand |
-| 2 | What's an Anchor? (one frame teaser for the article) | TBC | planned | yes, article link |
-| 3 | What to try first (tasks, one Anchor, Night Planning tonight) | TBC | planned | optional |
-| 4 | Feedback ask: "tell me what feels wrong" | TBC | planned | optional (reply or DM) |
+| 1 | The beta is open | Sun 25 Oct, 6:38 pm | published (Buffer, `2026-10-25-beta-open/`) | yes, added by hand |
+| 2 | What's an Anchor? (one frame teaser for the article) | Sun 8 Nov (proposed), the day before post 5 | planned | yes, article link |
+| 3 | What to try first (tasks, one Anchor, Night Planning tonight) | Wed 4 Nov (proposed) | planned | optional |
+| 4 | Feedback ask: "tell me what feels wrong" | Fri 6 Nov (proposed) | planned | optional (reply or DM) |
 | 5 | Reel teaser for 3 Nov | Mon 2 Nov | planned | no |
 
 ## Journal articles (website)
@@ -37,7 +39,7 @@ Carousel 6 was rebuilt on 25 Oct with "The beta is open" on slide 1 and "Join th
 |---------|------|--------|
 | `planning-across-clients` | 22 Oct | published |
 | `whats-an-anchor` | 22 Oct | published |
-| `join-the-jamaal-beta` | 26 Oct (with post 6) | written, needs public-link wording and minimum OS versions |
+| `join-the-jamaal-beta` | 26 Oct (with post 6; the post went out 25 Oct) | written, needs public-link wording and minimum OS versions |
 | `how-jamaal-knows-what-fits-today` | 3 Nov (with post 7) | written |
 | `habits-measured-in-weeks` | 5 Nov (with post 9) | written |
 | `why-things-keep-slipping` | 7 Nov (with post 10) | written |

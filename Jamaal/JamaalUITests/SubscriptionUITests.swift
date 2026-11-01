@@ -73,6 +73,32 @@ final class SubscriptionUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["privacyPolicy"].exists, "and so is the Privacy Policy")
     }
 
+    /// A TestFlight beta keeps full access and hides purchasing, until the tester switches test purchases on (#348).
+    @MainActor
+    func testABetaCanSwitchOnPurchaseTestingAndBuyInTheSandbox() throws {
+        let app = launch("trial:9", extra: ["-JamaalBeta"])
+        openSubscription(app)
+        XCTAssertEqual(app.staticTexts["subscriptionLabel"].label, "BETA")
+        XCTAssertFalse(app.buttons["seePlans"].exists, "no plans while the switch is off")
+        let toggle = app.switches["betaPurchaseTesting"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5), "the switch is there in a beta")
+        toggle.tap()
+        XCTAssertEqual(app.staticTexts["subscriptionLabel"].label, "BETA · PURCHASE TESTING")
+        app.buttons["seePlans"].tap()
+        XCTAssertTrue(app.buttons["subscribe"].waitForExistence(timeout: 5))
+        app.buttons["subscribe"].tap()
+        XCTAssertTrue(app.staticTexts["subscriptionLine"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["subscriptionLine"].label.hasPrefix("A sandbox subscription is active"), app.staticTexts["subscriptionLine"].label)
+    }
+
+    @MainActor
+    func testAnAppStoreBuildHasNoPurchaseTestingSwitch() throws {
+        let app = launch("trial:9")
+        openSubscription(app)
+        XCTAssertTrue(app.buttons["seePlans"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.switches["betaPurchaseTesting"].exists)
+    }
+
     @MainActor
     func testSubscribingLiftsTheLocksAndTheBannerGoes() throws {
         let app = launch("readOnly")
