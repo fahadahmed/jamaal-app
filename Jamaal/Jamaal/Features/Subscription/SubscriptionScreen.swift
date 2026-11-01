@@ -42,6 +42,8 @@ struct SubscriptionScreen: View {
                     row("Manage in the App Store", trailing: "arrow.up.right", id: "manageSubscription") {
                         if let url = URL(string: "https://apps.apple.com/account/subscriptions") { openURL(url) }
                     }
+                    row(SubscriptionCopy.termsOfUseTitle, trailing: "arrow.up.right", id: "termsOfUse") { openURL(SubscriptionLinks.termsOfUse) }
+                    row(SubscriptionCopy.privacyPolicyTitle, trailing: "arrow.up.right", id: "privacyPolicy") { openURL(SubscriptionLinks.privacyPolicy) }
                 }
                 if let message = store.message {
                     Text(message).threadsType(.body).foregroundStyle(threads.terra).accessibilityIdentifier("subscriptionMessage")
