@@ -91,6 +91,17 @@ The app side is built (StoreKit client, paywall, Settings → Subscription; #344
 5. **Attach them to the first App Store version.** A new subscription is reviewed together with an app version: on the version's page, add both under *In-App Purchases and Subscriptions* before *Submit for Review*.
 6. **Sandbox testers.** *Users and Access → Sandbox* → add a tester with an email that isn't an Apple Account. On a device, sign in under *Settings → Developer → Sandbox Apple Account*. Sandbox renewals are accelerated (a month renews in minutes), which is how renewal, cancellation and *Restore purchases* are watched.
 
+### Trying a purchase in a beta (#348)
+
+A `beta-` build keeps **full access with no purchasing** for everyone, so a public tester never meets a paywall. To try the real purchase flow with the App Store Connect products, install the beta from TestFlight and, on that one device, switch **Settings → Subscription → Test purchases** on (the switch is only there in a TestFlight build, and is off until you turn it on). Then:
+
+- **See plans** and **Restore purchases** appear. Buying goes through the App Store **sandbox**: nothing is charged, and a sandbox month renews in minutes.
+- The status reads **BETA · PURCHASE TESTING**, then *A sandbox subscription is active, and renews on …*.
+- **Access stays full either way**: no trial is started (so the first non-beta launch still claims it, once) and nothing is locked or read-only. Switching it off hides the plans again.
+- If the plans don't load, the screen says the two products need to be set up in App Store Connect and show *Ready to Submit*.
+
+This tests the purchase, the renewal and Restore. It does **not** test the trial running out or the read-only rules: those only show in a build from a `v<version>` tag (the App Store release), which is also the build to submit to App Review.
+
 ## Local builds are separate
 
 A build from your Mac (Xcode or `xcodebuild`) uses the **Development** iCloud environment, so what you do on your devices is never in TestFlight, and a TestFlight tester's data is never on yours. That is expected: say so to testers if it comes up. Keep testing each PR on your devices before merging, as now.

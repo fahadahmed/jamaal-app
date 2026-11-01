@@ -62,6 +62,24 @@ struct SubscriptionCopyTests {
         #expect(!status.line.contains("Renews"), "there is nothing to renew")
     }
 
+    @Test func aBetaWithPurchaseTestingOnSaysBuyingUsesTheSandboxAndAccessStaysFull() {
+        let off = SubscriptionCopy.status(.subscribed, trialStart: nil, renewsOn: nil, isBeta: true)
+        #expect(off.line.contains("test purchases"), "it says where the switch is")
+        let none = SubscriptionCopy.status(.subscribed, trialStart: nil, renewsOn: nil, isBeta: true, purchaseTesting: true, hasSubscription: false)
+        #expect(none.label == "BETA · PURCHASE TESTING")
+        #expect(none.line == "Buying here uses the App Store sandbox, so nothing is charged. Full access stays on either way.")
+        let active = SubscriptionCopy.status(.subscribed, trialStart: nil, renewsOn: "14 October", isBeta: true, purchaseTesting: true, hasSubscription: true)
+        #expect(active.line == "A sandbox subscription is active and renews on 14 October. Full access stays on either way.")
+        let noDate = SubscriptionCopy.status(.subscribed, trialStart: nil, renewsOn: nil, isBeta: true, purchaseTesting: true, hasSubscription: true)
+        #expect(noDate.line == "A sandbox subscription is active. Full access stays on either way.")
+    }
+
+    @Test func noPlansWhilePurchaseTestingPointsAtTheProductsNotTheBeta() {
+        let text = SubscriptionCopy.noPlans(isBeta: true, purchaseTesting: true)
+        #expect(text.contains("App Store Connect"))
+        #expect(!text.contains("doesn't have subscriptions"))
+    }
+
     @Test func noPlansSaysToCheckTheConnectionInAnAppStoreBuild() {
         #expect(SubscriptionCopy.noPlans(isBeta: false) == "Plans aren't available right now. Check your connection and try again.")
     }
