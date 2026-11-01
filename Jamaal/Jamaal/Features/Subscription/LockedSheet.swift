@@ -34,6 +34,7 @@ struct LockedSheet: View {
             .buttonStyle(.plain)
         }
         .padding(.horizontal, ThreadsSpace.gutter).padding(.top, ThreadsSpace.section)
+        .padding(.bottom, ThreadsSpace.section)                 // room under the buttons: a Mac sheet has no home-indicator inset (#371)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(threads.app)
         .presentationDetents([.height(260)])

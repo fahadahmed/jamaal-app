@@ -91,6 +91,7 @@ struct CapacityAndDayScreen: View {
                         Text("High").tag(CapacityLevel.high)
                     }
                     .pickerStyle(.segmented).frame(width: 210)
+                    .labelsHidden()                                  // a Mac segmented picker shows its label too; the row names the day (#371)
                     .accessibilityIdentifier("level-\(day)")
                 }
                 .frame(minHeight: 56)

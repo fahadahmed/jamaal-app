@@ -91,6 +91,19 @@ struct JamaalApp: App {
         .defaultSize(width: MacWindow.defaultWidth, height: MacWindow.defaultHeight)
         .commands { JamaalCommands() }
         #endif
+        #if os(macOS)
+        // The Settings window (the app menu's Settings…, ⌘,): a toolbar of panes (#366).
+        Settings {
+            if let container {
+                MacSettingsWindow()
+                    .modelContainer(container)
+                    .environment(reminders)
+                    .environment(storefront)
+                    .environment(\.threads, JamaalPalette())
+                    .preferredColorScheme(AppTheme(rawValue: theme)?.scheme)
+            }
+        }
+        #endif
     }
 
     @MainActor

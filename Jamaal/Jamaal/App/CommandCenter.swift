@@ -50,7 +50,7 @@ extension AppTab {
 }
 
 #if os(macOS)
-/// The Mac menu bar: New Task, Plan Tomorrow, the sections, and Settings in the app menu.
+/// The Mac menu bar: New Task, Plan Tomorrow and the sections. Settings… (⌘,) comes from the `Settings` scene.
 struct JamaalCommands: Commands {
     @FocusedValue(\.jamaalActions) private var actions
 
@@ -73,11 +73,6 @@ struct JamaalCommands: Commands {
                     .keyboardShortcut(KeyEquivalent(tab.commandKey), modifiers: .command)
                     .disabled(actions == nil)
             }
-        }
-        CommandGroup(replacing: .appSettings) {
-            Button("Settings…") { actions?.go(.settings) }
-                .keyboardShortcut(KeyEquivalent(AppTab.settings.commandKey), modifiers: .command)
-                .disabled(actions == nil)
         }
     }
 }
