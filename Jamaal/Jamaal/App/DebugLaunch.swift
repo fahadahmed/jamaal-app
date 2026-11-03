@@ -114,7 +114,28 @@ enum DebugLaunch {
         autoCompleted = true
         Onboarding.complete(settings, now: now)
     }
-    static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") }
+    /// `-JamaalStoreShots` is the sample data made presentable for the App Store screenshots (#362): a month of habit history with a few
+    /// honest misses, and Anchor rules without the "needs attention" and archived rows the tests use. Add `-JamaalAnchorRules` to see
+    /// the Anchors list, and `-JamaalWellbeing steady` for Wellbeing.
+    /// `-JamaalOpenHabit` and `-JamaalOpenRule` start with the Water habit and the School run rule selected where a list sits beside a
+    /// detail pane (the iPad and the Mac), so a store picture is not an empty pane (#362).
+    static var openHabit: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenHabit") }
+    static var openRule: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenRule") }
+    /// `-JamaalMacWindow 1280x760` opens the Mac window at that size, and `-JamaalTheme light|dark` forces the theme, so the store pictures
+    /// are the same size and appearance every time (#362).
+    static var macWindowSize: CGSize? {
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-JamaalMacWindow"), i + 1 < args.count else { return nil }
+        let parts = args[i + 1].split(separator: "x").compactMap { Double($0) }
+        return parts.count == 2 ? CGSize(width: parts[0], height: parts[1]) : nil
+    }
+    static var themeOverride: ColorScheme? {
+        let args = ProcessInfo.processInfo.arguments
+        guard let i = args.firstIndex(of: "-JamaalTheme"), i + 1 < args.count else { return nil }
+        return args[i + 1] == "dark" ? .dark : args[i + 1] == "light" ? .light : nil
+    }
+    static var storeShots: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalStoreShots") }
+    static var sampleData: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalSampleData") || storeShots }
 
     /// `-JamaalDayStartMinute N` (0 to 1439) sets the working day's start for this launch. Between midnight and that time of day Night
     /// Planning plans *this* morning and reviews yesterday, so a test that opens it at 02:00 sees a different flow (no Carry step) from one
@@ -228,7 +249,7 @@ enum DebugLaunch {
 
     @MainActor
     static func insertSampleAnchorRules(into context: ModelContext, now: Date = .now) {
-        guard anchorRules, ((try? context.fetchCount(FetchDescriptor<AnchorRule>())) ?? 0) == 0 else { return }
+        guard anchorRules || storeShots, ((try? context.fetchCount(FetchDescriptor<AnchorRule>())) ?? 0) == 0 else { return }
         let boundary = TodayDay.boundary(in: context)
         let today = boundary.logicalDate(at: now)
         let earlier = now.addingTimeInterval(-30 * 86_400)
@@ -246,22 +267,42 @@ enum DebugLaunch {
         _ = try? AnchorEditing.create(plants, in: context, now: earlier)
 
         var madrasa = AnchorRuleDraft.preset(.custom, today: today)
-        madrasa.title = "Madrasa pick-up"; madrasa.repeats = .days([1, 2, 3, 4, 5])
-        madrasa.slots = [AnchorSlotDraft(label: "Pick-up", startMinute: 15 * 60 + 30, windowMinutes: 30)]
-        if let rule = try? AnchorEditing.create(madrasa, in: context, now: earlier) {
+        madrasa.title = storeShots ? "Swimming lessons" : "Madrasa pick-up"
+        madrasa.repeats = storeShots ? .days([6]) : .days([1, 2, 3, 4, 5])
+        madrasa.slots = [AnchorSlotDraft(label: storeShots ? "Lesson" : "Pick-up", startMinute: storeShots ? 10 * 60 : 15 * 60 + 30, windowMinutes: 30)]
+        if let rule = try? AnchorEditing.create(madrasa, in: context, now: earlier), !storeShots {
             try? AnchorEditing.addException(to: rule, from: today.addingDays(-1), to: today.addingDays(4), reason: .holiday)
         }
 
-        var salah = PrayerRuleDraft(countryCode: "GB")
-        salah.location = PrayerConfig.Location(mode: "manual", latitude: 52.64, longitude: -1.14, name: "Leicester")
+        // The store pictures are taken in an Australian time zone, where Leicester's prayer times would be hours off.
+        var salah = PrayerRuleDraft(countryCode: storeShots ? "AU" : "GB")
+        salah.location = storeShots ? PrayerConfig.Location(mode: "manual", latitude: -33.87, longitude: 151.21, name: "Sydney")
+                                    : PrayerConfig.Location(mode: "manual", latitude: 52.64, longitude: -1.14, name: "Leicester")
         _ = try? PrayerEditing.create(salah, in: context, now: earlier)
 
+        if storeShots { return }                         // a store page has no rule that needs attention and no archived one
         let newer = AnchorRule(title: "Swimming club"); newer.configData = #"{"version":99}"#; newer.createdAt = earlier
         context.insert(newer)
 
         let archived = AnchorRule(title: "Nursery drop-off"); archived.isArchived = true; archived.createdAt = earlier
         archived.configData = AnchorRuleDraft.preset(.schoolRun, today: today).slots.isEmpty ? "{}" : #"{"version":1,"recurrence":{"kind":"weekly","weekdays":[1]},"slots":[{"id":"a","label":"","start":"08:00","windowMinutes":30}],"exceptions":[]}"#
         context.insert(archived)
+    }
+
+    /// A month of the binary habits, mostly done with a few honest misses, so the Habits tab shows what density looks like (#362).
+    @MainActor
+    private static func insertHabitHistory(into context: ModelContext, today: CalendarDate, now: Date) {
+        let misses: [String: (Int) -> Bool] = [
+            "Stretch": { $0 % 9 == 0 }, "Vitamins": { $0 % 11 == 0 }, "Journal": { $0 % 4 == 0 || $0 == 6 }, "Floss": { $0 % 7 == 3 || $0 % 7 == 4 },
+        ]
+        for habit in (try? context.fetch(FetchDescriptor<Habit>())) ?? [] {
+            guard let missed = misses[habit.title], let window = habit.windows?.first else { continue }
+            for offset in 1...27 where !missed(offset) {
+                let entry = HabitEntry(); entry.date = today.addingDays(-offset).storedDate; entry.target = 1; entry.amount = 1
+                entry.completedAt = now.addingTimeInterval(-Double(offset) * 86_400)
+                context.insert(entry); entry.window = window
+            }
+        }
     }
 
     /// A config the generator can't read, so it leaves these hand-made instances alone instead of pruning them.
@@ -271,6 +312,7 @@ enum DebugLaunch {
     /// first window is open, so every row state shows.
     @MainActor
     private static func insertSampleAnchors(into context: ModelContext, now: Date) {
+        if storeShots { return }                        // the store data has real rules, which make real instances (insertSampleAnchorRules)
         func anchor(_ title: String, rule: AnchorRule?, start: TimeInterval, end: TimeInterval, minutes: Int? = nil) {
             let a = Anchor(title: title)
             a.occurrenceDate = TodayDay.boundary(in: context).logicalDate(at: now).storedDate
@@ -337,6 +379,8 @@ enum DebugLaunch {
                 context.insert(e); e.window = window
             }
         }
+
+        if storeShots { insertHabitHistory(into: context, today: today, now: now) }
 
         // Paused and archived, for the Habits tab.
         habit("Reading before bed", .binary, target: 1)

@@ -3,6 +3,7 @@
 //  Jamaal
 //
 
+import SwiftData
 import SwiftUI
 import ThreadsTokens
 import JamaalCore
@@ -16,6 +17,7 @@ struct HabitsScreen: View {
     @Environment(\.threads) private var threads
     @Environment(\.horizontalSizeClass) private var sizeClass
     @Environment(\.requireAccess) private var requireAccess
+    @Environment(\.modelContext) private var context
     @State private var addingHabit = false
     @State private var addingAnchor = false
     @State private var selectedHabit: Habit?
@@ -33,7 +35,19 @@ struct HabitsScreen: View {
     private var compact: Bool { AppNavigation.showsAnchorsSegment(sizeClass: sizeClass) }
 
     var body: some View {
-        if compact && AppNavigation.isRegular(sizeClass) { segmentPanes } else if compact { compactBody } else { widePanes }
+        Group {
+            if compact && AppNavigation.isRegular(sizeClass) { segmentPanes } else if compact { compactBody } else { widePanes }
+        }
+        #if DEBUG
+        .task {
+            guard DebugLaunch.openHabit, selectedHabit == nil else { return }
+            selectedHabit = ((try? context.fetch(FetchDescriptor<Habit>())) ?? []).first { $0.title == "Water" && !$0.isArchived }
+        }
+        .task {
+            guard DebugLaunch.openRule, selectedRule == nil else { return }
+            selectedRule = ((try? context.fetch(FetchDescriptor<AnchorRule>())) ?? []).first { $0.title == "School run" && !$0.isArchived }
+        }
+        #endif
     }
 
     /// An iPhone held wide (an iPhone Duo's inner display, landscape or half open): the Habits | Anchors switch stays above the list, and

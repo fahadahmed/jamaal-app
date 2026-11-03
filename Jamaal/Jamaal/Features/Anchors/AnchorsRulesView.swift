@@ -136,10 +136,21 @@ struct AnchorsRulesView: View {
 /// Anchors as its own item (iPad and Mac sidebar): the same list in its own navigation.
 struct AnchorsScreen: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.modelContext) private var context
     @State private var adding = false
     @State private var selected: AnchorRule?
 
     var body: some View {
+        content
+        #if DEBUG
+        .task {
+            guard DebugLaunch.openRule, selected == nil else { return }
+            selected = ((try? context.fetch(FetchDescriptor<AnchorRule>())) ?? []).first { $0.title == "School run" && !$0.isArchived }
+        }
+        #endif
+    }
+
+    @ViewBuilder private var content: some View {
         if AppNavigation.isRegular(sizeClass) {
             // The rules on the left, the picked rule's detail beside them.
             HStack(spacing: 0) {

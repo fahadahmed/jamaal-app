@@ -79,7 +79,11 @@ struct JamaalApp: App {
                 }
             }
             .environment(\.threads, JamaalPalette())
+            #if DEBUG
+            .preferredColorScheme(DebugLaunch.themeOverride ?? AppTheme(rawValue: theme)?.scheme)
+            #else
             .preferredColorScheme(AppTheme(rawValue: theme)?.scheme)
+            #endif
             #if os(macOS)
             .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in RunLifecycle.leftTheScreen() }
             #endif
@@ -88,7 +92,11 @@ struct JamaalApp: App {
             #endif
         }
         #if os(macOS)
+        #if DEBUG
+        .defaultSize(width: DebugLaunch.macWindowSize?.width ?? MacWindow.defaultWidth, height: DebugLaunch.macWindowSize?.height ?? MacWindow.defaultHeight)
+        #else
         .defaultSize(width: MacWindow.defaultWidth, height: MacWindow.defaultHeight)
+        #endif
         .commands { JamaalCommands() }
         #endif
         #if os(macOS)
@@ -100,7 +108,11 @@ struct JamaalApp: App {
                     .environment(reminders)
                     .environment(storefront)
                     .environment(\.threads, JamaalPalette())
+                    #if DEBUG
+                    .preferredColorScheme(DebugLaunch.themeOverride ?? AppTheme(rawValue: theme)?.scheme)
+                    #else
                     .preferredColorScheme(AppTheme(rawValue: theme)?.scheme)
+                    #endif
             }
         }
         #endif
