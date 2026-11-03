@@ -40,6 +40,7 @@
 - [Claude Design brief](design/claude-design-brief)
 - [Design v4 handoff](design/README)
 - [Design v4 reconciliation](design/v4-reconciliation)
+- [Brief: the App Store pictures](design/app-store-screenshots-brief)
 - [Mac Settings window](design/mac-settings-window)
 - [Brief: widgets and the watch](design/widgets-and-watch-brief)
 - [Brief: the TestFlight email](design/testflight-emails-brief)
