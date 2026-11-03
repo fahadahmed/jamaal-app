@@ -414,7 +414,8 @@ struct BuildStep: View {
                 switch entry {
                 case .commitment(let c):
                     HStack(alignment: .firstTextBaseline, spacing: ThreadsSpace.row) {
-                        Text(time(c.start)).threadsType(.label).foregroundStyle(threads.ink2).frame(width: 56, alignment: .leading)
+                        Text(time(c.start)).threadsType(.label).foregroundStyle(threads.ink2).lineLimit(1)
+                            .frame(width: Self.timeColumn, alignment: .leading)
                         Rectangle().fill(threads.deep).frame(width: 3, height: 22)
                         Text(c.minutes >= 30 ? "\(c.title) · until \(time(c.start.addingTimeInterval(Double(c.minutes) * 60)))" : c.title)
                             .threadsType(.row).foregroundStyle(threads.ink)
@@ -422,13 +423,16 @@ struct BuildStep: View {
                 case .gap(let block, let isLongest):
                     Text(gapLine(block, isLongest: isLongest))
                         .threadsType(.meta).foregroundStyle(threads.ink2)
-                        .padding(.leading, 56 + ThreadsSpace.row + 3 + ThreadsSpace.row)
+                        .padding(.leading, Self.timeColumn + ThreadsSpace.row + 3 + ThreadsSpace.row)
                         .padding(.bottom, ThreadsSpace.hair)
                 }
             }
             addTaskButton
         }
     }
+
+    /// Wide enough for "10:35 PM" in the label type: at 56 pt a 12-hour time wrapped ("1:02 A" over "M") (#362).
+    private static let timeColumn: CGFloat = 84
 
     private func gapLine(_ block: FreeTime.Block, isLongest: Bool) -> String {
         var line = "\(TodayCopy.duration(block.minutes)) free"
@@ -506,12 +510,13 @@ struct BuildStep: View {
     @ViewBuilder private func habits(_ build: PlanBuild) -> some View {
         if !build.habitWindows.isEmpty {
             let minutes = HabitToday.remainingMinutes(build.habitWindows)
-            HStack(alignment: .firstTextBaseline) {
+            // The label over the list, both leading: a long list wrapped to the right of its label left ragged lines that ended in a dot.
+            VStack(alignment: .leading, spacing: ThreadsSpace.hair) {
                 Text("Habits on \(PlanningCopy.weekday(flow.forDate))").threadsType(.lede).foregroundStyle(threads.ink2)
-                Spacer(minLength: ThreadsSpace.row)
                 Text(build.habitWindows.map(\.habit.title).joined(separator: " · ") + (minutes > 0 ? " · \(minutes) min" : ""))
-                    .threadsType(.lede).foregroundStyle(threads.ink).multilineTextAlignment(.trailing)
+                    .threadsType(.lede).foregroundStyle(threads.ink).multilineTextAlignment(.leading)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityElement(children: .combine)
         }
     }
