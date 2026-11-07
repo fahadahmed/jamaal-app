@@ -119,6 +119,8 @@ enum DebugLaunch {
     /// the Anchors list, and `-JamaalWellbeing steady` for Wellbeing.
     /// `-JamaalOpenHabit` and `-JamaalOpenRule` start with the Water habit and the School run rule selected where a list sits beside a
     /// detail pane (the iPad and the Mac), so a store picture is not an empty pane (#362).
+    /// Adds tasks dated later (and so a Coming up list) to the sample data; off otherwise, so Night Planning's tomorrow stays as it was.
+    static var comingUp: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalComingUp") }
     static var openHabit: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenHabit") }
     static var openRule: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenRule") }
     /// `-JamaalMacWindow 1280x760` opens the Mac window at that size, and `-JamaalTheme light|dark` forces the theme, so the store pictures
@@ -190,6 +192,13 @@ enum DebugLaunch {
             }
             context.insert(task)
         }
+        // A few tasks dated later, for Coming up (`-JamaalComingUp`).
+        if comingUp { for (title, minutes, key, ahead) in [("Groceries", 45, "family", 1), ("Draft the migration estimate", 90, "work", 3),
+                                             ("Renew the car insurance", 30, "personal", 3), ("Return the library books", 15, "family", 6)] {
+            let later = TaskItem(title: title, dueDate: TodayDay.boundary(in: context).logicalDate(at: now).addingDays(ahead).storedDate, effortMinutes: minutes)
+            later.category = category(key)
+            context.insert(later)
+        } }
         if pickUp, let clinic = ((try? context.fetch(FetchDescriptor<TaskItem>())) ?? []).first(where: { $0.title == "Call the clinic back" }) {
             let boundary = TodayDay.boundary(in: context)
             let startOfToday = boundary.instant(of: boundary.logicalDate(at: now), atMinute: 0)

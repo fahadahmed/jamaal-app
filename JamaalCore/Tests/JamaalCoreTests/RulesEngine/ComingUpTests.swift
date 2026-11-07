@@ -77,6 +77,13 @@ struct ComingUpTests {
         _ = old
     }
 
+    @Test func aTaskTickedWhileTheScreenIsOpenStaysListedSoTheTickCanBeTakenBack() throws {
+        let w = try TaskWorld()
+        let t = w.task("Groceries", due: 16); t.isCompleted = true; t.completedAt = w.at(15)
+        #expect(try ComingUp.read(in: w.context, today: w.d(15), boundary: w.boundary).count == 0)
+        #expect(try ComingUp.read(in: w.context, today: w.d(15), boundary: w.boundary, keeping: [t.id]).count == 1)
+    }
+
     @Test func theTodayRowSaysHowManyAndStaysWhenThereAreNone() throws {
         let w = try TaskWorld()
         #expect(try read(w).count == 0)
