@@ -24,6 +24,7 @@
 - [Screens and flows register](journeys/screens)
 - [Journey walkthroughs](journeys/walkthroughs/overview)
 - [Today List](journeys/today-list)
+- [Coming up and Day review](journeys/coming-up-and-day-review)
 - [Night Planning](journeys/night-planning)
 - [Onboarding](journeys/onboarding)
 
@@ -40,6 +41,7 @@
 - [Claude Design brief](design/claude-design-brief)
 - [Design v4 handoff](design/README)
 - [Design v4 reconciliation](design/v4-reconciliation)
+- [v1 enhancements reconciliation](design/v1-enhancements-reconciliation)
 - [Brief: the App Store pictures](design/app-store-screenshots-brief)
 - [Mac Settings window](design/mac-settings-window)
 - [Brief: widgets and the watch](design/widgets-and-watch-brief)

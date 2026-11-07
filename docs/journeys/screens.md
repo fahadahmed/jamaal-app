@@ -53,7 +53,7 @@ Each flow lists its trigger, the screens it passes through, its branches and its
 
 **F03 Capture a task.** `TD-01 → Add sheet (Task | Anchor switch) = TK-01`. Branches: medium/high importance → date row required, Someday hidden · repeat chosen → date required · day already full → "Day is full · offer tomorrow" (`TK-01` state, never blocks) · no importance and no date → backlog task. End: row appears in `TD-01`.
 
-**F04 Complete, defer or drop a task.** Tap the check → done (quiet completion feedback). Tap the row → `TK-02` → Mark done / Begin / Defer / Drop / Stop repeating. Defer: 1st and 2nd are instant to tomorrow; from the 3rd `TK-03` (reason chips; a medium/high task is eased to low first, which un-hides Someday). Drop: soft delete with undo toast `SY-03`. Note: a one-line timestamped note can be appended on finish and defer.
+**F04 Complete, defer or drop a task.** Tap the check → done (quiet completion feedback). Tap the row → `TK-02` → Mark done / Begin / Defer / Drop / Stop repeating. Defer: 1st and 2nd are instant to tomorrow; from the 3rd `TK-03` (reason chips; a medium/high task is eased to low first, which un-hides Someday). Drop: soft delete with undo toast `SY-03`. Note: a one-line timestamped note can be appended on finish and defer. **Editing** (v1 enhancements): `TK-02` is the editor, so a field is changed where it stands (`TK-02a` effort, `TK-02b` due, `TK-02c` title), autosaves, and leaving a changed task shows `SY-03` with Undo; the first change to a repeating task asks `TK-07` once. **Future tasks:** `TK-02` shows **Move to today** instead of Begin.
 
 **F05 Run a focus session.** `TK-02` or the "Start here" card → Begin → chip `FS-01` appears on every tab. Tap chip → `FS-02` (timer, note checklist, Pause, Finish). Branches: Pause → `FS-04`; estimate passed → `FS-03` (neutral); Finish → `FS-05` (actual vs estimate, optional note) → task done → `SY-03` undo for 5 s; a second Begin while running → `FS-07` settle sheet (Done / Defer / Drop the running one); abandon → partial time kept; rollover reached → session closes at the boundary and `TD-06` offers to pick it back up. A timed habit uses the same screens (`HB` Begin).
 
@@ -77,6 +77,8 @@ Each flow lists its trigger, the screens it passes through, its branches and its
 
 **F15 Problems.** iCloud issue → `OB-03` (onboarding) or `SY-05` (later); an Anchor rule that can't be decoded → `AN-07`; two devices that both started a session → the later one is closed as abandoned and one quiet line says so on next open; a local store that won't open → a recovery screen (*Try again* / *Reset this device's data*); an iCloud account change → a notice with *Export my data* first; a value from a newer version → kept and shown as *Update Jamaal to see this*.
 
+**F16 Look back, look ahead (v1 enhancements).** Today's **Yesterday** row → `DY-01` (previous and next to the first day; Mark done inside two days). Today's **Coming up** row → `UP-01` → a row opens `TK-02` (Move to today, or change the day with `TK-02b`). Also reached from a Habits heatmap day and a Wellbeing sparkline day (`DY-01`). Detail: [Coming up and Day review](coming-up-and-day-review).
+
 **F-WA Watch.** Trigger: app icon, complication, Smart Stack, notification. Launch rule: a running session → `WA-04`; an open, unmarked Anchor window → `WA-02`; otherwise `WA-01`. After an hour away, the rule runs again. Pages move with the crown; one level of push (`WA-01` detail, `WA-03` kind screens); `WA-04` covers everything and returns to the page it came from. Every action shows at once and queues to the phone (`WA-06`).
 
 ## 4. Screen register
@@ -87,24 +89,37 @@ Columns: **ID · screen · entry · content and states · design · phase**. *De
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
-| TD-01 | **Today** (C/R; Duo inner = list + panel) | Tab 1, launch | Capacity slider and meter; companion card slot; **Anchors** (plain rows, grouped rows "Salah 3/5", window bars, three actions); **Habits** (binary, counted stepper, timed "12 of 20 min", avoid, paused hidden); **Tasks** (category label, effort; importance not shown); **Also today** (collapsed, count); **Plan tomorrow** (toolbar action, and a quiet row after the planning time); Add; chip host. States: default · guidance ("Start here" / "Good now") · first launch · all done · overloaded · past the day's end | **Drawn v4** · 5 frames | v1 |
+| TD-01 | **Today** (C/R; Duo inner = list + panel) | Tab 1, launch | Capacity slider and meter; companion card slot; **Anchors** (plain rows, grouped rows "Salah 3/5", window bars, three actions); **Habits** (binary, counted stepper, timed "12 of 20 min", avoid, paused hidden); **Tasks** (category label, effort; importance not shown); **Also today** (collapsed, count); **Plan tomorrow** (toolbar action, and a quiet row after the planning time); Add; chip host. States: default · guidance ("Start here" / "Good now") · first launch · all done · overloaded · past the day's end **v1 enhancements:** under *Also today*, a **Yesterday · {done} of {planned} done** row and a **Coming up · {n} next 14 days** row | **Drawn v4** · 5 frames | v1 |
 | TD-02 | Wellbeing strip | On TD-01 | Sparkline; "gathering data" until seven active days | **Drawn** (in v3·01) · not redrawn in v4 | v1 |
 | TD-03 | Category filter | TD-01 header | Narrows **Tasks only** to one category (Anchors and habits always shown; meter, load and *Also today* whole-day); *Start here* from visible tasks; local, clears at rollover and relaunch; empty result *"Nothing in Family today."* + *Show all*; never creates sections | **Drawn v4** · 2 frames | v1 |
 | TD-04 | Add sheet entry: **Task \| Anchor** switch | TD-01 Add | The add sheet opens on Task; the switch at the top reaches the one-off Anchor form (`AN-08`). No separate chooser screen | **None** · not redrawn in v4 | v1 |
 | TD-05 | Banners | TD-01 top | Notifications off · trial status · read-only | **Drawn v4** · 3 frames | v1 |
 | TD-06 | Carried-over row | TD-01 | One row to pick a session's task back up after auto-close | **Drawn v4** · 1 frame | v1 |
-| TD-07 | Morning card "No plan for today" | TD-01 | Shown once; opens the shortened flow for today (Build → Load → Close) | **Drawn v4** · 1 frame | v1 |
+| TD-07 | Morning card "No plan for today" | TD-01 | Shown once; opens the shortened flow for today (Build → Load → Close). Also when tasks are scheduled for today: "{n} tasks are scheduled for it" with **Pick for today** / **Not now** (v1 enhancements) | **Drawn v4** · 1 frame · **v1 enhancements** · 1 frame + wide | v1 |
 
 ### Tasks (`TK`)
 
 | ID | Screen | Entry | Content and states | Design | Phase |
 |---|---|---|---|---|---|
 | TK-01 | **Add task** (sheet / panel) | TD-04 | Title; effort (15m/30m/1h/2h+ shortcuts, Other… stepper, 30 preselected); importance (low default); category; schedule; repeat; note. States: medium/high (date required, Someday hidden) · repeat · "Day is full · offer tomorrow" | **Drawn v4** · 3 frames | v1 |
-| TK-02 | **Task detail** (sheet / panel) | Row tap | Title, note checklist, category, effort, importance, due, deferral history; Begin · Mark done · Defer · Drop · Stop repeating. States: normal · deferred · repeating · running · complete | **Drawn v4** · 2 frames | v1 |
+| TK-02 | **Task detail** (sheet / panel) | Row tap | Title, note checklist, category, effort, importance, due, deferral history; Begin · Mark done · Defer · Drop · Stop repeating. States: normal · deferred · repeating · running · complete. **v1 enhancements:** the detail is the **editor** (every field edits in place and autosaves, `Saved` tick, no Edit/Save/Cancel); a future task's primary is **Move to today**; a `More` menu | **Drawn v4** · 2 frames · **v1 enhancements** · 1 + wide | v1 |
 | TK-03 | **Defer / Later** picker | Defer from TK-02 or NP-02 | Later this week · Next week · Someday (low only) · a date; reason chips from the 3rd; the easing message | **Drawn v4** · 1 frame | v1 |
 | TK-04 | Note editor | TK-02 | Markdown subset (checklists, bold, italic, links, code); no headings, tables, images | **Drawn v4** · 1 frame | v1 |
 | TK-05 | Repeat picker | TK-01 / TK-02 | Daily · weekly days · monthly | **Drawn v4** · 1 frame | v1 |
 | TK-06 | Category picker | TK-01 / TK-02 | Pick or none; archived shown only as the current selection; a new task inherits an active filter's category | **Drawn v4** · 1 frame | v1 |
+| TK-02a | Effort picker | TK-02 Effort row | 15 min · 30 min · 45 min · 1 h · 90 min · 2 h · **Other…**; tap saves and closes (popover on iPad and Mac) | **Drawn** (v1 enhancements) · 1 + wide | v1 |
+| TK-02b | Due picker | TK-02 Due row | Today · Tomorrow · the current due weekday · Next week · No date (not for medium or high) · month grid from Monday; choosing Today is *Move to today* | **Drawn** (v1 enhancements) · 1 + wide | v1 |
+| TK-02c | Title editing | TK-02 title | Sheet to full height above the keyboard; *Editing title* + **Done**; empty on blur reverts | **Drawn** (v1 enhancements) · 1 | v1 |
+| TK-07 | Repeat scope | First change to a repeating task in a visit | "Change just this one, or every one after?" · **This and later {weekday}s** / **Only this {weekday}** / Cancel; once per visit | **Drawn** (v1 enhancements) · 1 + wide | v1 |
+
+### Coming up and Day review (`UP`, `DY`)
+
+Behaviour: [Coming up, Day review and editing a task](coming-up-and-day-review). Added by the v1 enhancements pass (#382).
+
+| ID | Screen | Entry | Content and states | Design | Phase |
+|---|---|---|---|---|---|
+| UP-01 | **Coming up** | TD-01 Coming up row | Tasks due after today, grouped by day for 14 days (Tomorrow, In 2 days, Next week), collapsed **Later · n**; one-off Anchors; dimmed rows that still tick; no capacity bar. Takes the list column on wide layouts | **Drawn** (v1 enhancements) · 1 + wide | v1 |
+| DY-01 | **Day review** | TD-01 Yesterday row · Habits heatmap day · Wellbeing sparkline day | Read-only: hero, capacity used and close time, Anchors, Habits, Tasks; previous and next to the first day; **Mark done** inside two days. Takes the detail column on wide layouts | **Drawn** (v1 enhancements) · 1 + wide | v1 |
 
 ### Focus sessions (`FS`)
 
@@ -206,7 +221,7 @@ Columns: **ID · screen · entry · content and states · design · phase**. *De
 | SB-03 | Read-only banner | Explains what is locked; offers to subscribe | **Drawn v4** · 1 frame | v1 |
 | SY-01 | Notifications-denied fallbacks | Today banner (switch on, permission off; once a day; *Don't remind me*); Settings warning card listing what isn't delivered | **Drawn** v3·24 · not redrawn in v4 | v1 |
 | SY-02 | Empty and finished states | Four fixed lines (today, first launch, habits, history) | **Drawn v4** · 1 frame | v1 |
-| SY-03 | Undo toast | Quiet, 5 seconds | **Drawn v4** · 1 frame | v1 |
+| SY-03 | Undo toast | Quiet, 5 seconds; also after an in-place edit of a task ("Call the clinic back · now 30 min"), one undo for the whole visit | **Drawn v4** · 1 frame | v1 |
 | SY-04 | Sheets vs panels | Sheets on compact; panels beside the list on regular | **Drawn** v3·D2 · not redrawn in v4 | v1 |
 | SY-05 | Problem states | iCloud problem line (dismissible; says the data is safe); account-changed notice; store-won't-open recovery screen; the quiet timer-clash line | **Drawn v4** · 3 frames | v1 |
 | SY-06 | App icon and launch screen | Three icon directions exist in the earlier mockups | **Drawn v4** · 1 frame | v1 |

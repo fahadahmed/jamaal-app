@@ -59,6 +59,14 @@ Rules: one category per task; at most **eight active** categories; a label is al
 | `reason`     | `String`  | `"unspecified"`| One of `tooMuch` / `notReady` / `noLonger` / `reschedule` / `unspecified`. Reason chips in the UI: Too much on / Not ready / No longer relevant. `unspecified` is used for automatic deferrals. A **user** deferral with no chip (the instant 1st and 2nd) is `reschedule`; one made with a chip stores that chip's value. |
 | `task`       | `TaskItem?`   | `nil`          | Inverse of `TaskItem.deferrals`. |
 
+## Scheduling and editing (v1 enhancements)
+
+**There is no separate scheduled day: `dueDate` is the day a task is scheduled for.** Today shows tasks due on or before today, so a task dated later is already off Today and out of today's capacity until its day is planned or the user chooses **Move to today** (which sets `dueDate` to today and counts against today's capacity). The **Coming up** list is the tasks due after today, read by day; backlog tasks (no date) are not in it. This needs **no new field and no CloudKit schema change**; a separate scheduled day can be added later, additively. See [v1 enhancements reconciliation](../design/v1-enhancements-reconciliation), decision 1.
+
+**Editing in place:** a field change writes straight to the task (autosave). One visit to a task is one undo group; undo restores every field changed in that visit. A repeating task asks once per visit whether a change applies to this instance only or to this and later ones (*this and later* also updates the repeat fields and the next instance's template; *only this one* changes just this instance). The effort picker offers 15 / 30 / 45 min, 1 h, 90 min, 2 h and **Other…**; the due picker hides *No date* for medium and high importance.
+
+**Completing a task for a past day** (Day review's two-day fix window): `completedAt` is set to the end of that logical day rather than now, so the day's record, `DayPlan.completedEffortMinutes` and wellbeing attribute it to the day it belongs to; a task that had been carried forward leaves the later day. Only today minus 1 or minus 2.
+
 ## Importance rules
 
 Importance has three levels — `low` (the default and the baseline), `medium`, `high` — and is chosen by the user, mainly set during **Night Planning's plan step** (it can also be set when adding a task or from the detail sheet).
