@@ -37,6 +37,8 @@ Under the task list, in this order: *Also today*, **Yesterday**, **Coming up** (
 
 ## Coming up (UP-01)
 
+> **Built (slice #385):** Today's **Coming up** row and the Coming up screen. The row pushes the screen inside Today's list column, so on a Mac, iPad and Duo it already takes that column; a task opens in the existing detail sheet until the editor (#387) and wide layouts (#389) arrive. The **Yesterday** row is added with Day review (#386), so that no row is a dead end. A one-off Anchor shows no tick here (attendance is marked on Today while its window is open). `-JamaalComingUp` adds sample tasks dated later.
+
 - Grouped by day for the next 14 days; the relative label (Tomorrow, In 2 days, Next week) on the right of each day header. Anything later goes into a collapsed **Later · n**.
 - Rows show effort; one-off Anchors show their time and "one-off Anchor". A repeating task shows its one live instance. Backlog tasks (no date) are not here.
 - Rows are dimmed (checkbox ring only; text contrast stays at 4.5:1 or better) because they aren't actionable yet, but the checkbox works: marking a future task done is allowed.
