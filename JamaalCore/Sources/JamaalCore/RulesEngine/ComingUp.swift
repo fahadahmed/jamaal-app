@@ -41,19 +41,26 @@ public struct ComingUp {
     /// Beyond 14 days, soonest first (the collapsed *Later* section).
     public var later: [ComingUpItem]
 
+    public init(days: [ComingUpDay] = [], later: [ComingUpItem] = []) {
+        self.days = days
+        self.later = later
+    }
+
     /// The number on Today's row: items in the next 14 days.
     public var count: Int { days.reduce(0) { $0 + $1.items.count } }
     public var laterCount: Int { later.count }
 
     @MainActor
-    public static func read(in context: ModelContext, today: CalendarDate, boundary: DayBoundary) throws -> ComingUp {
-        read(tasks: try context.fetch(FetchDescriptor<TaskItem>()), anchors: try context.fetch(FetchDescriptor<Anchor>()), today: today)
+    public static func read(in context: ModelContext, today: CalendarDate, boundary: DayBoundary, keeping kept: Set<UUID> = []) throws -> ComingUp {
+        read(tasks: try context.fetch(FetchDescriptor<TaskItem>()), anchors: try context.fetch(FetchDescriptor<Anchor>()), today: today, keeping: kept)
     }
 
-    public static func read(tasks: [TaskItem], anchors: [Anchor], today: CalendarDate) -> ComingUp {
+    /// `keeping` names tasks that were ticked while the screen is open: they stay listed (struck through) so a tick can be
+    /// taken back, and go when the screen is left. Done tasks are otherwise not here.
+    public static func read(tasks: [TaskItem], anchors: [Anchor], today: CalendarDate, keeping kept: Set<UUID> = []) -> ComingUp {
         struct Entry { var day: CalendarDate; var order: (Int, Date, String); var item: ComingUpItem }
         var entries: [Entry] = []
-        for task in tasks where !task.isCompleted && task.droppedAt == nil {
+        for task in tasks where (!task.isCompleted || kept.contains(task.id)) && task.droppedAt == nil {
             guard let due = task.dueDate.map({ CalendarDate(storedDate: $0) }), due > today else { continue }
             entries.append(Entry(day: due, order: (1, task.createdAt, task.id.uuidString), item: ComingUpItem(kind: .task(task))))
         }

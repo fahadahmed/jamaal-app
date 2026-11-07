@@ -131,6 +131,7 @@ struct TodayScreen: View {
                     habitsSection(todayHabits)
                     tasksSection(overview, filter: filter)
                     alsoToday(overview)
+                    comingUpRow(today: overview.today, boundary: boundary)
                     if eveningDue && state != .allDone && canShapeThePlan { planTomorrowRow }
                 }
             }
@@ -736,6 +737,25 @@ struct TodayScreen: View {
                             onBegin: rowBegin(task), onDrop: rowDrop(task))
                 }
             }
+        }
+    }
+
+    /// Coming up: tasks dated later, seen by day. A task dated later is already off Today, so this is where it waits.
+    private func comingUpRow(today: CalendarDate, boundary: DayBoundary) -> some View {
+        let count = (try? ComingUp.read(in: context, today: today, boundary: boundary))?.count ?? 0
+        return VStack(alignment: .leading, spacing: 0) {
+            Divider().overlay(threads.line)
+            NavigationLink { ComingUpScreen() } label: {
+                HStack {
+                    Text(ComingUpCopy.rowTitle(count: count)).threadsType(.lede).foregroundStyle(threads.ink2)
+                    Spacer()
+                    Image(systemName: "chevron.right").foregroundStyle(threads.ink3)
+                }
+                .frame(minHeight: ThreadsHit.minimum)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("comingUpRow")
         }
     }
 
