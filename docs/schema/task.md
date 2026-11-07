@@ -65,7 +65,7 @@ Rules: one category per task; at most **eight active** categories; a label is al
 
 **Editing in place:** a field change writes straight to the task (autosave). One visit to a task is one undo group; undo restores every field changed in that visit. A repeating task asks once per visit whether a change applies to this instance only or to this and later ones (*this and later* also updates the repeat fields and the next instance's template; *only this one* changes just this instance). The effort picker offers 15 / 30 / 45 min, 1 h, 90 min, 2 h and **Other…**; the due picker hides *No date* for medium and high importance.
 
-**Completing a task for a past day** (Day review's two-day fix window): `completedAt` is set to the end of that logical day rather than now, so the day's record, `DayPlan.completedEffortMinutes` and wellbeing attribute it to the day it belongs to; a task that had been carried forward leaves the later day. Only today minus 1 or minus 2.
+**Completing a task for a past day** (Day review's two-day fix window): `completedAt` is set to the end of that logical day rather than now, so the day's record, `DayPlan.completedEffortMinutes` and wellbeing attribute it to the day it belongs to; a task that had been carried forward leaves the later day. Only today minus 1 or minus 2 (`TaskActions.completeOnPastDay`; older is refused with `outsideFixWindow`). Habits and Anchors keep their own correction rules.
 
 ## Importance rules
 

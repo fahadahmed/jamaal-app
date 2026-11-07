@@ -11,7 +11,7 @@ Added by the v1 enhancements pass (#382); decisions and the differences from Des
 - **Undo instead of Cancel.** Leaving a task you changed shows an undo toast for 5 seconds; Undo reverts every change made in that visit. Mac also has ⌘Z.
 - **One terracotta fill per surface.** On a future task the primary is **Move to today**, which replaces **Begin**.
 - **Selected row** is a white fill with a 1.5 pt ink ring, never terracotta.
-- **Past days are read-only**, except that a missed task or habit can be ticked for **two days**.
+- **Past days are read-only**, except that a missed **task** can be ticked for **two days** (habits keep their 14-day correction, Anchors their own rule).
 - **Repeating tasks ask once** per visit: this and later, or only this one.
 
 ```mermaid
@@ -47,7 +47,7 @@ Under the task list, in this order: *Also today*, **Yesterday**, **Coming up** (
 - Header: the date (mono eyebrow) and previous and next arrows; **next stops at yesterday** (today has its own screen) and **previous goes back to the first day with data**. On Mac, ⌘[ and ⌘] do the same.
 - Hero, two lines, the second in italic accent ("A steady day. / Two of three done."); capacity used against set, with **Closed {time}** when the day was closed in Night Planning.
 - **Anchors**: attended count, one square per occurrence (attended and missed shaded differently). **Habits**: progress, one square. **Tasks**: done ones struck through with the time done; deferred ones "Deferred to {date}", dimmed; automatic ones "Not done · carried to {date}"; an outlined **Mark done** on a not-done task only inside the two-day fix window.
-- Footer: *"Past days are read-only. A missed tick can be fixed for two days."*
+- Footer: *"Past days are read-only. A missed task can be ticked for two days."* (Habits keep their 14-day correction from the heatmap, and Anchors "Mark as done after all"; only tasks get Mark done here.)
 - A task ticked from here is recorded on **that** day (see the reconciliation, decision 9).
 - Entry points: the Yesterday row, a Habits heatmap day, a Wellbeing sparkline day. iPhone: swiping right on Today is an optional shortcut to Yesterday.
 
