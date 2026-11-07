@@ -4,6 +4,8 @@ import SwiftData
 public enum TaskActionError: Error, Equatable, Sendable {
     /// "This one already repeated": the next instance was touched, so the un-tick is refused.
     case alreadyRepeated
+    /// A missed task can only be ticked for yesterday or the day before.
+    case outsideFixWindow
 }
 
 /// When a repeating task next falls (docs/schema/task.md, "Repeating tasks").
@@ -66,6 +68,25 @@ public enum TaskActions {
         task.isCompleted = true
         task.completedAt = now
         return createNext(after: task, on: boundary.logicalDate(at: now), context: context, now: now)
+    }
+
+    /// Ticks a task that was missed on `day`, inside the two-day fix window (`PastDay.fixWindowDays`). The completion is
+    /// recorded on **that** day, at its last minute, so the day's record and wellbeing count it where it belongs; the
+    /// day's `completedEffortMinutes` grows by its estimate. A repeating task makes its next instance as usual.
+    @MainActor
+    public static func completeOnPastDay(
+        _ task: TaskItem, day: CalendarDate, today: CalendarDate, now: Date, boundary: DayBoundary, context: ModelContext
+    ) throws {
+        guard PastDay.canFixTasks(on: day, today: today) else { throw TaskActionError.outsideFixWindow }
+        guard !task.isCompleted, task.droppedAt == nil else { return }
+        FocusSessions.closeLive(of: task, as: .finished, now: now)
+        let endOfDay = boundary.startInstant(of: day.addingDays(1)).addingTimeInterval(-60)
+        task.isCompleted = true
+        task.completedAt = endOfDay
+        if let plan = try context.fetch(FetchDescriptor<DayPlan>()).first(where: { CalendarDate(storedDate: $0.date) == day }) {
+            plan.completedEffortMinutes += task.effortMinutes ?? 0
+        }
+        createNext(after: task, on: day, context: context, now: now)
     }
 
     /// Drops a task at `now` (soft delete). A repeating task's series continues: the next instance
