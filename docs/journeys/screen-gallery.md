@@ -115,6 +115,26 @@ A companion app is planned for v1.1: Today, Anchors, the habit counter and the f
 <td align="center" valign="top"><img src="../../mockups/screens/9-watch/WA-04-focus.png" width="520" alt="Watch Focus"><br><sub>WA-04 Focus</sub></td>
 </tr></table>
 
+## Coming up, Day review and editing (design, not yet built)
+
+The v1 enhancements pass, answering beta feedback. Detail: [Coming up, Day review and editing a task](coming-up-and-day-review).
+
+### Coming up (UP-01) and Day review (DY-01)
+
+Future tasks by day, and a read-only look at a closed day.
+
+<table><tr><td align="center" valign="top"><img src="../../mockups/screens/10-v1-enhancements/Upcoming.png" width="230" alt="Coming up (UP-01) design"><br><sub>Design</sub></td><td align="center" valign="top"><img src="../../mockups/screens/10-v1-enhancements/DayReview.png" width="230" alt="Day review (DY-01) design"><br><sub>Design</sub></td><td align="center" valign="top"><img src="../../mockups/screens/10-v1-enhancements/Main.png" width="230" alt="Today rows (TD-01) design"><br><sub>Design</sub></td></tr></table>
+
+### Editing a task (TK-02)
+
+Task detail is the editor: fields change in place, a repeat asks once, an undo toast follows.
+
+<table><tr><td align="center" valign="top"><img src="../../mockups/screens/10-v1-enhancements/TaskEdit.png" width="230" alt="Task detail (TK-02) design"><br><sub>Design</sub></td><td align="center" valign="top"><img src="../../mockups/screens/10-v1-enhancements/EditEffort.png" width="230" alt="Effort picker (TK-02a) design"><br><sub>Design</sub></td><td align="center" valign="top"><img src="../../mockups/screens/10-v1-enhancements/RepeatScope.png" width="230" alt="Repeat scope (TK-07) design"><br><sub>Design</sub></td><td align="center" valign="top"><img src="../../mockups/screens/10-v1-enhancements/UndoToast.png" width="230" alt="Undo toast (SY-03) design"><br><sub>Design</sub></td></tr></table>
+
+### On the wide layouts
+
+<table><tr><td align="center" valign="top"><img src="../../mockups/screens/10-v1-enhancements/WideIpadUpcoming.png" width="360" alt="Coming up on the iPad design"><br><sub>Design</sub></td><td align="center" valign="top"><img src="../../mockups/screens/10-v1-enhancements/WideMacDayReview.png" width="360" alt="Day review on the Mac design"><br><sub>Design</sub></td></tr></table>
+
 ## Onboarding and subscription
 
 The first run, one decision a screen. Detail: [Onboarding](onboarding).

@@ -22,6 +22,7 @@ Top to bottom:
 4. **Habits** — today's due `HabitTimeWindow` occurrences (no streak counters — density lives on the habit detail), ordered **groups first (as pills), then ungrouped habits by window start (all-day last), then title**; a weekly-target habit shows every day until its week's target is met. Groups appear as a pill with proportional ring, name and count ("4/5"); tapping opens the group. Counted habits use an increment/decrement stepper in place of a single check; **timed** habits show minutes so far ("12 of 20 min") with **Begin** (the same ambient chip as a task) or a way to add minutes by hand; **avoid** habits show a quiet **Log a slip** action and a **Held today** tap, with no fill until the day resolves. Paused habits are hidden.
 5. **Tasks** — due today or overdue, plus a collapsed backlog. Tapping toggles complete; the row opens the task detail sheet. Each row shows its category as a coloured label.
 6. **Also today** — collapsed section for anything the current capacity hides, with a count.
+   - Then two rows (v1 enhancements, [detail](coming-up-and-day-review)): **Yesterday · {done} of {planned} done** (or *not planned*; hidden only on the first day) opening Day review, and **Coming up · {n} next 14 days** (or *nothing scheduled*, still tappable) opening Coming up. Past above future.
 7. **Plan tomorrow** — a toolbar action (after *Add*) that opens Night Planning; after the planning time, if tonight is neither planned nor skipped, a quiet row for it appears too, and the all-done state carries the action.
 8. **Add** — opens the add sheet, which starts on **Task** and has a small **Task | Anchor** switch at the top (the **One-off Anchor** side takes a title, date, window start/end and optional duration). There is no separate chooser screen, so capturing a task is one tap. Recurring Anchors are created and managed in the Habits tab's Anchors segment.
 
@@ -44,7 +45,7 @@ Set two ways: from Night Planning the evening before, or directly here if the da
 ## Task interactions
 
 - **Complete**: tap the check.
-- **Detail sheet** (bottom sheet): title, notes as a tappable markdown checklist, category, effort estimate, importance, due date, deferral history; actions — Defer, Drop (for a repeating task, skips only this occurrence), Stop repeating, and **Begin**, which starts a focus session (see [Focus chip and sessions](#focus-chip-and-sessions)). Begin also appears on the "Start here" guidance card.
+- **Detail sheet** (bottom sheet), which is also the **editor** — every field edits in place and autosaves, with no Edit, Save or Cancel, and leaving a changed task shows an undo toast ([detail](coming-up-and-day-review#task-detail-as-the-editor-tk-02)): title, notes as a tappable markdown checklist, category, effort estimate, importance, due date, deferral history; actions — Defer, Drop (for a repeating task, skips only this occurrence), Stop repeating, and **Begin**, which starts a focus session (see [Focus chip and sessions](#focus-chip-and-sessions)). Begin also appears on the "Start here" guidance card.
 - **Defer**: 1st and 2nd deferral moves the task to tomorrow instantly; from the 3rd a date picker opens with reason chips.
 - **Add task** (bottom sheet): title, effort (15 / 30 / 60 / 120 min shortcuts, **Other…** for any length, **30 preselected**, or *No estimate*), notes, importance (`low` by default), category, schedule (Today / Tomorrow / Later this week / Next week / Someday / pick a date — see [quick dates](../schema/task#quick-dates)), repeat (Never / Daily / Weekly + days / Monthly — needs a date, hides Someday). Choosing `medium`/`high` importance makes the date required (pre-filled with today, not clearable) and hides Someday. A `low` task with no date is a backlog task.
 
@@ -73,7 +74,7 @@ A compact **sparkline** near the capacity slider shows the wellbeing score over 
 ## Empty and edge states
 
 - Nothing due at all: an encouraging empty state ("Your day is blank"), not a blank screen. When everything is done: a quiet celebration.
-- No plan was confirmed for today (Night Planning skipped or missed): one quiet card at the top, "No plan for today — two minutes to pick?", opening a shortened Build tomorrow for today. Shown once; no guilt, no count.
+- No plan was confirmed for today (Night Planning skipped or missed): one quiet card at the top, "No plan for today — two minutes to pick?", opening a shortened Build tomorrow for today. Shown once; no guilt, no count. When tasks are scheduled for today the card names them ("{n} tasks are scheduled for it, so two minutes to confirm?") with **Pick for today** and **Not now**; *Not now* leaves them listed under *Scheduled for today*.
 - Notifications denied: an in-app banner at planning time — "Start evening planning →".
 - All sections hidden by capacity: a visible "N more at higher capacity" affordance.
 

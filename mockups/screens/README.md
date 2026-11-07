@@ -197,6 +197,44 @@ Source: `source/Jamaal v4 · 9 Apple Watch.dc.html`. Watch frames are 46 mm (208
 | WA-08 Sizes (40, 44, 49 mm) | [`9-watch/WA-08-sizes.png`](9-watch/WA-08-sizes.png) |
 | WA-09 Watch app icon | [`9-watch/WA-09-app-icon.png`](9-watch/WA-09-app-icon.png) |
 
+## 10 · v1 enhancements (November 2026)
+
+Source: `10-v1-enhancements/source/` (open any `.dc.html` with the `support.js` beside it). The handoff's own README, kept verbatim, is [`10-v1-enhancements/HANDOFF.md`](10-v1-enhancements/HANDOFF.md); what it changed in the docs, and where the repo overrides it, is in [v1 enhancements reconciliation](../../docs/design/v1-enhancements-reconciliation). Answers three pieces of beta feedback: looking back at a day, seeing future tasks, and editing a task. No new tokens or components.
+
+| Frame | File |
+|---|---|
+| TD-01 Today rows | [`10-v1-enhancements/Main.png`](10-v1-enhancements/Main.png) |
+| UP-01 Coming up | [`10-v1-enhancements/Upcoming.png`](10-v1-enhancements/Upcoming.png) |
+| DY-01 Day review | [`10-v1-enhancements/DayReview.png`](10-v1-enhancements/DayReview.png) |
+| TK-02 Task detail, a future task | [`10-v1-enhancements/TaskEdit.png`](10-v1-enhancements/TaskEdit.png) |
+| TK-02a Effort picker | [`10-v1-enhancements/EditEffort.png`](10-v1-enhancements/EditEffort.png) |
+| TK-02b Due picker | [`10-v1-enhancements/EditDue.png`](10-v1-enhancements/EditDue.png) |
+| TK-02c Title editing | [`10-v1-enhancements/EditTitle.png`](10-v1-enhancements/EditTitle.png) |
+| TK-07 Repeat scope | [`10-v1-enhancements/RepeatScope.png`](10-v1-enhancements/RepeatScope.png) |
+| TD-07 Morning, scheduled tasks | [`10-v1-enhancements/MorningScheduled.png`](10-v1-enhancements/MorningScheduled.png) |
+| SY-03 Undo toast | [`10-v1-enhancements/UndoToast.png`](10-v1-enhancements/UndoToast.png) |
+| iPad TD-01 + DY-01 Day review | [`10-v1-enhancements/WideIpadDayReview.png`](10-v1-enhancements/WideIpadDayReview.png) |
+| iPad UP-01 + TK-02 Coming up and task | [`10-v1-enhancements/WideIpadUpcoming.png`](10-v1-enhancements/WideIpadUpcoming.png) |
+| iPad TK-07 Repeat scope | [`10-v1-enhancements/WideIpadRepeat.png`](10-v1-enhancements/WideIpadRepeat.png) |
+| iPad TD-07 Morning | [`10-v1-enhancements/WideIpadMorning.png`](10-v1-enhancements/WideIpadMorning.png) |
+| iPad TK-02a Effort | [`10-v1-enhancements/WideIpadEditEffort.png`](10-v1-enhancements/WideIpadEditEffort.png) |
+| iPad TK-02b Due | [`10-v1-enhancements/WideIpadEditDue.png`](10-v1-enhancements/WideIpadEditDue.png) |
+| iPad SY-03 Undo | [`10-v1-enhancements/WideIpadUndo.png`](10-v1-enhancements/WideIpadUndo.png) |
+| Duo inner landscape TD-01 + DY-01 Day review | [`10-v1-enhancements/WideDuoDayReview.png`](10-v1-enhancements/WideDuoDayReview.png) |
+| Duo inner landscape UP-01 + TK-02 Coming up and task | [`10-v1-enhancements/WideDuoUpcoming.png`](10-v1-enhancements/WideDuoUpcoming.png) |
+| Duo inner landscape TK-07 Repeat scope | [`10-v1-enhancements/WideDuoRepeat.png`](10-v1-enhancements/WideDuoRepeat.png) |
+| Duo inner landscape TD-07 Morning | [`10-v1-enhancements/WideDuoMorning.png`](10-v1-enhancements/WideDuoMorning.png) |
+| Duo inner landscape TK-02a Effort | [`10-v1-enhancements/WideDuoEditEffort.png`](10-v1-enhancements/WideDuoEditEffort.png) |
+| Duo inner landscape TK-02b Due | [`10-v1-enhancements/WideDuoEditDue.png`](10-v1-enhancements/WideDuoEditDue.png) |
+| Duo inner landscape SY-03 Undo | [`10-v1-enhancements/WideDuoUndo.png`](10-v1-enhancements/WideDuoUndo.png) |
+| macOS TD-01 + DY-01 Day review | [`10-v1-enhancements/WideMacDayReview.png`](10-v1-enhancements/WideMacDayReview.png) |
+| macOS UP-01 + TK-02 Coming up and task | [`10-v1-enhancements/WideMacTask.png`](10-v1-enhancements/WideMacTask.png) |
+| macOS TK-07 Repeat scope | [`10-v1-enhancements/WideMacRepeat.png`](10-v1-enhancements/WideMacRepeat.png) |
+| macOS TD-07 Morning | [`10-v1-enhancements/WideMacMorning.png`](10-v1-enhancements/WideMacMorning.png) |
+| macOS TK-02a Effort | [`10-v1-enhancements/WideMacEditEffort.png`](10-v1-enhancements/WideMacEditEffort.png) |
+| macOS TK-02b Due | [`10-v1-enhancements/WideMacEditDue.png`](10-v1-enhancements/WideMacEditDue.png) |
+| macOS SY-03 Undo | [`10-v1-enhancements/WideMacUndo.png`](10-v1-enhancements/WideMacUndo.png) |
+
 ## Also in `source/`
 
 - `ThreadsKit Tokens.dc.html`: the token contract (21 colours, type, space, elevation, motion, glass, the eight components).
