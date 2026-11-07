@@ -131,7 +131,7 @@ struct TodayScreen: View {
                     habitsSection(todayHabits)
                     tasksSection(overview, filter: filter)
                     alsoToday(overview)
-                    comingUpRow(today: overview.today, boundary: boundary)
+                    lookBackAndAhead(today: overview.today, boundary: boundary)
                     if eveningDue && state != .allDone && canShapeThePlan { planTomorrowRow }
                 }
             }
@@ -740,14 +740,23 @@ struct TodayScreen: View {
         }
     }
 
-    /// Coming up: tasks dated later, seen by day. A task dated later is already off Today, so this is where it waits.
-    private func comingUpRow(today: CalendarDate, boundary: DayBoundary) -> some View {
+    /// The two rows under *Also today*, past above future: **Yesterday** (Day review) and **Coming up**.
+    @ViewBuilder
+    private func lookBackAndAhead(today: CalendarDate, boundary: DayBoundary) -> some View {
+        if let title = DayReviewCopy.yesterdayRow((try? PastDay.yesterdayRow(today: today, boundary: boundary, context: context)) ?? .hidden) {
+            linkRow(title, id: "yesterdayRow") { DayReviewScreen(day: today.addingDays(-1)) }
+        }
         let count = (try? ComingUp.read(in: context, today: today, boundary: boundary))?.count ?? 0
-        return VStack(alignment: .leading, spacing: 0) {
+        linkRow(ComingUpCopy.rowTitle(count: count), id: "comingUpRow") { ComingUpScreen() }
+    }
+
+    /// A quiet row that pushes a screen inside Today's own stack (so on a wide layout it takes the list column).
+    private func linkRow<Destination: View>(_ title: String, id: String, @ViewBuilder destination: () -> Destination) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
             Divider().overlay(threads.line)
-            NavigationLink { ComingUpScreen() } label: {
+            NavigationLink { destination() } label: {
                 HStack {
-                    Text(ComingUpCopy.rowTitle(count: count)).threadsType(.lede).foregroundStyle(threads.ink2)
+                    Text(title).threadsType(.lede).foregroundStyle(threads.ink2)
                     Spacer()
                     Image(systemName: "chevron.right").foregroundStyle(threads.ink3)
                 }
@@ -755,7 +764,7 @@ struct TodayScreen: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .accessibilityIdentifier("comingUpRow")
+            .accessibilityIdentifier(id)
         }
     }
 

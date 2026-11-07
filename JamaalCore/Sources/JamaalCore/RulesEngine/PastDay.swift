@@ -32,6 +32,11 @@ public enum YesterdayRow: Equatable {
 public struct PastDayNeighbours: Equatable {
     public var previous: CalendarDate?
     public var next: CalendarDate?
+
+    public init(previous: CalendarDate? = nil, next: CalendarDate? = nil) {
+        self.previous = previous
+        self.next = next
+    }
 }
 
 /// **Day review** (docs/journeys/coming-up-and-day-review.md): one closed day, read-only, **derived** from what is
