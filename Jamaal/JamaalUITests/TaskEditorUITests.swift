@@ -57,6 +57,26 @@ final class TaskEditorUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter().wait(for: [back], timeout: 8), .completed, "it is back as it was")
     }
 
+    /// Stepping *Other…* more than once keeps the picker open (it used to close whenever a step landed on a listed option, such as 45).
+    @MainActor
+    func testTheOtherStepperCanBeSteppedRepeatedlyWithoutClosing() throws {
+        let app = launch()
+        open("Call the clinic back", in: app)                                   // 15 min
+        app.buttons["detailRow-Effort"].tap()
+        let other = app.buttons["effort-other"]
+        XCTAssertTrue(other.waitForExistence(timeout: 5))
+        other.tap()
+        let stepper = app.steppers["effortStepper"]
+        XCTAssertTrue(stepper.waitForExistence(timeout: 5))
+        for _ in 0..<4 { stepper.buttons.element(boundBy: 1).tap() }               // 30, 45, 60, 75: three of them are listed options
+        XCTAssertTrue(app.steppers["effortStepper"].exists, "the picker is still open")
+        app.buttons["pickerBack"].tap()
+        let row = app.buttons["detailRow-Effort"]
+        XCTAssertTrue(row.waitForExistence(timeout: 5))
+        XCTAssertTrue(row.label.contains("1h 15m"), row.label)
+    }
+
+
     @MainActor
     func testTheTitleEditsInPlace() throws {
         let app = launch()

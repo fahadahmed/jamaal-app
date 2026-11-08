@@ -288,7 +288,8 @@ struct TaskDetailSheet: View {
         case .category:
             CategoryPicker(task: task, showsBack: showsBack, categories: allCategories.filter { !$0.isArchived }, onChoose: { TaskEditing.setCategory(task, $0); markSaved(); close() }, onBack: close)
         case .effort:
-            EffortPicker(task: task, showsBack: showsBack, onChoose: { TaskEditing.setEffort(task, minutes: $0); markSaved(); if TaskEditCopy.effortOptions.contains($0 ?? -1) || $0 == nil { close() } }, onBack: close)
+            EffortPicker(task: task, showsBack: showsBack, onChoose: { TaskEditing.setEffort(task, minutes: $0); markSaved(); close() },
+                         onStep: { TaskEditing.setEffort(task, minutes: $0); markSaved() }, onBack: close)
         case .matters:
             MattersPicker(task: task, showsBack: showsBack, onChoose: { TaskRules.setImportance(task, to: $0, defaultDueDate: today); markSaved(); close() }, onBack: close)
         case .due:

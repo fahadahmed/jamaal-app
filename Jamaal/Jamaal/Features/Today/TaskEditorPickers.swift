@@ -92,7 +92,10 @@ struct EffortPicker: View {
     @Environment(\.threads) private var threads
     let task: TaskItem
     var showsBack = true
+    /// A listed option or *No estimate*: saves and closes.
     let onChoose: (Int?) -> Void
+    /// A step of the *Other…* stepper: saves and stays, so it can be stepped again.
+    let onStep: (Int) -> Void
     let onBack: () -> Void
     @State private var other = false
 
@@ -108,7 +111,7 @@ struct EffortPicker: View {
                     withAnimation(.snappy) { other.toggle() }
                 }
                 if other || isCustom {
-                    Stepper(value: Binding(get: { task.effortMinutes ?? 30 }, set: { onChoose($0) }), in: 15...480, step: 15) {
+                    Stepper(value: Binding(get: { task.effortMinutes ?? 30 }, set: { onStep($0) }), in: 15...480, step: 15) {
                         Text(TodayCopy.duration(task.effortMinutes ?? 30)).threadsType(.row).foregroundStyle(threads.ink)
                     }
                     .padding(.horizontal, ThreadsSpace.row)
