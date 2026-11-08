@@ -121,6 +121,8 @@ enum DebugLaunch {
     /// detail pane (the iPad and the Mac), so a store picture is not an empty pane (#362).
     /// Adds tasks dated later (and so a Coming up list) to the sample data; off otherwise, so Night Planning's tomorrow stays as it was.
     static var comingUp: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalComingUp") }
+    /// Adds a few past days (tasks done, deferred and carried, a day record) to the sample data, for Day review.
+    static var pastDays: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalPastDays") }
     static var openHabit: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenHabit") }
     static var openRule: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenRule") }
     /// `-JamaalMacWindow 1280x760` opens the Mac window at that size, and `-JamaalTheme light|dark` forces the theme, so the store pictures
@@ -192,6 +194,7 @@ enum DebugLaunch {
             }
             context.insert(task)
         }
+        if pastDays { insertPastDays(into: context, now: now, category: category) }
         // A few tasks dated later, for Coming up (`-JamaalComingUp`).
         if comingUp { for (title, minutes, key, ahead) in [("Groceries", 45, "family", 1), ("Draft the migration estimate", 90, "work", 3),
                                              ("Renew the car insurance", 30, "personal", 3), ("Return the library books", 15, "family", 6)] {
@@ -257,6 +260,44 @@ enum DebugLaunch {
     }
 
     @MainActor
+    /// Yesterday: one task done, one deferred by choice, one carried by the rollover, and a day record; the day before: one done.
+    /// The first of them was made three days ago, which is the first day Day review can go back to.
+    private static func insertPastDays(into context: ModelContext, now: Date, category: (String) -> TaskCategory?) {
+        let boundary = TodayDay.boundary(in: context)
+        let today = boundary.logicalDate(at: now)
+        func at(_ ahead: Int, _ hour: Int, _ minute: Int = 0) -> Date { boundary.instant(of: today.addingDays(ahead), atMinute: hour * 60 + minute) }
+        func record(_ task: TaskItem, from: Int, to: Int, _ reason: DeferralReason) {
+            let r = DeferralRecord()
+            r.day = today.addingDays(from).storedDate
+            r.deferredTo = today.addingDays(to).storedDate
+            r.reasonKind = reason
+            context.insert(r)
+            r.task = task
+        }
+        let done = TaskItem(title: "Send the invoice", dueDate: today.addingDays(-1).storedDate, effortMinutes: 30)
+        done.createdAt = at(-3, 9)
+        done.isCompleted = true; done.completedAt = at(-1, 9, 12); done.category = category("work")
+        let earlier = TaskItem(title: "Book the dentist", dueDate: today.addingDays(-2).storedDate, effortMinutes: 15)
+        earlier.createdAt = at(-3, 9)
+        earlier.isCompleted = true; earlier.completedAt = at(-2, 10); earlier.category = category("personal")
+        let chosen = TaskItem(title: "Plan the weekend", dueDate: today.addingDays(2).storedDate, effortMinutes: 45)
+        chosen.createdAt = at(-3, 9); chosen.category = category("family")
+        let carried = TaskItem(title: "Renew the library card", dueDate: today.storedDate, effortMinutes: 20)
+        carried.createdAt = at(-3, 9); carried.deferralCount = 1; carried.category = category("personal")
+        for task in [done, earlier, chosen, carried] { context.insert(task) }
+        record(chosen, from: -1, to: 2, .tooMuch)
+        record(carried, from: -1, to: 0, .unspecified)
+        let plan = DayPlan()
+        plan.date = today.addingDays(-1).storedDate
+        plan.capacityLevel = .medium
+        plan.completedEffortMinutes = 30
+        plan.planningCompletedAt = at(-2, 21, 30)
+        context.insert(plan)
+        let closing = NightPlanningSession()
+        closing.forDate = today.storedDate; closing.isComplete = true; closing.completedAt = at(-1, 22, 40)
+        context.insert(closing)
+    }
+
     static func insertSampleAnchorRules(into context: ModelContext, now: Date = .now) {
         guard anchorRules || storeShots, ((try? context.fetchCount(FetchDescriptor<AnchorRule>())) ?? 0) == 0 else { return }
         let boundary = TodayDay.boundary(in: context)

@@ -46,6 +46,8 @@ Under the task list, in this order: *Also today*, **Yesterday**, **Coming up** (
 
 ## Day review (DY-01)
 
+> **Built (slice #386):** Today's **Yesterday** row (above Coming up) and the Day review screen, with arrows between days (the day changes in place; previous goes back to the first day with data, next stops at yesterday), **Mark done** inside the two-day window, and the footer. Anchors read one row per rule ("4 of 5 attended" with a square each). `-JamaalPastDays` adds sample past days. **Not yet:** the entries from a Habits heatmap day and a Wellbeing sparkline day. The heatmap's day tap already opens the habit's 14-day correction, so a second action there needs a small design decision; it follows with the wide layouts (#389).
+
 - Header: the date (mono eyebrow) and previous and next arrows; **next stops at yesterday** (today has its own screen) and **previous goes back to the first day with data**. On Mac, ⌘[ and ⌘] do the same.
 - Hero, two lines, the second in italic accent ("A steady day. / Two of three done."); capacity used against set, with **Closed {time}** when the day was closed in Night Planning.
 - **Anchors**: attended count, one square per occurrence (attended and missed shaded differently). **Habits**: progress, one square. **Tasks**: done ones struck through with the time done; deferred ones "Deferred to {date}", dimmed; automatic ones "Not done · carried to {date}"; an outlined **Mark done** on a not-done task only inside the two-day fix window.
