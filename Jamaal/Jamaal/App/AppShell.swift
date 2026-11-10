@@ -34,6 +34,7 @@ struct AppShell: View {
     }
     @Query(sort: \UserSettings.createdAt) private var settingsRows: [UserSettings]
     @State private var coordinator = FocusCoordinator()
+    @State private var editUndo = EditUndoCenter()
     @State private var todayFilter = TodayFilterState()
     @State private var commandCenter = CommandCenter()
     @Query(sort: \TaskCategory.sortOrder) private var categoryRows: [TaskCategory]
@@ -177,9 +178,11 @@ struct AppShell: View {
             go: { tab in show(tab) }))
         // The chip (or, for five seconds after Done, its Undo toast) sits above the tab bar on every tab. A Mac has no tab
         // bar: its chip is in the sidebar, and only the Undo toast comes up from the bottom of the window.
-        .focusAccessory(isEnabled: windowChipShown || coordinator.toast != nil) {
+                .focusAccessory(isEnabled: windowChipShown || coordinator.toast != nil || editUndo.toast != nil) {
             if let toast = coordinator.toast {
                 UndoToast(title: toast.title) { coordinator.undoToast() }
+            } else if let toast = editUndo.toast {
+                EditUndoToast(text: toast.text) { editUndo.undo(in: context) }
             } else if windowChipShown, let live = liveSession {
                 TimelineView(.periodic(from: .now, by: 30)) { timeline in
                     FocusChip(session: live, edge: FocusSessions.approachingEdge(anchors: anchors, now: timeline.date)) {
@@ -192,6 +195,7 @@ struct AppShell: View {
             OnboardingFlow(startAt: OnboardingStep(rawValue: debugStartStep) ?? .meet)
         }
         .environment(coordinator)
+        .environment(editUndo)
         .environment(\.requireAccess) { action in
             let boundary = TodayDay.boundary(in: context)
             if action.isAllowed(in: store.access(settings: settingsRows.first, boundary: boundary)) { return true }

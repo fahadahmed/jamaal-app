@@ -31,9 +31,10 @@ final class TaskDetailUITests: XCTestCase {
         let app = launch()
         open("Call the clinic back", in: app)
 
-        XCTAssertTrue(app.staticTexts["Effort"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["15 min"].exists)
-        XCTAssertTrue(app.staticTexts["Deferred twice"].exists || app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Deferred twice'")).firstMatch.exists)
+        let effort = app.buttons["detailRow-Effort"]
+        XCTAssertTrue(effort.waitForExistence(timeout: 5))
+        XCTAssertTrue(effort.label.contains("15 min"), effort.label)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'Deferred twice'")).firstMatch.exists)
 
         let box = app.buttons["Are Thursday mornings still open?"]
         XCTAssertTrue(box.waitForExistence(timeout: 5))

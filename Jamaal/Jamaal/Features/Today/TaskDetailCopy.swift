@@ -14,6 +14,15 @@ enum TaskDetailCopy {
         return minutes < 60 ? "\(minutes) min" : TodayCopy.duration(minutes)
     }
 
+    static func repeatName(_ kind: RepeatKind) -> String {
+        switch kind {
+        case .daily: "Daily"
+        case .weekly: "Weekly"
+        case .monthly: "Monthly"
+        case .off, .unknown: "Never"
+        }
+    }
+
     static func matters(_ importance: Importance) -> String {
         switch importance {
         case .high: "High"

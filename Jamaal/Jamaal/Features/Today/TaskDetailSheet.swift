@@ -16,6 +16,8 @@ struct TaskDetailSheet: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @Environment(FocusCoordinator.self) private var focus
+    @Environment(EditUndoCenter.self) private var editUndo
+    @Query(sort: \TaskCategory.sortOrder) private var allCategories: [TaskCategory]
 
     let task: TaskItem
     /// In the panel beside the list (regular width) it closes by clearing the selection instead of dismissing a sheet.
@@ -24,6 +26,15 @@ struct TaskDetailSheet: View {
     @State private var deferring = false
     @State private var confirmingDrop = false
     @State private var editingNote = false
+    // Editing in place: there is no edit mode, so a visit's changes are kept as one undo group (EditUndoCenter).
+    @State private var snapshot: TaskSnapshot?
+    /// The visit ended in Mark done, Defer, Drop or Begin: those are not edits, so there is nothing to undo as one.
+    @State private var resolved = false
+    @State private var titleText = ""
+    @SwiftUI.FocusState private var titleFocused: Bool
+    @State private var picking: EditField?
+    @State private var showsSaved = false
+    @State private var dayFull: DayFullCheck?
 
     private var boundary: DayBoundary { TodayDay.boundary(in: context) }
     private var today: CalendarDate { boundary.logicalDate(at: .now) }
@@ -35,9 +46,33 @@ struct TaskDetailSheet: View {
     private var sideBySide: Bool { embedded && paneWidth >= 560 }
 
     var body: some View {
+        // On a phone the field pickers push inside the sheet; beside the list (regular width) they are popovers on their rows.
+        Group {
+            if embedded {
+                content
+            } else {
+                NavigationStack {
+                    content
+                        .navigationDestination(item: $picking) { field in
+                            pickerView(for: field, showsBack: true)
+                        }
+                }
+            }
+        }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .onAppear {
+            snapshot = TaskEditing.snapshot(task)
+            titleText = task.title
+        }
+        .onDisappear { endVisit() }
+    }
+
+    private var content: some View {
         VStack(alignment: .leading, spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: ThreadsSpace.section) {
+                    header
                     heading
                     if sideBySide {
                         // The panel is wide: the note beside the facts, as drawn for iPad.
@@ -53,13 +88,12 @@ struct TaskDetailSheet: View {
                 .padding(.horizontal, ThreadsSpace.gutter)
                 .padding(.top, ThreadsSpace.section)
             }
+            if let check = dayFull { dayFullPanel(check).padding(.horizontal, ThreadsSpace.gutter) }
             actions
         }
         .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { paneWidth = $0 }
         .background(threads.app)
-        .toolbar { if embedded { ToolbarItem(placement: .jamaalTrailing) { moreMenu } } }
-        .presentationDetents([.large])
-        .presentationDragIndicator(.visible)
+        .hidesNavigationBar()
         .onAppear {
             #if DEBUG
             if DebugLaunch.openDefer { deferring = true }
@@ -80,20 +114,39 @@ struct TaskDetailSheet: View {
         }
     }
 
-    /// The panel's ⋯ (the sheet has no toolbar): what isn't one of the four actions beneath.
+    /// The header: `Saved` once something has been changed, and ⋯ for what isn't one of the four actions beneath.
+    private var header: some View {
+        HStack {
+            if showsSaved {
+                Label(TaskEditCopy.savedLabel, systemImage: "checkmark").labelStyle(.titleAndIcon)
+                    .threadsType(.label).foregroundStyle(threads.accent)
+                    .accessibilityIdentifier("savedTick")
+            }
+            Spacer()
+            moreMenu
+        }
+        .frame(minHeight: ThreadsHit.minimum)
+    }
+
     private var moreMenu: some View {
         Menu {
             Button(TaskNotes.items(task.notes).isEmpty ? "Add a note" : "Edit note", systemImage: "square.and.pencil") {
                 if requireAccess(.editTask) { editingNote = true }
             }
             .accessibilityIdentifier("moreEditNote")
+            if !task.isCompleted {
+                Button("Move to another day", systemImage: "calendar") { if requireAccess(.editTask) { picking = .due } }
+                    .accessibilityIdentifier("moreMoveDay")
+            }
             if task.repeatMode != .off && !task.isCompleted {
                 Button("Stop repeating", systemImage: "repeat") { stopRepeating() }
                     .accessibilityIdentifier("moreStopRepeating")
             }
         } label: {
             Label("More", systemImage: "ellipsis").labelStyle(.iconOnly)
+                .frame(width: ThreadsHit.minimum, height: ThreadsHit.minimum).contentShape(Rectangle())
         }
+        .accessibilityLabel("More")
         .accessibilityIdentifier("moreMenu")
     }
 
@@ -107,9 +160,32 @@ struct TaskDetailSheet: View {
                     Text(category.name).threadsType(.body).foregroundStyle(threads.ink2)
                 }
             }
-            Text(task.title).threadsType(.display(.compact)).foregroundStyle(threads.ink)
+            // The title reads as editable (a faint tinted box) and edits where it stands; Return or leaving it saves, and an empty one reverts.
+            TextField("Title", text: $titleText, axis: .vertical)
+                .threadsType(.display(.compact)).foregroundStyle(threads.ink)
+                .focused($titleFocused)
+                .submitLabel(.done)
+                .disabled(task.isCompleted)
+                .padding(.horizontal, ThreadsSpace.row).padding(.vertical, 10)
+                .background(RoundedRectangle(cornerRadius: ThreadsRadius.card).fill(titleFocused ? threads.card : threads.accent.opacity(0.07)))
+                .overlay(RoundedRectangle(cornerRadius: ThreadsRadius.card).strokeBorder(titleFocused ? threads.accent : .clear, lineWidth: 1.5))
+                .padding(.horizontal, -ThreadsSpace.row)
                 .accessibilityIdentifier("detailTitle")
-                .accessibilityAddTraits(.isHeader)
+                .onSubmit { commitTitle() }
+                .onChange(of: titleText) { _, new in
+                    if new.contains("\n") { titleText = new.replacingOccurrences(of: "\n", with: ""); commitTitle(); titleFocused = false }
+                }
+                .onChange(of: titleFocused) { _, focused in if !focused { commitTitle() } }
+        }
+    }
+
+    private func commitTitle() {
+        guard titleText != task.title else { return }
+        if requireAccess(.editTask), TaskEditing.setTitle(task, titleText) {
+            titleText = task.title
+            markSaved()
+        } else {
+            titleText = task.title
         }
     }
 
@@ -152,25 +228,162 @@ struct TaskDetailSheet: View {
     private var table: some View {
         VStack(spacing: 0) {
             Divider().overlay(threads.line)
-            tableRow("Effort", TaskDetailCopy.effort(task.effortMinutes))
-            tableRow("Matters", TaskDetailCopy.matters(task.importanceLevel))
-            tableRow("Due", TaskDetailCopy.due(task.dueDate.map(CalendarDate.init(storedDate:)), today: today))
-            tableRow("History", TaskDetailCopy.history(deferrals: task.deferralCount, addedOn: boundary.logicalDate(at: task.createdAt)))
-            if task.repeatMode != .off { tableRow("Repeats", Self.repeatName(task.repeatMode)) }
+            editRow(.category, task.category.map(\.name) ?? "None")
+            editRow(.effort, TaskDetailCopy.effort(task.effortMinutes))
+            editRow(.matters, TaskDetailCopy.matters(task.importanceLevel))
+            editRow(.due, TaskDetailCopy.due(task.dueDate.map(CalendarDate.init(storedDate:)), today: today))
+            editRow(.repeats, TaskDetailCopy.repeatName(task.repeatMode))
+            historyRow
+            if isFuture, let due = task.dueDate.map(CalendarDate.init(storedDate:)) {
+                Text(TaskEditCopy.futureNote(for: due)).threadsType(.meta).foregroundStyle(threads.ink2)
+                    .padding(.top, ThreadsSpace.row)
+                    .accessibilityIdentifier("futureNote")
+            }
         }
     }
 
-    private func tableRow(_ title: String, _ value: String) -> some View {
+    /// A field you can change where it stands: the whole row opens its picker.
+    private func editRow(_ field: EditField, _ value: String) -> some View {
+        Button { if !task.isCompleted, requireAccess(.editTask) { picking = field } } label: {
+            VStack(spacing: 0) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(field.title).threadsType(.lede).foregroundStyle(threads.ink2)
+                    Spacer(minLength: ThreadsSpace.row)
+                    Text(value).threadsType(.lede).foregroundStyle(threads.ink).multilineTextAlignment(.trailing)
+                    Image(systemName: "chevron.right").font(.footnote).foregroundStyle(threads.ink3)
+                }
+                .padding(.vertical, ThreadsSpace.row)
+                .frame(minHeight: ThreadsHit.minimum)
+                Divider().overlay(threads.line)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityHint("Changes it")
+        .accessibilityIdentifier("detailRow-\(field.title)")
+        .popover(isPresented: Binding(get: { embedded && picking == field }, set: { if !$0, picking == field { picking = nil } })) {
+            pickerView(for: field, showsBack: false).frame(minWidth: 320, minHeight: 360)
+        }
+    }
+
+    private var historyRow: some View {
         VStack(spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
-                Text(title).threadsType(.lede).foregroundStyle(threads.ink2)
+                Text("History").threadsType(.lede).foregroundStyle(threads.ink2)
                 Spacer(minLength: ThreadsSpace.row)
-                Text(value).threadsType(.lede).foregroundStyle(threads.ink).multilineTextAlignment(.trailing)
+                Text(TaskDetailCopy.history(deferrals: task.deferralCount, addedOn: boundary.logicalDate(at: task.createdAt)))
+                    .threadsType(.lede).foregroundStyle(threads.ink).multilineTextAlignment(.trailing)
             }
             .padding(.vertical, ThreadsSpace.row)
             Divider().overlay(threads.line)
         }
         .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private func pickerView(for field: EditField, showsBack: Bool) -> some View {
+        let close = { picking = nil }
+        switch field {
+        case .category:
+            CategoryPicker(task: task, showsBack: showsBack, categories: allCategories.filter { !$0.isArchived }, onChoose: { TaskEditing.setCategory(task, $0); markSaved(); close() }, onBack: close)
+        case .effort:
+            EffortPicker(task: task, showsBack: showsBack, onChoose: { TaskEditing.setEffort(task, minutes: $0); markSaved(); close() },
+                         onStep: { TaskEditing.setEffort(task, minutes: $0); markSaved() }, onBack: close)
+        case .matters:
+            MattersPicker(task: task, showsBack: showsBack, onChoose: { TaskRules.setImportance(task, to: $0, defaultDueDate: today); markSaved(); close() }, onBack: close)
+        case .due:
+            DuePicker(task: task, today: today, firstWeekdayISO: firstWeekdayISO, showsBack: showsBack, onChoose: { setDue($0); close() }, onBack: close)
+        case .repeats:
+            RepeatPicker(task: task, showsBack: showsBack, onChoose: { TaskEditing.setRepeat(task, $0, today: today); markSaved(); close() }, onBack: close)
+        }
+    }
+
+    private var firstWeekdayISO: Int { ((Calendar.current.firstWeekday + 5) % 7) + 1 }
+
+    /// Choosing a date saves it. Choosing today is *Move to today*, so it goes through the day-is-full check too.
+    private func setDue(_ date: CalendarDate?) {
+        if date == today { requestMoveToToday(); return }
+        guard (try? TaskRules.setDueDate(task, to: date)) != nil else { return }
+        markSaved()
+    }
+
+    private func markSaved() {
+        withAnimation(.snappy) { showsSaved = true }
+        resolved = false
+    }
+
+    // MARK: A visit
+
+    /// Leaving the task ends the visit: one undo toast for everything changed in it, unless it ended in Mark done, Defer, Drop or Begin.
+    private func endVisit() {
+        commitTitle()
+        guard let snapshot, !resolved else { return }
+        editUndo.visitEnded(task: task, snapshot: snapshot)
+        self.snapshot = nil
+    }
+
+    private var isFuture: Bool {
+        task.dueDate.map { CalendarDate(storedDate: $0) > today } ?? false
+    }
+
+    // MARK: Move to today
+
+    private var moveToTodayButton: some View {
+        Button(action: requestMoveToToday) {
+            Label(TaskEditCopy.moveToToday, systemImage: "arrow.down").threadsType(.row).foregroundStyle(.white)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, minHeight: 56).background(Capsule().fill(threads.terra))
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("moveToToday")
+    }
+
+    /// Moves the task to today (it then counts against today's capacity). A full day offers another day first, as Add does.
+    private func requestMoveToToday() {
+        guard requireAccess(.editTask) else { return }
+        if let check = try? TaskCreation.dayFullCheck(adding: task.effortMinutes, on: today, in: context, now: .now) {
+            withAnimation(.snappy) { dayFull = check }
+        } else {
+            moveToToday()
+        }
+    }
+
+    private func moveToToday() {
+        dayFull = nil
+        guard (try? TaskEditing.moveToToday(task, today: today)) != nil else { return }
+        markSaved()
+    }
+
+    private func dayFullPanel(_ check: DayFullCheck) -> some View {
+        let copy = AddTaskForm.dayFullCopy(check, adding: task.effortMinutes ?? 0, on: today, today: today)
+        return VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
+            Text(copy.title).threadsType(.lede).foregroundStyle(threads.ink)
+            Text(copy.detail).threadsType(.meta).foregroundStyle(threads.ink2)
+            HStack(spacing: ThreadsSpace.tight) {
+                if let suggestion = check.suggestion {
+                    Button {
+                        dayFull = nil
+                        try? TaskRules.setDueDate(task, to: suggestion)
+                        markSaved()
+                    } label: {
+                        Text(AddTaskForm.relativeButton(suggestion, today: today)).threadsType(.row).foregroundStyle(.white)
+                            .frame(maxWidth: .infinity, minHeight: 52).background(Capsule().fill(threads.terra))
+                    }
+                    .accessibilityIdentifier("dayFullOffer")
+                }
+                Button { moveToToday() } label: {
+                    Text("Move anyway").threadsType(.row).foregroundStyle(threads.ink)
+                        .frame(maxWidth: .infinity, minHeight: 52).overlay(Capsule().strokeBorder(threads.line2, lineWidth: 1))
+                }
+                .accessibilityIdentifier("moveAnyway")
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(ThreadsSpace.row)
+        .background(RoundedRectangle(cornerRadius: ThreadsRadius.card).fill(threads.card))
+        .overlay(RoundedRectangle(cornerRadius: ThreadsRadius.card).strokeBorder(threads.line2, lineWidth: 1))
+        .padding(.vertical, ThreadsSpace.tight)
     }
 
     private var actions: some View {
@@ -181,7 +394,7 @@ struct TaskDetailSheet: View {
                 // widen everything above it, so it stacks instead (#329).
                 ViewThatFits(in: .horizontal) {
                     HStack(spacing: ThreadsSpace.tight) {
-                        if !task.isCompleted { beginButton.frame(minWidth: 130) }
+                        if !task.isCompleted { primaryButton.frame(minWidth: 130) }
                         markDoneButton
                         if !task.isCompleted { deferButton; dropButton }
                     }
@@ -198,12 +411,17 @@ struct TaskDetailSheet: View {
 
     private var stackedActions: some View {
         VStack(spacing: ThreadsSpace.tight) {
-            if !task.isCompleted { beginButton }
+            if !task.isCompleted { primaryButton }
             HStack(spacing: ThreadsSpace.tight) {
                 markDoneButton
                 if !task.isCompleted { deferButton; dropButton }
             }
         }
+    }
+
+    /// A future task's primary is *Move to today*, which replaces Begin: it isn't actionable until its day.
+    @ViewBuilder private var primaryButton: some View {
+        if isFuture { moveToTodayButton } else { beginButton }
     }
 
     private var beginButton: some View {
@@ -248,6 +466,7 @@ struct TaskDetailSheet: View {
     private func close() { embedded ? onClose() : dismiss() }
 
     private func begin() {
+        resolved = true
         if isTimingThis {
             focus.isShowingFocus = true
             close()
@@ -270,6 +489,7 @@ struct TaskDetailSheet: View {
     }
 
     private func toggleDone() {
+        resolved = true
         if task.isCompleted {
             try? TaskActions.uncomplete(task, boundary: boundary, context: context)
         } else {
@@ -281,6 +501,7 @@ struct TaskDetailSheet: View {
     /// The first and second deferral move the task to tomorrow at once; from the third the picker opens.
     private func startDefer() {
         guard requireAccess(.deferTask) else { return }
+        resolved = true
         let preview = TaskDeferral.preview(task, from: today)
         if preview.requiresPicker {
             deferring = true
@@ -292,12 +513,14 @@ struct TaskDetailSheet: View {
 
     private func drop() {
         guard requireAccess(.dropTask) else { return }
+        resolved = true
         TaskActions.drop(task, now: .now, boundary: boundary, context: context)
         close()
     }
 
     private func stopRepeating() {
         guard requireAccess(.editTask) else { return }
+        resolved = true
         TaskActions.stopRepeating(task)
         close()
     }
@@ -306,14 +529,6 @@ struct TaskDetailSheet: View {
         (try? AttributedString(markdown: markdown, options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace))) ?? AttributedString(markdown)
     }
 
-    private static func repeatName(_ kind: RepeatKind) -> String {
-        switch kind {
-        case .daily: "Daily"
-        case .weekly: "Weekly"
-        case .monthly: "Monthly"
-        case .off, .unknown: "Never"
-        }
-    }
 }
 
 /// The note's checkbox: a rounded square, filled accent with a check when done.

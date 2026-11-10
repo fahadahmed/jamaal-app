@@ -52,6 +52,27 @@ struct FocusChip: View {
     }
 }
 
+/// The five-second toast after a task was edited in place ("Call the clinic back · now 30 min  Undo"), in the same place.
+struct EditUndoToast: View {
+    @Environment(\.threads) private var threads
+    let text: String
+    let onUndo: () -> Void
+
+    var body: some View {
+        HStack {
+            Text(text).threadsType(.row).foregroundStyle(threads.ink).lineLimit(1)
+            Spacer(minLength: ThreadsSpace.tight)
+            Button("Undo", action: onUndo)
+                .threadsType(.row).foregroundStyle(threads.ink)
+                .frame(minHeight: ThreadsHit.minimum)
+                .accessibilityIdentifier("editUndoButton")
+        }
+        .padding(.horizontal, ThreadsSpace.row)
+        .frame(minHeight: ThreadsHit.minimum)
+        .accessibilityElement(children: .contain)
+    }
+}
+
 /// The five-second toast after Done, in the chip's place: "Done · title  Undo".
 struct UndoToast: View {
     @Environment(\.threads) private var threads
