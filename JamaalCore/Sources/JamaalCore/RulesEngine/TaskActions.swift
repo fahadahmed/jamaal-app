@@ -100,6 +100,23 @@ public enum TaskActions {
         return createNext(after: task, on: boundary.logicalDate(at: now), context: context, now: now)
     }
 
+    /// *Only this one* (TK-07): the series carries on as it was and this occurrence stops repeating. The next instance is made now, from
+    /// the task as it is (so call this **before** applying the change); then this one leaves the series, so there is still exactly one
+    /// live instance of it. Returns the next instance (`nil` if the task doesn't repeat, or the next one already existed).
+    @MainActor
+    @discardableResult
+    public static func splitOffThisOccurrence(
+        _ task: TaskItem, today: CalendarDate, now: Date, boundary: DayBoundary, context: ModelContext
+    ) -> TaskItem? {
+        guard task.repeatMode != .off, task.repeatMode != .unknown else { return nil }
+        let next = createNext(after: task, on: today, context: context, now: now)
+        task.repeatMode = .off
+        task.repeatWeekdays = ""
+        task.repeatDayOfMonth = 0
+        task.seriesID = nil
+        return next
+    }
+
     /// Ends a repeating task's series at the live instance.
     public static func stopRepeating(_ task: TaskItem) {
         task.repeatMode = .off

@@ -17,6 +17,8 @@ final class EditUndoCenter {
         var text: String
         var task: TaskItem
         var snapshot: TaskSnapshot
+        /// Instances an *only this one* answer made, taken away again by Undo.
+        var created: [TaskItem] = []
         var at: Date
     }
 
@@ -29,10 +31,12 @@ final class EditUndoCenter {
     init(now: @escaping () -> Date = { .now }) { self.now = now }
 
     /// Called when a visit to `task` ends. Shows nothing if nothing changed.
-    func visitEnded(task: TaskItem, snapshot: TaskSnapshot) {
-        guard let text = TaskEditCopy.undoText(title: task.title, changes: TaskEditing.changes(from: snapshot, to: task)) else { return }
+    func visitEnded(task: TaskItem, snapshot: TaskSnapshot, created: [TaskItem] = []) {
+        // Splitting off this occurrence also stops it repeating; that is the means, not a change the person made.
+        let changes = TaskEditing.changes(from: snapshot, to: task).filter { created.isEmpty || { if case .repeats = $0 { false } else { true } }($0) }
+        guard let text = TaskEditCopy.undoText(title: task.title, changes: changes) else { return }
         let at = now()
-        toast = Toast(text: text, task: task, snapshot: snapshot, at: at)
+        toast = Toast(text: text, task: task, snapshot: snapshot, created: created, at: at)
         expiry?.cancel()
         expiry = Task { [weak self] in
             try? await Task.sleep(for: .seconds(Self.seconds))
@@ -45,6 +49,7 @@ final class EditUndoCenter {
         guard let current = toast else { return }
         toast = nil
         expiry?.cancel()
+        for next in current.created { TaskEditing.undoSplit(next, in: context) }
         let categories = (try? context.fetch(FetchDescriptor<TaskCategory>())) ?? []
         TaskEditing.restore(current.snapshot, to: current.task, categories: categories)
         try? context.save()

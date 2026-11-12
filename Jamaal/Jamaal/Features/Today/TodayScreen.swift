@@ -564,11 +564,17 @@ struct TodayScreen: View {
         .accessibilityIdentifier("exitNotice")
     }
 
+    /// How many tasks were scheduled for today ahead of time, for the morning card to name.
+    private var scheduledForToday: Int {
+        let boundary = TodayDay.boundary(in: context)
+        return (try? MorningCard.scheduledTasks(today: boundary.logicalDate(at: now), boundary: boundary, context: context))?.count ?? 0
+    }
+
     /// TD-07: no plan was confirmed for today. Pick for today opens the shortened flow; Not now puts it away.
     private var morningCard: some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.row) {
             CompanionRow {
-                Text(TodayCopy.morningCard).threadsType(.lede).foregroundStyle(threads.ink)
+                Text(TodayCopy.morningCard(scheduled: scheduledForToday)).threadsType(.lede).foregroundStyle(threads.ink)
             }
             AdaptiveButtons {
                 Button(action: pickForToday) {

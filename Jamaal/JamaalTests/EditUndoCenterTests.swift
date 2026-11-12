@@ -37,6 +37,23 @@ struct EditUndoCenterTests {
         #expect(center.toast == nil)
     }
 
+    @Test func aSplitVisitNamesTheEditNotTheStoppedRepeatAndUndoRemovesTheNewInstance() throws {
+        let (context, task) = try world()
+        task.repeatKind = "weekly"; task.dueDate = Date(timeIntervalSince1970: 1_000_000); task.seriesID = UUID()
+        let snapshot = TaskEditing.snapshot(task)
+        let boundary = DayBoundary(rolloverMinute: 0, timeZone: TimeZone(identifier: "UTC")!)
+        let next = try #require(TaskActions.splitOffThisOccurrence(
+            task, today: boundary.logicalDate(at: .now), now: .now, boundary: boundary, context: context))
+        TaskEditing.setEffort(task, minutes: 45)
+        let center = EditUndoCenter()
+        center.visitEnded(task: task, snapshot: snapshot, created: [next])
+        #expect(center.toast?.text == "Call the clinic back · now 45 min", "it doesn't call stopping the repeat a change")
+        center.undo(in: context)
+        #expect(task.repeatMode == .weekly)
+        #expect(task.effortMinutes == 15)
+        #expect(try context.fetch(FetchDescriptor<TaskItem>()).count == 1)
+    }
+
     @Test func theToastGoesAfterFiveSeconds() throws {
         let (_, task) = try world()
         var clock = Date(timeIntervalSince1970: 1_000)

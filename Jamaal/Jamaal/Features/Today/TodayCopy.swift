@@ -31,6 +31,12 @@ enum TodayCopy {
     static func unplanned(date: CalendarDate) -> (first: String, second: String) { ("\(PlanningCopy.weekday(date)),", "unplanned.") }
     static let morningCard = "No plan for today — two minutes to pick?"
 
+    /// With tasks already scheduled for today, the card names them: "3 tasks are scheduled for it, so two minutes to confirm?"
+    static func morningCard(scheduled: Int) -> String {
+        guard scheduled > 0 else { return morningCard }
+        return "No plan for today. \(scheduled) \(scheduled == 1 ? "task is" : "tasks are") scheduled for it, so two minutes to confirm?"
+    }
+
     static let blankDay = "Your day is blank."
     static let allDone = "Nothing left for today."
     static func nothingIn(_ category: String) -> String { "Nothing in \(category) today." }

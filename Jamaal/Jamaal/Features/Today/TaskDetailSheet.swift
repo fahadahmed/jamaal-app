@@ -35,6 +35,17 @@ struct TaskDetailSheet: View {
     @State private var picking: EditField?
     @State private var showsSaved = false
     @State private var dayFull: DayFullCheck?
+    /// A change to a repeating task waits here until it has been asked (once per visit) whether it is for this one or every one after.
+    @State private var pendingScope: PendingScope?
+    @State private var scopeAnswered = false
+    /// Instances made by an *only this one* answer, so undoing the visit can take them away again.
+    @State private var splitInstances: [TaskItem] = []
+
+    private struct PendingScope: Identifiable {
+        let id = UUID()
+        let change: TaskEditCopy.ScopedChange
+        let apply: () -> Void
+    }
 
     private var boundary: DayBoundary { TodayDay.boundary(in: context) }
     private var today: CalendarDate { boundary.logicalDate(at: .now) }
@@ -66,6 +77,16 @@ struct TaskDetailSheet: View {
             titleText = task.title
         }
         .onDisappear { endVisit() }
+        .sheet(item: $pendingScope, onDismiss: { titleText = task.title }) { pending in
+            RepeatScopeSheet(
+                eyebrow: repeatRule,
+                sentence: TaskEditCopy.scopeSentence(pending.change),
+                laterTitle: TaskEditCopy.scopeLater(kind: task.repeatMode, weekday: repeatWeekdayName),
+                onlyTitle: TaskEditCopy.scopeOnly(kind: task.repeatMode, weekday: repeatWeekdayName),
+                onLater: { answerScope(pending, onlyThis: false) },
+                onOnly: { answerScope(pending, onlyThis: true) },
+                onCancel: { pendingScope = nil })
+        }
     }
 
     private var content: some View {
@@ -181,12 +202,49 @@ struct TaskDetailSheet: View {
 
     private func commitTitle() {
         guard titleText != task.title else { return }
-        if requireAccess(.editTask), TaskEditing.setTitle(task, titleText) {
-            titleText = task.title
-            markSaved()
-        } else {
+        let text = titleText
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { titleText = task.title; return }   // an empty title reverts
+        edit(.title(to: text.trimmingCharacters(in: .whitespacesAndNewlines))) {
+            TaskEditing.setTitle(task, text)
             titleText = task.title
         }
+        if pendingScope == nil { titleText = task.title }
+    }
+
+    // MARK: Repeating tasks: this one or every one after
+
+    /// Makes a change to the task's template (title, effort, matters, category). A repeating task is asked once per visit first.
+    private func edit(_ change: TaskEditCopy.ScopedChange, apply: @escaping () -> Void) {
+        guard requireAccess(.editTask) else { titleText = task.title; return }
+        if TaskEditing.needsScope(task) && !scopeAnswered {
+            pendingScope = PendingScope(change: change, apply: apply)
+        } else {
+            apply()
+            markSaved()
+        }
+    }
+
+    private func answerScope(_ pending: PendingScope, onlyThis: Bool) {
+        pendingScope = nil
+        scopeAnswered = true
+        if onlyThis,
+           let next = TaskActions.splitOffThisOccurrence(task, today: today, now: .now, boundary: boundary, context: context) {
+            splitInstances.append(next)
+        }
+        pending.apply()
+        markSaved()
+    }
+
+    private var repeatWeekdayName: String? {
+        let iso = task.repeatWeekdays.split(separator: ",").compactMap { Int($0) }.first
+            ?? task.dueDate.map { CalendarDate(storedDate: $0).isoWeekday }
+        return iso.map { PlanningCopy.weekday(CalendarDate(year: 2026, month: 10, day: 4 + $0)!) }       // 4 Oct 2026 was a Sunday: +1 is Monday
+    }
+
+    private var repeatRule: String {
+        TaskEditCopy.scopeEyebrow(
+            kind: task.repeatMode, weekday: repeatWeekdayName,
+            dayOfMonth: task.repeatDayOfMonth > 0 ? task.repeatDayOfMonth : task.dueDate.map { CalendarDate(storedDate: $0).day })
     }
 
     @ViewBuilder private var note: some View {
@@ -232,7 +290,7 @@ struct TaskDetailSheet: View {
             editRow(.effort, TaskDetailCopy.effort(task.effortMinutes))
             editRow(.matters, TaskDetailCopy.matters(task.importanceLevel))
             editRow(.due, TaskDetailCopy.due(task.dueDate.map(CalendarDate.init(storedDate:)), today: today))
-            editRow(.repeats, TaskDetailCopy.repeatName(task.repeatMode))
+            editRow(.repeats, task.repeatMode == .off ? "Never" : repeatRule)
             historyRow
             if isFuture, let due = task.dueDate.map(CalendarDate.init(storedDate:)) {
                 Text(TaskEditCopy.futureNote(for: due)).threadsType(.meta).foregroundStyle(threads.ink2)
@@ -286,12 +344,12 @@ struct TaskDetailSheet: View {
         let close = { picking = nil }
         switch field {
         case .category:
-            CategoryPicker(task: task, showsBack: showsBack, categories: allCategories.filter { !$0.isArchived }, onChoose: { TaskEditing.setCategory(task, $0); markSaved(); close() }, onBack: close)
+            CategoryPicker(task: task, showsBack: showsBack, categories: allCategories.filter { !$0.isArchived }, onChoose: { choice in edit(.category(from: task.category?.name, to: choice?.name)) { TaskEditing.setCategory(task, choice) }; close() }, onBack: close)
         case .effort:
-            EffortPicker(task: task, showsBack: showsBack, onChoose: { TaskEditing.setEffort(task, minutes: $0); markSaved(); close() },
-                         onStep: { TaskEditing.setEffort(task, minutes: $0); markSaved() }, onBack: close)
+            EffortPicker(task: task, showsBack: showsBack, onChoose: { minutes in edit(.effort(from: task.effortMinutes, to: minutes)) { TaskEditing.setEffort(task, minutes: minutes) }; close() },
+                         onStep: { minutes in edit(.effort(from: task.effortMinutes, to: minutes)) { TaskEditing.setEffort(task, minutes: minutes) } }, onBack: close)
         case .matters:
-            MattersPicker(task: task, showsBack: showsBack, onChoose: { TaskRules.setImportance(task, to: $0, defaultDueDate: today); markSaved(); close() }, onBack: close)
+            MattersPicker(task: task, showsBack: showsBack, onChoose: { level in edit(.matters(from: task.importanceLevel, to: level)) { TaskRules.setImportance(task, to: level, defaultDueDate: today) }; close() }, onBack: close)
         case .due:
             DuePicker(task: task, today: today, firstWeekdayISO: firstWeekdayISO, showsBack: showsBack, onChoose: { setDue($0); close() }, onBack: close)
         case .repeats:
@@ -319,7 +377,7 @@ struct TaskDetailSheet: View {
     private func endVisit() {
         commitTitle()
         guard let snapshot, !resolved else { return }
-        editUndo.visitEnded(task: task, snapshot: snapshot)
+        editUndo.visitEnded(task: task, snapshot: snapshot, created: splitInstances)
         self.snapshot = nil
     }
 
