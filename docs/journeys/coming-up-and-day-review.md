@@ -82,6 +82,16 @@ The morning after a skipped night, when tasks are scheduled for today: hero "{We
 
 A pill on `--deep` with `--onAccent` text, "{Task title} · {what changed}", and an outlined **Undo** (Mac shows ⌘Z beside it). It appears after the sheet closes (iPhone) or when you leave an edited task (wide layouts), above the tab bar on iPhone and at the foot of the list column elsewhere; 5 seconds, longer while VoiceOver is on it; not shown if nothing changed; announced as a status update.
 
+## Wide layouts and the keyboard (slice #389)
+
+> **Built:** on an iPad, a Mac and a foldable's inner display (anywhere Today has a detail panel):
+> - **Day review takes the detail column.** Tapping *Yesterday* shows it beside the list (no back button; the row shows the selected style); picking a task replaces it. On a phone it is pushed.
+> - **Coming up takes the list column** (it is pushed inside Today's list column) and **a task you open from it opens in the detail column**, not in a sheet.
+> - **Field pickers:** a popover on the row on an iPad and a Mac; on a foldable's inner display (a phone-sized screen) they push inside the right half with a back button.
+> - **Repeat scope:** a centred sheet, 540 pt wide on an iPad and 480 on a Mac; a bottom sheet on a phone (on a foldable it is not confined to the right half).
+> - **Keyboard:** ⌘[ and ⌘] step between days in Day review; ⌘Z is Undo while the edit toast is up (the toast shows ⌘Z on a Mac); **Return** on a selected task in Today's list starts editing its title.
+> - **Not built:** arrow-key movement and Return inside a Mac picker popover (Tab, Space and Esc work as for any popover), and a popover that points at the exact row on every layout (it attaches to the row it opens from).
+
 ## Accessibility
 
 Every control is a real button; icon-only buttons are labelled (Back to Today, Previous day, Next day, Mark done, More, Back to task). Picker options expose a selected state. Touch targets 44 pt or more, except Mac's 28 to 32 pt pointer targets.

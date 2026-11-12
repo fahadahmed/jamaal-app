@@ -28,9 +28,10 @@ final class MacListKeysUITests: XCTestCase {
 
     @MainActor
     private func panelTitle(_ app: XCUIApplication) -> String {
-        let title = app.staticTexts["detailTitle"]
+        // The title is an editable field since the task detail became the editor (#387).
+        let title = app.descendants(matching: .any)["detailTitle"].firstMatch
         XCTAssertTrue(title.waitForExistence(timeout: 10), "a task is open in the panel")
-        return title.label
+        return (title.value as? String) ?? title.label
     }
 
     @MainActor
