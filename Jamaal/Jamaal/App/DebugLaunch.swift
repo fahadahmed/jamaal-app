@@ -123,6 +123,10 @@ enum DebugLaunch {
     static var comingUp: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalComingUp") }
     /// Adds a few past days (tasks done, deferred and carried, a day record) to the sample data, for Day review.
     static var pastDays: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalPastDays") }
+    /// Adds a weekly repeating task for today ("Weekly review"), for the repeat-scope question.
+    static var repeating: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalRepeating") }
+    /// Adds tasks that were scheduled for today ahead of time (made days ago), for the morning card to name.
+    static var scheduled: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalScheduled") }
     static var openHabit: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenHabit") }
     static var openRule: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenRule") }
     /// `-JamaalMacWindow 1280x760` opens the Mac window at that size, and `-JamaalTheme light|dark` forces the theme, so the store pictures
@@ -195,6 +199,22 @@ enum DebugLaunch {
             context.insert(task)
         }
         if pastDays { insertPastDays(into: context, now: now, category: category) }
+        if repeating {
+            let weekly = TaskItem(title: "Weekly review", dueDate: TodayDay.boundary(in: context).logicalDate(at: now).storedDate, effortMinutes: 30)
+            weekly.repeatKind = "weekly"
+            weekly.category = category("work")
+            weekly.seriesID = UUID()
+            context.insert(weekly)
+        }
+        if scheduled {
+            let boundary = TodayDay.boundary(in: context)
+            let today = boundary.logicalDate(at: now)
+            for (title, minutes) in [("Dentist forms", 15), ("Order the school shoes", 20)] {
+                let task = TaskItem(title: title, dueDate: today.storedDate, effortMinutes: minutes)
+                task.createdAt = boundary.instant(of: today.addingDays(-3), atMinute: 9 * 60)
+                context.insert(task)
+            }
+        }
         // A few tasks dated later, for Coming up (`-JamaalComingUp`).
         if comingUp { for (title, minutes, key, ahead) in [("Groceries", 45, "family", 1), ("Draft the migration estimate", 90, "work", 3),
                                              ("Renew the car insurance", 30, "personal", 3), ("Return the library books", 15, "family", 6)] {

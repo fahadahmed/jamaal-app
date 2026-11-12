@@ -45,4 +45,47 @@ struct TaskEditCopyTests {
     @Test func effortOptionsAreTheSixInThePickerThenOther() {
         #expect(TaskEditCopy.effortOptions == [15, 30, 45, 60, 90, 120])
     }
+
+    // MARK: Repeat scope (TK-07)
+
+    @Test func theScopeSheetNamesTheRepeatRule() {
+        #expect(TaskEditCopy.scopeEyebrow(kind: .weekly, weekday: "Monday", dayOfMonth: nil) == "Weekly on Monday")
+        #expect(TaskEditCopy.scopeEyebrow(kind: .daily, weekday: nil, dayOfMonth: nil) == "Every day")
+        #expect(TaskEditCopy.scopeEyebrow(kind: .monthly, weekday: nil, dayOfMonth: 1) == "Monthly on the 1st")
+        #expect(TaskEditCopy.scopeEyebrow(kind: .monthly, weekday: nil, dayOfMonth: 22) == "Monthly on the 22nd")
+        #expect(TaskEditCopy.scopeEyebrow(kind: .monthly, weekday: nil, dayOfMonth: 13) == "Monthly on the 13th")
+        #expect(TaskEditCopy.scopeEyebrow(kind: .monthly, weekday: nil, dayOfMonth: 23) == "Monthly on the 23rd")
+    }
+
+    @Test func theScopeHeroAsksPlainly() {
+        #expect(TaskEditCopy.scopeHero == ("Change just this one,", "or every one after?"))
+    }
+
+    @Test func theScopeSentenceNamesTheChange() {
+        #expect(TaskEditCopy.scopeSentence(.effort(from: 30, to: 45)) == "Effort goes from 30 min to 45 min.")
+        #expect(TaskEditCopy.scopeSentence(.effort(from: nil, to: 45)) == "Effort goes from no estimate to 45 min.")
+        #expect(TaskEditCopy.scopeSentence(.effort(from: 45, to: nil)) == "Effort goes from 45 min to no estimate.")
+        #expect(TaskEditCopy.scopeSentence(.matters(from: .low, to: .high)) == "Matters goes from low to high.")
+        #expect(TaskEditCopy.scopeSentence(.category(from: "Work", to: "Family")) == "Category goes from Work to Family.")
+        #expect(TaskEditCopy.scopeSentence(.category(from: nil, to: "Family")) == "Category goes from none to Family.")
+        #expect(TaskEditCopy.scopeSentence(.title(to: "Submit timesheet")) == "The title becomes \u{201C}Submit timesheet\u{201D}.")
+    }
+
+    @Test func theScopeButtonsFollowTheRule() {
+        #expect(TaskEditCopy.scopeLater(kind: .weekly, weekday: "Monday") == "This and later Mondays")
+        #expect(TaskEditCopy.scopeOnly(kind: .weekly, weekday: "Monday") == "Only this Monday")
+        #expect(TaskEditCopy.scopeLater(kind: .daily, weekday: nil) == "This and every day after")
+        #expect(TaskEditCopy.scopeOnly(kind: .daily, weekday: nil) == "Only this day")
+        #expect(TaskEditCopy.scopeLater(kind: .monthly, weekday: nil) == "This and later months")
+        #expect(TaskEditCopy.scopeOnly(kind: .monthly, weekday: nil) == "Only this month")
+        #expect(TaskEditCopy.scopeCancel == "Cancel")
+    }
+
+    // MARK: The morning card
+
+    @Test func theMorningCardNamesHowManyTasksAreScheduledForToday() {
+        #expect(TodayCopy.morningCard(scheduled: 0) == "No plan for today — two minutes to pick?")
+        #expect(TodayCopy.morningCard(scheduled: 1) == "No plan for today. 1 task is scheduled for it, so two minutes to confirm?")
+        #expect(TodayCopy.morningCard(scheduled: 3) == "No plan for today. 3 tasks are scheduled for it, so two minutes to confirm?")
+    }
 }

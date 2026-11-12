@@ -11,6 +11,7 @@ public struct TaskSnapshot: Equatable, Sendable {
     public var repeatKind: String
     public var repeatWeekdays: String
     public var repeatDayOfMonth: Int
+    public var seriesID: UUID?
 }
 
 /// One change made in a visit, for the undo toast ("Call the clinic back · now 30 min").
@@ -66,7 +67,7 @@ public enum TaskEditing {
     public static func snapshot(_ task: TaskItem) -> TaskSnapshot {
         TaskSnapshot(
             title: task.title, effortMinutes: task.effortMinutes, importance: task.importance, dueDate: task.dueDate,
-            categoryID: task.category?.id, repeatKind: task.repeatKind, repeatWeekdays: task.repeatWeekdays, repeatDayOfMonth: task.repeatDayOfMonth)
+            categoryID: task.category?.id, repeatKind: task.repeatKind, repeatWeekdays: task.repeatWeekdays, repeatDayOfMonth: task.repeatDayOfMonth, seriesID: task.seriesID)
     }
 
     /// What changed since `snapshot`, in the order the rows are drawn (title first).
@@ -93,5 +94,20 @@ public enum TaskEditing {
         task.repeatKind = snapshot.repeatKind
         task.repeatWeekdays = snapshot.repeatWeekdays
         task.repeatDayOfMonth = snapshot.repeatDayOfMonth
+        task.seriesID = snapshot.seriesID
+    }
+
+    // MARK: Repeating tasks: this one, or every one after
+
+    /// A repeating task asks once per visit whether a change is for this occurrence only or for every one after (TK-07).
+    public static func needsScope(_ task: TaskItem) -> Bool {
+        task.repeatMode != .off && task.repeatMode != .unknown
+    }
+
+    /// Takes back a split made by `TaskActions.splitOffThisOccurrence`: removes the instance it made, unless it has been touched since.
+    @MainActor
+    public static func undoSplit(_ next: TaskItem, in context: ModelContext) {
+        guard !next.isCompleted, next.droppedAt == nil, next.deferralCount == 0, (next.sessions ?? []).isEmpty else { return }
+        context.delete(next)
     }
 }

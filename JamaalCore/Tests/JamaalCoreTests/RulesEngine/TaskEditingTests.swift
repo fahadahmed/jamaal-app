@@ -110,3 +110,91 @@ struct TaskEditingTests {
         #expect(t.effortMinutes == 45)
     }
 }
+
+/// Repeating tasks ask once whether a change is for this one or every one after (TK-07). "Every one after" is the plain edit, because
+/// the live instance is the template the next one copies. "Only this one" leaves the series as it was: the next instance is made now
+/// from the unchanged task, and this occurrence stops repeating, so there is still exactly one live instance of the series.
+@MainActor
+struct RepeatScopeTests {
+    @Test func onlyRepeatingTasksNeedTheQuestion() throws {
+        let w = try TaskWorld()
+        let weekly = w.task("Timesheet", due: 15); weekly.repeatKind = "weekly"
+        let plain = w.task("Call", due: 15)
+        #expect(TaskEditing.needsScope(weekly))
+        #expect(!TaskEditing.needsScope(plain))
+    }
+
+    @Test func onlyThisOneMakesTheNextInstanceFromTheUnchangedTaskAndDetachesThisOne() throws {
+        let w = try TaskWorld()
+        let t = w.task("Timesheet", due: 15, minutes: 30)           // Thu 15 Oct; weekly on Thursdays
+        t.repeatKind = "weekly"; t.repeatWeekdays = "4"; t.seriesID = UUID()
+        let series = t.seriesID
+
+        let next = try #require(TaskActions.splitOffThisOccurrence(t, today: w.d(15), now: w.at(15, 9), boundary: w.boundary, context: w.context))
+        #expect(t.repeatMode == .off)
+        #expect(t.seriesID == nil)
+        #expect(next.effortMinutes == 30, "the next one keeps the old value, so the change is only for this one")
+        #expect(next.seriesID == series)
+        #expect(next.dueDate == w.d(22).storedDate)
+        TaskEditing.setEffort(t, minutes: 45)
+        let live = try w.context.fetch(FetchDescriptor<TaskItem>()).filter { $0.seriesID == series && !$0.isCompleted }
+        #expect(live.map(\.id) == [next.id], "one live instance of the series")
+        #expect(next.effortMinutes == 30)
+    }
+
+    @Test func completingTheDetachedOccurrenceMakesNoSecondNextInstance() throws {
+        let w = try TaskWorld()
+        let t = w.task("Timesheet", due: 15); t.repeatKind = "weekly"; t.repeatWeekdays = "4"; t.seriesID = UUID()
+        TaskActions.splitOffThisOccurrence(t, today: w.d(15), now: w.at(15, 9), boundary: w.boundary, context: w.context)
+        TaskActions.complete(t, now: w.at(15, 10), boundary: w.boundary, context: w.context)
+        #expect(try w.context.fetch(FetchDescriptor<TaskItem>()).count == 2)
+    }
+
+    @Test func aTaskThatDoesNotRepeatIsLeftAlone() throws {
+        let w = try TaskWorld()
+        let t = w.task("Call", due: 15)
+        #expect(TaskActions.splitOffThisOccurrence(t, today: w.d(15), now: w.at(15, 9), boundary: w.boundary, context: w.context) == nil)
+    }
+
+    @Test func undoingAVisitThatSplitTheSeriesPutsTheSeriesBack() throws {
+        let w = try TaskWorld()
+        let t = w.task("Timesheet", due: 15, minutes: 30); t.repeatKind = "weekly"; t.repeatWeekdays = "4"; t.seriesID = UUID()
+        let series = t.seriesID
+        let snapshot = TaskEditing.snapshot(t)
+        let next = try #require(TaskActions.splitOffThisOccurrence(t, today: w.d(15), now: w.at(15, 9), boundary: w.boundary, context: w.context))
+        TaskEditing.setEffort(t, minutes: 45)
+
+        TaskEditing.undoSplit(next, in: w.context)
+        TaskEditing.restore(snapshot, to: t, categories: [])
+        #expect(t.effortMinutes == 30)
+        #expect(t.repeatMode == .weekly)
+        #expect(t.seriesID == series)
+        #expect(try w.context.fetch(FetchDescriptor<TaskItem>()).count == 1, "the extra instance is gone")
+    }
+
+    @Test func aTouchedNextInstanceIsNotRemovedByUndo() throws {
+        let w = try TaskWorld()
+        let t = w.task("Timesheet", due: 15); t.repeatKind = "weekly"; t.repeatWeekdays = "4"; t.seriesID = UUID()
+        let next = try #require(TaskActions.splitOffThisOccurrence(t, today: w.d(15), now: w.at(15, 9), boundary: w.boundary, context: w.context))
+        next.isCompleted = true; next.completedAt = w.at(22)
+        TaskEditing.undoSplit(next, in: w.context)
+        #expect(try w.context.fetch(FetchDescriptor<TaskItem>()).count == 2)
+    }
+}
+
+/// The morning card names how many tasks were scheduled for today ahead of time (not carried here by the rollover, not added today).
+@MainActor
+struct ScheduledForTodayTests {
+    @Test func countsLiveTasksDatedTodayBeforeTodayThatWereNotCarried() throws {
+        let w = try TaskWorld()
+        let scheduled = w.task("Dentist forms", due: 16, created: 5)
+        let carried = w.task("Carried", due: 16, created: 5)
+        let r = DeferralRecord(); r.day = w.d(15).storedDate; r.deferredTo = w.d(16).storedDate; w.context.insert(r); r.task = carried
+        w.task("Added today", due: 16, created: 16)
+        w.task("Tomorrow's", due: 17, created: 5)
+        let done = w.task("Done", due: 16, created: 5); done.isCompleted = true; done.completedAt = w.at(16, 7)
+        let found = try MorningCard.scheduledTasks(today: w.d(16), boundary: w.boundary, context: w.context)
+        #expect(found.map(\.title) == ["Dentist forms"])
+        _ = (scheduled, done)
+    }
+}

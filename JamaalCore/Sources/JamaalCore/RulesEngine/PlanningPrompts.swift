@@ -17,6 +17,20 @@ public enum MorningCard {
         return try log(on: today, in: context)?.dismissedAt == nil
     }
 
+    /// The tasks that were scheduled for today ahead of time: live, dated today, made before today, and not carried here by the
+    /// rollover or a deferral. The card names how many ("3 tasks are scheduled for it").
+    @MainActor
+    public static func scheduledTasks(today: CalendarDate, boundary: DayBoundary, context: ModelContext) throws -> [TaskItem] {
+        let start = boundary.startInstant(of: today)
+        return try context.fetch(FetchDescriptor<TaskItem>())
+            .filter { task in
+                guard !task.isCompleted, task.droppedAt == nil, task.createdAt < start,
+                      task.dueDate.map({ CalendarDate(storedDate: $0) }) == today else { return false }
+                return !(task.deferrals ?? []).contains { $0.deferredTo.map { CalendarDate(storedDate: $0) } == today }
+            }
+            .sorted { ($0.createdAt, $0.id.uuidString) < ($1.createdAt, $1.id.uuidString) }
+    }
+
     /// Records that the card was shown today (once).
     @MainActor
     public static func markShown(now: Date, boundary: DayBoundary, context: ModelContext) throws {

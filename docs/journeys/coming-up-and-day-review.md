@@ -68,9 +68,13 @@ Under the task list, in this order: *Also today*, **Yesterday**, **Coming up** (
 
 ## Repeat scope (TK-07)
 
+> **Built (slice #388):** the sheet asks once per visit when title, effort, matters or category of a repeating task is changed; the change is made only once it is answered, so **Cancel (or swiping the sheet away) leaves the task exactly as it was**. *This and later* is the plain edit, because the one live instance is the template the next one copies. ***Only this one*** makes the next instance now from the task as it still is, then this occurrence leaves the series (it stops repeating and loses its `seriesID`), so the series carries on unchanged and there is still exactly one live instance. That needs **no new field and no schema change**. Undo for the visit takes the extra instance away again (unless it has been touched) and puts the series back; the undo toast names the edit, not the stopped repeat. Due and Repeats changes are not asked: a date moves this occurrence, and Repeats is the series itself. The Repeats row now reads "Weekly on Thursday".
+
 On the first change to a repeating task in a visit: eyebrow with the rule ("Weekly on Monday"), "Change just this one, / or every one after?", one sentence naming the change ("Effort goes from 30 to 45 min."), then **This and later {weekday}s** (terracotta), **Only this {weekday}** (outlined) and **Cancel** (text; reverts the change). Asked once per visit; the answer is part of that visit's undo group. A sheet on iPhone, a centred 540 pt sheet on iPad (480 on Mac), a bottom sheet over the right half on Duo.
 
 ## Morning, scheduled tasks (TD-07)
+
+> **Built (slice #388):** the existing morning card names the tasks that were scheduled for today ahead of time (live, due today, made before today, not carried by the rollover or a deferral): "No plan for today. 2 tasks are scheduled for it, so two minutes to confirm?" **Pick for today** and **Not now** are as before. There is **no separate "Scheduled for today" section**: a task due today is already on Today's one flat list (grouping it would add a second axis), so *Not now* simply leaves them where they are. `-JamaalScheduled` and `-JamaalRepeating` add sample tasks for these.
 
 The morning after a skipped night, when tasks are scheduled for today: hero "{Weekday}, / unplanned.", the card *"No plan for today. {n} tasks are scheduled for it, so two minutes to confirm?"* with **Pick for today** (the shortened morning flow, those tasks offered) and **Not now** (dismisses for the day; the tasks stay under *Scheduled for today*). On wide layouts the detail column says "Nothing selected" until a task is chosen.
 
