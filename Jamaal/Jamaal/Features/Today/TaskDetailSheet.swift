@@ -17,6 +17,7 @@ struct TaskDetailSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(FocusCoordinator.self) private var focus
     @Environment(EditUndoCenter.self) private var editUndo
+    @Environment(CommandCenter.self) private var commands
     @Query(sort: \TaskCategory.sortOrder) private var allCategories: [TaskCategory]
 
     let task: TaskItem
@@ -60,7 +61,11 @@ struct TaskDetailSheet: View {
         // On a phone the field pickers push inside the sheet; beside the list (regular width) they are popovers on their rows.
         Group {
             if embedded {
-                content
+                // Beside the list the pickers are popovers on an iPad or a Mac; on a foldable's inner display (a phone) they push inside
+                // the right half, with a back button.
+                content.navigationDestination(item: pushesPickers ? $picking : .constant(nil)) { field in
+                    pickerView(for: field, showsBack: true)
+                }
             } else {
                 NavigationStack {
                     content
@@ -75,7 +80,9 @@ struct TaskDetailSheet: View {
         .onAppear {
             snapshot = TaskEditing.snapshot(task)
             titleText = task.title
+            consumeEditTitleRequest()
         }
+        .onChange(of: commands.editTitleRequests) { consumeEditTitleRequest() }
         .onDisappear { endVisit() }
         .sheet(item: $pendingScope, onDismiss: { titleText = task.title }) { pending in
             RepeatScopeSheet(
@@ -320,7 +327,7 @@ struct TaskDetailSheet: View {
         .accessibilityElement(children: .combine)
         .accessibilityHint("Changes it")
         .accessibilityIdentifier("detailRow-\(field.title)")
-        .popover(isPresented: Binding(get: { embedded && picking == field }, set: { if !$0, picking == field { picking = nil } })) {
+        .popover(isPresented: Binding(get: { embedded && !pushesPickers && picking == field }, set: { if !$0, picking == field { picking = nil } })) {
             pickerView(for: field, showsBack: false).frame(minWidth: 320, minHeight: 360)
         }
     }
@@ -354,6 +361,25 @@ struct TaskDetailSheet: View {
             DuePicker(task: task, today: today, firstWeekdayISO: firstWeekdayISO, showsBack: showsBack, onChoose: { setDue($0); close() }, onBack: close)
         case .repeats:
             RepeatPicker(task: task, showsBack: showsBack, onChoose: { TaskEditing.setRepeat(task, $0, today: today); markSaved(); close() }, onBack: close)
+        }
+    }
+
+    /// A phone-sized screen (a foldable's inner display) pushes pickers instead of showing popovers.
+    private var pushesPickers: Bool {
+        #if os(iOS)
+        UIDevice.current.userInterfaceIdiom == .phone
+        #else
+        false
+        #endif
+    }
+
+    /// Mac: Return on a selected task asks the detail to start editing its title.
+    private func consumeEditTitleRequest() {
+        guard embedded, commands.editTitleRequests > commands.handledEditTitleRequests else { return }
+        commands.handledEditTitleRequests = commands.editTitleRequests
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(150))
+            titleFocused = true
         }
     }
 

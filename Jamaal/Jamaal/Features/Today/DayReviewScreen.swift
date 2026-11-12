@@ -22,8 +22,13 @@ struct DayReviewScreen: View {
     @Query private var entries: [HabitEntry]
     @State private var day: CalendarDate
     @State private var now = Date.now
+    /// In the detail column beside the list (a wide layout) there is no back button: the list stays where it is.
+    var embedded = false
 
-    init(day: CalendarDate) { _day = State(initialValue: day) }
+    init(day: CalendarDate, embedded: Bool = false) {
+        _day = State(initialValue: day)
+        self.embedded = embedded
+    }
 
     private var boundary: DayBoundary { TodayDay.boundary(in: context) }
 
@@ -63,20 +68,22 @@ struct DayReviewScreen: View {
 
     private func topBar(_ near: PastDayNeighbours) -> some View {
         HStack(spacing: ThreadsSpace.row) {
-            Button { dismiss() } label: {
-                Image(systemName: "chevron.left").font(.body.weight(.semibold)).foregroundStyle(threads.ink)
-                    .frame(width: 48, height: 48).glassEffect(.regular.interactive(), in: Circle())
-                    .contentShape(Circle())
+            if !embedded {
+                Button { dismiss() } label: {
+                    Image(systemName: "chevron.left").font(.body.weight(.semibold)).foregroundStyle(threads.ink)
+                        .frame(width: 48, height: 48).glassEffect(.regular.interactive(), in: Circle())
+                        .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Back to Today")
+                .accessibilityIdentifier("dayReviewBack")
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Back to Today")
-            .accessibilityIdentifier("dayReviewBack")
             Text(DayReviewCopy.eyebrow(day)).threadsType(.label).foregroundStyle(threads.ink2)
                 .accessibilityIdentifier("dayReviewDate")
             Spacer()
             HStack(spacing: 0) {
-                arrow("chevron.left", "Previous day", id: "dayReviewPrevious", target: near.previous)
-                arrow("chevron.right", "Next day", id: "dayReviewNext", target: near.next)
+                arrow("chevron.left", "Previous day", id: "dayReviewPrevious", target: near.previous, key: "[")
+                arrow("chevron.right", "Next day", id: "dayReviewNext", target: near.next, key: "]")
             }
             .padding(.horizontal, 4).frame(height: 48)
             .glassEffect(.regular, in: Capsule())
@@ -85,13 +92,15 @@ struct DayReviewScreen: View {
         .padding(.top, 8)
     }
 
-    private func arrow(_ symbol: String, _ label: String, id: String, target: CalendarDate?) -> some View {
+    /// ⌘[ and ⌘] step between days (a Mac, or an iPad with a keyboard).
+    private func arrow(_ symbol: String, _ label: String, id: String, target: CalendarDate?, key: KeyEquivalent) -> some View {
         Button { if let target { day = target } } label: {
             Image(systemName: symbol).font(.body.weight(.semibold))
                 .foregroundStyle(target == nil ? threads.ink3.opacity(0.4) : threads.ink)
                 .frame(width: 44, height: 44).contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .keyboardShortcut(key, modifiers: .command)
         .disabled(target == nil)
         .accessibilityLabel(label)
         .accessibilityIdentifier(id)

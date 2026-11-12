@@ -13,6 +13,10 @@ import Observation
 final class CommandCenter {
     /// New Task: Today opens its Add form when it sees this.
     var newTaskRequested = false
+    /// Counts Return presses on a selected task (Mac); a change asks the open detail to focus its title.
+    var editTitleRequests = 0
+    /// How many of those the open detail has acted on, so a request is handled once, whether the detail was already open or opened with it.
+    @ObservationIgnored var handledEditTitleRequests = 0
 
     func requestNewTask() { newTaskRequested = true }
 }

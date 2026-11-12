@@ -58,6 +58,8 @@ struct TodayScreen: View {
     @SwiftUI.FocusState private var listFocused: Bool
     #endif
     @State private var openTask: TaskItem?
+    /// The day shown in the detail column (Day review) at a wide layout; on a phone Day review is pushed instead.
+    @State private var reviewDay: CalendarDate?
     @State private var planning: PlanningFlow?
     // The category filter is local to this device and this day: it clears at the rollover and on relaunch.
     @Environment(TodayFilterState.self) private var filterState
@@ -153,8 +155,8 @@ struct TodayScreen: View {
         #if os(macOS)
         .modifier(MacListKeys(
             focused: $listFocused, navigable: navigableTasks(overview, filter: filter),
-            select: { task in isAdding = false; openTask = task },
-            selected: openTask, toggle: toggle, drop: { droppingTask = $0 }))
+            select: { task in isAdding = false; reviewDay = nil; openTask = task },
+            selected: openTask, toggle: toggle, drop: { droppingTask = $0 }, edit: { task in isAdding = false; reviewDay = nil; openTask = task; commands.requestEditTitle() }))
         #endif
         .background(threads.app.ignoresSafeArea())          // inside the stack: the stack's own ground is the system's white
         .toolbar { todayToolbar(categories: categories, isFiltering: filter != nil, label: overview.map { TodayCopy.headerLabel($0.today) } ?? "") }
@@ -165,6 +167,7 @@ struct TodayScreen: View {
         .inlineNavigationTitle()
         .clearNavigationBarBackground()
         let listColumn = NavigationStack { list }
+            .environment(\.openTaskInPanel, usesPanel ? { task in isAdding = false; reviewDay = nil; openTask = task } : nil)
             .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { listWidth = $0 }
         return Group {
             if usesPanel {
@@ -212,7 +215,7 @@ struct TodayScreen: View {
         })) {
             AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now), carry: $addCarry)
         }
-        .onChange(of: isAdding) { _, adding in if adding && usesPanel { openTask = nil } }
+        .onChange(of: isAdding) { _, adding in if adding && usesPanel { openTask = nil; reviewDay = nil } }
         .confirmationDialog(
             droppingTask.map { TodayCopy.dropMenuTitle(repeating: $0.repeatMode != .off) + "?" } ?? "",
             isPresented: Binding(get: { droppingTask != nil }, set: { if !$0 { droppingTask = nil } }), titleVisibility: .visible, presenting: droppingTask
@@ -284,6 +287,9 @@ struct TodayScreen: View {
                 AddTaskSheet(today: TodayDay.boundary(in: context).logicalDate(at: now), embedded: true, onClose: { isAdding = false }, carry: $addCarry).id("add")
             } else if let task = openTask {
                 TaskDetailSheet(task: task, embedded: true, onClose: { openTask = nil }).id(task.id)
+            } else if let day = reviewDay {
+                // Day review is a view of one day, so it takes the detail column; Coming up is a list, so it takes the list column.
+                DayReviewScreen(day: day, embedded: true).id(day)
             } else {
                 VStack {
                     Spacer()
@@ -739,7 +745,7 @@ struct TodayScreen: View {
                 ForEach(rows, id: \.id) { task in
                     TaskRow(task: task, doneTime: task.completedAt.map(Self.timeFormat.string(from:)),
                             trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
-                            onToggle: { toggle(task) }, onOpen: { isAdding = false; openTask = task; focusList() }, isSelected: usesPanel && openTask?.id == task.id,
+                            onToggle: { toggle(task) }, onOpen: { isAdding = false; reviewDay = nil; openTask = task; focusList() }, isSelected: usesPanel && openTask?.id == task.id,
                             onBegin: rowBegin(task), onDrop: rowDrop(task))
                 }
             }
@@ -750,10 +756,41 @@ struct TodayScreen: View {
     @ViewBuilder
     private func lookBackAndAhead(today: CalendarDate, boundary: DayBoundary) -> some View {
         if let title = DayReviewCopy.yesterdayRow((try? PastDay.yesterdayRow(today: today, boundary: boundary, context: context)) ?? .hidden) {
-            linkRow(title, id: "yesterdayRow") { DayReviewScreen(day: today.addingDays(-1)) }
+            if usesPanel {
+                yesterdayPanelRow(title, day: today.addingDays(-1))
+            } else {
+                linkRow(title, id: "yesterdayRow") { DayReviewScreen(day: today.addingDays(-1)) }
+            }
         }
         let count = (try? ComingUp.read(in: context, today: today, boundary: boundary))?.count ?? 0
         linkRow(ComingUpCopy.rowTitle(count: count), id: "comingUpRow") { ComingUpScreen() }
+    }
+
+    /// At a wide layout Yesterday shows Day review in the detail column; the row shows the selected style while it is there.
+    private func yesterdayPanelRow(_ title: String, day: CalendarDate) -> some View {
+        let isSelected = reviewDay != nil
+        return VStack(alignment: .leading, spacing: 0) {
+            Divider().overlay(threads.line)
+            Button { isAdding = false; openTask = nil; reviewDay = day } label: {
+                HStack {
+                    Text(title).threadsType(.lede).foregroundStyle(threads.ink2)
+                    Spacer()
+                    Image(systemName: "chevron.right").foregroundStyle(threads.ink3)
+                }
+                .padding(.horizontal, isSelected ? ThreadsSpace.row : 0)
+                .frame(minHeight: ThreadsHit.minimum)
+                .background {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: ThreadsRadius.card).fill(threads.card)
+                            .overlay(RoundedRectangle(cornerRadius: ThreadsRadius.card).strokeBorder(threads.ink, lineWidth: 1.5))
+                    }
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
+            .accessibilityIdentifier("yesterdayRow")
+        }
     }
 
     /// A quiet row that pushes a screen inside Today's own stack (so on a wide layout it takes the list column).
@@ -793,7 +830,7 @@ struct TodayScreen: View {
                 if alsoTodayOpen {
                     ForEach(overview.alsoToday, id: \.id) { task in
                         TaskRow(task: task, doneTime: nil, trackedSeconds: FocusSessions.trackedSeconds(of: task, at: now), isTiming: isTiming(task),
-                            onToggle: { toggle(task) }, onOpen: { isAdding = false; openTask = task; focusList() }, isSelected: usesPanel && openTask?.id == task.id,
+                            onToggle: { toggle(task) }, onOpen: { isAdding = false; reviewDay = nil; openTask = task; focusList() }, isSelected: usesPanel && openTask?.id == task.id,
                             onBegin: rowBegin(task), onDrop: rowDrop(task))
                     }
                 }

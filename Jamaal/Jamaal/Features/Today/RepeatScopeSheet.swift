@@ -19,6 +19,12 @@ struct RepeatScopeSheet: View {
     let onOnly: () -> Void
     let onCancel: () -> Void
 
+    #if os(macOS)
+    private static let width: CGFloat = 480
+    #else
+    private static let width: CGFloat = 540
+    #endif
+
     var body: some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.row) {
             Text(eyebrow).threadsType(.label).foregroundStyle(threads.ink2)
@@ -53,10 +59,12 @@ struct RepeatScopeSheet: View {
         .padding(.horizontal, ThreadsSpace.gutter)
         .padding(.top, ThreadsSpace.section)
         .padding(.bottom, ThreadsSpace.row)
-        .frame(maxWidth: 540)
+        // A centred sheet 540 pt wide on an iPad and 480 on a Mac; a bottom sheet on a phone.
+        .frame(maxWidth: Self.width)
         .frame(maxWidth: .infinity)
         .background(threads.app)
         .presentationDetents([.height(440), .large])
+        .presentationSizing(.fitted)
         .presentationDragIndicator(.visible)
     }
 }

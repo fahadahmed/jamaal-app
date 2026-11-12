@@ -62,10 +62,19 @@ struct EditUndoToast: View {
         HStack {
             Text(text).threadsType(.row).foregroundStyle(threads.ink).lineLimit(1)
             Spacer(minLength: ThreadsSpace.tight)
-            Button("Undo", action: onUndo)
-                .threadsType(.row).foregroundStyle(threads.ink)
-                .frame(minHeight: ThreadsHit.minimum)
-                .accessibilityIdentifier("editUndoButton")
+            Button(action: onUndo) {
+                HStack(spacing: 6) {
+                    Text("Undo")
+                    #if os(macOS)
+                    Text("⌘Z").threadsType(.meta).foregroundStyle(threads.ink2)
+                    #endif
+                }
+            }
+            .keyboardShortcut("z", modifiers: .command)          // Edit › Undo, for as long as the toast is up
+            .accessibilityLabel("Undo")
+            .threadsType(.row).foregroundStyle(threads.ink)
+            .frame(minHeight: ThreadsHit.minimum)
+            .accessibilityIdentifier("editUndoButton")
         }
         .padding(.horizontal, ThreadsSpace.row)
         .frame(minHeight: ThreadsHit.minimum)

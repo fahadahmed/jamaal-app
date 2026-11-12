@@ -21,6 +21,7 @@ struct ComingUpScreen: View {
     @Query private var anchors: [AnchorInstance]
     @State private var now = Date.now
     @State private var laterOpen = false
+    @Environment(\.openTaskInPanel) private var openInPanel
     @State private var openTask: TaskItem?
     /// Ticked while this screen is open: kept in the list, struck through, so the tick can be taken back.
     @State private var ticked: Set<UUID> = []
@@ -127,7 +128,7 @@ struct ComingUpScreen: View {
             Button { tick(task) } label: { CheckCircle(isDone: task.isCompleted, isMuted: true) }
                 .buttonStyle(.plain)
                 .accessibilityLabel(task.isCompleted ? "Mark \(task.title) not done" : "Mark \(task.title) done")
-            Button { openTask = task } label: {
+            Button { if let openInPanel { openInPanel(task) } else { openTask = task } } label: {
                 VStack(alignment: .leading, spacing: ThreadsSpace.hair) {
                     Text(task.title).threadsType(.row)
                         .strikethrough(task.isCompleted, color: threads.ink3).foregroundStyle(threads.ink)

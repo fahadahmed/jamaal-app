@@ -16,6 +16,8 @@ struct MacListKeys: ViewModifier {
     let selected: TaskItem?
     let toggle: (TaskItem) -> Void
     let drop: (TaskItem) -> Void
+    /// Return starts editing the selected task's title.
+    var edit: (TaskItem) -> Void = { _ in }
 
     func body(content: Content) -> some View {
         content
@@ -24,6 +26,11 @@ struct MacListKeys: ViewModifier {
             .focusEffectDisabled()
             .onKeyPress(.downArrow) { move(.next) }
             .onKeyPress(.upArrow) { move(.previous) }
+            .onKeyPress(.return) {
+                guard let selected, !selected.isCompleted else { return .ignored }
+                edit(selected)
+                return .handled
+            }
             .onKeyPress(.space) {
                 guard let selected else { return .ignored }
                 toggle(selected)
