@@ -79,6 +79,7 @@ struct DayReviewScreen: View {
                 .accessibilityIdentifier("dayReviewBack")
             }
             Text(DayReviewCopy.eyebrow(day)).threadsType(.label).foregroundStyle(threads.ink2)
+                .lineLimit(2).fixedSize(horizontal: false, vertical: true)
                 .accessibilityIdentifier("dayReviewDate")
             Spacer()
             HStack(spacing: 0) {
@@ -110,9 +111,10 @@ struct DayReviewScreen: View {
 
     private func capacity(_ past: PastDay) -> some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
-            HStack {
+            // One line at normal sizes; at accessibility sizes the capacity and the close time each get a line instead of tearing apart.
+            AdaptiveRow {
                 Text(DayReviewCopy.used(usedMinutes: past.usedMinutes, budgetMinutes: past.budgetMinutes)).threadsType(.lede).foregroundStyle(threads.ink)
-                Spacer()
+            } trailing: {
                 if let closed = past.closedAt {
                     Text(DayReviewCopy.closed(time: Self.time.string(from: closed))).threadsType(.label).foregroundStyle(threads.ink2)
                 }
