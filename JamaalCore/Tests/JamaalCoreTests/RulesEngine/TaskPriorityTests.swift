@@ -98,12 +98,19 @@ struct TaskPriorityTests {
 
     // MARK: Ties (#404)
 
-    @Test func highComesBeforeMediumInTheSameQuadrantEvenWhenTheMediumIsOlderAndDueSooner() throws {
+    @Test func aHighTaskDueTomorrowDoesNotJumpAheadOfAMediumTaskDueToday() throws {
+        let w = try TaskWorld()
+        let medium = w.task("medium today", due: 15, importance: .medium, created: 5)
+        let high = w.task("high tomorrow", due: 16, importance: .high, created: 1)          // both first-priority: important and due by tomorrow
+        #expect(TaskPriority.quadrant(medium, today: w.d(15)) == TaskPriority.quadrant(high, today: w.d(15)))
+        #expect(TaskPriority.order([high, medium], today: w.d(15)).map(\.title) == ["medium today", "high tomorrow"], "the day leads")
+    }
+
+    @Test func highComesBeforeMediumWhenBothAreDueTheSameDayEvenIfTheMediumIsOlder() throws {
         let w = try TaskWorld()
         let medium = w.task("medium today", due: 15, importance: .medium, created: 1)
-        let high = w.task("high tomorrow", due: 16, importance: .high, created: 5)         // both first-priority: important and due by tomorrow
-        #expect(TaskPriority.quadrant(medium, today: w.d(15)) == TaskPriority.quadrant(high, today: w.d(15)))
-        #expect(TaskPriority.order([medium, high], today: w.d(15)).map(\.title) == ["high tomorrow", "medium today"])
+        let high = w.task("high today", due: 15, importance: .high, created: 5)
+        #expect(TaskPriority.order([medium, high], today: w.d(15)).map(\.title) == ["high today", "medium today"])
     }
 
     @Test func twoHighTasksDueTodayAreOrderedByWhichHasSlippedMoreThenTheShorterThenTheOlder() throws {
