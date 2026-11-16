@@ -127,6 +127,8 @@ enum DebugLaunch {
     static var repeating: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalRepeating") }
     /// Adds tasks that were scheduled for today ahead of time (made days ago), for the morning card to name.
     static var scheduled: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalScheduled") }
+    /// Keeps Today's folded parts (slider, Anchors, Habits) closed even in an in-memory run, as a real first launch has them.
+    static var compactToday: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalCompactToday") }
     static var openHabit: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenHabit") }
     static var openRule: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenRule") }
     /// `-JamaalMacWindow 1280x760` opens the Mac window at that size, and `-JamaalTheme light|dark` forces the theme, so the store pictures

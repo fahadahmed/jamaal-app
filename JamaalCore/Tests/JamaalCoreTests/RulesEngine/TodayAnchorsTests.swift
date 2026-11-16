@@ -237,3 +237,44 @@ struct TodayAnchorActionTests {
         #expect(actions(skipped, now: at(15, 12)).isEmpty)
     }
 }
+
+/// What the collapsed Anchors line says: how many have been attended of those still counting, and the next one that still needs doing.
+@MainActor
+struct TodayAnchorsSummaryTests {
+    private func row(_ w: AnchorWorld, _ title: String, hour: Int, status: AttendanceStatus = .pending, state: AnchorWindowState = .upcoming) -> TodayAnchorRow {
+        let a = Anchor(title: title); a.windowStart = w.at(15, hour); a.windowEnd = w.at(15, hour + 1)
+        return TodayAnchorRow(anchor: a, title: title, state: state, status: status, progress: 0, dayNumber: 1, totalDays: 1, endsToday: true)
+    }
+
+    @Test func countsAttendedOfThoseStillCountingAndNamesTheNextPendingOne() throws {
+        let w = try AnchorWorld()
+        let done = row(w, "Fajr", hour: 5, status: .attended, state: .closed)
+        let skipped = row(w, "Dhuhr", hour: 12, status: .skipped, state: .closed)
+        let next = row(w, "Asr", hour: 16, state: .open)
+        let later = row(w, "Isha", hour: 20)
+        let group = TodayAnchorGroup(title: "Salah", members: [done, skipped, next], attended: 1, counting: 2, next: next, isAllDecided: false)
+        let s = TodayAnchors.summary([.group(group), .plain(later)])
+        #expect(s.attended == 1)
+        #expect(s.counting == 3, "skipped and delegated ones don't count")
+        #expect(s.next?.title == "Asr")
+    }
+
+    @Test func theNextOneIsTheEarliestStillToCome() throws {
+        let w = try AnchorWorld()
+        let s = TodayAnchors.summary([.plain(row(w, "Bin night", hour: 19)), .plain(row(w, "School run", hour: 15))])
+        #expect(s.next?.title == "School run")
+    }
+
+    @Test func aMissedOrClosedAnchorIsNeverTheNextOne() throws {
+        let w = try AnchorWorld()
+        let missed = row(w, "Missed", hour: 8, status: .missed, state: .closed)
+        let s = TodayAnchors.summary([.plain(missed)])
+        #expect(s.next == nil)
+        #expect(s.counting == 1 && s.attended == 0)
+    }
+
+    @Test func nothingToday() {
+        let s = TodayAnchors.summary([])
+        #expect(s.counting == 0 && s.attended == 0 && s.next == nil)
+    }
+}

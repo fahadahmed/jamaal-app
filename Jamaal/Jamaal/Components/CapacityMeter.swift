@@ -17,11 +17,18 @@ struct CapacityMeter: View {
     let loadScore: Int
     /// Filtering Tasks never changes the load: the meter says it is still the whole day.
     var wholeDay = false
+    /// When given, the row names the level first ("Medium · 2h 15m of 3h"), so the slider can stay folded away.
+    var level: CapacityLevel? = nil
+
+    private var rowText: String {
+        level.map { TodayCopy.capacityRow(level: $0, plannedMinutes: plannedMinutes, budgetMinutes: budgetMinutes, wholeDay: wholeDay) }
+            ?? TodayCopy.meter(plannedMinutes: plannedMinutes, budgetMinutes: budgetMinutes, wholeDay: wholeDay)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
             AdaptiveRow {
-                Text(TodayCopy.meter(plannedMinutes: plannedMinutes, budgetMinutes: budgetMinutes, wholeDay: wholeDay))
+                Text(rowText)
                     .threadsType(.body).foregroundStyle(threads.ink)
             } trailing: {
                 Text(TodayCopy.stateWord(state))
@@ -41,6 +48,6 @@ struct CapacityMeter: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Today's load")
-        .accessibilityValue("\(TodayCopy.meter(plannedMinutes: plannedMinutes, budgetMinutes: budgetMinutes, wholeDay: wholeDay)), \(TodayCopy.stateWord(state).lowercased())")
+        .accessibilityValue("\(rowText), \(TodayCopy.stateWord(state).lowercased())")
     }
 }

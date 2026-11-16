@@ -204,5 +204,31 @@ enum TodayCopy {
 
     static func groupPill(done: Int, total: Int) -> String { "\(done) of \(total)" }
 
+    // MARK: The compact top (#406)
+
+    /// What a collapsed Anchors section says: the next one still to do and how the day is going.
+    struct NextAnchor {
+        var title: String
+        var isOpen: Bool
+        var start: String
+        var end: String
+    }
+
+    static func anchorsLine(attended: Int, counting: Int, next: NextAnchor?) -> String {
+        guard counting > 0 else { return "None today" }
+        guard let next else { return "Done for today · \(attended) of \(counting)" }
+        let when = next.isOpen ? "until \(next.end)" : "from \(next.start)"
+        return "\(next.title) · \(when) · \(attended) of \(counting)"
+    }
+
+    /// "Medium", "Low", "High": the level, named in the capacity row so the slider can stay folded away.
+    static func levelName(_ level: CapacityLevel) -> String { label(for: level).capitalized }
+
+    static func capacityRow(level: CapacityLevel, plannedMinutes: Int, budgetMinutes: Int, wholeDay: Bool) -> String {
+        "\(levelName(level)) · \(meter(plannedMinutes: plannedMinutes, budgetMinutes: budgetMinutes, wholeDay: wholeDay))"
+    }
+
+    static func sectionHint(isOpen: Bool) -> String { isOpen ? "Hides them" : "Shows them" }
+
     static func habitsSummary(done: Int, total: Int) -> String { total == 0 ? "none today" : "\(done) of \(total) done" }
 }

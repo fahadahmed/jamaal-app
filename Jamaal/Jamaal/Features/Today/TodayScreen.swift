@@ -29,6 +29,10 @@ struct TodayScreen: View {
     @State private var listWidth: CGFloat = 0
     @State private var now: Date = .now
     @State private var alsoTodayOpen = false
+    // The parts of Today that fold to a line so the tasks sit near the top (#406); remembered per device.
+    @AppStorage(AppPreferences.Keys.todaySliderOpen, store: AppPreferences.defaults) private var sliderOpen = AppPreferences.todayPartsStartOpen
+    @AppStorage(AppPreferences.Keys.todayAnchorsOpen, store: AppPreferences.defaults) private var anchorsOpen = AppPreferences.todayPartsStartOpen
+    @AppStorage(AppPreferences.Keys.todayHabitsOpen, store: AppPreferences.defaults) private var habitsOpen = AppPreferences.todayPartsStartOpen
     /// The last run ended without the app leaving the screen (docs/architecture/observability.md): a one-time, gentle card.
     @State private var showsExitNotice = false
     @Environment(\.openURL) private var openURL
@@ -117,14 +121,27 @@ struct TodayScreen: View {
                     header(overview, filter: filter, state: state, unplanned: morningDue)
                     if let banner = topBanner(eveningDue: eveningDue, clock: eveningNow ?? now, boundary: boundary) { bannerView(banner, boundary: boundary) }
                     else if showsExitNotice { exitNoticeCard }
-                    CapacityMeter(
-                        plannedMinutes: overview.plannedMinutes, budgetMinutes: overview.budgetMinutes,
-                        state: overview.state, loadScore: overview.loadScore, wholeDay: filter != nil
-                    )
-                    CapacitySlider(level: overview.level) { level in
-                        if requireAccess(.setCapacityLevel) { try? TodayDay.setLevel(level, in: context, now: now) }
+                    HStack(alignment: .center, spacing: ThreadsSpace.tight) {
+                        CapacityMeter(
+                            plannedMinutes: overview.plannedMinutes, budgetMinutes: overview.budgetMinutes,
+                            state: overview.state, loadScore: overview.loadScore, wholeDay: filter != nil, level: overview.level
+                        )
+                        // The level is named in the row; the slider that changes it unfolds from here.
+                        Button { withAnimation(.snappy) { sliderOpen.toggle() } } label: {
+                            Image(systemName: sliderOpen ? "chevron.up" : "chevron.down").font(.footnote).foregroundStyle(threads.ink3)
+                                .frame(width: ThreadsHit.minimum, height: ThreadsHit.minimum).contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Capacity for today")
+                        .accessibilityValue(TodayCopy.levelName(overview.level))
+                        .accessibilityHint(sliderOpen ? "Hides the slider" : "Shows the slider")
+                        .accessibilityIdentifier("capacityToggle")
                     }
-                    wellbeingStrip
+                    if sliderOpen {
+                        CapacitySlider(level: overview.level) { level in
+                            if requireAccess(.setCapacityLevel) { try? TodayDay.setLevel(level, in: context, now: now) }
+                        }
+                    }
                     if tonightCard(boundary: boundary) { tonightCardView }
                     if let nudge = todayNudge(boundary: boundary) { todayWellbeingCard(nudge, boundary: boundary) }
                     if morningDue && canShapeThePlan { morningCard }
@@ -416,30 +433,6 @@ struct TodayScreen: View {
     }
 
     /// A slim strip near the slider: the score's line, or how far gathering data has got. Tapping opens Wellbeing.
-    @ViewBuilder private var wellbeingStrip: some View {
-        if let snapshot = wellbeing?.snapshot {
-            Button { openTab(.wellbeing) } label: {
-                HStack(spacing: ThreadsSpace.row) {
-                    switch snapshot.state {
-                    case .gathering(let days, let needed):
-                        Text(WellbeingCopy.strip(gathering: days, needed: needed)).threadsType(.meta).foregroundStyle(threads.ink2)
-                        Spacer()
-                    case .active(let score, _):
-                        Text("Wellbeing").threadsType(.meta).foregroundStyle(threads.ink2)
-                        Spacer()
-                        Sparkline(points: snapshot.sparkline).frame(width: 96, height: 24)
-                        Text("\(score)").threadsType(.row).foregroundStyle(threads.ink)
-                    }
-                    Image(systemName: "chevron.right").font(.footnote).foregroundStyle(threads.ink3)
-                }
-                .frame(minHeight: ThreadsHit.minimum).contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityElement(children: .combine)
-            .accessibilityIdentifier("wellbeingStrip")
-        }
-    }
-
     /// The pattern card, at most once a day on Today (it stays on the Wellbeing tab).
     private func todayNudge(boundary: DayBoundary) -> WellbeingNudge? {
         guard let nudge = wellbeing?.nudge else { return nil }
@@ -685,8 +678,16 @@ struct TodayScreen: View {
     @ViewBuilder
     private func anchorsSection(_ items: [TodayAnchorItem]) -> some View {
         if !items.isEmpty {
-            VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
-                SectionLabel(title: "Anchors")
+            let summary = TodayAnchors.summary(items)
+            let next = summary.next.map { row in
+                TodayCopy.NextAnchor(
+                    title: row.title, isOpen: row.state == .open || row.state == .closingSoon,
+                    start: Self.timeFormat.string(from: row.anchor.windowStart), end: Self.timeFormat.string(from: row.anchor.windowEnd))
+            }
+            CollapsibleSection(
+                title: "Anchors", summary: TodayCopy.anchorsLine(attended: summary.attended, counting: summary.counting, next: next),
+                identifier: "todayAnchorsToggle", isOpen: $anchorsOpen
+            ) {
                 ForEach(Array(items.enumerated()), id: \.offset) { _, item in
                     switch item {
                     case .plain(let row):
@@ -702,9 +703,10 @@ struct TodayScreen: View {
     @ViewBuilder
     private func habitsSection(_ habits: TodayHabits?) -> some View {
         if let habits, habits.total > 0 {
-            VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
-                SectionLabel(title: "Habits")
-                    .accessibilityValue(TodayCopy.habitsSummary(done: habits.done, total: habits.total))
+            CollapsibleSection(
+                title: "Habits", summary: TodayCopy.habitsSummary(done: habits.done, total: habits.total),
+                identifier: "todayHabitsToggle", isOpen: $habitsOpen
+            ) {
                 ForEach(habits.groups, id: \.group.id) { group in
                     HabitGroupView(group: group, onAction: { row, action in log(action, on: row) }, onBegin: { focus.begin(.habit($0.window)) }, onAddMinutes: { addingMinutes = MinutesTarget(habit: $0.habit, window: $0.window) })
                 }

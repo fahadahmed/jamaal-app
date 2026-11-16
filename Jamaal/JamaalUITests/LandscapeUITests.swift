@@ -27,11 +27,13 @@ final class LandscapeUITests: XCTestCase {
     func testTodayFillsTheWidthAfterRotating() {
         guard UIDevice.current.userInterfaceIdiom == .phone else { return }
         let app = launchSideways()
-        let strip = app.buttons["wellbeingStrip"]
-        XCTAssertTrue(strip.waitForExistence(timeout: 10))
+        let toggle = app.buttons["capacityToggle"]                                     // the right end of the capacity row
+        XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        let meter = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Today's load")).firstMatch
+        XCTAssertTrue(meter.waitForExistence(timeout: 5))
         let window = app.windows.firstMatch.frame
         // It was a narrow column (about 340 points of 844) in the middle of the screen.
-        XCTAssertGreaterThan(strip.frame.width, window.width * 0.7, "Today should use the width of the screen")
+        XCTAssertGreaterThan(toggle.frame.maxX - meter.frame.minX, window.width * 0.7, "Today should use the width of the screen")
     }
 
     @MainActor

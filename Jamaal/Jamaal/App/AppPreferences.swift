@@ -22,6 +22,21 @@ enum AppPreferences {
     enum Keys {
         static let theme = "appearanceTheme"
         static let suggestionCards = "suggestionCardsOn"
+        /// Today's folded-away parts, remembered per device: the capacity slider, the Anchors and the Habits.
+        static let todaySliderOpen = "todaySliderOpen"
+        static let todayAnchorsOpen = "todayAnchorsOpen"
+        static let todayHabitsOpen = "todayHabitsOpen"
+    }
+
+    /// Whether Today's folded parts start open. They start **closed**, so the tasks sit near the top; debug runs on the in-memory store
+    /// (the UI tests) start them open so existing tests keep reaching the slider, the Anchors and the Habits. `-JamaalCompactToday` gives
+    /// a test the real default.
+    static var todayPartsStartOpen: Bool {
+        #if DEBUG
+        DebugLaunch.inMemory && !DebugLaunch.compactToday
+        #else
+        false
+        #endif
     }
 }
 
