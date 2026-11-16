@@ -496,7 +496,8 @@ struct TaskDetailSheet: View {
     private var stackedActions: some View {
         VStack(spacing: ThreadsSpace.tight) {
             if !task.isCompleted { primaryButton }
-            HStack(spacing: ThreadsSpace.tight) {
+            // Three pills side by side at normal sizes; one under another at accessibility sizes, where "Mark done" was cut to "Mar…".
+            AdaptiveButtons {
                 markDoneButton
                 if !task.isCompleted { deferButton; dropButton }
             }

@@ -26,6 +26,18 @@ Two kinds of finding are accepted, and the test skips them:
 1. **"Dynamic Type font sizes are partially unsupported"** on the small uppercase labels (the date, the load word, "ANCHORS", "0/2", step counts). This is the `label` cap above. **Owner decision:** raise the cap in ThreadsKit (for example to `.accessibility2`) so those labels keep growing, at some cost to layouts that hold them. Several labels carry meaning (the load word, a count), so I'd lean to raising it; it is a ThreadsKit release, not an app change.
 2. **Contrast in the strip just above the floating tab bar.** iOS 26 fades scrolling content into the bar, and the audit reads the fade as low contrast. The same text measures 7.7:1 away from the fade, and the palette's text pairs are 5.0:1 or better in light mode (`ink3` on `app` 5.0, `ink2` 7.9, `ink` 10.8). Small text should use `ink2` or `ink`; `ink3` is the weakest and passes by a small margin. The capacity slider's unselected labels use `ink3` (a note for Design).
 
+### Findings accepted, and the ones fixed (14 Nov 2026, #400)
+
+The audit also runs now on **Coming up, Day review, the task editor and its Effort picker** (default size; Coming up, Day review and the editor at *Accessibility Extra Large* too). It found and I fixed two real problems at large sizes: the task sheet's **Mark done · Defer · Drop** row cut "Mark done" to "Mar…" (the three now stack, `AdaptiveButtons`), and Day review's **capacity line tore apart** from its "Closed 22:40" (now `AdaptiveRow`), with its date allowed to wrap.
+
+Beyond the two kinds above, the test now skips these, each by label so anything else still fails:
+3. **"Text clipped" on a few texts that are not clipped.** "Keep as planned" (Night Planning's Load step), the iCloud "Off" in Settings, "LAST 14 ACTIVE DAYS" (Wellbeing), Day review's date eyebrow ("SAT 14 NOV") and its "CLOSED 10:40 PM". Each was looked at in a screenshot; each stayed flagged with a wider frame, a plain button that may wrap, or a forced size, so layout was ruled out; and each passes at the largest size. Most are the small mono label with digits, but the pattern is not clean ("Off" is not one).
+4. **"Text clipped" inside a presented sheet** (the task editor and its picker): almost every text in a sheet is reported, including text that cannot be (the same words are whole at both sizes), so on a sheet that one finding is not used. Contrast, hit regions and missing descriptions still are.
+5. **Contrast on text sampled under a glass control or a strikethrough:** the date eyebrow, a picker's title and a ticked note line, whose palette pairs are 5.0:1 or better.
+6. **An unnamed element** (no label, an empty frame), which cannot be acted on.
+
+**Not audited:** the repeat-scope sheet, because over a sheet on a sheet the audit reports elements it cannot name. It was looked at by eye. This suggests the audit is less reliable on this simulator (an iPhone 17e) than on a device, and worth re-running on a real iPhone before submission.
+
 ## Still to do (needs a person or a later pass)
 
 - **Listen with VoiceOver** on a real iPhone: Today (rows, Anchor group, the meter and slider), Night Planning (the rail and the Load step), the focus timer, and a habit's log buttons. Check the reading order, the labels and what each action says. Turn it on with Settings → Accessibility → VoiceOver (triple-click the side button once set up under Accessibility Shortcut).
