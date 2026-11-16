@@ -44,16 +44,32 @@ public enum TaskPriority {
 
     public static func suggestsRemoval(_ task: TaskItem) -> Bool { task.deferralCount >= removalThreshold }
 
-    /// Today's order: quadrant, then due date (undated last), then the older task first. `low`
-    /// tasks are never important, so they follow every medium and high task.
+    /// Today's order: quadrant, then **importance** (high before medium), then due date (undated last), then the task that has **slipped more**
+    /// (more deferrals first), then the **shorter** one (no estimate last), then the older task, then a stable id. `low` tasks are never
+    /// important, so they follow every medium and high task, and importance does not separate them from each other. A high task due
+    /// tomorrow therefore comes before a medium task due today: both are first-priority, and what matters more leads.
     public static func order(_ tasks: [TaskItem], today: CalendarDate) -> [TaskItem] {
         tasks.sorted { a, b in
             let (qa, qb) = (quadrant(a, today: today), quadrant(b, today: today))
             if qa != qb { return qa < qb }
+            let (ia, ib) = (importanceRank(a), importanceRank(b))
+            if ia != ib { return ia < ib }
             let (da, db) = (a.dueDate ?? .distantFuture, b.dueDate ?? .distantFuture)
             if da != db { return da < db }
+            if a.deferralCount != b.deferralCount { return a.deferralCount > b.deferralCount }
+            let (ea, eb) = (a.effortMinutes ?? Int.max, b.effortMinutes ?? Int.max)
+            if ea != eb { return ea < eb }
             if a.createdAt != b.createdAt { return a.createdAt < b.createdAt }
             return a.id.uuidString < b.id.uuidString
+        }
+    }
+
+    /// High first, then medium; low (and an importance this app doesn't recognise) last.
+    private static func importanceRank(_ task: TaskItem) -> Int {
+        switch task.importanceLevel {
+        case .high: 0
+        case .medium: 1
+        case .low, .unknown: 2
         }
     }
 

@@ -150,7 +150,7 @@ Habit entries, Anchor attendance and avoid-habit days need no rollover writes: t
 - **Input**: today's date, all live tasks (not completed, not dropped), their deferral history.
 - **Behavior**:
   - Derives urgency, importance and the hidden **Eisenhower quadrant** per task (rules in [task.md](../schema/task)). The quadrant is never shown to the user.
-  - Orders tasks for Today by quadrant (`doFirst`, then `schedule`, `fitIn`, `letGo`), then `dueDate`, then `createdAt` — so `low` tasks, which are never important, naturally follow all medium/high tasks. Manual drag ordering is an open question.
+  - Orders tasks for Today by quadrant (`doFirst`, then `schedule`, `fitIn`, `letGo`), then importance (high before medium), then `dueDate`, then more deferrals first, then shorter effort first (no estimate last), then `createdAt` and a stable id — so `low` tasks, which are never important, naturally follow all medium/high tasks, and ties between equally important tasks are settled the same way every time (#404). Manual drag ordering is an open question.
   - Enforces the importance rules from [task.md](../schema/task): medium/high need a due date and never Someday; a medium/high task's 3rd deferral eases it to `low`.
   - Runs the automatic deferral at day rollover for dated tasks the user never handled (lazily and idempotently — see [The day boundary](#the-day-boundary)); at most one deferral per task per logical day.
   - Creates the next instance of a repeating task when the live one is completed or dropped (rules in [task.md](../schema/task#repeating-tasks)); dedups by `(seriesID, dueDate)`.
