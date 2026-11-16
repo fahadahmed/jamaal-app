@@ -87,6 +87,7 @@
 			membershipExceptions = (
 				Info.plist,
 				JamaalWidgets.swift,
+				PrivacyInfo.xcprivacy,
 			);
 			target = EC072FBD30666379000ED989 /* Jamaal */;
 		};
