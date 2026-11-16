@@ -95,4 +95,66 @@ struct TaskPriorityTests {
         let two = one + [w.task("c", due: 16, importance: .medium)]
         #expect(TaskPriority.hasMultipleDoFirst(two, today: w.d(15)))
     }
+
+    // MARK: Ties (#404)
+
+    @Test func aHighTaskDueTomorrowDoesNotJumpAheadOfAMediumTaskDueToday() throws {
+        let w = try TaskWorld()
+        let medium = w.task("medium today", due: 15, importance: .medium, created: 5)
+        let high = w.task("high tomorrow", due: 16, importance: .high, created: 1)          // both first-priority: important and due by tomorrow
+        #expect(TaskPriority.quadrant(medium, today: w.d(15)) == TaskPriority.quadrant(high, today: w.d(15)))
+        #expect(TaskPriority.order([high, medium], today: w.d(15)).map(\.title) == ["medium today", "high tomorrow"], "the day leads")
+    }
+
+    @Test func highComesBeforeMediumWhenBothAreDueTheSameDayEvenIfTheMediumIsOlder() throws {
+        let w = try TaskWorld()
+        let medium = w.task("medium today", due: 15, importance: .medium, created: 1)
+        let high = w.task("high today", due: 15, importance: .high, created: 5)
+        #expect(TaskPriority.order([medium, high], today: w.d(15)).map(\.title) == ["high today", "medium today"])
+    }
+
+    @Test func twoHighTasksDueTodayAreOrderedByWhichHasSlippedMoreThenTheShorterThenTheOlder() throws {
+        let w = try TaskWorld()
+        let fresh = w.task("fresh", due: 15, importance: .high, deferrals: 0, minutes: 30, created: 1)
+        let slipped = w.task("slipped", due: 15, importance: .high, deferrals: 2, minutes: 90, created: 4)
+        #expect(TaskPriority.order([fresh, slipped], today: w.d(15)).map(\.title) == ["slipped", "fresh"], "the one that keeps slipping first")
+
+        let long = w.task("long", due: 15, importance: .high, minutes: 120, created: 2)
+        let short = w.task("short", due: 15, importance: .high, minutes: 15, created: 3)
+        #expect(TaskPriority.order([long, short], today: w.d(15)).map(\.title) == ["short", "long"], "then the quick one")
+
+        let unknown = w.task("no estimate", due: 15, importance: .high, minutes: nil, created: 1)
+        let known = w.task("estimated", due: 15, importance: .high, minutes: 120, created: 2)
+        #expect(TaskPriority.order([unknown, known], today: w.d(15)).map(\.title) == ["estimated", "no estimate"], "an unknown estimate goes last")
+
+        let older = w.task("older", due: 15, importance: .high, minutes: 30, created: 1)
+        let newer = w.task("newer", due: 15, importance: .high, minutes: 30, created: 2)
+        #expect(TaskPriority.order([newer, older], today: w.d(15)).map(\.title) == ["older", "newer"], "and finally the older one")
+    }
+
+    @Test func theDueDateStillDecidesBeforeSlippingAndEstimateWithinTheSameImportance() throws {
+        let w = try TaskWorld()
+        let overdue = w.task("overdue", due: 13, importance: .high, deferrals: 0, minutes: 120, created: 5)
+        let today = w.task("today", due: 15, importance: .high, deferrals: 2, minutes: 15, created: 1)
+        #expect(TaskPriority.order([today, overdue], today: w.d(15)).map(\.title) == ["overdue", "today"])
+    }
+
+    @Test func lowTasksKeepTheirOrderBecauseImportanceDoesNotSeparateThem() throws {
+        let w = try TaskWorld()
+        let later = w.task("later", due: 15, created: 1)
+        let sooner = w.task("sooner", due: 14, created: 2)
+        #expect(TaskPriority.order([later, sooner], today: w.d(15)).map(\.title) == ["sooner", "later"])
+    }
+
+    @Test func theOrderIsTheSameWhateverOrderTheTasksArriveIn() throws {
+        let w = try TaskWorld()
+        let tasks = [
+            w.task("a", due: 15, importance: .high, deferrals: 1, minutes: 30, created: 1),
+            w.task("b", due: 15, importance: .high, deferrals: 1, minutes: 30, created: 1),
+            w.task("c", due: 16, importance: .medium, minutes: 15, created: 2),
+            w.task("d", due: 15, importance: .low, minutes: 15, created: 3),
+        ]
+        let expected = TaskPriority.order(tasks, today: w.d(15)).map(\.id)
+        for _ in 0..<5 { #expect(TaskPriority.order(tasks.shuffled(), today: w.d(15)).map(\.id) == expected) }
+    }
 }

@@ -275,7 +275,7 @@ struct NightPlanningTests {
     @Test func anOverfullDayOffersToMoveTheLowestOrderedMovableTaskToTheNearestDayThatStaysUnderFull() throws {
         let w = try world()
         _ = w.task("Review", due: 16, importance: .high, minutes: 60)                      // doFirst: never moved
-        _ = w.task("Slides", due: 16, minutes: 120, created: 2)
+        _ = w.task("Slides", due: 16, minutes: 90, created: 2)                             // same size as Groceries, so the older task leads
         let groceries = w.task("Groceries", due: 16, minutes: 90, created: 3)              // last in the order: the one to move
         _ = w.task("Saturday job", due: 17, minutes: 60)                                   // Saturday (low: 120 budget): 150/120 is over
         let check = try NightPlanning.loadCheck(forDate: w.d(16), boundary: w.boundary, now: w.at(15, 21), context: w.context)
@@ -286,8 +286,8 @@ struct NightPlanningTests {
 
     @Test func aDayThatWouldLandExactlyOnFullIsNotUnderFull() throws {
         let w = try world()
-        _ = w.task("Review", due: 16, importance: .high, minutes: 60)
-        _ = w.task("Slides", due: 16, minutes: 120, created: 2)
+        _ = w.task("Review", due: 16, importance: .high, minutes: 90)
+        _ = w.task("Slides", due: 16, minutes: 60, created: 2)                            // same size as Groceries, so the older task leads
         let groceries = w.task("Groceries", due: 16, minutes: 60, created: 3)
         _ = w.task("Saturday job", due: 17, minutes: 60)                                  // 60 + 60 = 120 of Saturday's 120: exactly full
         let check = try NightPlanning.loadCheck(forDate: w.d(16), boundary: w.boundary, now: w.at(15, 21), context: w.context)
