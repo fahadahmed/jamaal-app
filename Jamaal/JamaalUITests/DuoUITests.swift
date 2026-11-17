@@ -20,12 +20,14 @@ final class DuoUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalDayStartMinute", "0"]
         app.launch()
-        let strip = app.buttons["wellbeingStrip"]
-        XCTAssertTrue(strip.waitForExistence(timeout: 15))
+        let toggle = app.buttons["capacityToggle"]                                     // the right end of the capacity row
+        XCTAssertTrue(toggle.waitForExistence(timeout: 15))
+        let meter = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Today's load")).firstMatch
+        XCTAssertTrue(meter.waitForExistence(timeout: 5))
         let window = app.windows.firstMatch.frame
         // The content area is the window less the side pills (84 pt) and the margins; Today was 84 pt narrower than that and off-centre.
-        XCTAssertLessThan(strip.frame.minX, 40, "Today starts at the normal margin, not pushed in")
-        XCTAssertGreaterThan(strip.frame.width, window.width - 84 - 70, "Today uses the width the side pills leave")
-        XCTAssertLessThanOrEqual(strip.frame.maxX, window.width - 84, "and stays clear of the pills")
+        XCTAssertLessThan(meter.frame.minX, 40, "Today starts at the normal margin, not pushed in")
+        XCTAssertGreaterThan(toggle.frame.maxX - meter.frame.minX, window.width - 84 - 70, "Today uses the width the side pills leave")
+        XCTAssertLessThanOrEqual(toggle.frame.maxX, window.width - 84, "and stays clear of the pills")
     }
 }

@@ -79,21 +79,14 @@ final class WellbeingUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["wellbeingScore"].exists)                 // the reading stays
     }
 
+    /// The Wellbeing strip left Today (#406) so the tasks sit higher; the tab is one tap away, and the once-a-day card stays.
     @MainActor
-    func testTodayShowsAStripThatOpensWellbeing() throws {
+    func testTodayNoLongerCarriesAStripAndTheTabIsOneTapAway() throws {
         let app = launch("steady", tab: nil)
-        let strip = app.buttons["wellbeingStrip"]
-        XCTAssertTrue(strip.waitForExistence(timeout: 10))
-        strip.tap()
+        XCTAssertTrue(app.buttons["addButton"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["wellbeingStrip"].exists)
+        app.tabBars.buttons["Wellbeing"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["wellbeingScore"].waitForExistence(timeout: 5))
-    }
-
-    @MainActor
-    func testTodayStripSaysHowFarGatheringHasGot() throws {
-        let app = launch("gathering", tab: nil)
-        let strip = app.buttons["wellbeingStrip"]
-        XCTAssertTrue(strip.waitForExistence(timeout: 10))
-        XCTAssertTrue(strip.label.contains("gathering data · 4 of 7"), strip.label)
     }
 
     @MainActor

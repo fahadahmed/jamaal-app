@@ -42,6 +42,7 @@
 - [Design v4 handoff](design/README)
 - [Design v4 reconciliation](design/v4-reconciliation)
 - [v1 enhancements reconciliation](design/v1-enhancements-reconciliation)
+- [Today: a compact top](design/today-compact-top)
 - [Brief: the App Store pictures](design/app-store-screenshots-brief)
 - [Mac Settings window](design/mac-settings-window)
 - [Brief: widgets and the watch](design/widgets-and-watch-brief)

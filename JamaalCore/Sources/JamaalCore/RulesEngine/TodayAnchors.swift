@@ -36,6 +36,14 @@ public enum TodayAnchorItem {
     case group(TodayAnchorGroup)
 }
 
+/// The one line a collapsed Anchors section says: how many are attended of those still counting, and the next one still to do.
+public struct TodayAnchorsSummary {
+    public var attended: Int
+    public var counting: Int
+    /// The earliest Anchor that is still pending and whose window has not closed; `nil` when nothing is left to do.
+    public var next: TodayAnchorRow?
+}
+
 /// The Anchors part of Today (docs/journeys/today-list.md, item 3). Anchors are always shown, at every level.
 public enum TodayAnchors {
 
@@ -113,6 +121,21 @@ public enum TodayAnchors {
     // MARK: Acting on a row
 
     /// What can be done with an Anchor right now (docs/journeys/walkthroughs/04-anchors.md, AN-10).
+    /// Skipped and delegated Anchors are neither attended nor missed, so they are left out of the count (as in a grouped row).
+    public static func summary(_ items: [TodayAnchorItem]) -> TodayAnchorsSummary {
+        let rows = items.flatMap { item -> [TodayAnchorRow] in
+            switch item {
+            case .plain(let row): [row]
+            case .group(let group): group.members
+            }
+        }
+        let counted = rows.filter { $0.status != .skipped && $0.status != .delegated }
+        let next = rows
+            .filter { $0.status == .pending && $0.state != .closed }
+            .min { ($0.anchor.windowStart, $0.anchor.id.uuidString) < ($1.anchor.windowStart, $1.anchor.id.uuidString) }
+        return TodayAnchorsSummary(attended: counted.filter { $0.status == .attended }.count, counting: counted.count, next: next)
+    }
+
     public static func actions(for anchor: Anchor, now: Date, boundary: DayBoundary) -> [AnchorAction] {
         let state = AnchorAttendance.windowState(of: anchor, at: now)
         switch AnchorAttendance.displayStatus(of: anchor, at: now) {
