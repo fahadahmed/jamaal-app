@@ -14,19 +14,25 @@ final class LandscapeUITests: XCTestCase {
     override func tearDown() { XCUIDevice.shared.orientation = .portrait }
 
     @MainActor
-    private func launchSideways(_ extra: [String] = []) -> XCUIApplication {
+    private func launchSideways(_ extra: [String] = []) throws -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalDayStartMinute", "0"] + extra
         XCUIDevice.shared.orientation = .portrait
         app.launch()
         XCUIDevice.shared.orientation = .landscapeLeft
+        // On some simulators (the iPhone 17e on iOS 26.5) the device turns but the app's window never does, so there is nothing sideways to
+        // test, and a width check would pass trivially in portrait. Say so instead of failing or passing for the wrong reason (#407).
+        let window = app.windows.firstMatch
+        let turned = NSPredicate { _, _ in window.frame.width > window.frame.height }
+        let wait = XCTNSPredicateExpectation(predicate: turned, object: nil)
+        try XCTSkipUnless(XCTWaiter().wait(for: [wait], timeout: 6) == .completed, "this simulator did not rotate the app's window")
         return app
     }
 
     @MainActor
-    func testTodayFillsTheWidthAfterRotating() {
+    func testTodayFillsTheWidthAfterRotating() throws {
         guard UIDevice.current.userInterfaceIdiom == .phone else { return }
-        let app = launchSideways()
+        let app = try launchSideways()
         let toggle = app.buttons["capacityToggle"]                                     // the right end of the capacity row
         XCTAssertTrue(toggle.waitForExistence(timeout: 10))
         let meter = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Today's load")).firstMatch
@@ -37,9 +43,9 @@ final class LandscapeUITests: XCTestCase {
     }
 
     @MainActor
-    func testNightPlanningKeepsItsButtonsOnOneRow() {
+    func testNightPlanningKeepsItsButtonsOnOneRow() throws {
         guard UIDevice.current.userInterfaceIdiom == .phone else { return }
-        let app = launchSideways(["-JamaalPlan", "3"])
+        let app = try launchSideways(["-JamaalPlan", "3"])
         let next = app.buttons["planContinue"], skip = app.buttons["planSkip"]
         XCTAssertTrue(next.waitForExistence(timeout: 10))
         XCTAssertTrue(next.isHittable && skip.isHittable)
@@ -49,9 +55,9 @@ final class LandscapeUITests: XCTestCase {
     }
 
     @MainActor
-    func testTaskDetailActionsShareARow() {
+    func testTaskDetailActionsShareARow() throws {
         guard UIDevice.current.userInterfaceIdiom == .phone else { return }
-        let app = launchSideways(["-JamaalOpenTask"])
+        let app = try launchSideways(["-JamaalOpenTask"])
         let begin = app.buttons["beginButton"], done = app.buttons["markDone"]
         XCTAssertTrue(begin.waitForExistence(timeout: 10))
         XCTAssertTrue(begin.isHittable && done.isHittable)
