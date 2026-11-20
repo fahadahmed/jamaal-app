@@ -228,6 +228,12 @@ enum TodayCopy {
         "\(levelName(level)) · \(meter(plannedMinutes: plannedMinutes, budgetMinutes: budgetMinutes, wholeDay: wholeDay))"
     }
 
+    /// The next gap (#410): how long it lasts, what it ends at, and the first task that fits. An offer, never an order.
+    static func nextGapLine(before: String, minutes: Int, startsNow: Bool, start: String, task: String) -> String {
+        let span = startsNow ? "Free until \(before)" : "Free from \(start) until \(before)"
+        return "\(span) · \(duration(minutes)). Fits: \(task)."
+    }
+
     static func sectionHint(isOpen: Bool) -> String { isOpen ? "Hides them" : "Shows them" }
 
     static func habitsSummary(done: Int, total: Int) -> String { total == 0 ? "none today" : "\(done) of \(total) done" }

@@ -129,6 +129,10 @@ enum DebugLaunch {
     static var scheduled: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalScheduled") }
     /// Keeps Today's folded parts (slider, Anchors, Habits) closed even in an in-memory run, as a real first launch has them.
     static var compactToday: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalCompactToday") }
+    /// Pretends it is 09:00 for the next-gap line and adds a fixed Anchor at 11:00 (30 minutes), so a two-hour gap is there whatever the real time.
+    static var nextGap: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalNextGap") }
+    /// Pretends it is 20:00, after the working day, so the next-gap line has no free time to point at.
+    static var nextGapAfterHours: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalNextGapAfterHours") }
     static var openHabit: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenHabit") }
     static var openRule: Bool { ProcessInfo.processInfo.arguments.contains("-JamaalOpenRule") }
     /// `-JamaalMacWindow 1280x760` opens the Mac window at that size, and `-JamaalTheme light|dark` forces the theme, so the store pictures
@@ -216,6 +220,17 @@ enum DebugLaunch {
                 task.createdAt = boundary.instant(of: today.addingDays(-3), atMinute: 9 * 60)
                 context.insert(task)
             }
+        }
+        if nextGap {
+            let boundary = TodayDay.boundary(in: context)
+            let today = boundary.logicalDate(at: now)
+            let dentist = Anchor(title: "Dentist")
+            dentist.occurrenceDate = today.storedDate
+            dentist.windowStart = boundary.instant(of: today, atMinute: 11 * 60)
+            dentist.windowEnd = boundary.instant(of: today, atMinute: 11 * 60 + 30)
+            dentist.effortMinutes = 30
+            dentist.slotKey = "dentist"
+            context.insert(dentist)
         }
         // A few tasks dated later, for Coming up (`-JamaalComingUp`).
         if comingUp { for (title, minutes, key, ahead) in [("Groceries", 45, "family", 1), ("Draft the migration estimate", 90, "work", 3),

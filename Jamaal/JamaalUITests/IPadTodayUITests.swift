@@ -15,11 +15,12 @@ final class IPadTodayUITests: XCTestCase {
     }
 
     @MainActor
-    private func launch(_ extra: [String] = [], landscape: Bool = false) -> XCUIApplication {
+    private func launch(_ extra: [String] = [], landscape: Bool = false) throws -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData"] + extra
         XCUIDevice.shared.orientation = landscape ? .landscapeLeft : .portrait       // the simulator keeps its last orientation
         app.launch()
+        if landscape { try skipUnlessSideways(app) }
         return app
     }
 
@@ -30,7 +31,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testWithNothingPickedThePanelSaysWhatToDo() throws {
-        let app = launch()
+        let app = try launch()
         XCTAssertTrue(app.staticTexts["detailPlaceholder"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["addButton"].exists)
     }
@@ -40,7 +41,7 @@ final class IPadTodayUITests: XCTestCase {
     @MainActor
     func testTheListsContentStaysInsideItsColumnInLandscape() throws {
         for landscape in [true, false] {
-            let app = launch(landscape: landscape)
+            let app = try launch(landscape: landscape)
             let panel = app.staticTexts["detailPlaceholder"]
             XCTAssertTrue(panel.waitForExistence(timeout: 10))
             let meter = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Today's load")).firstMatch
@@ -56,7 +57,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testPickingATaskShowsItsDetailBesideTheListNotInASheet() throws {
-        let app = launch()
+        let app = try launch()
         let clinic = row("Call the clinic back", in: app)
         XCTAssertTrue(clinic.waitForExistence(timeout: 10))
         clinic.tap()
@@ -69,7 +70,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testPickingAnotherTaskSwapsTheDetail() throws {
-        let app = launch()
+        let app = try launch()
         row("Call the clinic back", in: app).tap()
         XCTAssertTrue(app.staticTexts["Ask about the referral letter"].waitForExistence(timeout: 5) || app.buttons["Ask about the referral letter"].waitForExistence(timeout: 5))
         row("Draft the architecture review", in: app).tap()
@@ -80,7 +81,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testDroppingFromThePanelClearsItAndTheTaskLeavesTheList() throws {
-        let app = launch()
+        let app = try launch()
         row("Call the clinic back", in: app).tap()
         let drop = app.buttons["dropButton"]
         XCTAssertTrue(drop.waitForExistence(timeout: 5))
@@ -95,7 +96,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testMarkingDoneFromThePanelClearsItToo() throws {
-        let app = launch()
+        let app = try launch()
         row("Call the clinic back", in: app).tap()
         let done = app.buttons["Mark done"]
         XCTAssertTrue(done.waitForExistence(timeout: 5))
@@ -105,7 +106,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testTheNoteEditorOpensFromThePanel() throws {
-        let app = launch()
+        let app = try launch()
         row("Call the clinic back", in: app).tap()
         let edit = app.buttons["editNote"]
         XCTAssertTrue(edit.waitForExistence(timeout: 5))
@@ -115,7 +116,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testTheSidebarShowsTheDestinationsIncludingAnchorsOnItsOwn() throws {
-        let app = launch()
+        let app = try launch()
         XCTAssertTrue(app.staticTexts["detailPlaceholder"].waitForExistence(timeout: 10))
         let anchors = app.descendants(matching: .any).matching(NSPredicate(format: "label == 'Anchors'")).firstMatch
         XCTAssertTrue(anchors.exists, "Anchors is its own item at regular width (the Habits segment is for the phone)")
@@ -123,7 +124,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testTheToolbarStaysWhileTheListScrolls() throws {
-        let app = launch()
+        let app = try launch()
         let add = app.buttons["addButton"]
         XCTAssertTrue(add.waitForExistence(timeout: 10))
         let before = add.frame
@@ -137,7 +138,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testThePanelHasAMoreMenuWithTheNote() throws {
-        let app = launch()
+        let app = try launch()
         row("Call the clinic back", in: app).tap()
         let more = app.buttons["moreMenu"]
         XCTAssertTrue(more.waitForExistence(timeout: 5))
@@ -154,7 +155,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testTheSidebarHasTheWordmarkCategoriesAndPlanTomorrow() throws {
-        let app = launch(landscape: true)
+        let app = try launch(landscape: true)
         XCTAssertTrue(sidebar("sidebarWordmark", in: app).waitForExistence(timeout: 10))
         for name in ["Personal", "Family", "Work"] {
             XCTAssertTrue(sidebar("sidebarCategory-\(name)", in: app).exists, name)
@@ -164,7 +165,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testPickingACategoryInTheSidebarFiltersTodayAndPickingItAgainClears() throws {
-        let app = launch(landscape: true)
+        let app = try launch(landscape: true)
         let work = sidebar("sidebarCategory-Work", in: app)
         XCTAssertTrue(work.waitForExistence(timeout: 10))
         XCTAssertTrue(row("Book Yusuf's swimming lessons", in: app).waitForExistence(timeout: 5))   // a Family task
@@ -178,7 +179,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testPlanTomorrowInTheSidebarOpensNightPlanning() throws {
-        let app = launch(landscape: true)
+        let app = try launch(landscape: true)
         let plan = sidebar("sidebarPlanTomorrow", in: app)
         XCTAssertTrue(plan.waitForExistence(timeout: 10))
         plan.tap()
@@ -196,7 +197,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testAddOpensInThePanelBesideTheListNotInASheet() throws {
-        let app = launch()
+        let app = try launch()
         tapAdd(app)
         XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["addTaskButton"].exists)
@@ -207,7 +208,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testAddingFromThePanelPutsTheTaskOnTheListAndClearsThePanel() throws {
-        let app = launch()
+        let app = try launch()
         tapAdd(app)
         let field = app.textFields["Title"]
         XCTAssertTrue(field.waitForExistence(timeout: 5))
@@ -224,7 +225,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testClosingTheAddPanelClearsIt() throws {
-        let app = launch()
+        let app = try launch()
         tapAdd(app)
         XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 5))
         app.buttons["Close"].tap()
@@ -234,7 +235,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testPickingATaskWhileAddingSwitchesToItsDetail() throws {
-        let app = launch()
+        let app = try launch()
         tapAdd(app)
         XCTAssertTrue(app.textFields["Title"].waitForExistence(timeout: 5))
         row("Call the clinic back", in: app).tap()
@@ -244,7 +245,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testAddingWhileATaskIsOpenReplacesItsDetail() throws {
-        let app = launch()
+        let app = try launch()
         row("Call the clinic back", in: app).tap()
         XCTAssertTrue(app.buttons["beginButton"].waitForExistence(timeout: 5))
         tapAdd(app)
@@ -256,7 +257,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testPressingARowOffersItsMenu() throws {
-        let app = launch()
+        let app = try launch()
         let clinic = row("Call the clinic back", in: app)
         XCTAssertTrue(clinic.waitForExistence(timeout: 10))
         clinic.press(forDuration: 1.2)
@@ -268,7 +269,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testBeginFromTheMenuStartsTheTimer() throws {
-        let app = launch()
+        let app = try launch()
         let clinic = row("Call the clinic back", in: app)
         XCTAssertTrue(clinic.waitForExistence(timeout: 10))
         clinic.press(forDuration: 1.2)
@@ -278,7 +279,7 @@ final class IPadTodayUITests: XCTestCase {
 
     @MainActor
     func testDropFromTheMenuAsksFirstThenRemovesTheTask() throws {
-        let app = launch()
+        let app = try launch()
         let clinic = row("Call the clinic back", in: app)
         XCTAssertTrue(clinic.waitForExistence(timeout: 10))
         clinic.press(forDuration: 1.2)

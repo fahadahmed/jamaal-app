@@ -42,4 +42,19 @@ struct TodayCompactCopyTests {
         #expect(TodayCopy.sectionHint(isOpen: false) == "Shows them")
         #expect(TodayCopy.sectionHint(isOpen: true) == "Hides them")
     }
+
+    // MARK: The next gap (#410)
+
+    @Test func theNextGapLineSaysHowLongAndWhatFits() {
+        #expect(TodayCopy.nextGapLine(before: "Asr", minutes: 100, startsNow: true, start: "2:20 pm", task: "Draft the architecture review")
+                == "Free until Asr · 1h 40m. Fits: Draft the architecture review.")
+        #expect(TodayCopy.nextGapLine(before: "Maghrib", minutes: 90, startsNow: false, start: "4:30 pm", task: "Reply to Sam")
+                == "Free from 4:30 pm until Maghrib · 1h 30m. Fits: Reply to Sam.")
+        #expect(TodayCopy.nextGapLine(before: "Asr", minutes: 45, startsNow: true, start: "3:15 pm", task: "Call") == "Free until Asr · 45m. Fits: Call.")
+    }
+
+    @Test func theNextGapLineIsAnOfferNotAnOrder() {
+        let line = TodayCopy.nextGapLine(before: "Asr", minutes: 60, startsNow: true, start: "3:00 pm", task: "Draft")
+        #expect(!line.contains("!") && !line.lowercased().contains("must") && !line.lowercased().contains("should"))
+    }
 }
