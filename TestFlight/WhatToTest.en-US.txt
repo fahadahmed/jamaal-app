@@ -2,11 +2,13 @@ Thanks for trying Jamaal.
 
 New in this build, please try:
 
-1. Look back. On Today, the Yesterday row opens a read-only look at yesterday: what you did, what you moved, your Anchors and habits. Use the arrows to go to earlier days. If you forgot to tick something, you can tick a missed task for two days.
-2. Look ahead. The Coming up row lists tasks you dated for later, by day. They stay off Today until their day.
-3. Change a task where it stands. Open any task and change its effort, how much it matters, its day, its category or its title. There is no Save button: it saves as you go, and an Undo appears for a few seconds when you leave. If a task repeats, Jamaal asks whether a change is for just that one or for every one after.
+1. A calmer top of Today. The tasks now sit near the top. The capacity slider, your Anchors and your habits each fold to one line: tap the chevron beside "Medium · 2h 15m of 3h" to change your capacity, and tap the Anchors or Habits line to open the full list. Jamaal remembers what you left open. The wellbeing strip has moved to the Wellbeing tab.
+2. A next-gap line. When there is a free stretch before your next Anchor and a task that fits it, a line above your tasks says so: "Free until Asr · 1h 40m. Fits: …". Tap it to open that task. If there is nothing useful to say, it stays out of the way. (It uses each task's effort estimate, so tasks with no estimate are never suggested.)
+3. A steadier order. When two tasks are due the same day, the one that matters more comes first, then the one you keep putting off, then the shorter one. A task due later never jumps ahead of one due today.
 
-Also worth a go: add a few tasks, make a habit and an Anchor, and plan tomorrow in the evening. Add the Today and Next Anchor widgets (on the Lock Screen too). If you use more than one device, check that changes show up on the others.
+Still worth a go from last time: the Yesterday row (a read-only look back, and you can tick a missed task for two days), the Coming up row (tasks you dated for later), and changing a task where it stands (no Save button; an Undo appears when you leave; a repeating task asks whether a change is for just that one).
+
+Also: add a few tasks, make a habit and an Anchor, and plan tomorrow in the evening. Add the Today and Next Anchor widgets (on the Lock Screen too). If you use more than one device, check that changes show up on the others.
 
 This beta is the full app with nothing to pay for and no trial to count down.
 
