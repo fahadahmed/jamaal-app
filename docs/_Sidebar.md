@@ -33,6 +33,7 @@
 - [Phases](roadmap/phases)
 - [TestFlight readiness](roadmap/testflight-readiness)
 - [Release process](roadmap/release-process)
+- [Release day runbook](roadmap/release-day-runbook)
 - [App Store listing](roadmap/app-store-listing)
 
 ### Design
