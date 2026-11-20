@@ -15,11 +15,12 @@ final class IPadDetailUITests: XCTestCase {
     }
 
     @MainActor
-    private func launch(_ args: [String], landscape: Bool = true) -> XCUIApplication {
+    private func launch(_ args: [String], landscape: Bool = true) throws -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-JamaalInMemory", "-JamaalFakePlaces"] + args
         XCUIDevice.shared.orientation = landscape ? .landscapeLeft : .portrait
         app.launch()
+        if landscape { try skipUnlessSideways(app) }
         return app
     }
 
@@ -44,7 +45,7 @@ final class IPadDetailUITests: XCTestCase {
 
     @MainActor
     func testHabitsStartWithAPlaceholderBesideTheList() throws {
-        let app = launch(["-JamaalSampleData"])
+        let app = try launch(["-JamaalSampleData"])
         openSidebarItem("Habits", in: app)
         XCTAssertTrue(element("habitPlaceholder", in: app).waitForExistence(timeout: 8))
         XCTAssertTrue(row("Floss", in: app).exists)
@@ -52,7 +53,7 @@ final class IPadDetailUITests: XCTestCase {
 
     @MainActor
     func testPickingAHabitOpensItsDetailBesideTheListWithNoBackButton() throws {
-        let app = launch(["-JamaalSampleData"])
+        let app = try launch(["-JamaalSampleData"])
         openSidebarItem("Habits", in: app)
         let floss = row("Floss", in: app)
         XCTAssertTrue(floss.waitForExistence(timeout: 8))
@@ -67,7 +68,7 @@ final class IPadDetailUITests: XCTestCase {
 
     @MainActor
     func testPickingAnotherHabitSwapsTheDetail() throws {
-        let app = launch(["-JamaalSampleData"])
+        let app = try launch(["-JamaalSampleData"])
         openSidebarItem("Habits", in: app)
         row("Floss", in: app).tap()
         XCTAssertTrue(element("habitMenu", in: app).waitForExistence(timeout: 8))
@@ -78,7 +79,7 @@ final class IPadDetailUITests: XCTestCase {
 
     @MainActor
     func testArchivingFromTheDetailClearsThePane() throws {
-        let app = launch(["-JamaalSampleData"])
+        let app = try launch(["-JamaalSampleData"])
         openSidebarItem("Habits", in: app)
         row("Floss", in: app).tap()
         let menu = element("habitMenu", in: app)
@@ -92,7 +93,7 @@ final class IPadDetailUITests: XCTestCase {
 
     @MainActor
     func testAnAnchorRuleOpensBesideTheListAsAReadableColumn() throws {
-        let app = launch(["-JamaalAnchorRules"])
+        let app = try launch(["-JamaalAnchorRules"])
         openSidebarItem("Anchors", in: app)
         XCTAssertTrue(element("anchorPlaceholder", in: app).waitForExistence(timeout: 8))
         let rule = row("School run", in: app)
@@ -109,7 +110,7 @@ final class IPadDetailUITests: XCTestCase {
     func testARuleWithLittleToShowStillFillsItsPaneInPortrait() throws {
         // With the sample data the seeded rules need attention, so the detail has almost nothing in it. Portrait shows the
         // top tab bar, so go to Anchors in landscape (where the sidebar is open) and turn the iPad.
-        let app = launch(["-JamaalSampleData", "-JamaalAnchorRules"])
+        let app = try launch(["-JamaalSampleData", "-JamaalAnchorRules"])
         openSidebarItem("Anchors", in: app)
         XCTAssertTrue(element("addAnchorRule", in: app).waitForExistence(timeout: 8))
         XCUIDevice.shared.orientation = .portrait
@@ -126,7 +127,7 @@ final class IPadDetailUITests: XCTestCase {
 
     @MainActor
     func testArchivingARuleFromTheDetailClearsThePane() throws {
-        let app = launch(["-JamaalAnchorRules"])
+        let app = try launch(["-JamaalAnchorRules"])
         openSidebarItem("Anchors", in: app)
         row("School run", in: app).tap()
         let menu = element("ruleMenu", in: app)

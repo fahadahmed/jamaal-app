@@ -148,6 +148,7 @@ struct TodayScreen: View {
                     ForEach(pickUps, id: \.task.id) { row in pickUpRow(row) }
                     anchorsSection(anchorItems)
                     habitsSection(todayHabits)
+                    nextGapRow(overview, filter: filter, anchorItems: anchorItems, boundary: boundary)
                     tasksSection(overview, filter: filter)
                     alsoToday(overview)
                     lookBackAndAhead(today: overview.today, boundary: boundary)
@@ -698,6 +699,49 @@ struct TodayScreen: View {
                 }
             }
         }
+    }
+
+    /// "Free until Asr · 1h 40m. Fits: Draft the architecture review.": the next gap before a fixed Anchor, and the first task in Today's order that
+    /// fits it (#410). Shown only when there is such a gap and such a task; tapping it opens the task.
+    @ViewBuilder
+    private func nextGapRow(_ overview: TodayOverview, filter: TaskCategory?, anchorItems: [TodayAnchorItem], boundary: DayBoundary) -> some View {
+        if let gap = nextGap(overview, filter: filter, anchorItems: anchorItems, boundary: boundary) {
+            Button { isAdding = false; reviewDay = nil; openTask = gap.task; focusList() } label: {
+                HStack(alignment: .firstTextBaseline, spacing: ThreadsSpace.tight) {
+                    Text(TodayCopy.nextGapLine(
+                        before: gap.before, minutes: gap.minutes, startsNow: gap.startsNow,
+                        start: Self.timeFormat.string(from: gap.start), task: gap.task.title))
+                        .threadsType(.lede).foregroundStyle(threads.ink).multilineTextAlignment(.leading)
+                    Spacer(minLength: 0)
+                    Image(systemName: "chevron.right").font(.footnote).foregroundStyle(threads.ink3)
+                }
+                .padding(ThreadsSpace.row)
+                .background(RoundedRectangle(cornerRadius: ThreadsRadius.card).fill(threads.card))
+                .overlay(RoundedRectangle(cornerRadius: ThreadsRadius.card).strokeBorder(threads.line2, lineWidth: 1))
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint("Shows the task")
+            .accessibilityIdentifier("nextGap")
+        }
+    }
+
+    private func nextGap(_ overview: TodayOverview, filter: TaskCategory?, anchorItems: [TodayAnchorItem], boundary: DayBoundary) -> NextGap? {
+        let settings = settings.first ?? UserSettings()
+        var clock = now
+        #if DEBUG
+        if DebugLaunch.nextGap { clock = boundary.instant(of: overview.today, atMinute: 9 * 60) }
+        if DebugLaunch.nextGapAfterHours { clock = boundary.instant(of: overview.today, atMinute: 20 * 60) }
+        #endif
+        let anchors = anchorItems.flatMap { item -> [AnchorInstance] in
+            switch item {
+            case .plain(let row): [row.anchor]
+            case .group(let group): group.members.map(\.anchor)
+            }
+        }
+        return NextGap.find(
+            now: clock, today: overview.today, boundary: boundary, dayStartMinute: settings.dayStartMinute, dayEndMinute: settings.dayEndMinute,
+            anchors: anchors, tasks: TodayTaskFilter.apply(overview.shown, to: filter))
     }
 
     @ViewBuilder
