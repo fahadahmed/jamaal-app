@@ -15,6 +15,8 @@ flowchart LR
   ASC --> Review["App Review"] --> Store["App Store"]
 ```
 
+> **First App Store release:** the step-by-step checklist (creating the `v` workflow, a rehearsal tag, submission) is the [release day runbook](release-day-runbook).
+
 ## Who gets what
 
 | Audience | What they get | How |
