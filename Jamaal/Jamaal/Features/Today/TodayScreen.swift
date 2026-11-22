@@ -17,13 +17,15 @@ struct TodayScreen: View {
     @Environment(FocusCoordinator.self) private var focus
 
     // Observing these re-reads Today whenever a task or a day's plan changes, here or on another device.
-    @Query private var tasks: [TaskItem]
-    @Query private var plans: [DayPlan]
+    // These are change triggers, not the data (Today reads what it shows through the context), so they look back a window instead of
+    // at every row ever made: a sync import marks every observed model dirty, and that is the path a crash went through (#418).
+    @Query(filter: QueryWindow.tasks(from: QueryWindow.start())) private var tasks: [TaskItem]
+    @Query(filter: QueryWindow.plans(from: QueryWindow.start())) private var plans: [DayPlan]
     @Query private var settings: [UserSettings]
-    @Query private var anchors: [AnchorInstance]
-    @Query private var habitEntries: [HabitEntry]
+    @Query(filter: QueryWindow.anchors(from: QueryWindow.start())) private var anchors: [AnchorInstance]
+    @Query(filter: QueryWindow.habitEntries(from: QueryWindow.start())) private var habitEntries: [HabitEntry]
     @Query private var habits: [Habit]
-    @Query private var sessions: [WorkSession]
+    @Query(filter: QueryWindow.sessions(from: QueryWindow.start())) private var sessions: [WorkSession]
     /// The list column's usable width, measured outside the scroll view so it follows a rotation. A geometry proxy's size is already the
     /// size inside the safe area (a Duo's side bar takes 84 pt of 466), so the insets are not taken off again (#329).
     @State private var listWidth: CGFloat = 0
@@ -83,7 +85,7 @@ struct TodayScreen: View {
     @State private var showingPlans = false
     @State private var addingMinutes: MinutesTarget?
     @State private var bannerTick = 0
-    @Query private var wellbeingLogs: [NudgeLog]
+    @Query(filter: QueryWindow.nudgeLogs(from: QueryWindow.start())) private var wellbeingLogs: [NudgeLog]
     @State private var wellbeing: WellbeingRead?
     /// The pattern whose card Today is showing this time; Today shows a card once a day, so it keeps its own.
     @State private var todayCardKey: String?

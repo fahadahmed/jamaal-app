@@ -12,9 +12,9 @@ final class CompactTodayUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
 
     @MainActor
-    private func launch() -> XCUIApplication {
+    private func launch(_ extra: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalCompactToday", "-JamaalDayStartMinute", "0", "-JamaalWeekdayLevel", "medium"]
+        app.launchArguments = ["-JamaalInMemory", "-JamaalSampleData", "-JamaalCompactToday", "-JamaalDayStartMinute", "0", "-JamaalWeekdayLevel", "medium"] + extra
         XCUIDevice.shared.orientation = .portrait
         app.launch()
         return app
@@ -22,12 +22,25 @@ final class CompactTodayUITests: XCTestCase {
 
     @MainActor
     func testTheFirstTaskIsOnTheFirstScreenWithoutScrolling() throws {
-        let app = launch()
+        // The next-gap line only shows when there is free time before an Anchor, which depends on the real clock; pretend it is after hours
+        // so the test always sees the same top of the screen (the next test covers the day-time case).
+        let app = launch(["-JamaalNextGapAfterHours"])
         let first = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Draft the architecture review'")).firstMatch
         XCTAssertTrue(first.waitForExistence(timeout: 10))
         XCTAssertTrue(first.isHittable, "the first task is on the first screen")
         let window = app.windows.firstMatch.frame
         XCTAssertLessThan(first.frame.minY, window.height * 0.75, "and in the upper part of it")
+    }
+
+    /// With the next-gap card above the tasks (`-JamaalNextGap` pretends it is 09:00 and adds an 11:00 Anchor) the first task is lower,
+    /// but it is still on the first screen without scrolling.
+    @MainActor
+    func testTheFirstTaskIsStillOnTheFirstScreenBeneathTheNextGapLine() throws {
+        let app = launch(["-JamaalNextGap"])
+        XCTAssertTrue(app.buttons["nextGap"].waitForExistence(timeout: 10), "the card is there")
+        let first = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Draft the architecture review'")).firstMatch
+        XCTAssertTrue(first.waitForExistence(timeout: 5))
+        XCTAssertTrue(first.isHittable, "and the first task is still on the first screen beneath it")
     }
 
     @MainActor
