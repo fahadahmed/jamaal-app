@@ -154,6 +154,7 @@ struct HabitDetailScreen: View {
                 cells: cells, columns: 14,
                 onTap: { cell in correcting = Correction(window: window, day: cell.day) },
                 isTappable: { cell in HabitLogging.canCorrect(habit, day: cell.day, today: today, boundary: boundary) })
+            DensityKey(style: DensityKeyCopy.style(for: habit.habitKind))
         }
     }
 

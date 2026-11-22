@@ -36,13 +36,17 @@ enum DensityColors {
         }
     }
 
-    static func color(for state: DensityState, in threads: any ThreadsPalette) -> Color {
-        switch step(for: state) {
+    static func color(for step: Step, in threads: any ThreadsPalette) -> Color {
+        switch step {
         case .full: threads.d3
         case .mid: threads.d2
         case .light: threads.d1
         case .missed: threads.missed
         case .empty: threads.line
         }
+    }
+
+    static func color(for state: DensityState, in threads: any ThreadsPalette) -> Color {
+        color(for: step(for: state), in: threads)
     }
 }

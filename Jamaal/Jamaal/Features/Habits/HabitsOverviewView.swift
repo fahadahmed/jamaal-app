@@ -129,6 +129,7 @@ struct HabitsOverviewView: View {
             .accessibilityIdentifier("group-\(group.group.title)")
             DensityGrid(cells: group.grid, columns: 14)
                 .frame(maxWidth: .infinity)
+            DensityKey(style: .group)
             if isOpen {
                 VStack(spacing: 0) {
                     ForEach(group.habits, id: \.habit.id) { summary in
