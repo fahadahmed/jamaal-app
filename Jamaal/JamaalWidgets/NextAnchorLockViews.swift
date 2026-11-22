@@ -22,10 +22,13 @@ struct NextAnchorInlineView: View {
 
 struct NextAnchorCircularView: View {
     let display: LockScreenAnchorDisplay
+    /// Inside the rectangular widget. `AccessoryWidgetBackground` takes the shape of the widget family it is in, which in the rectangular
+    /// family is a rounded rectangle, so the ring sat on a rounded square. Embedded, the ring draws its own circle instead.
+    var embedded = false
 
     var body: some View {
         ZStack {
-            AccessoryWidgetBackground()
+            if embedded { Circle().fill(.primary.opacity(0.16)) } else { AccessoryWidgetBackground() }
             ring
             VStack(spacing: 0) {
                 Text(display.circular.label).font(.system(size: 9, weight: .medium)).lineLimit(1).minimumScaleFactor(0.6)
@@ -59,7 +62,7 @@ struct NextAnchorRectangularView: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            NextAnchorCircularView(display: display).frame(width: 44, height: 44)
+            NextAnchorCircularView(display: display, embedded: true).frame(width: 44, height: 44)
             VStack(alignment: .leading, spacing: 2) {
                 Text(display.rectangular.title).font(.system(size: 14, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.6).widgetAccentable()
                 if let subtitle = display.rectangular.subtitle {
