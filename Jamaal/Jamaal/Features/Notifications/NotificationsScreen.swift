@@ -120,7 +120,7 @@ struct NotificationsScreen: View {
                     .labelsHidden().accessibilityIdentifier("morningTime")
             }
             Toggle("Morning list", isOn: Binding(get: { reminders.morningEnabled }, set: { reminders.morningEnabled = $0; reminders.scheduleReplan(in: context) }))
-                .labelsHidden().tint(threads.accent).accessibilityIdentifier("morningSwitch")
+                .switchOnly().accessibilityIdentifier("morningSwitch")
         }
         .frame(minHeight: 60)
         .overlay(alignment: .bottom) { Divider().overlay(threads.line) }
