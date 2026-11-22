@@ -38,10 +38,11 @@ struct AppShell: View {
     @State private var todayFilter = TodayFilterState()
     @State private var commandCenter = CommandCenter()
     @Query(sort: \TaskCategory.sortOrder) private var categoryRows: [TaskCategory]
-    @Query private var tasks: [TaskItem]
+    // The always-alive shell observes only what it uses: live tasks (for the sidebar count) and Anchors from yesterday on (for the chip). #418
+    @Query(filter: QueryWindow.liveTasks()) private var tasks: [TaskItem]
     // The one live session, and the Anchors the chip's single line is drawn from.
     @Query(filter: #Predicate<WorkSession> { $0.outcome == "running" && $0.endedAt == nil }) private var liveSessions: [WorkSession]
-    @Query private var anchors: [AnchorInstance]
+    @Query(filter: QueryWindow.anchors(from: QueryWindow.shellStart())) private var anchors: [AnchorInstance]
 
     /// First launch: until onboarding is completed (a second device on the account has it already). Debug in-memory runs
     /// skip it unless asked, so tests don't change.
