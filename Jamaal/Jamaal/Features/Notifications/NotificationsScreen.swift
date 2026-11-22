@@ -112,13 +112,19 @@ struct NotificationsScreen: View {
             Text("Morning list").threadsType(.lede).foregroundStyle(threads.ink)
             Spacer()
             if reminders.morningEnabled {
+                #if os(iOS)
                 TimePill("Morning list", selection: morning.wrappedValue, isOpen: $morningOpen, id: "morningTime")
+                #else
+                DatePicker("Morning list", selection: morning, displayedComponents: .hourAndMinute).labelsHidden().accessibilityIdentifier("morningTime")
+                #endif
             }
             Toggle("Morning list", isOn: Binding(get: { reminders.morningEnabled }, set: { reminders.morningEnabled = $0; reminders.scheduleReplan(in: context) }))
                 .switchOnly().accessibilityIdentifier("morningSwitch")
         }
         .frame(minHeight: 60)
+        #if os(iOS)
         if reminders.morningEnabled && morningOpen { TimeWheelCard(selection: morning, id: "morningTimeWheel") }
+        #endif
         Divider().overlay(threads.line)
         }
         .animation(.snappy(duration: 0.2), value: morningOpen)
