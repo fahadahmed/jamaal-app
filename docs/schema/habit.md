@@ -151,6 +151,8 @@ Each due day is one cell in the habit's grid, shaded by how much was done. Binar
 
 Colours come from the design's density tokens — three fill steps plus a miss colour (`d1`, `d2`, `d3`, `missed`) — which ThreadsKit doesn't have yet; see [threadskit-usage](../design/threadskit-usage). Grid rules from the design: cells never hold a numeral (a label goes beside the grid, not in it), the grid fills from the trailing edge so right-to-left layouts reverse correctly, and cell size is 18 pt with a 3 pt gap and 3 pt radius.
 
+**The key.** Every heatmap has a **key** under it (`DensityKey`, #424): a small swatch and a plain word for each colour the grid can use, so nobody has to guess. It follows the kind: a yes/no habit says *Done · Not done · Nothing due* and an avoid habit *Held · Slipped · Nothing due* (neither has partial steps); a counted or timed habit says *Under half · Half or more · Target reached · Not done · Nothing due*; a group's 14-day grid, which is about how many of its habits were done, says *Every habit · Half or more · Under half · None · Nothing due*. A miss is never worded as a failure. *Nothing due* covers the pale cells: not scheduled, paused, before the habit existed, in the future or still open. VoiceOver reads the key as one line.
+
 ## Presets
 
 `presetKey` identifies a built-in. The catalogue is **bundled app data**, not user data; every preset uses one all-day window, and everything is editable after creation.

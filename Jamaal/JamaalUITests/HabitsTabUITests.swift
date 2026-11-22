@@ -69,6 +69,24 @@ final class HabitsTabUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["habitRead"].exists || app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Reached the target on'")).firstMatch.exists)
     }
 
+    /// Each heatmap says what its colours mean (#424), and a yes/no habit's key has no partial shades.
+    @MainActor
+    func testEveryHeatmapHasAKeyThatFollowsTheHabitKind() throws {
+        let app = launchOnHabits()
+        let groupKey = app.descendants(matching: .any)["densityKey"].firstMatch
+        XCTAssertTrue(groupKey.waitForExistence(timeout: 5), "the group grid has a key")
+        XCTAssertTrue((groupKey.value as? String ?? "").contains("Every habit"), groupKey.value as? String ?? "")
+        row("Water", in: app).tap()
+        let counted = app.descendants(matching: .any)["densityKey"].firstMatch
+        XCTAssertTrue(counted.waitForExistence(timeout: 5))
+        XCTAssertEqual(counted.value as? String, "Under half, Half or more, Target reached, Not done, Nothing due")
+        app.buttons["Back"].firstMatch.tap()
+        row("Floss", in: app).tap()
+        let yesNo = app.descendants(matching: .any)["densityKey"].firstMatch
+        XCTAssertTrue(yesNo.waitForExistence(timeout: 5))
+        XCTAssertEqual(yesNo.value as? String, "Done, Not done, Nothing due")
+    }
+
     @MainActor
     func testAPastDayCanBeCorrectedFromTheGrid() throws {
         let app = launchOnHabits()
