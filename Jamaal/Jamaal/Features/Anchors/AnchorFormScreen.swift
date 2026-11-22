@@ -260,7 +260,7 @@ struct AnchorFormScreen: View {
                 Spacer()
                 Toggle("Ends", isOn: Binding(
                     get: { hasEnd },
-                    set: { on in hasEnd = on; form.draft.endDate = on ? form.today.addingDays(30) : nil })).labelsHidden()
+                    set: { on in hasEnd = on; form.draft.endDate = on ? form.today.addingDays(30) : nil })).switchOnly()
                 if hasEnd {
                     DatePicker("Ends", selection: Binding(
                         get: { (form.draft.endDate ?? form.today).pickerDate() },

@@ -79,6 +79,9 @@ struct JamaalApp: App {
                 }
             }
             .environment(\.threads, JamaalPalette())
+            #if os(iOS)
+            .toggleStyle(JamaalToggleStyle())            // a thumb that can be seen on the track in dark mode (#422); the Mac keeps its own switch
+            #endif
             #if DEBUG
             .preferredColorScheme(DebugLaunch.themeOverride ?? AppTheme(rawValue: theme)?.scheme)
             #else

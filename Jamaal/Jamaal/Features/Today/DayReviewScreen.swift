@@ -230,15 +230,7 @@ struct DayReviewScreen: View {
         }
     }
 
-    private func habitColor(_ state: DensityState) -> Color {
-        switch state {
-        case .complete: threads.d1
-        case .partialHigh: threads.d2
-        case .partialLow: threads.d3
-        case .missed: threads.missed
-        case .empty: threads.line
-        }
-    }
+    private func habitColor(_ state: DensityState) -> Color { DensityColors.color(for: state, in: threads) }
 
     // MARK: Fixing a missed task
 
