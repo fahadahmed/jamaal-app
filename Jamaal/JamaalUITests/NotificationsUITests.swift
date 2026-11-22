@@ -85,6 +85,25 @@ final class NotificationsUITests: XCTestCase {
         XCTAssertFalse(app.datePickers["morningTime"].exists)
     }
 
+    /// The time opens as a wheel inline on a solid card, not the system's see-through popover (#422).
+    @MainActor
+    func testATimeOpensAWheelInlineAndTheWheelChangesIt() throws {
+        let app = launch("granted")
+        openNotifications(app)
+        let pill = app.buttons["planningTime"]
+        XCTAssertTrue(pill.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.pickerWheels.firstMatch.exists, "closed until asked")
+        let before = pill.value as? String
+        pill.tap()
+        let hours = app.pickerWheels.firstMatch
+        XCTAssertTrue(hours.waitForExistence(timeout: 5), "the wheel opens in the page")
+        hours.adjust(toPickerWheelValue: "9")
+        XCTAssertNotEqual(pill.value as? String, before, "and the pill follows the wheel")
+        pill.tap()
+        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: app.pickerWheels.firstMatch)
+        XCTAssertEqual(XCTWaiter().wait(for: [gone], timeout: 5), .completed, "tapping again closes it")
+    }
+
     @MainActor
     func testTheTodayBannerAppearsInTheEveningWhenRemindersAreOffAndIsDismissedForTheDay() throws {
         let app = launch("denied", extra: ["-JamaalEvening"], tab: nil)

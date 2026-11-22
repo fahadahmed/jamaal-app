@@ -198,13 +198,7 @@ struct OnboardingFlow: View {
             }
             VStack(spacing: 0) {
                 Divider().overlay(threads.line)
-                HStack {
-                    Text(OnboardingCopy.dayEnds).threadsType(.lede).foregroundStyle(threads.ink)
-                    Spacer()
-                    DatePicker(OnboardingCopy.dayEnds, selection: Binding(get: { HabitForm.date(forMinute: dayEnd) }, set: { dayEnd = HabitForm.minute(of: $0) }),
-                               displayedComponents: .hourAndMinute).labelsHidden().accessibilityIdentifier("dayEnd")
-                }
-                .frame(minHeight: 60)
+                TimeField(OnboardingCopy.dayEnds, selection: Binding(get: { HabitForm.date(forMinute: dayEnd) }, set: { dayEnd = HabitForm.minute(of: $0) }), id: "dayEnd")
                 Divider().overlay(threads.line)
             }
             VStack(alignment: .leading, spacing: ThreadsSpace.row) {
@@ -249,13 +243,7 @@ struct OnboardingFlow: View {
 
     private func timeRow(_ title: String, minute: Binding<Int>, id: String) -> some View {
         VStack(spacing: 0) {
-            HStack {
-                Text(title).threadsType(.lede).foregroundStyle(threads.ink)
-                Spacer()
-                DatePicker(title, selection: Binding(get: { HabitForm.date(forMinute: minute.wrappedValue) }, set: { minute.wrappedValue = HabitForm.minute(of: $0) }),
-                           displayedComponents: .hourAndMinute).labelsHidden().accessibilityIdentifier(id)
-            }
-            .frame(minHeight: 60)
+            TimeField(title, selection: Binding(get: { HabitForm.date(forMinute: minute.wrappedValue) }, set: { minute.wrappedValue = HabitForm.minute(of: $0) }), id: id)
             Divider().overlay(threads.line)
         }
     }

@@ -330,8 +330,8 @@ extension AddTaskSheet {
         }
         VStack(alignment: .leading, spacing: ThreadsSpace.tight) {
             Text("Window").threadsType(.label).foregroundStyle(threads.ink2)
-            DatePicker("From", selection: Binding(get: { HabitForm.date(forMinute: oneOff.startMinute) }, set: { oneOff.setStart(HabitForm.minute(of: $0)) }), displayedComponents: .hourAndMinute)
-            DatePicker("Until", selection: Binding(get: { HabitForm.date(forMinute: oneOff.endMinute) }, set: { oneOff.setEnd(HabitForm.minute(of: $0)) }), displayedComponents: .hourAndMinute)
+            TimeField("From", selection: Binding(get: { HabitForm.date(forMinute: oneOff.startMinute) }, set: { oneOff.setStart(HabitForm.minute(of: $0)) }), id: "oneOffFrom")
+            TimeField("Until", selection: Binding(get: { HabitForm.date(forMinute: oneOff.endMinute) }, set: { oneOff.setEnd(HabitForm.minute(of: $0)) }), id: "oneOffUntil")
             HStack {
                 Text("Takes").threadsType(.lede).foregroundStyle(threads.ink2)
                 Spacer()

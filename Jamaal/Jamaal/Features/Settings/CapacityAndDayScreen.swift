@@ -120,14 +120,7 @@ struct CapacityAndDayScreen: View {
 
     private func timeRow(_ title: String, _ minute: Int, id: String, set: @escaping (Int) -> Void) -> some View {
         VStack(spacing: 0) {
-            HStack {
-                Text(title).threadsType(.lede).foregroundStyle(threads.ink)
-                Spacer()
-                DatePicker(title, selection: Binding(get: { HabitForm.date(forMinute: minute) }, set: { set(HabitForm.minute(of: $0)) }),
-                           displayedComponents: .hourAndMinute)
-                    .labelsHidden().accessibilityIdentifier(id)
-            }
-            .frame(minHeight: 56)
+            TimeField(title, selection: Binding(get: { HabitForm.date(forMinute: minute) }, set: { set(HabitForm.minute(of: $0)) }), id: id)
             Divider().overlay(threads.line)
         }
     }

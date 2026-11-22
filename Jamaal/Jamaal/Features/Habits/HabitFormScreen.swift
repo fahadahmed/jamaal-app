@@ -340,20 +340,20 @@ struct WindowEditorSheet: View {
                     update { $0.startMinute = on ? 0 : 6 * 60; $0.endMinute = on ? 1439 : 12 * 60 }
                 }))
             if !isAllDay {
-                DatePicker("From", selection: Binding(
+                TimeField("From", selection: Binding(
                     get: { HabitForm.date(forMinute: window.startMinute) },
-                    set: { value in update { $0.startMinute = HabitForm.minute(of: value) } }), displayedComponents: .hourAndMinute)
-                DatePicker("Until", selection: Binding(
+                    set: { value in update { $0.startMinute = HabitForm.minute(of: value) } }), id: "windowFrom")
+                TimeField("Until", selection: Binding(
                     get: { HabitForm.date(forMinute: window.endMinute) },
-                    set: { value in update { $0.endMinute = HabitForm.minute(of: value) } }), displayedComponents: .hourAndMinute)
+                    set: { value in update { $0.endMinute = HabitForm.minute(of: value) } }), id: "windowUntil")
             }
             Toggle("Remind me", isOn: Binding(
                 get: { window.reminderMinute != nil },
                 set: { on in update { $0.reminderMinute = on ? (isAllDay ? 9 * 60 : window.startMinute) : nil } }))
             if let reminder = window.reminderMinute {
-                DatePicker("At", selection: Binding(
+                TimeField("At", selection: Binding(
                     get: { HabitForm.date(forMinute: reminder) },
-                    set: { value in update { $0.reminderMinute = HabitForm.minute(of: value) } }), displayedComponents: .hourAndMinute)
+                    set: { value in update { $0.reminderMinute = HabitForm.minute(of: value) } }), id: "reminderAt")
                 RemindersOffLine()
             }
             Spacer()

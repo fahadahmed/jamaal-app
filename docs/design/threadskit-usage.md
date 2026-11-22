@@ -87,3 +87,7 @@ Navigation chrome (floating pill tab bar, translucent nav circles) uses the iOS 
 ## Switches (#422)
 
 The system switch has a **white** thumb, and `accent` in dark mode is a pale mint, so the thumb sat on the track at 1.8:1: the on state was hard to see. `JamaalToggleStyle` (iOS; the Mac keeps its native switch) draws the thumb in `onAccent` (dark on the mint track in dark mode, light on the deep track in light mode, about 6:1 both ways) and gives the off state an outlined `ink3` track and thumb. It stays a switch to VoiceOver (`accessibilityRepresentation`) and to UI tests (`app.switches[...]`). A row that draws its own label beside the switch uses `.switchOnly()` where it used to use `.labelsHidden()`.
+
+## Time of day (#422)
+
+The system's compact time picker opens a see-through glass popover with a faint wheel, which was hard to read in dark mode. On iOS a time is now a pill (`TimePill`) that opens the wheel **inline** on a solid `selected` card (`TimeWheelCard`), with the system's primary label colour on it; tapping the pill again closes it. `TimeField` is the whole row (label, pill, wheel). The Morning list row, which also holds a switch, uses the pill and card directly. The Mac keeps the system field. The card must be the wheel's natural height (216 pt): a shorter frame lets the wheel overflow over the pill and swallow its taps.

@@ -98,32 +98,30 @@ struct NotificationsScreen: View {
     }
 
     private func timeRow(_ title: String, _ minute: Int, id: String, set: @escaping (Int) -> Void) -> some View {
-        HStack {
-            Text(title).threadsType(.lede).foregroundStyle(threads.ink)
-            Spacer()
-            DatePicker(title, selection: Binding(get: { HabitForm.date(forMinute: minute) }, set: { set(HabitForm.minute(of: $0)); reminders.scheduleReplan(in: context) }),
-                       displayedComponents: .hourAndMinute)
-                .labelsHidden().accessibilityIdentifier(id)
-        }
-        .frame(minHeight: 60)
+        TimeField(title, selection: Binding(get: { HabitForm.date(forMinute: minute) }, set: { set(HabitForm.minute(of: $0)); reminders.scheduleReplan(in: context) }), id: id)
         .overlay(alignment: .bottom) { Divider().overlay(threads.line) }
     }
 
+    @State private var morningOpen = false
+
     private func morningRow(_ settings: UserSettings) -> some View {
+        let morning = Binding(get: { HabitForm.date(forMinute: settings.morningMinute) },
+                              set: { settings.morningMinute = HabitForm.minute(of: $0); reminders.scheduleReplan(in: context) })
+        return VStack(spacing: 0) {
         HStack {
             Text("Morning list").threadsType(.lede).foregroundStyle(threads.ink)
             Spacer()
             if reminders.morningEnabled {
-                DatePicker("Morning list", selection: Binding(get: { HabitForm.date(forMinute: settings.morningMinute) },
-                                                              set: { settings.morningMinute = HabitForm.minute(of: $0); reminders.scheduleReplan(in: context) }),
-                           displayedComponents: .hourAndMinute)
-                    .labelsHidden().accessibilityIdentifier("morningTime")
+                TimePill("Morning list", selection: morning.wrappedValue, isOpen: $morningOpen, id: "morningTime")
             }
             Toggle("Morning list", isOn: Binding(get: { reminders.morningEnabled }, set: { reminders.morningEnabled = $0; reminders.scheduleReplan(in: context) }))
                 .switchOnly().accessibilityIdentifier("morningSwitch")
         }
         .frame(minHeight: 60)
-        .overlay(alignment: .bottom) { Divider().overlay(threads.line) }
+        if reminders.morningEnabled && morningOpen { TimeWheelCard(selection: morning, id: "morningTimeWheel") }
+        Divider().overlay(threads.line)
+        }
+        .animation(.snappy(duration: 0.2), value: morningOpen)
     }
 
     /// Turning the switch on asks for permission in context if it hasn't been asked.

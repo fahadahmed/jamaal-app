@@ -338,9 +338,9 @@ struct SlotEditorSheet: View {
                 Toggle("All day", isOn: Binding(get: { slot.allDay }, set: { value in update { $0.allDay = value } }))
             }
             if !slot.allDay {
-                DatePicker("Starts", selection: Binding(
+                TimeField("Starts", selection: Binding(
                     get: { HabitForm.date(forMinute: slot.startMinute) },
-                    set: { value in update { $0.startMinute = HabitForm.minute(of: value) } }), displayedComponents: .hourAndMinute)
+                    set: { value in update { $0.startMinute = HabitForm.minute(of: value) } }), id: "slotStarts")
                 HStack {
                     Text("Window").threadsType(.lede).foregroundStyle(threads.ink)
                     Spacer()
