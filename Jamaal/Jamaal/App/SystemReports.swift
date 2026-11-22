@@ -28,6 +28,17 @@ enum AppLaunch {
     }()
 }
 
+/// Whether the app is on screen right now, readable from any thread (a sync event can finish on a background queue, where asking UIKit is not
+/// allowed). Set at launch and whenever the scene changes phase. A sync event that says `foreground=false` happened while the app was away:
+/// the case a crash report with process role *Non UI* points at.
+final class ForegroundState: @unchecked Sendable {
+    static let shared = ForegroundState()
+    private let lock = NSLock()
+    private var value = true
+    var isForeground: Bool { lock.withLock { value } }
+    func set(_ foreground: Bool) { lock.withLock { value = foreground } }
+}
+
 enum RunLifecycle {
     private static let recordKey = "runRecord"
     private static let noticeKey = "exitNotice"
@@ -100,9 +111,12 @@ final class MetricKitReceiver: NSObject, MXMetricManagerSubscriber, @unchecked S
         for payload in payloads {
             let at = payload.timeStampEnd
             for crash in payload.crashDiagnostics ?? [] {
+                // The system's termination reason is kept only as its namespace and code (RUNNINGBOARD 0xdead10cc): it says which kind of
+                // kill this was, and the cleaner drops anything else in the text.
                 Diag.shared.record(SystemDiagnostic(
                     kind: .crash, at: at, exceptionType: crash.exceptionType?.intValue, exceptionCode: crash.exceptionCode?.intValue,
-                    signal: crash.signal?.intValue, build: SystemDiagnostic.build(from: crash.metaData.applicationBuildVersion)).event)
+                    signal: crash.signal?.intValue, build: SystemDiagnostic.build(from: crash.metaData.applicationBuildVersion),
+                    terminationReason: crash.terminationReason).event)
             }
             for hang in payload.hangDiagnostics ?? [] {
                 Diag.shared.record(SystemDiagnostic(
@@ -121,11 +135,19 @@ final class MetricKitReceiver: NSObject, MXMetricManagerSubscriber, @unchecked S
     #if os(iOS)
     nonisolated func didReceive(_ payloads: [MXMetricPayload]) {
         for payload in payloads {
-            guard let exits = payload.applicationExitMetrics?.foregroundExitData else { continue }
+            guard let metrics = payload.applicationExitMetrics else { continue }
+            let exits = metrics.foregroundExitData
+            let away = metrics.backgroundExitData
             let day = DailyHealth(
                 at: payload.timeStampEnd, normalExits: exits.cumulativeNormalAppExitCount,
                 abnormalExits: exits.cumulativeAbnormalExitCount + exits.cumulativeBadAccessExitCount + exits.cumulativeIllegalInstructionExitCount,
-                memoryExits: exits.cumulativeMemoryResourceLimitExitCount, watchdogExits: exits.cumulativeAppWatchdogExitCount)
+                memoryExits: exits.cumulativeMemoryResourceLimitExitCount, watchdogExits: exits.cumulativeAppWatchdogExitCount,
+                // While the app was away: what the foreground counts can't see (#416).
+                backgroundAbnormalExits: away.cumulativeAbnormalExitCount + away.cumulativeBadAccessExitCount + away.cumulativeIllegalInstructionExitCount,
+                backgroundMemoryExits: away.cumulativeMemoryResourceLimitExitCount + away.cumulativeMemoryPressureExitCount,
+                backgroundWatchdogExits: away.cumulativeAppWatchdogExitCount,
+                backgroundLockedFileExits: away.cumulativeSuspendedWithLockedFileExitCount,
+                backgroundTaskTimeoutExits: away.cumulativeBackgroundTaskAssertionTimeoutExitCount)
             if !day.isEmpty { Diag.shared.record(day.event) }
         }
     }

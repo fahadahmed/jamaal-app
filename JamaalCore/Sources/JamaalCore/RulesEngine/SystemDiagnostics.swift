@@ -17,12 +17,14 @@ public struct SystemDiagnostic: Equatable, Sendable {
     /// A hang's length.
     public var durationMs: Int?
     public var build: Int?
+    /// The system's reason for a crash, as MetricKit words it; only its namespace and code are ever kept (`DiagnosticValue.termination`).
+    public var terminationReason: String?
 
     public init(kind: Kind, at: Date, exceptionType: Int? = nil, exceptionCode: Int? = nil, signal: Int? = nil,
-                durationMs: Int? = nil, build: Int? = nil) {
+                durationMs: Int? = nil, build: Int? = nil, terminationReason: String? = nil) {
         self.kind = kind; self.at = at
         self.exceptionType = exceptionType; self.exceptionCode = exceptionCode; self.signal = signal
-        self.durationMs = durationMs; self.build = build
+        self.durationMs = durationMs; self.build = build; self.terminationReason = terminationReason
     }
 
     /// The build number when it is a whole number ("7"), nothing otherwise: free text is never kept.
@@ -46,6 +48,7 @@ public struct SystemDiagnostic: Equatable, Sendable {
         if let signal { fields.append(.init(.signal, .count(signal))) }
         if let durationMs, durationMs >= 0 { fields.append(.init(.durationMs, .count(durationMs))) }
         if let build { fields.append(.init(.build, .count(build))) }
+        if let reason = DiagnosticValue.termination(terminationReason) { fields.append(.init(.termination, reason)) }
         return DiagnosticEvent(at: at, name: name, level: level, fields: fields)
     }
 }
@@ -128,21 +131,47 @@ public struct DailyHealth: Equatable, Sendable {
     public private(set) var abnormalExits: Int
     public private(set) var memoryExits: Int
     public private(set) var watchdogExits: Int
+    // Exits while the app was in the background (MetricKit's background exit data). A background death is the one a person never sees,
+    // so these say what the foreground counts can't: a crash while away, memory, the watchdog, being suspended while holding a file
+    // lock (the 0xdead10cc kill, which a store in the App Group can meet), and a background task that ran out of time.
+    public private(set) var backgroundAbnormalExits: Int
+    public private(set) var backgroundMemoryExits: Int
+    public private(set) var backgroundWatchdogExits: Int
+    public private(set) var backgroundLockedFileExits: Int
+    public private(set) var backgroundTaskTimeoutExits: Int
 
-    public init(at: Date, normalExits: Int, abnormalExits: Int, memoryExits: Int, watchdogExits: Int) {
+    public init(
+        at: Date, normalExits: Int, abnormalExits: Int, memoryExits: Int, watchdogExits: Int,
+        backgroundAbnormalExits: Int = 0, backgroundMemoryExits: Int = 0, backgroundWatchdogExits: Int = 0,
+        backgroundLockedFileExits: Int = 0, backgroundTaskTimeoutExits: Int = 0
+    ) {
         self.at = at
         self.normalExits = max(0, normalExits); self.abnormalExits = max(0, abnormalExits)
         self.memoryExits = max(0, memoryExits); self.watchdogExits = max(0, watchdogExits)
+        self.backgroundAbnormalExits = max(0, backgroundAbnormalExits); self.backgroundMemoryExits = max(0, backgroundMemoryExits)
+        self.backgroundWatchdogExits = max(0, backgroundWatchdogExits); self.backgroundLockedFileExits = max(0, backgroundLockedFileExits)
+        self.backgroundTaskTimeoutExits = max(0, backgroundTaskTimeoutExits)
+    }
+
+    private var backgroundTrouble: Int {
+        backgroundAbnormalExits + backgroundMemoryExits + backgroundWatchdogExits + backgroundLockedFileExits + backgroundTaskTimeoutExits
     }
 
     /// Nothing happened worth a line.
-    public var isEmpty: Bool { normalExits + abnormalExits + memoryExits + watchdogExits == 0 }
+    public var isEmpty: Bool { normalExits + abnormalExits + memoryExits + watchdogExits + backgroundTrouble == 0 }
 
     public var event: DiagnosticEvent {
-        let trouble = abnormalExits + memoryExits + watchdogExits > 0
-        return DiagnosticEvent(at: at, name: .systemDaily, level: trouble ? .notice : .info, fields: [
+        let trouble = abnormalExits + memoryExits + watchdogExits + backgroundTrouble > 0
+        var fields: [DiagnosticEvent.Field] = [
             .init(.exitsNormal, .count(normalExits)), .init(.exitsAbnormal, .count(abnormalExits)),
             .init(.exitsMemory, .count(memoryExits)), .init(.exitsWatchdog, .count(watchdogExits)),
-        ])
+        ]
+        // Only what happened: a quiet day's line stays as short as it was.
+        for (key, count) in [(DiagnosticKey.bgAbnormal, backgroundAbnormalExits), (.bgMemory, backgroundMemoryExits),
+                             (.bgWatchdog, backgroundWatchdogExits), (.bgLockedFile, backgroundLockedFileExits),
+                             (.bgTaskTimeout, backgroundTaskTimeoutExits)] where count > 0 {
+            fields.append(.init(key, .count(count)))
+        }
+        return DiagnosticEvent(at: at, name: .systemDaily, level: trouble ? .notice : .info, fields: fields)
     }
 }

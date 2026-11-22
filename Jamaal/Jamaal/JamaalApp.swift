@@ -66,9 +66,9 @@ struct JamaalApp: App {
                             #endif
                         }
                         .onChange(of: scenePhase) { _, phase in
-                            if phase == .active { Diag.shared.record(.appActive); RunLifecycle.becameActive(); tick(container) }
+                            if phase == .active { ForegroundState.shared.set(true); Diag.shared.record(.appActive); RunLifecycle.becameActive(); tick(container) }
                             else { RunLifecycle.leftTheScreen() }
-                            if phase == .background { Diag.shared.save() }
+                            if phase == .background { ForegroundState.shared.set(false); Diag.shared.record(.appBackground); Diag.shared.save() }
                             if phase != .inactive { WidgetRefresher.shared.reloadNow() }       // coming forward or leaving it
                         }
                         // A widget link takes the same path in as a notification tap.
