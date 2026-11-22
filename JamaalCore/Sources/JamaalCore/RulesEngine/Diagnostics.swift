@@ -17,6 +17,7 @@ public enum DiagnosticLevel: String, Codable, Sendable {
 public enum DiagnosticName: String, Codable, CaseIterable, Sendable {
     case appLaunched = "app.launched"
     case appActive = "app.active"
+    case appBackground = "app.background"
     case appUnexpectedExit = "app.unexpectedExit"
     case syncSetup = "sync.setup"
     case syncImport = "sync.import"
@@ -38,7 +39,7 @@ public enum DiagnosticName: String, Codable, CaseIterable, Sendable {
 
     public var category: DiagnosticCategory {
         switch self {
-        case .appLaunched, .appActive, .appUnexpectedExit: .app
+        case .appLaunched, .appActive, .appBackground, .appUnexpectedExit: .app
         case .syncSetup, .syncImport, .syncExport, .syncAccount: .sync
         case .engineTick, .engineTickFailed: .engine
         case .focusBegan, .focusFinished: .focus
@@ -59,6 +60,11 @@ public enum DiagnosticKey: String, Codable, CaseIterable, Sendable {
     case exceptionType, exceptionCode, signal, build
     case account, foreground
     case exitsNormal, exitsAbnormal, exitsMemory, exitsWatchdog
+    /// How a crash ended, as "NAMESPACE code" (RUNNINGBOARD 0xdead10cc): the system's reason for it, never text.
+    case termination
+    /// Exits while the app was in the background: a crash, memory, the watchdog, suspended while holding a file lock (0xdead10cc),
+    /// and a background task that ran out of time.
+    case bgAbnormal, bgMemory, bgWatchdog, bgLockedFile, bgTaskTimeout
 }
 
 /// What a field can hold. There is no initialiser that takes text: only these, so content can't get in.
@@ -80,6 +86,17 @@ public struct DiagnosticValue: Codable, Equatable, Sendable {
         case .temporarilyUnavailable: .init("temporarilyUnavailable")
         case .unknown: .init("unknown")
         }
+    }
+
+    /// The system's termination reason for a crash ("Namespace RUNNINGBOARD, Code 0xdead10cc"), kept only as "RUNNINGBOARD 0xdead10cc": a
+    /// capitals namespace of up to 24 characters and a code, and **nothing after the code**, so a title or a path in the text can't get in.
+    /// Anything that doesn't fit that shape is dropped.
+    public static func termination(_ text: String?) -> DiagnosticValue? {
+        guard let text, let range = text.range(of: #"Namespace\s+([A-Z_]{2,24}),\s*Code\s+(0x[0-9a-fA-F]{1,16}|[0-9]{1,6})"#, options: .regularExpression) else { return nil }
+        let matched = String(text[range])
+        let parts = matched.split(whereSeparator: { $0 == " " || $0 == "," }).map(String.init)       // Namespace, NAME, Code, code
+        guard parts.count == 4 else { return nil }
+        return .init("\(parts[1]) \(parts[3])")
     }
 
     /// An error's domain and code. Its message is dropped: it can hold anything.

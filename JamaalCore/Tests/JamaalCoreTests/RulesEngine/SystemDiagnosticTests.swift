@@ -202,5 +202,53 @@ struct SystemDiagnosticTests {
         #expect(event.name == .appLaunched)
         #expect(event.line(timeZone: utc) == "2026-09-22 18:00:00 app.launched foreground=false")
     }
-}
 
+    // MARK: Why it died, and what happened in the background (#416)
+
+    @Test func aTerminationReasonIsKeptAsItsNamespaceAndCodeOnly() {
+        #expect(DiagnosticValue.termination("Namespace RUNNINGBOARD, Code 0xdead10cc")?.text == "RUNNINGBOARD 0xdead10cc")
+        #expect(DiagnosticValue.termination("Namespace SPRINGBOARD, Code 0x8badf00d")?.text == "SPRINGBOARD 0x8badf00d")
+        #expect(DiagnosticValue.termination("Namespace SIGNAL, Code 11")?.text == "SIGNAL 11")
+        #expect(DiagnosticValue.termination("Namespace SIGNAL, Code 11 Segmentation fault: 11 while saving Call the clinic back")?.text == "SIGNAL 11",
+                "anything after the code is dropped, so a title or a path can't get in")
+    }
+
+    @Test func textThatIsNotANamespaceAndCodeIsNeverKept() {
+        #expect(DiagnosticValue.termination(nil) == nil)
+        #expect(DiagnosticValue.termination("") == nil)
+        #expect(DiagnosticValue.termination("Call the clinic back") == nil)
+        #expect(DiagnosticValue.termination("Namespace lower, Code 0x1") == nil, "a namespace is capitals")
+        #expect(DiagnosticValue.termination("Namespace " + String(repeating: "A", count: 40) + ", Code 1") == nil, "and short")
+    }
+
+    @Test func aCrashEventCarriesItsTerminationReasonWhenThereIsOne() {
+        let withReason = SystemDiagnostic(kind: .crash, at: when, exceptionType: 10, exceptionCode: 0, signal: 9, build: 13,
+                                          terminationReason: "Namespace RUNNINGBOARD, Code 0xdead10cc").event
+        #expect(withReason.line(timeZone: utc).contains("termination=RUNNINGBOARD 0xdead10cc"))
+        let without = SystemDiagnostic(kind: .crash, at: when, exceptionType: 10, exceptionCode: 0, signal: 9, build: 13).event
+        #expect(!without.line(timeZone: utc).contains("termination"))
+    }
+
+    @Test func theBackgroundExitCountsJoinTheDailyLineOnlyWhenTheyAreNotZero() {
+        let quiet = DailyHealth(at: when, normalExits: 3, abnormalExits: 0, memoryExits: 0, watchdogExits: 0)
+        #expect(!quiet.event.line(timeZone: utc).contains("bg"))
+        let trouble = DailyHealth(at: when, normalExits: 3, abnormalExits: 0, memoryExits: 0, watchdogExits: 0,
+                                  backgroundAbnormalExits: 1, backgroundLockedFileExits: 2, backgroundTaskTimeoutExits: 0)
+        let line = trouble.event.line(timeZone: utc)
+        #expect(line.contains("bgAbnormal=1") && line.contains("bgLockedFile=2"))
+        #expect(!line.contains("bgTaskTimeout"))
+        #expect(trouble.event.level == .notice, "any background trouble makes the day a notice")
+    }
+
+    @Test func aDayWithOnlyBackgroundTroubleIsStillWorthALine() {
+        let onlyBackground = DailyHealth(at: when, normalExits: 0, abnormalExits: 0, memoryExits: 0, watchdogExits: 0, backgroundMemoryExits: 1)
+        #expect(!onlyBackground.isEmpty)
+    }
+
+    @Test func goingToTheBackgroundIsAnAppEventAndSyncEventsCanSayWhetherTheAppWasAway() {
+        #expect(DiagnosticName.appBackground.rawValue == "app.background")
+        #expect(DiagnosticName.appBackground.category == .app)
+        let away = DiagnosticEvent(at: when, name: .syncImport, fields: [.init(.ok, .flag(true)), .init(.foreground, .flag(false))])
+        #expect(away.line(timeZone: utc).hasSuffix("sync.import ok=true foreground=false"))
+    }
+}

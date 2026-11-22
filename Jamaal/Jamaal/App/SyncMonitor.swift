@@ -53,7 +53,8 @@ final class SyncMonitor {
             let end = event.endDate, ok = event.succeeded
             if end != nil {                                          // an event still in progress isn't worth a line
                 let name: DiagnosticName = switch kind { case .setup: .syncSetup; case .import: .syncImport; case .export: .syncExport }
-                var fields: [DiagnosticEvent.Field] = [.init(.ok, .flag(ok))]
+                // Whether the app was on screen when it finished: iCloud work in the background is what a crash with role Non UI points at.
+                var fields: [DiagnosticEvent.Field] = [.init(.ok, .flag(ok)), .init(.foreground, .flag(ForegroundState.shared.isForeground))]
                 if let error = event.error { fields.append(.init(.errorCode, .detailedError(error))) }
                 Diag.shared.record(name, level: ok ? .info : .error, fields)
                 if kind == .setup, !ok {
